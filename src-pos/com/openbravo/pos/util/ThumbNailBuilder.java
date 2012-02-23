@@ -22,7 +22,7 @@ package com.openbravo.pos.util;
 import java.awt.image.*;
 import java.awt.*;
 import javax.imageio.ImageIO;
-import javax.swing.JLabel;
+import javax.swing.JTextArea;
 
 public class ThumbNailBuilder {
     
@@ -77,12 +77,20 @@ public class ThumbNailBuilder {
         Graphics2D g2d = imgtext.createGraphics();
                 
         // The text        
-        JLabel label = new JLabel();
+        JTextArea label = new JTextArea();
         label.setOpaque(false);
+        label.setLineWrap(true);
+        label.setWrapStyleWord(true);
+        // Make font bold if text is not too long
+        int wordsCount = text.split(" ").length;
+        int charCount = text.length();
+        if (wordsCount < 4 && charCount < 20) {
+            Font f = label.getFont();
+            Font bold = f.deriveFont(Font.BOLD);
+            label.setFont(bold);
+        }
         label.setText(text);
-        //label.setText("<html><center>Line1<br>Line2");
-        label.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        label.setVerticalAlignment(javax.swing.SwingConstants.BOTTOM);            
+        label.setSize(imgtext.getWidth(), 1); // Force width for preferredSize
         Dimension d = label.getPreferredSize();
         label.setBounds(0, 0, imgtext.getWidth(), d.height);  
         
