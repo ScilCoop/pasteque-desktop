@@ -35,7 +35,6 @@ import com.openbravo.format.Formats;
  */
 public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInterface {
 
-    private PaymentPanel m_cardpanel;
     private PaymentGateway m_paymentgateway;
     private JPaymentNotifier m_notifier;
     private String transaction;
@@ -59,10 +58,19 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         } else {
             jlblMessage.setText(null);
         }
+
     }
     
     public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+        this.transaction = transID;
         
+        if (m_paymentgateway == null) {
+            jlblMessage.setText(AppLocal.getIntString("message.nopaymentgateway"));
+            m_notifier.setStatus(false, false);
+        } else {
+            jlblMessage.setText(null);
+        }
+
         m_dTotal = dTotal;
         
         
@@ -73,7 +81,8 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         
     }
     public PaymentInfo executePayment() {
-        return new PaymentInfoMagcard("", "", "", "", m_dPaid);
+        PaymentInfoMagcard payinfo = new PaymentInfoMagcard("", "", "", this.transaction, m_dPaid);
+        return payinfo;
         /*        
         jlblMessage.setText(null);
 
