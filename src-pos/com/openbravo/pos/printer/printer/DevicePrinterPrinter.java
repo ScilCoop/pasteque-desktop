@@ -46,6 +46,10 @@ import javax.print.attribute.standard.JobName;
 import javax.print.attribute.standard.Media;
 import javax.print.attribute.standard.MediaSizeName;
 import javax.print.attribute.standard.OrientationRequested;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.MediaSize;
+import javax.print.attribute.standard.MediaSizeName;
+import javax.print.attribute.standard.OrientationRequested;
 
 /**
  *Class DevicePrinterPrinter is responsible for printing tickets using system <br>
@@ -244,6 +248,10 @@ public class DevicePrinterPrinter implements DevicePrinter {
                 aset.add(OrientationRequested.PORTRAIT);
                 aset.add(new JobName(AppLocal.APP_NAME + " - Document", null));
                 aset.add(media);
+                
+                MediaSize mediaSize = MediaSize.getMediaSizeForName(MediaSizeName.NA_LEGAL);
+                float [] size = mediaSize.getSize(MediaSize.INCH);
+                aset.add(new MediaPrintableArea(0, 0, size[0], size[1], MediaPrintableArea.INCH));
 
                 DocPrintJob printjob = ps.createPrintJob();
                 Doc doc = new SimpleDoc(new PrintableBasicTicket(m_ticketcurrent, imageable_x, imageable_y, imageable_width, imageable_height), DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
