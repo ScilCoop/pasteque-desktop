@@ -21,10 +21,15 @@ package com.openbravo.pos.payment;
 
 import com.openbravo.pos.customers.CustomerInfoExt;
 import java.awt.Component;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.util.RoundUtils;
 
 public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterface {
     
+    private double m_dPaid;
     private double m_dTotal;
     private JPaymentNotifier m_notifier;
     
@@ -32,21 +37,49 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
     public JPaymentFree(JPaymentNotifier notifier) {
         m_notifier = notifier;
         initComponents();
+        
+        m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
+        m_jTendered.addEditorKeys(m_jKeys);
     }
     public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
         
         m_dTotal = dTotal;
         
         // m_jTotal.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
+        m_jTendered.reset();
+        m_jTendered.activate();
         
-        m_notifier.setStatus(true, true);
+        printState();
     }
     
     public PaymentInfo executePayment() {
-        return new PaymentInfoFree(m_dTotal);
+        return new PaymentInfoFree(m_dPaid);
     }
     public Component getComponent() {
         return this;
+    }
+    
+    private void printState() {
+        
+        Double value = m_jTendered.getDoubleValue();
+        if (value == null) {
+            m_dPaid = m_dTotal;
+        } else {
+            m_dPaid = value;
+        } 
+
+        m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
+        
+        int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
+        
+        // if iCompare > 0 then the payment is not valid
+        m_notifier.setStatus(m_dPaid > 0.0 && iCompare <= 0, iCompare == 0);
+    }
+    
+    private class RecalculateState implements PropertyChangeListener {
+        public void propertyChange(PropertyChangeEvent evt) {
+            printState();
+        }
     }
     
     /** This method is called from within the constructor to
@@ -56,16 +89,58 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        jPanel3 = new javax.swing.JPanel();
+        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        m_jMoneyEuros = new javax.swing.JLabel();
 
-        jLabel1.setText(AppLocal.getIntString("message.paymentfree"));
-        add(jLabel1);
+        setLayout(new java.awt.BorderLayout());
 
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
+        jPanel1.add(m_jKeys);
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        jPanel3.setLayout(new java.awt.BorderLayout());
+        jPanel3.add(m_jTendered, java.awt.BorderLayout.CENTER);
+
+        jPanel1.add(jPanel3);
+
+        jPanel2.add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        add(jPanel2, java.awt.BorderLayout.EAST);
+
+        jPanel4.setLayout(null);
+
+        jLabel8.setText(AppLocal.getIntString("Label.InputCash")); // NOI18N
+        jPanel4.add(jLabel8);
+        jLabel8.setBounds(20, 20, 100, 15);
+
+        m_jMoneyEuros.setBackground(new java.awt.Color(153, 153, 255));
+        m_jMoneyEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        m_jMoneyEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        m_jMoneyEuros.setOpaque(true);
+        m_jMoneyEuros.setPreferredSize(new java.awt.Dimension(150, 25));
+        jPanel4.add(m_jMoneyEuros);
+        m_jMoneyEuros.setBounds(120, 20, 150, 25);
+
+        add(jPanel4, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
     
-    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private javax.swing.JLabel m_jMoneyEuros;
+    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
     // End of variables declaration//GEN-END:variables
     
 }
