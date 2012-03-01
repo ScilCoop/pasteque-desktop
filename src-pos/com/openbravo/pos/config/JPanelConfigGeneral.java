@@ -57,6 +57,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         jtxtMachineHostname.getDocument().addDocumentListener(dirty);
         jcboLAF.addActionListener(dirty);
+        m_jcboScreenType.addActionListener(dirty);
         jcboMachineScreenmode.addActionListener(dirty);
         jcboTicketsBag.addActionListener(dirty);
 
@@ -128,6 +129,10 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         jcboMachineScreenmode.addItem("window");
         jcboMachineScreenmode.addItem("fullscreen");
+
+        // Screen type values
+        m_jcboScreenType.addItem("standard");
+        m_jcboScreenType.addItem("touchscreen");
 
         jcboTicketsBag.addItem("simple");
         jcboTicketsBag.addItem("standard");
@@ -290,6 +295,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         // jcboLAF.setSelectedItem(new LookAndFeelInfo());
 
         jcboMachineScreenmode.setSelectedItem(config.getProperty("machine.screenmode"));
+        m_jcboScreenType.setSelectedItem(config.getProperty("machine.screentype"));
         jcboTicketsBag.setSelectedItem(config.getProperty("machine.ticketsbag"));
 
         StringParser p = new StringParser(config.getProperty("machine.printer"));
@@ -393,6 +399,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                 : laf.getClassName());
 
         config.setProperty("machine.screenmode", comboValue(jcboMachineScreenmode.getSelectedItem()));
+        config.setProperty("machine.screentype", comboValue(m_jcboScreenType.getSelectedItem()));
         config.setProperty("machine.ticketsbag", comboValue(jcboTicketsBag.getSelectedItem()));
 
         String sMachinePrinter = comboValue(jcboMachinePrinter.getSelectedItem());
@@ -608,6 +615,9 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jPanel19 = new javax.swing.JPanel();
         jlblPrinterPort5 = new javax.swing.JLabel();
         jcboSerialScanner = new javax.swing.JComboBox();
+        
+        jlblScreenType = new javax.swing.JLabel();
+        m_jcboScreenType = new javax.swing.JComboBox();
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("Label.CashMachine"))); // NOI18N
 
@@ -616,6 +626,8 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jLabel2.setText(AppLocal.getIntString("label.looknfeel")); // NOI18N
 
         jLabel6.setText(AppLocal.getIntString("Label.MachineScreen")); // NOI18N
+        
+        jlblScreenType.setText(AppLocal.getIntString("Label.MachineScreenType"));
 
         jLabel16.setText(AppLocal.getIntString("Label.Ticketsbag")); // NOI18N
 
@@ -1056,6 +1068,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcboMachineScreenmode, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    // Screen type
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1077,6 +1094,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
                     .addComponent(jcboMachineScreenmode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                // Screen type
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblScreenType)
+                    .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
@@ -1297,4 +1319,6 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
     private javax.swing.JTextField m_jtxtJPOSPrinter2;
     private javax.swing.JTextField m_jtxtJPOSPrinter3;
     // End of variables declaration//GEN-END:variables
+    private javax.swing.JLabel jlblScreenType;
+    private javax.swing.JComboBox m_jcboScreenType;
 }
