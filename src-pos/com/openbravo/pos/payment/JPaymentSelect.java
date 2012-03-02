@@ -29,6 +29,7 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.DataLogicSystem;
+import com.openbravo.pos.util.WidgetsBuilder;
 import java.awt.ComponentOrientation;
 import java.util.HashMap;
 import java.util.List;
@@ -295,8 +296,8 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         jPanel6 = new javax.swing.JPanel();
         m_jLblRemainingEuros = new javax.swing.JLabel();
         m_jRemaininglEuros = new javax.swing.JLabel();
-        m_jButtonAdd = new javax.swing.JButton();
-        m_jButtonRemove = new javax.swing.JButton();
+        m_jButtonAdd = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
+        m_jButtonRemove = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
         jPanel3 = new javax.swing.JPanel();
         m_jTabPayment = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
@@ -336,7 +337,6 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jRemaininglEuros.setRequestFocusEnabled(false);
         jPanel6.add(m_jRemaininglEuros);
 
-        m_jButtonAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png"))); // NOI18N
         m_jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jButtonAddActionPerformed(evt);
@@ -344,7 +344,6 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         });
         jPanel6.add(m_jButtonAdd);
 
-        m_jButtonRemove.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png"))); // NOI18N
         m_jButtonRemove.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jButtonRemoveActionPerformed(evt);

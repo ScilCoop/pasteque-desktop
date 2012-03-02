@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -36,7 +37,9 @@ import java.util.logging.Logger;
 public class AppConfig implements AppProperties {
 
     private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
-     
+    
+    public static AppConfig loadedInstance;
+    
     private Properties m_propsconfig;
     private File configfile;
       
@@ -64,7 +67,11 @@ public class AppConfig implements AppProperties {
     }
     
     public String getProperty(String sKey) {
-        return m_propsconfig.getProperty(sKey);
+        String prop = m_propsconfig.getProperty(sKey);
+        if (prop == null) {
+            prop = DEFAULT_VALUES.get(sKey);
+        }
+        return prop;
     }
     
     public String getHost() {
@@ -109,7 +116,7 @@ public class AppConfig implements AppProperties {
         } catch (IOException e){
             loadDefault();
         }
-    
+        AppConfig.loadedInstance = this;
     }
     
     public void save() throws IOException {
@@ -119,6 +126,14 @@ public class AppConfig implements AppProperties {
             m_propsconfig.store(out, AppLocal.APP_NAME + ". Configuration file.");
             out.close();
         }
+    }
+    
+    private static HashMap<String, String> DEFAULT_VALUES;
+    static {
+        DEFAULT_VALUES = new HashMap<String, String>();
+        DEFAULT_VALUES.put("ui.touchbtnminwidth", "0.4"); // in inches
+        DEFAULT_VALUES.put("ui.touchbtnminheight", "0.4"); // in inches
+        DEFAULT_VALUES.put("machine.screendensity", "72"); // in pixel per inch
     }
     
     private void loadDefault() {
@@ -192,5 +207,7 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("paper.standard.mediasizename", "A4");
 
         m_propsconfig.setProperty("machine.uniqueinstance", "false");
+        
+        // 
     }
 }
