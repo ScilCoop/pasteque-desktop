@@ -23,6 +23,7 @@ import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
 import java.awt.Window;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
@@ -146,9 +147,10 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             }
             
             jpayinterface.getComponent().applyComponentOrientation(getComponentOrientation());
+            ImageIcon icon = WidgetsBuilder.createIcon(new ImageIcon(getClass().getResource(jpay.getIconKey())));
             m_jTabPayment.addTab(
                     AppLocal.getIntString(jpay.getLabelKey()),
-                    new javax.swing.ImageIcon(getClass().getResource(jpay.getIconKey())),
+                    icon,
                     jpayinterface.getComponent());
         }
     }

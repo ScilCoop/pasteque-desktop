@@ -31,33 +31,90 @@ import javax.swing.JButton;
 
 public class WidgetsBuilder {
     
+    private WidgetsBuilder() {}
+    
     public static JButton createButton(ImageIcon icon) {
     	JButton btn = new JButton();
     	btn.setIcon(icon);
-    	AppConfig cfg = AppConfig.loadedInstance;
+    	WidgetsBuilder.adaptSize(btn);
+    	return btn;
+    }
+    
+    public static void adaptSize(Component widget) {
+        AppConfig cfg = AppConfig.loadedInstance;
     	if (cfg != null) {
     	    if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
                 int minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
                 int minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
-                int width = (int) btn.getPreferredSize().getWidth();
-                int height = (int) btn.getPreferredSize().getHeight();
-                btn.setMinimumSize(new Dimension(minWidth, minHeight));
+                int width = (int) widget.getPreferredSize().getWidth();
+                int height = (int) widget.getPreferredSize().getHeight();
+                widget.setMinimumSize(new Dimension(minWidth, minHeight));
                 // Some layout ignore minimum size, adjust preferred size in case
                 if (width < minWidth) {
-                    btn.setPreferredSize(new Dimension(minWidth, height));
+                    widget.setPreferredSize(new Dimension(minWidth, height));
                     width = minWidth;
                 }
                 if (height < minHeight) {
-                    btn.setPreferredSize(new Dimension(width, minHeight));
+                    widget.setPreferredSize(new Dimension(width, minHeight));
                 }
     	    }
     	}
-    	return btn;
     }
     
     private static int pixelSize(float inchSize) {
         AppConfig cfg = AppConfig.loadedInstance;
         int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));
         return (int)(inchSize * density);
+    }
+    
+    public static ImageIcon createIcon(ImageIcon icon) {
+        AppConfig cfg = AppConfig.loadedInstance;
+        if (cfg != null) {
+            if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
+    	        int minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
+                int minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
+                return new TouchIcon(icon, minWidth, minHeight);
+            }
+        }
+        return icon;
+    }
+    
+    public static class TouchIcon extends ImageIcon {
+    	private int fullHeight;
+    	private int fullWidth;
+    	private ImageIcon icon;
+    	
+    	public TouchIcon(ImageIcon baseIcon, int fullWidth, int fullHeight) {
+    		this.icon = baseIcon;
+    		this.fullWidth = fullWidth;
+    		this.fullHeight = fullHeight;
+    	}
+    	
+    	@Override
+    	public int getIconHeight() {
+    	    return Math.max(this.fullHeight, this.icon.getIconHeight());
+    	}
+    	
+    	@Override
+    	public int getIconWidth() {
+    	    return Math.max(this.fullWidth, this.icon.getIconWidth());
+    	}
+    	
+    	@Override
+    	public void paintIcon(Component c, Graphics g, int x, int y) {
+            int marginTop = 0;
+            int marginLeft = 0;
+            if (this.fullHeight > 0 
+                && this.icon.getIconHeight() < this.fullHeight) {
+                marginTop = (this.fullHeight - this.icon.getIconHeight())/2;
+            }
+            if (this.fullWidth > 0 
+                && this.icon.getIconWidth() < this.fullWidth) {
+                marginLeft = (this.fullWidth - this.icon.getIconWidth())/2;
+            }
+            g.translate(marginLeft, marginTop);
+            this.icon.paintIcon(c, g, x, y);
+            g.translate(-marginLeft, -marginTop);
+        }
     }
 }
