@@ -31,6 +31,8 @@ import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.util.RoundUtils;
 import com.openbravo.pos.util.ThumbNailBuilder;
+import com.openbravo.pos.widgets.JEditorCurrencyPositive;
+import com.openbravo.pos.widgets.JEditorKeys;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
@@ -177,9 +179,9 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         jPanel6 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new JEditorKeys();
         jPanel3 = new javax.swing.JPanel();
-        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        m_jTendered = new JEditorCurrencyPositive();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -246,9 +248,9 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JLabel m_jChangeEuros;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
-    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
+    private JEditorCurrencyPositive m_jTendered;
     // End of variables declaration//GEN-END:variables
     
 }
