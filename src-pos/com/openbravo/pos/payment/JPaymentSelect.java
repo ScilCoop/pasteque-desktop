@@ -409,7 +409,20 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         getContentPane().add(jPanel5, java.awt.BorderLayout.SOUTH);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-672)/2, (screenSize.height-497)/2, 672, 497);
+        // Icons are to big for a 72dpi density, they don't fit in a popup less than 640x480px
+        int minWidth = 680;
+        int minHeight = 480;
+        int width = WidgetsBuilder.dipToPx(460);
+        int height = WidgetsBuilder.dipToPx(350);
+        width = Math.max(minWidth, width);
+        height = Math.max(minHeight, height);
+        // If popup is big enough, make it fullscreen
+        if (width > 0.8 * screenSize.width || height > 0.8 * screenSize.height) {
+            width = screenSize.width;
+            height = screenSize.height;
+            this.setUndecorated(true);
+        }
+        setBounds((screenSize.width-width)/2, (screenSize.height-height)/2, width, height);
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jButtonRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonRemoveActionPerformed
