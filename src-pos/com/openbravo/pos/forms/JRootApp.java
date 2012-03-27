@@ -690,17 +690,19 @@ public class JRootApp extends JPanel implements AppView {
 
         add(m_jPanelContainer, java.awt.BorderLayout.CENTER);
 
-        m_jPanelDown.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
-        m_jPanelDown.setLayout(new java.awt.BorderLayout());
+        if (cfg == null || cfg.getProperty("ui.showfooterbar").equals("1")) {
+            m_jPanelDown.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
+            m_jPanelDown.setLayout(new java.awt.BorderLayout());
 
-        m_jHost.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/display.png"))); // NOI18N
-        m_jHost.setText("*Hostname");
-        panelTask.add(m_jHost);
+            m_jHost.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/display.png"))); // NOI18N
+            m_jHost.setText("*Hostname");
+            panelTask.add(m_jHost);
 
-        m_jPanelDown.add(panelTask, java.awt.BorderLayout.LINE_START);
-        m_jPanelDown.add(jPanel3, java.awt.BorderLayout.LINE_END);
+            m_jPanelDown.add(panelTask, java.awt.BorderLayout.LINE_START);
+            m_jPanelDown.add(jPanel3, java.awt.BorderLayout.LINE_END);
 
-        add(m_jPanelDown, java.awt.BorderLayout.SOUTH);
+            add(m_jPanelDown, java.awt.BorderLayout.SOUTH);
+        }
     }// </editor-fold>//GEN-END:initComponents
 
 

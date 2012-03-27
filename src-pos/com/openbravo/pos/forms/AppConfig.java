@@ -140,6 +140,7 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.touchbtnspacing", "0.08"); // in inches
         DEFAULT_VALUES.put("ui.fontsize", "14");
         DEFAULT_VALUES.put("ui.showtitlebar", "1");
+        DEFAULT_VALUES.put("ui.showfooterbar", "1");
         DEFAULT_VALUES.put("machine.screendensity", "72"); // in pixel per inch
     }
     
