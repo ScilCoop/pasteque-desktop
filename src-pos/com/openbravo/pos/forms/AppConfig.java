@@ -133,6 +133,12 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES = new HashMap<String, String>();
         DEFAULT_VALUES.put("ui.touchbtnminwidth", "0.4"); // in inches
         DEFAULT_VALUES.put("ui.touchbtnminheight", "0.4"); // in inches
+        DEFAULT_VALUES.put("ui.touchbigbtnminwidth", "0.5"); // in inches
+        DEFAULT_VALUES.put("ui.touchbigbtnminheight", "0.5"); // in inches
+        DEFAULT_VALUES.put("ui.touchsmallbtnminwidth", "0.3"); // in inches
+        DEFAULT_VALUES.put("ui.touchsmallbtnminheight", "0.3"); // in inches
+        DEFAULT_VALUES.put("ui.touchbtnspacing", "0.08"); // in inches
+        DEFAULT_VALUES.put("ui.fontsize", "14");
         DEFAULT_VALUES.put("machine.screendensity", "72"); // in pixel per inch
     }
     

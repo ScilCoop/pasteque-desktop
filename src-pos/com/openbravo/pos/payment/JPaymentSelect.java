@@ -21,6 +21,7 @@ package com.openbravo.pos.payment;
 
 import java.awt.Component;
 import java.awt.Dialog;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
 import javax.swing.ImageIcon;
@@ -30,7 +31,7 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.DataLogicSystem;
-import com.openbravo.pos.util.WidgetsBuilder;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.awt.ComponentOrientation;
 import java.util.HashMap;
 import java.util.List;
@@ -294,10 +295,10 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
 
         jPanel4 = new javax.swing.JPanel();
         m_jLblTotalEuros1 = new javax.swing.JLabel();
-        m_jTotalEuros = new javax.swing.JLabel();
+        m_jTotalEuros = WidgetsBuilder.createImportantLabel();
         jPanel6 = new javax.swing.JPanel();
         m_jLblRemainingEuros = new javax.swing.JLabel();
-        m_jRemaininglEuros = new javax.swing.JLabel();
+        m_jRemaininglEuros = WidgetsBuilder.createImportantLabel();
         m_jButtonAdd = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
         m_jButtonRemove = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
         jPanel3 = new javax.swing.JPanel();
@@ -317,11 +318,9 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         jPanel4.add(m_jLblTotalEuros1);
 
         m_jTotalEuros.setBackground(java.awt.Color.white);
-        m_jTotalEuros.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         m_jTotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jTotalEuros.setOpaque(true);
-        m_jTotalEuros.setPreferredSize(new java.awt.Dimension(125, 25));
         m_jTotalEuros.setRequestFocusEnabled(false);
         jPanel4.add(m_jTotalEuros);
 
@@ -331,11 +330,9 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         jPanel6.add(m_jLblRemainingEuros);
 
         m_jRemaininglEuros.setBackground(java.awt.Color.white);
-        m_jRemaininglEuros.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         m_jRemaininglEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         m_jRemaininglEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jRemaininglEuros.setOpaque(true);
-        m_jRemaininglEuros.setPreferredSize(new java.awt.Dimension(125, 25));
         m_jRemaininglEuros.setRequestFocusEnabled(false);
         jPanel6.add(m_jRemaininglEuros);
 

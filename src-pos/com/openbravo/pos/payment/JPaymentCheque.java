@@ -95,9 +95,9 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel3 = new javax.swing.JPanel();
-        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        m_jTendered = new com.openbravo.pos.widgets.JEditorCurrencyPositive();
         jPanel4 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         m_jMoneyEuros = new javax.swing.JLabel();
@@ -143,9 +143,9 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
-    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
+    private com.openbravo.pos.widgets.JEditorCurrencyPositive m_jTendered;
     // End of variables declaration//GEN-END:variables
     
 }

@@ -18,7 +18,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.openbravo.pos.util;
+package com.openbravo.pos.widgets;
 
 import com.openbravo.pos.forms.AppConfig;
 
@@ -28,24 +28,48 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 public class WidgetsBuilder {
+    
+    public static final int SIZE_SMALL = 0;
+    public static final int SIZE_MEDIUM = 1;
+    public static final int SIZE_BIG = 2;
     
     private WidgetsBuilder() {}
     
     public static JButton createButton(ImageIcon icon) {
+    	return WidgetsBuilder.createButton(icon, SIZE_MEDIUM);
+    }
+    
+    public static JButton createButton(ImageIcon icon, int size) {
     	JButton btn = new JButton();
     	btn.setIcon(icon);
-    	WidgetsBuilder.adaptSize(btn);
+    	WidgetsBuilder.adaptSize(btn, size);
     	return btn;
     }
     
-    public static void adaptSize(Component widget) {
+    public static void adaptSize(Component widget, int size) {
         AppConfig cfg = AppConfig.loadedInstance;
     	if (cfg != null) {
     	    if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
-                int minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
-                int minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
+    	        int minWidth, minHeight = 0;
+    	        switch (size) {
+    	        case SIZE_SMALL:
+    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchsmallbtnminwidth")));
+                    minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchsmallbtnminheight")));
+    	            break;
+    	        case SIZE_BIG:
+    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminwidth")));
+                    minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminheight")));
+    	            break;
+    	        case SIZE_MEDIUM:
+    	        default:
+    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
+                    minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
+    	            break;
+    	        }
+                
                 int width = (int) widget.getPreferredSize().getWidth();
                 int height = (int) widget.getPreferredSize().getHeight();
                 widget.setMinimumSize(new Dimension(minWidth, minHeight));
@@ -61,10 +85,25 @@ public class WidgetsBuilder {
     	}
     }
     
-    private static int pixelSize(float inchSize) {
+    public static int pixelSize(float inchSize) {
         AppConfig cfg = AppConfig.loadedInstance;
         int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));
         return (int)(inchSize * density);
+    }
+    
+    public static int dipToPx(int px) {
+        AppConfig cfg = AppConfig.loadedInstance;
+        int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));        
+        return (int)((float)px * (float)density / 72.0);
+    }
+    
+    public static JLabel createImportantLabel() {
+        JLabel lbl = new JLabel();
+        AppConfig cfg = AppConfig.loadedInstance;
+        int dipSize = Integer.parseInt(cfg.getProperty("ui.fontsize"));
+        int size = dipToPx(dipSize);
+        lbl.setFont(new Font("Dialog", Font.BOLD, size)); // NOI18N
+        return lbl;
     }
     
     public static ImageIcon createIcon(ImageIcon icon) {

@@ -35,6 +35,7 @@ import com.openbravo.format.Formats;
  */
 public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInterface {
 
+    //private PaymentPanel m_cardpanel;
     private PaymentGateway m_paymentgateway;
     private JPaymentNotifier m_notifier;
     private String transaction;
@@ -56,6 +57,9 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         if (m_paymentgateway == null) {
             jlblMessage.setText(AppLocal.getIntString("message.nopaymentgateway"));
         } else {
+            // TODO: In case card reader is connected to POS
+            //m_cardpanel = PaymentPanelFac.getPaymentPanel(app.getProperties().getProperty("payment.magcardreader"), notifier);
+            //add(m_cardpanel.getComponent(), BorderLayout.CENTER);
             jlblMessage.setText(null);
         }
 
