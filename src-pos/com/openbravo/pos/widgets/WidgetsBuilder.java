@@ -49,6 +49,14 @@ public class WidgetsBuilder {
     	return btn;
     }
     
+    public static JButton createButton(ImageIcon icon, String text, int size) {
+    	JButton btn = new JButton();
+    	btn.setText(text);
+    	btn.setIcon(icon);
+    	WidgetsBuilder.adaptSize(btn, size);
+    	return btn;
+    }
+    
     public static void adaptSize(Component widget, int size) {
         AppConfig cfg = AppConfig.loadedInstance;
     	if (cfg != null) {
