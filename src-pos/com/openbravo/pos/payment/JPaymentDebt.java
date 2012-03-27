@@ -26,6 +26,8 @@ import com.openbravo.pos.util.RoundUtils;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import com.openbravo.pos.widgets.JEditorCurrencyPositive;
+import com.openbravo.pos.widgets.JEditorKeys;
 
 /**
  *
@@ -160,9 +162,9 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         jlblMessage = new javax.swing.JTextArea();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new JEditorKeys();
         jPanel3 = new javax.swing.JPanel();
-        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        m_jTendered = new JEditorCurrencyPositive();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -274,11 +276,11 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jlblMessage;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
     private javax.swing.JTextField m_jName;
     private javax.swing.JTextArea m_jNotes;
-    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
+    private JEditorCurrencyPositive m_jTendered;
     private javax.swing.JTextField txtCurdate;
     private javax.swing.JTextField txtCurdebt;
     private javax.swing.JTextField txtMaxdebt;

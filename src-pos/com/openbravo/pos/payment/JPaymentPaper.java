@@ -27,6 +27,8 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.util.RoundUtils;
+import com.openbravo.pos.widgets.JEditorCurrencyPositive;
+import com.openbravo.pos.widgets.JEditorKeys;
 
 public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterface {
     
@@ -106,9 +108,9 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jMoneyEuros = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new JEditorKeys();
         jPanel1 = new javax.swing.JPanel();
-        m_jTendered = new com.openbravo.editor.JEditorCurrencyPositive();
+        m_jTendered = new JEditorCurrencyPositive();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -151,9 +153,9 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel4;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
-    private com.openbravo.editor.JEditorCurrencyPositive m_jTendered;
+    private JEditorCurrencyPositive m_jTendered;
     // End of variables declaration//GEN-END:variables
     
 }
