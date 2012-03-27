@@ -47,6 +47,7 @@ import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.BeanFactoryApp;
 import com.openbravo.pos.forms.BeanFactoryException;
+import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.payment.JPaymentSelectReceipt;
 import com.openbravo.pos.payment.JPaymentSelectRefund;
@@ -1165,6 +1166,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        AppConfig cfg = AppConfig.loadedInstance;
+        
         java.awt.GridBagConstraints gridBagConstraints;
 
         m_jPanContainer = new javax.swing.JPanel();
@@ -1285,29 +1288,31 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel2.setLayout(new java.awt.GridLayout(0, 1, 5, 5));
 
-        m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
-        m_jUp.setFocusPainted(false);
-        m_jUp.setFocusable(false);
-        m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jUp.setRequestFocusEnabled(false);
-        m_jUp.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jUpActionPerformed(evt);
-            }
-        });
-        jPanel2.add(m_jUp);
+        if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
+            m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
+            m_jUp.setFocusPainted(false);
+            m_jUp.setFocusable(false);
+            m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
+            m_jUp.setRequestFocusEnabled(false);
+            m_jUp.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    m_jUpActionPerformed(evt);
+                }
+            });
+            jPanel2.add(m_jUp);
 
-        m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
-        m_jDown.setFocusPainted(false);
-        m_jDown.setFocusable(false);
-        m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jDown.setRequestFocusEnabled(false);
-        m_jDown.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jDownActionPerformed(evt);
-            }
-        });
-        jPanel2.add(m_jDown);
+            m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
+            m_jDown.setFocusPainted(false);
+            m_jDown.setFocusable(false);
+            m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));
+            m_jDown.setRequestFocusEnabled(false);
+            m_jDown.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    m_jDownActionPerformed(evt);
+                }
+            });
+            jPanel2.add(m_jDown);
+        }
 
         m_jDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png"))); // NOI18N
         m_jDelete.setFocusPainted(false);
