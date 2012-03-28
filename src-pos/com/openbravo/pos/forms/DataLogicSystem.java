@@ -39,6 +39,8 @@ import javax.swing.ImageIcon;
  */
 public class DataLogicSystem extends BeanFactoryDataSingle {
     
+    private static final String RES_DIR = "res/";
+    
     protected String m_sInitScript;
     private SentenceFind m_version;       
     private SentenceExec m_dummy;
@@ -181,16 +183,53 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         
         resource = resourcescache.get(name);
         
-        if (resource == null) {       
-            // Primero trato de obtenerlo de la tabla de recursos
-            try {
-                resource = (byte[]) m_resourcebytes.find(name);
-                resourcescache.put(name, resource);
-            } catch (BasicException e) {
-                resource = null;
+        if (resource == null) {
+            // Check resource on file system
+            File resFile = new File(RES_DIR + name);
+            if (resFile.exists() && resFile.isFile() && resFile.canRead()) {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+                byte[] buffer = new byte[2048];
+                BufferedInputStream bis = null;
+                try {
+                   bis = new BufferedInputStream(new FileInputStream(resFile));
+                } catch (FileNotFoundException fnfe) {
+                    // Unreachable
+                    fnfe.printStackTrace();
+                }
+                int read = 0;
+                try {
+                    read = bis.read(buffer, 0, buffer.length);
+                    while (read != -1) {
+                        bos.write(buffer, 0, read);
+                        read = bis.read(buffer, 0, buffer.length);
+                    }
+                } catch (IOException ioe) {
+                    // TODO: log error;
+                    ioe.printStackTrace();
+                }
+                resource = bos.toByteArray();
+                try {
+                    bis.close();
+                } catch (IOException ioe) {
+                    // TODO: log error
+                    ioe.printStackTrace();
+                }
+                try {
+                    bos.close();
+                } catch (IOException ioe) {
+                    // TODO: log error
+                    ioe.printStackTrace();
+                }
+            } else {
+                // Check resource in database
+                try {
+                    resource = (byte[]) m_resourcebytes.find(name);
+                    resourcescache.put(name, resource);
+                } catch (BasicException e) {
+                    resource = null;
+                }
             }
         }
-        
         return resource;
     }
     
