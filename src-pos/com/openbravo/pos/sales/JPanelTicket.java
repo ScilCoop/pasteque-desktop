@@ -57,6 +57,11 @@ import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.util.JRPrinterAWT300;
 import com.openbravo.pos.util.ReportUtils;
+import com.openbravo.pos.widgets.JEditorCurrencyPositive;
+import com.openbravo.pos.widgets.JEditorKeys;
+import com.openbravo.pos.widgets.JNumberEvent;
+import com.openbravo.pos.widgets.JNumberEventListener;
+import com.openbravo.pos.widgets.JNumberKeys;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -1201,7 +1206,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jLblTotalEuros3 = new javax.swing.JLabel();
         m_jContEntries = new javax.swing.JPanel();
         m_jPanEntries = new javax.swing.JPanel();
-        m_jNumberKeys = new com.openbravo.beans.JNumberKeys();
+        m_jNumberKeys = new JNumberKeys();
         jPanel9 = new javax.swing.JPanel();
         m_jPrice = new javax.swing.JLabel();
         m_jPor = new javax.swing.JLabel();
@@ -1454,8 +1459,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
 
-        m_jNumberKeys.addJNumberEventListener(new com.openbravo.beans.JNumberEventListener() {
-            public void keyPerformed(com.openbravo.beans.JNumberEvent evt) {
+        m_jNumberKeys.addJNumberEventListener(new JNumberEventListener() {
+            public void keyPerformed(JNumberEvent evt) {
                 m_jNumberKeysKeyPerformed(evt);
             }
         });
@@ -1594,7 +1599,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     }//GEN-LAST:event_m_jEnterActionPerformed
 
-    private void m_jNumberKeysKeyPerformed(com.openbravo.beans.JNumberEvent evt) {//GEN-FIRST:event_m_jNumberKeysKeyPerformed
+    private void m_jNumberKeysKeyPerformed(JNumberEvent evt) {//GEN-FIRST:event_m_jNumberKeysKeyPerformed
 
         stateTransition(evt.getKey());
 
@@ -1724,7 +1729,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JLabel m_jLblTotalEuros2;
     private javax.swing.JLabel m_jLblTotalEuros3;
     private javax.swing.JButton m_jList;
-    private com.openbravo.beans.JNumberKeys m_jNumberKeys;
+    private JNumberKeys m_jNumberKeys;
     private javax.swing.JPanel m_jOptions;
     private javax.swing.JPanel m_jPanContainer;
     private javax.swing.JPanel m_jPanEntries;
