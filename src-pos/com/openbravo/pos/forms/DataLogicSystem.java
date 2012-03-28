@@ -185,7 +185,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         
         if (resource == null) {
             // Check resource on file system
-            File resFile = new File(RES_DIR + name);
+            String basePath = System.getProperty("dirname.path");
+            File resFile = new File(basePath + RES_DIR + name);
             if (resFile.exists() && resFile.isFile() && resFile.canRead()) {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
                 byte[] buffer = new byte[2048];
