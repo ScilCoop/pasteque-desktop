@@ -376,7 +376,10 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing, 0, 0);
         add(m_jEquals, gridBagConstraints);
-
+        
+        // Force maximum size to preferred to avoid keyboard from stretching
+        // in dynamic layouts
+        this.setMaximumSize(this.getPreferredSize());
     }
     // </editor-fold>//GEN-END:initComponents
 

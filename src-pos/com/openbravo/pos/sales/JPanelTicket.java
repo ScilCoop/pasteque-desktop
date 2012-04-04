@@ -1207,7 +1207,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTaxesEuros = new javax.swing.JLabel();
         m_jLblTotalEuros2 = new javax.swing.JLabel();
         m_jLblTotalEuros3 = new javax.swing.JLabel();
-        m_jContEntries = new javax.swing.JPanel();
         m_jPanEntries = new javax.swing.JPanel();
         m_jNumberKeys = new JNumberKeys();
         jPanel9 = new javax.swing.JPanel();
@@ -1218,11 +1217,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jaddtax = new javax.swing.JToggleButton();
         m_jKeyFactory = new javax.swing.JTextField();
         catcontainer = new javax.swing.JPanel();
+        m_jInputContainer = new javax.swing.JPanel();
 
         setBackground(new java.awt.Color(255, 204, 153));
         setLayout(new java.awt.CardLayout());
 
-        m_jPanContainer.setLayout(new java.awt.BorderLayout());
+        m_jPanContainer.setLayout(new javax.swing.BoxLayout(m_jPanContainer, javax.swing.BoxLayout.Y_AXIS));
 
         m_jOptions.setLayout(new java.awt.BorderLayout());
 
@@ -1279,8 +1279,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jPanelBag.setLayout(new java.awt.BorderLayout());
         m_jOptions.add(m_jPanelBag, java.awt.BorderLayout.CENTER);
+        // Pack buttons line
+        m_jOptions.setMaximumSize(new java.awt.Dimension(m_jOptions.getMaximumSize().width, m_jOptions.getPreferredSize().height));
 
-        m_jPanContainer.add(m_jOptions, java.awt.BorderLayout.NORTH);
+        m_jPanContainer.add(m_jOptions);
+        
+        // Second panel line: ticket and input keyboard
+        m_jInputContainer.setLayout(new javax.swing.BoxLayout(m_jInputContainer, javax.swing.BoxLayout.X_AXIS));
 
         m_jPanTicket.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         m_jPanTicket.setLayout(new java.awt.BorderLayout());
@@ -1449,9 +1454,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jPanTicket.add(m_jPanelCentral, java.awt.BorderLayout.CENTER);
 
-        m_jPanContainer.add(m_jPanTicket, java.awt.BorderLayout.CENTER);
-
-        m_jContEntries.setLayout(new java.awt.BorderLayout());
+        m_jInputContainer.add(m_jPanTicket);
 
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
 
@@ -1462,6 +1465,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         m_jPanEntries.add(m_jNumberKeys);
 
+        // jPanel9: barcode entry line under keyboard
         jPanel9.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel9.setLayout(new java.awt.GridBagLayout());
 
@@ -1538,6 +1542,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         jPanel9.add(m_jaddtax, gridBagConstraints);
 
+        jPanel9.setMaximumSize(new java.awt.Dimension(m_jNumberKeys.getMaximumSize().width, jPanel9.getPreferredSize().height));
         m_jPanEntries.add(jPanel9);
 
         m_jKeyFactory.setBackground(javax.swing.UIManager.getDefaults().getColor("Panel.background"));
@@ -1551,15 +1556,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         m_jPanEntries.add(m_jKeyFactory);
+        // Pack whole ticket and keyboard zone
+        m_jPanEntries.setMaximumSize(new java.awt.Dimension(m_jNumberKeys.getMaximumSize().width, m_jPanEntries.getPreferredSize().height));
+        m_jPanTicket.setMaximumSize(new java.awt.Dimension(m_jPanTicket.getMaximumSize().width, m_jPanEntries.getMaximumSize().height));
 
-        m_jContEntries.add(m_jPanEntries, java.awt.BorderLayout.NORTH);
+        m_jInputContainer.add(m_jPanEntries);
 
-        m_jPanContainer.add(m_jContEntries, java.awt.BorderLayout.LINE_END);
+        m_jPanContainer.add(m_jInputContainer);
 
+        // Last line: catalog selector
         catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         catcontainer.setLayout(new java.awt.BorderLayout());
-        m_jPanContainer.add(catcontainer, java.awt.BorderLayout.SOUTH);
-
+        m_jPanContainer.add(catcontainer);
         add(m_jPanContainer, "ticket");
     }// </editor-fold>//GEN-END:initComponents
 
@@ -1751,7 +1759,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
-    private javax.swing.JPanel m_jContEntries;
     private javax.swing.JButton m_jDelete;
     private javax.swing.JButton m_jDown;
     private javax.swing.JButton m_jEditLine;
@@ -1781,6 +1788,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JToggleButton m_jaddtax;
     private javax.swing.JButton m_jbtnScale;
     private javax.swing.JButton m_jbtnLineDiscount;
+    private javax.swing.JPanel m_jInputContainer;
     // End of variables declaration//GEN-END:variables
 
 }
