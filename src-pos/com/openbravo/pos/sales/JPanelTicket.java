@@ -63,6 +63,7 @@ import com.openbravo.pos.widgets.JEditorKeys;
 import com.openbravo.pos.widgets.JNumberEvent;
 import com.openbravo.pos.widgets.JNumberEventListener;
 import com.openbravo.pos.widgets.JNumberKeys;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -1180,23 +1181,23 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jOptions = new javax.swing.JPanel();
         m_jButtons = new javax.swing.JPanel();
         m_jTicketId = new javax.swing.JLabel();
-        btnCustomer = new javax.swing.JButton();
-        btnSplit = new javax.swing.JButton();
+        btnCustomer = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")));
+        btnSplit = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")));
         m_jPanelScripts = new javax.swing.JPanel();
         m_jButtonsExt = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jbtnScale = new javax.swing.JButton();
+        m_jbtnScale = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/ark216.png")));
         m_jPanelBag = new javax.swing.JPanel();
         m_jPanTicket = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        m_jUp = new javax.swing.JButton();
-        m_jDown = new javax.swing.JButton();
-        m_jDelete = new javax.swing.JButton();
-        m_jList = new javax.swing.JButton();
-        m_jEditLine = new javax.swing.JButton();
-        m_jbtnLineDiscount = new javax.swing.JButton();
-        jEditAttributes = new javax.swing.JButton();
+        m_jUp = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")));
+        m_jDown = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")));
+        m_jDelete = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png")));
+        m_jList = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search22.png")));
+        m_jEditLine = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png")));
+        m_jbtnLineDiscount = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/discount.png")));
+        jEditAttributes = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png")));
         m_jPanelCentral = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jPanTotals = new javax.swing.JPanel();
@@ -1212,7 +1213,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel9 = new javax.swing.JPanel();
         m_jPrice = new javax.swing.JLabel();
         m_jPor = new javax.swing.JLabel();
-        m_jEnter = new javax.swing.JButton();
+        m_jEnter = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png")));
         m_jTax = new javax.swing.JComboBox();
         m_jaddtax = new javax.swing.JToggleButton();
         m_jKeyFactory = new javax.swing.JTextField();
@@ -1233,10 +1234,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTicketId.setRequestFocusEnabled(false);
         m_jButtons.add(m_jTicketId);
 
-        btnCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png"))); // NOI18N
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
-        btnCustomer.setMargin(new java.awt.Insets(8, 14, 8, 14));
         btnCustomer.setRequestFocusEnabled(false);
         btnCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1245,10 +1244,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         m_jButtons.add(btnCustomer);
 
-        btnSplit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png"))); // NOI18N
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
-        btnSplit.setMargin(new java.awt.Insets(8, 14, 8, 14));
         btnSplit.setRequestFocusEnabled(false);
         btnSplit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1263,11 +1260,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jButtonsExt.setLayout(new javax.swing.BoxLayout(m_jButtonsExt, javax.swing.BoxLayout.LINE_AXIS));
 
-        m_jbtnScale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/ark216.png"))); // NOI18N
         m_jbtnScale.setText(AppLocal.getIntString("button.scale")); // NOI18N
         m_jbtnScale.setFocusPainted(false);
         m_jbtnScale.setFocusable(false);
-        m_jbtnScale.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jbtnScale.setRequestFocusEnabled(false);
         m_jbtnScale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1296,10 +1291,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel2.setLayout(new java.awt.GridLayout(0, 1, 5, 5));
 
         if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
-            m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
-            m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
             m_jUp.setRequestFocusEnabled(false);
             m_jUp.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1308,10 +1301,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             });
             jPanel2.add(m_jUp);
 
-            m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
             m_jDown.setFocusPainted(false);
             m_jDown.setFocusable(false);
-            m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));
             m_jDown.setRequestFocusEnabled(false);
             m_jDown.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1321,10 +1312,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             jPanel2.add(m_jDown);
         }
 
-        m_jDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png"))); // NOI18N
         m_jDelete.setFocusPainted(false);
         m_jDelete.setFocusable(false);
-        m_jDelete.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jDelete.setRequestFocusEnabled(false);
         m_jDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1333,10 +1322,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         jPanel2.add(m_jDelete);
 
-        m_jList.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search22.png"))); // NOI18N
         m_jList.setFocusPainted(false);
         m_jList.setFocusable(false);
-        m_jList.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jList.setRequestFocusEnabled(false);
         m_jList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1345,10 +1332,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         jPanel2.add(m_jList);
 
-        m_jEditLine.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png"))); // NOI18N
         m_jEditLine.setFocusPainted(false);
         m_jEditLine.setFocusable(false);
-        m_jEditLine.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jEditLine.setRequestFocusEnabled(false);
         m_jEditLine.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1357,10 +1342,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         jPanel2.add(m_jEditLine);
 
-        jEditAttributes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png"))); // NOI18N
         jEditAttributes.setFocusPainted(false);
         jEditAttributes.setFocusable(false);
-        jEditAttributes.setMargin(new java.awt.Insets(8, 14, 8, 14));
         jEditAttributes.setRequestFocusEnabled(false);
         jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1370,10 +1353,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel2.add(jEditAttributes);
         
         // Line discount button
-        m_jbtnLineDiscount.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/discount.png"))); // NOI18N
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
-        m_jbtnLineDiscount.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jbtnLineDiscount.setRequestFocusEnabled(false);
         m_jbtnLineDiscount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1514,7 +1495,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         jPanel9.add(m_jPor, gridBagConstraints);
 
-        m_jEnter.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png"))); // NOI18N
         m_jEnter.setFocusPainted(false);
         m_jEnter.setFocusable(false);
         m_jEnter.setRequestFocusEnabled(false);

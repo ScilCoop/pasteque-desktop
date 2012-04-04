@@ -22,6 +22,7 @@ package com.openbravo.pos.sales.restaurant;
 import javax.swing.*;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagRestaurant extends javax.swing.JPanel {
     
@@ -51,16 +52,14 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        m_jDelTicket = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
+        jButton2 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/redo16.png")));
+        jButton1 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png")));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jDelTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png"))); // NOI18N
         m_jDelTicket.setFocusPainted(false);
         m_jDelTicket.setFocusable(false);
-        m_jDelTicket.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jDelTicket.setRequestFocusEnabled(false);
         m_jDelTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -69,10 +68,8 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
         });
         add(m_jDelTicket);
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/redo16.png"))); // NOI18N
         jButton2.setFocusPainted(false);
         jButton2.setFocusable(false);
-        jButton2.setMargin(new java.awt.Insets(8, 14, 8, 14));
         jButton2.setRequestFocusEnabled(false);
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,10 +78,8 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
         });
         add(jButton2);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png"))); // NOI18N
         jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
-        jButton1.setMargin(new java.awt.Insets(8, 14, 8, 14));
         jButton1.setRequestFocusEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

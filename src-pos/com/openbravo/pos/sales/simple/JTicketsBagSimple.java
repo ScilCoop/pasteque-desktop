@@ -23,6 +23,7 @@ import com.openbravo.pos.forms.*;
 import javax.swing.*;
 import com.openbravo.pos.sales.*;
 import com.openbravo.pos.ticket.TicketInfo;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagSimple extends JTicketsBag {
     
@@ -65,14 +66,12 @@ public class JTicketsBagSimple extends JTicketsBag {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        m_jDelTicket = new javax.swing.JButton();
+        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jDelTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
         m_jDelTicket.setFocusPainted(false);
         m_jDelTicket.setFocusable(false);
-        m_jDelTicket.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jDelTicket.setRequestFocusEnabled(false);
         m_jDelTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

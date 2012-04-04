@@ -38,6 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppUser;
 import com.openbravo.pos.util.ThumbNailBuilder;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -134,7 +135,7 @@ public class JPanelButtons extends javax.swing.JPanel {
                         : AppLocal.getIntString(titlekey);
                 
                 // adding the button to the panel
-                JButton btn = new JButtonFunc(attributes.getValue("key"), 
+                JButton btn = createButtonFunc(attributes.getValue("key"), 
                         attributes.getValue("image"), 
                         title);
                 
@@ -169,20 +170,16 @@ public class JPanelButtons extends javax.swing.JPanel {
         public void endElement(String uri, String localName, String qName) throws SAXException {}
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {}
-    }  
-        
-    private class JButtonFunc extends JButton {
-       
-        public JButtonFunc(String sKey, String sImage, String title) {
-            
-            setName(sKey);
-            setText(title);
-            setIcon(new ImageIcon(tnbmacro.getThumbNail(panelticket.getResourceAsImage(sImage))));
-            setFocusPainted(false);
-            setFocusable(false);
-            setRequestFocusEnabled(false);
-            setMargin(new Insets(8, 14, 8, 14));  
-        }         
+    }
+    
+    private JButton createButtonFunc(String sKey, String sImage, String title) {
+        JButton btn = WidgetsBuilder.createButton(new ImageIcon(tnbmacro.getThumbNail(panelticket.getResourceAsImage(sImage))), title, WidgetsBuilder.SIZE_MEDIUM);
+        btn.setName(sKey);
+        btn.setText(title);
+        btn.setFocusPainted(false);
+        btn.setFocusable(false);
+        btn.setRequestFocusEnabled(false);
+        return btn; 
     }
     
     /** This method is called from within the constructor to

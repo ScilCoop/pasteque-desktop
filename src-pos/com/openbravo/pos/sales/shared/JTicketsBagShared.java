@@ -26,7 +26,8 @@ import javax.swing.*;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.pos.sales.*;
-import com.openbravo.pos.forms.*; 
+import com.openbravo.pos.forms.*;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagShared extends JTicketsBag {
     
@@ -143,16 +144,14 @@ public class JTicketsBagShared extends JTicketsBag {
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         jPanel1 = new javax.swing.JPanel();
-        m_jNewTicket = new javax.swing.JButton();
-        m_jDelTicket = new javax.swing.JButton();
-        m_jListTickets = new javax.swing.JButton();
+        m_jNewTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editnew.png")));
+        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
+        m_jListTickets = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/unsortedList.png")));
 
         setLayout(new java.awt.BorderLayout());
 
-        m_jNewTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editnew.png")));
         m_jNewTicket.setFocusPainted(false);
         m_jNewTicket.setFocusable(false);
-        m_jNewTicket.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jNewTicket.setRequestFocusEnabled(false);
         m_jNewTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -162,10 +161,8 @@ public class JTicketsBagShared extends JTicketsBag {
 
         jPanel1.add(m_jNewTicket);
 
-        m_jDelTicket.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
         m_jDelTicket.setFocusPainted(false);
         m_jDelTicket.setFocusable(false);
-        m_jDelTicket.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jDelTicket.setRequestFocusEnabled(false);
         m_jDelTicket.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -175,10 +172,8 @@ public class JTicketsBagShared extends JTicketsBag {
 
         jPanel1.add(m_jDelTicket);
 
-        m_jListTickets.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/unsortedList.png")));
         m_jListTickets.setFocusPainted(false);
         m_jListTickets.setFocusable(false);
-        m_jListTickets.setMargin(new java.awt.Insets(8, 14, 8, 14));
         m_jListTickets.setRequestFocusEnabled(false);
         m_jListTickets.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
