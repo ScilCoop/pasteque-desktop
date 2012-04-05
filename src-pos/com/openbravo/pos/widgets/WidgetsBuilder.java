@@ -105,12 +105,57 @@ public class WidgetsBuilder {
         return (int)((float)px * (float)density / 72.0);
     }
     
+    public static Font getFont(int size) {
+        AppConfig cfg = AppConfig.loadedInstance;
+        int dipSize;
+        int style;
+        switch (size) {
+        case SIZE_SMALL:
+            dipSize = Integer.parseInt(cfg.getProperty("ui.fontsizesmall"));
+            style = Font.PLAIN;
+            break;
+        case SIZE_BIG:
+            dipSize = Integer.parseInt(cfg.getProperty("ui.fontsizebig"));
+            style = Font.BOLD;
+            break;
+        case SIZE_MEDIUM:
+        default:
+            dipSize = Integer.parseInt(cfg.getProperty("ui.fontsize"));
+            style = Font.PLAIN;
+            break;
+        }
+        int fontSize = dipToPx(dipSize);
+        return new Font("Dialog", style, fontSize);
+    }
+    
+    /** Setup an existing label with config properties */
+    public static void setupLabel(JLabel lbl, int size) {
+        lbl.setFont(getFont(size));
+    }
+    
+    public static JLabel createLabel(String text) {
+        JLabel lbl = new JLabel();
+        setupLabel(lbl, SIZE_MEDIUM);
+        if (text != null) {
+            lbl.setText(text);
+        }
+        return lbl;
+    }
+    
+    public static JLabel createLabel() {
+        return createLabel(null);
+    }
+    
     public static JLabel createImportantLabel() {
         JLabel lbl = new JLabel();
-        AppConfig cfg = AppConfig.loadedInstance;
-        int dipSize = Integer.parseInt(cfg.getProperty("ui.fontsize"));
-        int size = dipToPx(dipSize);
-        lbl.setFont(new Font("Dialog", Font.BOLD, size)); // NOI18N
+        setupLabel(lbl, SIZE_BIG);
+        
+        return lbl;
+    }
+    
+    public static JLabel createSmallLabel() {
+        JLabel lbl = new JLabel();
+        setupLabel(lbl, SIZE_SMALL);
         return lbl;
     }
     

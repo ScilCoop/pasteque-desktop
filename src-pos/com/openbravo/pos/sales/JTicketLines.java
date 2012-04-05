@@ -32,6 +32,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -41,6 +42,7 @@ import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.ticket.TicketLineInfo;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xml.sax.Attributes;
@@ -93,10 +95,11 @@ public class JTicketLines extends javax.swing.JPanel {
         }       
         
         m_jScrollTableTicket.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
-       
+        TableCellRenderer defaultHeaderRenderer = m_jTicketTable.getTableHeader().getDefaultRenderer();
+        m_jTicketTable.getTableHeader().setDefaultRenderer(new TicketHeaderRenderer(defaultHeaderRenderer, acolumns));
         m_jTicketTable.getTableHeader().setReorderingAllowed(false);         
         m_jTicketTable.setDefaultRenderer(Object.class, new TicketCellRenderer(acolumns));
-        m_jTicketTable.setRowHeight(40);
+        m_jTicketTable.setRowHeight(WidgetsBuilder.dipToPx(40));
         m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
         
         // reseteo la tabla...
@@ -212,6 +215,27 @@ public class JTicketLines extends javax.swing.JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
             
             JLabel aux = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            WidgetsBuilder.setupLabel(aux, WidgetsBuilder.SIZE_MEDIUM);
+            aux.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+            aux.setHorizontalAlignment(m_acolumns[column].align);
+            return aux;
+        }
+    }
+    
+    private static class TicketHeaderRenderer extends DefaultTableCellRenderer {
+        
+        private ColumnTicket[] m_acolumns;
+        private TableCellRenderer baseRenderer;
+        
+        public TicketHeaderRenderer(TableCellRenderer baseRenderer, ColumnTicket[] acolumns) {
+            this.baseRenderer = baseRenderer;
+            m_acolumns = acolumns;
+        }
+        
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            JLabel aux = (JLabel) this.baseRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            WidgetsBuilder.setupLabel(aux, WidgetsBuilder.SIZE_SMALL);
             aux.setVerticalAlignment(javax.swing.SwingConstants.TOP);
             aux.setHorizontalAlignment(m_acolumns[column].align);
             return aux;

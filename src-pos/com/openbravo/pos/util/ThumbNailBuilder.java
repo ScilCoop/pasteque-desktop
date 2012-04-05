@@ -24,6 +24,8 @@ import java.awt.*;
 import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 
+import com.openbravo.pos.widgets.WidgetsBuilder;
+
 public class ThumbNailBuilder {
     
     private Image m_imgdefault;
@@ -84,11 +86,7 @@ public class ThumbNailBuilder {
         // Make font bold if text is not too long
         int wordsCount = text.split(" ").length;
         int charCount = text.length();
-        if (wordsCount < 4 && charCount < 20) {
-            Font f = label.getFont();
-            Font bold = f.deriveFont(Font.BOLD);
-            label.setFont(bold);
-        }
+        label.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_SMALL));
         label.setText(text);
         label.setSize(imgtext.getWidth(), 1); // Force width for preferredSize
         Dimension d = label.getPreferredSize();

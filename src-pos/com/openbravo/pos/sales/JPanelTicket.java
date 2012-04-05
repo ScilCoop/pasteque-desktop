@@ -1174,7 +1174,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanContainer = new javax.swing.JPanel();
         m_jOptions = new javax.swing.JPanel();
         m_jButtons = new javax.swing.JPanel();
-        m_jTicketId = new javax.swing.JLabel();
+        m_jTicketId = WidgetsBuilder.createLabel();
         btnCustomer = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")));
         btnSplit = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")));
         m_jButtonsExt = new javax.swing.JPanel();
@@ -1193,17 +1193,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelCentral = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jPanTotals = new javax.swing.JPanel();
-        m_jTotalEuros = new javax.swing.JLabel();
-        m_jLblTotalEuros1 = new javax.swing.JLabel();
-        m_jSubtotalEuros = new javax.swing.JLabel();
-        m_jTaxesEuros = new javax.swing.JLabel();
-        m_jLblTotalEuros2 = new javax.swing.JLabel();
-        m_jLblTotalEuros3 = new javax.swing.JLabel();
+        m_jTotalEuros = WidgetsBuilder.createImportantLabel();
+        m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel();
+        m_jSubtotalEuros = WidgetsBuilder.createLabel();
+        m_jTaxesEuros = WidgetsBuilder.createLabel();
+        m_jLblTotalEuros2 = WidgetsBuilder.createLabel();
+        m_jLblTotalEuros3 = WidgetsBuilder.createLabel();
         m_jPanEntries = new javax.swing.JPanel();
         m_jNumberKeys = new JNumberKeys();
         jPanel9 = new javax.swing.JPanel();
-        m_jPrice = new javax.swing.JLabel();
-        m_jPor = new javax.swing.JLabel();
+        m_jPrice = WidgetsBuilder.createLabel();
+        m_jPor = WidgetsBuilder.createLabel();
         m_jEnter = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png")));
         m_jTax = new javax.swing.JComboBox();
         m_jaddtax = new javax.swing.JToggleButton();
@@ -1369,11 +1369,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
 
         m_jTotalEuros.setBackground(java.awt.Color.white);
-        m_jTotalEuros.setFont(new java.awt.Font("Dialog", 1, 14));
         m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         m_jTotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jTotalEuros.setOpaque(true);
-        m_jTotalEuros.setPreferredSize(new java.awt.Dimension(150, 25));
+        //m_jTotalEuros.setPreferredSize(new java.awt.Dimension(150, 25));
         m_jTotalEuros.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
@@ -1396,7 +1395,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jSubtotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         m_jSubtotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jSubtotalEuros.setOpaque(true);
-        m_jSubtotalEuros.setPreferredSize(new java.awt.Dimension(150, 25));
         m_jSubtotalEuros.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 3;
@@ -1411,7 +1409,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTaxesEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         m_jTaxesEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jTaxesEuros.setOpaque(true);
-        m_jTaxesEuros.setPreferredSize(new java.awt.Dimension(150, 25));
         m_jTaxesEuros.setRequestFocusEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
