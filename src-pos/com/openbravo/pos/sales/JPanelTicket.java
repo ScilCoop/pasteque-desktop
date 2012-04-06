@@ -327,8 +327,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
        
     private void printPartialTotals(){
-               
-        if (m_oTicket.getLinesCount() == 0) {
+        if (m_oTicket == null) {
             m_jSubtotalEuros.setText(null);
             m_jTaxesEuros.setText(null);
             m_jTotalEuros.setText(null);
