@@ -42,7 +42,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     private static final String RES_DIR = "res/";
     
     protected String m_sInitScript;
-    private SentenceFind m_version;       
+    private SentenceFind m_dbversion;
     private SentenceExec m_dummy;
     
     protected SentenceList m_peoplevisible;  
@@ -71,7 +71,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
         m_sInitScript = "/com/openbravo/pos/scripts/" + s.DB.getName();
 
-        m_version = new PreparedSentence(s, "SELECT VERSION FROM APPLICATIONS WHERE ID = ?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE);
+        m_dbversion = new PreparedSentence(s, "SELECT VERSION FROM APPLICATIONS WHERE ID = ?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE);
         m_dummy = new StaticSentence(s, "SELECT * FROM PEOPLE WHERE 1 = 0");
          
         final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "com/openbravo/images/yast_sysadmin.png");        
@@ -147,8 +147,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     
 //    public abstract BaseSentence getShutdown();
     
-    public final String findVersion() throws BasicException {
-        return (String) m_version.find(AppLocal.APP_ID);
+    public final String findDbVersion() throws BasicException {
+        return (String) m_dbversion.find(AppLocal.APP_ID);
     }
     public final void execDummy() throws BasicException {
         m_dummy.exec();

@@ -113,7 +113,7 @@ public class JRootApp extends JPanel implements AppView {
         
         // Create or upgrade the database if database version is not the expected
         String sDBVersion = readDataBaseVersion();        
-        if (!AppLocal.APP_VERSION.equals(sDBVersion)) {
+        if (!AppLocal.DB_VERSION.equals(sDBVersion)) {
             
             // Create or upgrade database
             
@@ -138,7 +138,7 @@ public class JRootApp extends JPanel implements AppView {
                         BatchSentence bsentence = new BatchSentenceResource(session, sScript);
                         bsentence.putParameter("APP_ID", Matcher.quoteReplacement(AppLocal.APP_ID));
                         bsentence.putParameter("APP_NAME", Matcher.quoteReplacement(AppLocal.APP_NAME));
-                        bsentence.putParameter("APP_VERSION", Matcher.quoteReplacement(AppLocal.APP_VERSION));
+                        bsentence.putParameter("DB_VERSION", Matcher.quoteReplacement(AppLocal.DB_VERSION));
 
                         java.util.List l = bsentence.list();
                         if (l.size() > 0) {
@@ -232,7 +232,7 @@ public class JRootApp extends JPanel implements AppView {
     
     private String readDataBaseVersion() {
         try {
-            return m_dlSystem.findVersion();
+            return m_dlSystem.findDbVersion();
         } catch (BasicException ed) {
             return null;
         }
