@@ -23,8 +23,14 @@ import java.util.Locale;
 import javax.swing.UIManager;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
+import java.awt.BorderLayout;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JFrame;
 import javax.swing.LookAndFeel;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
@@ -56,6 +62,30 @@ public class StartPOS {
     }
     
     public static void main (final String args[]) {
+        // Show splash
+        final JFrame splash = new JFrame();
+        splash.setUndecorated(true);
+        splash.setResizable(false);
+        splash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        try {
+            splash.setPreferredSize(new java.awt.Dimension(600, 168));
+            java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            splash.setBounds((screenSize.width-600)/2, (screenSize.height-168)/2, 600, 168);
+            ImageIcon splashImage = new ImageIcon(ImageIO.read(JFrame.class.getResourceAsStream("/com/openbravo/images/logo.png")));
+            JLabel splashLabel = new JLabel(splashImage);
+            splash.add(splashLabel, BorderLayout.CENTER);
+            splash.setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
+            splash.setLocationRelativeTo(null);
+            splash.pack();
+            splash.setVisible(true);
+            try {
+                splash.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
+            } catch (IOException ioe) {
+                logger.throwing("Splash icon ImageIO", "read", ioe);
+            }
+        } catch (IOException ioe) {
+            logger.throwing("Splash loading ImageIO", "read", ioe);
+        }
         
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -63,6 +93,8 @@ public class StartPOS {
                 if (!registerApp()) {
                     System.exit(1);
                 }
+                
+                
                 
                 AppConfig config = new AppConfig(args);
                 config.load();
@@ -106,6 +138,7 @@ public class StartPOS {
                     JRootFrame rootframe = new JRootFrame(); 
                     rootframe.initFrame(config);
                 }
+                splash.dispose();
             }
         });    
     }    
