@@ -2,7 +2,7 @@
 //    Based upon Openbravo POS
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//                       2012 Scil (http://scil.coop)
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
 //    This file is part of POS-Tech.
 //
