@@ -90,7 +90,6 @@ public class JRootApp extends JPanel implements AppView {
 
         m_aBeanFactories = new HashMap<String, BeanFactory>();
         
-        // Inicializo los componentes visuales
         initComponents ();            
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));   
     }
@@ -98,7 +97,6 @@ public class JRootApp extends JPanel implements AppView {
     public boolean initApp(AppProperties props) {
         
         m_props = props;
-        //setPreferredSize(new java.awt.Dimension(800, 600));
 
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
@@ -158,24 +156,34 @@ public class JRootApp extends JPanel implements AppView {
             }   
         }
         
-        // Cargamos las propiedades de base de datos
+        // Load host properties from resources
         m_propsdb = m_dlSystem.getResourceAsProperties(m_props.getHost() + "/properties");
-        
-        // creamos la caja activa si esta no existe      
+        // Load cash token
         try {
+            // Get cash token from resources
             String sActiveCashIndex = m_propsdb.getProperty("activecash");
+            // Check active cash in database if found in resources
             Object[] valcash = sActiveCashIndex == null
                     ? null
                     : m_dlSystem.findActiveCash(sActiveCashIndex);
             if (valcash == null || !m_props.getHost().equals(valcash[0])) {
-                // no la encuentro o no es de mi host por tanto creo una...
-                setActiveCash(UUID.randomUUID().toString(), m_dlSystem.getSequenceCash(m_props.getHost()) + 1, new Date(), null);
+                // No active cash found or token affected to an other host
+                // Create a new one
+                setActiveCash(UUID.randomUUID().toString(),
+                              m_dlSystem.getSequenceCash(m_props.getHost()) + 1,
+                              new Date(), null);
 
-                // creamos la caja activa      
-                m_dlSystem.execInsertCash(
-                        new Object[] {getActiveCashIndex(), m_props.getHost(), getActiveCashSequence(), getActiveCashDateStart(), getActiveCashDateEnd()});                  
+                // Insert new token in database
+                m_dlSystem.execInsertCash(new Object[] {getActiveCashIndex(),
+                                          m_props.getHost(),
+                                          getActiveCashSequence(),
+                                          getActiveCashDateStart(),
+                                          getActiveCashDateEnd()});
             } else {
-                setActiveCash(sActiveCashIndex, (Integer) valcash[1], (Date) valcash[2], (Date) valcash[3]);
+                // Active cash found, set it
+                setActiveCash(sActiveCashIndex, (Integer) valcash[1],
+                              (Date) valcash[2],
+                              (Date) valcash[3]);
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos
