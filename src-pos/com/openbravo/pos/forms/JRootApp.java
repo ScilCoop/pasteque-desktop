@@ -171,7 +171,7 @@ public class JRootApp extends JPanel implements AppView {
                 // Create a new one
                 setActiveCash(UUID.randomUUID().toString(),
                               m_dlSystem.getSequenceCash(m_props.getHost()) + 1,
-                              new Date(), null);
+                              null, null);
 
                 // Insert new token in database
                 m_dlSystem.execInsertCash(new Object[] {getActiveCashIndex(),
