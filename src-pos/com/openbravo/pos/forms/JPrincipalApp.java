@@ -367,7 +367,20 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                     m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
                     m_aCreatedViews.put(sTaskClass, m_jMyView);
                 }
-               
+                
+                // Check if view requires that the cash is opened and switch
+                if (m_jMyView.requiresOpenedCash()
+                        && m_appview.getActiveCashDateEnd() != null) {
+                    // Hum hum
+                    m_jMyView = new JPanelNull(m_appview, new Exception("Cash must be opened"));
+                    sTaskClass = "JPanelNull";
+                    if (m_aCreatedViews.get(sTaskClass) == null) {
+                        m_jMyView.getComponent().applyComponentOrientation(getComponentOrientation());
+                        m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
+                        m_aCreatedViews.put(sTaskClass, m_jMyView);
+                    }
+                }
+                
                 // Activate view
                 try {
                     m_jMyView.activate();
