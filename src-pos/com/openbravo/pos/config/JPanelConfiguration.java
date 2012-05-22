@@ -130,7 +130,11 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
         } else {
             return true;
         }
-    }      
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 
     
     /** This method is called from within the constructor to

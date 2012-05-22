@@ -82,5 +82,9 @@ public class PeoplePanel extends JPanelTable {
     }      
     public String getTitle() {
         return AppLocal.getIntString("Menu.Users");
-    }     
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

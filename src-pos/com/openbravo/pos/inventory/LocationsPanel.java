@@ -80,5 +80,9 @@ public class LocationsPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Locations");
-    }      
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

@@ -79,5 +79,9 @@ public class JPanelFloors extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Floors");
-    }     
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

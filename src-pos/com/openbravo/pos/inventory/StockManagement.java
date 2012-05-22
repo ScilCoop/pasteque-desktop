@@ -115,6 +115,10 @@ public class StockManagement extends JPanel implements JPanelView {
     public JComponent getComponent() {
         return this;
     }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 
     public void activate() throws BasicException {
         m_cat.loadCatalog();

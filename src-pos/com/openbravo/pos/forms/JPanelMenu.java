@@ -48,7 +48,11 @@ public class JPanelMenu extends JPanel implements JPanelView {
     
     public String getTitle() {
         return m_menu.getTitle();
-    }  
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
     
     public void activate() throws BasicException {
         

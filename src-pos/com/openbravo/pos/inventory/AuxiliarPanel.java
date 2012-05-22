@@ -95,7 +95,11 @@ public class AuxiliarPanel extends JPanelTable2 {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Auxiliar");
-    } 
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
     
     private void reload(AuxiliarFilter filter) throws BasicException {
         ProductInfoExt prod = filter.getProductInfoExt();

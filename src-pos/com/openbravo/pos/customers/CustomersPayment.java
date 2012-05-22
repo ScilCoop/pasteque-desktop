@@ -216,6 +216,10 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
             }
         }
     }
+    
+    public boolean requiresOpenedCash() {
+        return true;
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.

@@ -64,7 +64,12 @@ public class JPanelPrinter extends JPanel implements JPanelView {
     }
     public String getTitle() {
         return AppLocal.getIntString("Menu.Printer");
-    }        
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
+    
     public void activate() throws BasicException {
     }
     public boolean deactivate() {

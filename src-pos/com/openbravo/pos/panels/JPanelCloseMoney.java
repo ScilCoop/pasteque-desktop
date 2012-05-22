@@ -96,7 +96,11 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
 
     public String getTitle() {
         return AppLocal.getIntString("Menu.CloseTPV");
-    }    
+    }
+    
+    public boolean requiresOpenedCash() {
+        return true;
+    }
     
     public void activate() throws BasicException {
         loadData();

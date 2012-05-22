@@ -72,5 +72,9 @@ public class ThirdPartiesPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.ThirdPartiesManagement");
-    }     
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

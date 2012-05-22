@@ -353,6 +353,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                     // The view was not in cache, create it
                     // Is the view prepared
                     m_jMyView = m_aPreparedViews.get(sTaskClass);
+                    
                     if (m_jMyView == null) {   
                         // The view is not prepared. Try to get as a Bean...
                         try {
@@ -366,7 +367,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                     m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
                     m_aCreatedViews.put(sTaskClass, m_jMyView);
                 }
-                
+               
                 // Activate view
                 try {
                     m_jMyView.activate();

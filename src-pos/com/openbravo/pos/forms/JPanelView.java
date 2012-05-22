@@ -32,4 +32,5 @@ public interface JPanelView {
     public abstract void activate() throws BasicException;
     public abstract boolean deactivate();
     public abstract JComponent getComponent();
+    public boolean requiresOpenedCash();
 }
