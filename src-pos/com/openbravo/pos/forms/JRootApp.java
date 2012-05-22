@@ -295,6 +295,11 @@ public class JRootApp extends JPanel implements AppView {
     public Date getActiveCashDateEnd(){
         return m_dActiveCashDateEnd;
     }
+    
+    public boolean isCashOpened() {
+        return m_dActiveCashDateStart != null;
+    }
+    
     public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
         m_sActiveCashIndex = sIndex;
         m_iActiveCashSequence = iSeq;

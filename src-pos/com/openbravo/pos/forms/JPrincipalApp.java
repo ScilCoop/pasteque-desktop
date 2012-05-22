@@ -370,7 +370,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                 
                 // Check if view requires that the cash is opened and switch
                 if (m_jMyView.requiresOpenedCash()
-                        && m_appview.getActiveCashDateEnd() != null) {
+                        && !m_appview.isCashOpened()) {
                     // Hum hum
                     m_jMyView = new JPanelNull(m_appview, new Exception("Cash must be opened"));
                     sTaskClass = "JPanelNull";
