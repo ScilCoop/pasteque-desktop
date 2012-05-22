@@ -489,8 +489,9 @@ public class JRootApp extends JPanel implements AppView {
         cl.show(m_jPanelContainer, view);  
     }
     
+    /** Enter app, show main screen with selected user. */
     private void openAppView(AppUser user) {
-        
+        // Make sure app is not already opened before continuing
         if (closeAppView()) {
 
             m_principalapp = new JPrincipalApp(this, user);
@@ -506,7 +507,10 @@ public class JRootApp extends JPanel implements AppView {
             m_principalapp.activate();
         }
     }
-       
+    
+    /** Return to login screen.
+     * @return True if not opened or successfuly closed, false if close failed.
+     */
     public boolean closeAppView() {
         
         if (m_principalapp == null) {

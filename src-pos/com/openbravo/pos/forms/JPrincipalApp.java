@@ -334,20 +334,23 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         return m_appuser;
     }
     
+    /** Change main panel content to a new task.
+     * @param sTaskClass Task class name, the class must implement JPanelView.
+     */
     public void showTask(String sTaskClass) {
          
-        m_appview.waitCursorBegin();       
-         
-        if (m_appuser.hasPermission(sTaskClass)) {            
-            
+        m_appview.waitCursorBegin();
+        
+        if (m_appuser.hasPermission(sTaskClass)) {
+            // Load view from already set views
             JPanelView m_jMyView = (JPanelView) m_aCreatedViews.get(sTaskClass);
 
-            // cierro la antigua
-            if (m_jLastView == null || (m_jMyView != m_jLastView && m_jLastView.deactivate())) {
+            // Disable previous task if any and continue
+            if (m_jLastView == null
+                    || (m_jMyView != m_jLastView && m_jLastView.deactivate())) {
 
-                // Construct the new view
                 if (m_jMyView == null) {   
-                    
+                    // The view was not in cache, create it
                     // Is the view prepared
                     m_jMyView = m_aPreparedViews.get(sTaskClass);
                     if (m_jMyView == null) {   
@@ -358,32 +361,32 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                             m_jMyView = new JPanelNull(m_appview, e);
                         }
                     }
-                    
+                    // Set the view
                     m_jMyView.getComponent().applyComponentOrientation(getComponentOrientation());
                     m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
                     m_aCreatedViews.put(sTaskClass, m_jMyView);
                 }
                 
-                // ejecuto la tarea
+                // Activate view
                 try {
                     m_jMyView.activate();
                 } catch (BasicException e) {
                     JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notactive"), e));            
                 }
 
-                // se tiene que mostrar el panel                
+                // Set it as active view
                 m_jLastView = m_jMyView;
 
                 setMenuVisible(getBounds().width > 800);
 
-                showView(sTaskClass);   
-                // Y ahora que he cerrado la antigua me abro yo            
+                // Show view and title
+                showView(sTaskClass);
                 String sTitle = m_jMyView.getTitle();
                 m_jPanelTitle.setVisible(sTitle != null);
                 m_jTitle.setText(sTitle);       
             }
         } else  {
-            // No hay permisos para ejecutar la accion...
+            // User does not have permission to show the task
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notpermissions")));            
         }
         m_appview.waitCursorEnd();       
