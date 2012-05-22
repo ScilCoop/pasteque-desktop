@@ -444,7 +444,7 @@ public class JRootApp extends JPanel implements AppView {
             ee.printStackTrace();
         }
     }
-    // La accion del selector
+    // Action performed when clicking on a people button
     private class AppUserAction extends AbstractAction {
         
         private AppUser m_actionuser;
@@ -460,20 +460,22 @@ public class JRootApp extends JPanel implements AppView {
         }
         
         public void actionPerformed(ActionEvent evt) {
-            // String sPassword = m_actionuser.getPassword();
+            // Try auto-logging if user has no password set
             if (m_actionuser.authenticate()) {
-                // p'adentro directo, no tiene password        
+                // It works!
                 openAppView(m_actionuser);         
             } else {
-                // comprobemos la clave antes de entrar...
+                // Show password input
                 String sPassword = JPasswordDialog.showEditPassword(JRootApp.this, 
                         AppLocal.getIntString("Label.Password"),
                         m_actionuser.getName(),
                         m_actionuser.getIcon());
                 if (sPassword != null) {
                     if (m_actionuser.authenticate(sPassword)) {
+                        // Password is valid, enter app
                         openAppView(m_actionuser);                
                     } else {
+                        // Wrong password, show message
                         MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
                         msg.show(JRootApp.this);                        
                     }
