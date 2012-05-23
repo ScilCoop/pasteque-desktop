@@ -17,13 +17,14 @@
 --    You should have received a copy of the GNU General Public License
 --    along with POS-tech. If not, see <http://www.gnu.org/licenses/>.
 
--- Database upgrade script for DERBY
+-- Database upgrade script for MYSQL
 
--- v1.0.0 - v1.0.1
+-- db v1 - v2
 
 -- final script
 
 ALTER TABLE PRODUCTS DROP INDEX PRODUCTS_INX_1;
-ALTER TABLE PRODUCTS ALTER COLUMN PRICE_BUY DROP NOT NULL;
+ALTER TABLE PRODUCTS MODIFY PRICEBUY double;
+ALTER TABLE CLOSEDCASH MODIFY DATESTART datetime;
 
-UPDATE APPLICATIONS SET NAME = $APP_NAME{}, VERSION = $APP_VERSION{} WHERE ID = $APP_ID{};
+UPDATE APPLICATIONS SET NAME = $APP_NAME{}, VERSION = $DB_VERSION{} WHERE ID = $APP_ID{};

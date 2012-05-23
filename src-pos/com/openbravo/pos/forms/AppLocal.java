@@ -32,7 +32,7 @@ public class AppLocal {
     public static final String APP_NAME = "POS-Tech";
     public static final String APP_ID = "postech";
     public static final String APP_VERSION = "1.0.0";
-    public static final String DB_VERSION = "1.0.1";
+    public static final String DB_VERSION = "2";
   
     // private static List<ResourceBundle> m_messages;
     private static LocaleResources m_resources;
