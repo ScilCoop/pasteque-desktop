@@ -35,6 +35,7 @@ import java.util.Properties;
 public class ProductInfoExt {
 
     private static final long serialVersionUID = 7587696873036L;
+    private static final double NO_PRICE = -1.345d;
 
     protected String m_ID;
     protected String m_sRef;
@@ -195,7 +196,12 @@ public class ProductInfoExt {
             product.m_sName = dr.getString(4);
             product.m_bCom = dr.getBoolean(5).booleanValue();
             product.m_bScale = dr.getBoolean(6).booleanValue();
-            product.m_dPriceBuy = dr.getDouble(7).doubleValue();
+            Double priceBuy = dr.getDouble(7);
+            if (priceBuy != null) {
+                product.m_dPriceBuy = dr.getDouble(7).doubleValue();
+            } else {
+                product.m_dPriceBuy = NO_PRICE;
+            }
             product.m_dPriceSell = dr.getDouble(8).doubleValue();
             product.taxcategoryid = dr.getString(9);
             product.categoryid = dr.getString(10);
