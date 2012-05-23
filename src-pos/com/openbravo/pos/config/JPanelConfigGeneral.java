@@ -31,6 +31,7 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.util.ReportUtils;
 import com.openbravo.pos.util.StringParser;
 import java.util.Map;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
@@ -68,6 +69,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         
         jcbShowTitlebar.addActionListener(dirty);
         jcbShowFooterbar.addActionListener(dirty);
+        jcbAutoHideMenu.addActionListener(dirty);
 
         jcboMachineDisplay.addActionListener(dirty);
         jcboConnDisplay.addActionListener(dirty);
@@ -311,6 +313,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         jcbShowTitlebar.setSelected(!config.getProperty("ui.showtitlebar").equals("0"));
         jcbShowFooterbar.setSelected(!config.getProperty("ui.showfooterbar").equals("0"));
+        jcbAutoHideMenu.setSelected(!config.getProperty("ui.autohidemenu").equals("0"));
 
         StringParser p = new StringParser(config.getProperty("machine.printer"));
         String sparam = unifySerialInterface(p.nextToken(':'));
@@ -419,7 +422,8 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         config.setProperty("ui.showtitlebar", checkboxValue(jcbShowTitlebar));
         config.setProperty("ui.showfooterbar", checkboxValue(jcbShowFooterbar));
-
+        config.setProperty("ui.autohidemenu", checkboxValue(jcbAutoHideMenu));
+        
         String sMachinePrinter = comboValue(jcboMachinePrinter.getSelectedItem());
         if ("epson".equals(sMachinePrinter) || "tmu220".equals(sMachinePrinter) || "star".equals(sMachinePrinter) || "ithaca".equals(sMachinePrinter) || "surepos".equals(sMachinePrinter)) {
             config.setProperty("machine.printer", sMachinePrinter + ":" + comboValue(jcboConnPrinter.getSelectedItem()) + "," + comboValue(jcboSerialPrinter.getSelectedItem()));
@@ -655,6 +659,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jlblShowFooterbar.setText(AppLocal.getIntString("label.showfooterbar"));
         jcbShowTitlebar = new javax.swing.JCheckBox();
         jcbShowFooterbar = new javax.swing.JCheckBox();
+        
+        javax.swing.JLabel jlblAutoHideMenu = new javax.swing.JLabel();
+        jlblAutoHideMenu.setText(AppLocal.getIntString("label.autohidemenu"));
+        jcbAutoHideMenu = new JCheckBox();
+        
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("Label.CashMachine"))); // NOI18N
 
@@ -1124,6 +1133,12 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                         .addComponent(jlblShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    // Auto hide menu
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1164,6 +1179,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlblShowFooterbar)
                     .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                // Auto hide Menu
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblAutoHideMenu)
+                    .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1391,4 +1411,5 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
     private javax.swing.JCheckBox jcbShowTitlebar;
     private javax.swing.JCheckBox jcbShowFooterbar;
     private javax.swing.JTextField jtxtScreenDensity;
+    private javax.swing.JCheckBox jcbAutoHideMenu;
 }

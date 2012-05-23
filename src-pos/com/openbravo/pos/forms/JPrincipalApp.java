@@ -34,6 +34,7 @@ import javax.swing.*;
 import com.openbravo.beans.RoundedBorder;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.JMessageDialog;
+import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
@@ -270,7 +271,8 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     
     public void activate() {
         
-        setMenuVisible(getBounds().width > 800);
+        boolean menuVisible = AppConfig.loadedInstance.getProperty("ui.autohidemenu").equals("0");
+        setMenuVisible(menuVisible);
         
         // arranco la primera opcion
         if (m_actionfirst != null) {
@@ -394,7 +396,8 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                 // Set it as active view
                 m_jLastView = m_jMyView;
 
-                setMenuVisible(getBounds().width > 800);
+                boolean menuVisible = AppConfig.loadedInstance.getProperty("ui.autohidemenu").equals("0");
+                setMenuVisible(menuVisible);
 
                 // Show view and title
                 showView(sTaskClass);
