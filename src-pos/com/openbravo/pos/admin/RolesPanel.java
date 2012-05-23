@@ -76,5 +76,9 @@ public class RolesPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Roles");
-    }        
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

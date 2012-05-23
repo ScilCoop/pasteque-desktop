@@ -85,7 +85,11 @@ public class JPanelPlaces extends JPanelTable {
 
     public String getTitle() {
         return AppLocal.getIntString("Menu.Tables");
-    }      
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
     
     @Override
     public void activate() throws BasicException {

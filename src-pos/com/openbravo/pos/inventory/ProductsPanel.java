@@ -99,7 +99,11 @@ public class ProductsPanel extends JPanelTable2 implements EditorListener {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Products");
-    } 
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
         
     @Override
     public void activate() throws BasicException {

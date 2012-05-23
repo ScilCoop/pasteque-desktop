@@ -48,6 +48,10 @@ public class JPanelTicketSales extends JPanelTicket {
         return null;
     }
     
+    public boolean requiresOpenedCash() {
+        return true;
+    }
+    
     protected Component getSouthComponent() {
         m_cat = new JCatalog(dlSales,
                 "true".equals(m_jbtnconfig.getProperty("pricevisible")),

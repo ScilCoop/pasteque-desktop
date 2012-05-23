@@ -87,5 +87,9 @@ public class CustomersPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.CustomersManagement");
-    }    
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

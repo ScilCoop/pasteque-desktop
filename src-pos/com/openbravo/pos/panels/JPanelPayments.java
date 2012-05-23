@@ -59,5 +59,9 @@ public class JPanelPayments extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Payments");
-    }    
+    }
+    
+    public boolean requiresOpenedCash() {
+        return true;
+    }
 }

@@ -39,6 +39,10 @@ public class JPanelTicketEdits extends JPanelTicket {
         return null;
     }
     
+    public boolean requiresOpenedCash() {
+        return true;
+    }
+    
     @Override
     public void activate() throws BasicException {      
         super.activate();

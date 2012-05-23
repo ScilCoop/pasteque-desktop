@@ -77,5 +77,9 @@ public class CategoriesPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Categories");
-    }        
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

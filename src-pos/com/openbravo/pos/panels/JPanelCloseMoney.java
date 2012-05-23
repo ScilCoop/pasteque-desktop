@@ -1,25 +1,28 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.panels;
 
 import com.openbravo.pos.forms.JPanelView;
+import com.openbravo.pos.forms.JRootApp;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
 import java.awt.*;
@@ -96,7 +99,11 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
 
     public String getTitle() {
         return AppLocal.getIntString("Menu.CloseTPV");
-    }    
+    }
+    
+    public boolean requiresOpenedCash() {
+        return true;
+    }
     
     public void activate() throws BasicException {
         loadData();
@@ -484,7 +491,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             Date dNow = new Date();
             
             try {               
-                // Cerramos la caja si esta pendiente de cerrar.
+                // Close cash in database
                 if (m_App.getActiveCashDateEnd() == null) {
                     new StaticSentence(m_App.getSession()
                         , "UPDATE CLOSEDCASH SET DATEEND = ? WHERE HOST = ? AND MONEY = ?"
@@ -497,10 +504,10 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             }
             
             try {
-                // Creamos una nueva caja          
-                m_App.setActiveCash(UUID.randomUUID().toString(), m_App.getActiveCashSequence() + 1, dNow, null);
+                // Create new cash token
+                m_App.setActiveCash(UUID.randomUUID().toString(), m_App.getActiveCashSequence() + 1, null, null);
                 
-                // creamos la caja activa      
+                // Insert new cash token in database
                 m_dlSystem.execInsertCash(
                         new Object[] {m_App.getActiveCashIndex(), m_App.getProperties().getHost(), m_App.getActiveCashSequence(), m_App.getActiveCashDateStart(), m_App.getActiveCashDateEnd()});                  
                
@@ -510,7 +517,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
                 // print report
                 printPayments("Printer.CloseCash");
                 
-                // Mostramos el mensaje
+                // Show confirmation message
                 JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.closecashok"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);
             } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
@@ -518,10 +525,15 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             }
             
             try {
+                // Refresh screen
                 loadData();
             } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("label.noticketstoclose"), e);
                 msg.show(this);
+            }
+            // Log out
+            if (m_App instanceof JRootApp) {
+                ((JRootApp)m_App).closeAppView();
             }
         }         
     }//GEN-LAST:event_m_jCloseCashActionPerformed

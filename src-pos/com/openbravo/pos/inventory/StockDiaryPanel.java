@@ -63,6 +63,9 @@ public class StockDiaryPanel extends JPanelTable {
         return AppLocal.getIntString("Menu.StockDiary");
     }     
     
+    public boolean requiresOpenedCash() {
+        return false;
+    }
         
     public void activate() throws BasicException {
         jeditor.activate(); // primero activo el editor 
