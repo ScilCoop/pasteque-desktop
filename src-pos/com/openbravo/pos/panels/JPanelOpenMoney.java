@@ -98,15 +98,16 @@ implements JPanelView {
         cashClosed.setAlignmentX(Component.CENTER_ALIGNMENT);
         container.add(cashClosed);
 
-        JButton openCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("/com/openbravo/images/password.png"), AppLocal.getIntString("label.opencash"), WidgetsBuilder.SIZE_BIG);
-        openCash.setAlignmentX(Component.CENTER_ALIGNMENT);
-        openCash.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                openCash(evt);
-            }
-        });
-        container.add(openCash);
-        
+        if (this.principalApp.getUser().hasPermission("button.openmoney")) {
+            JButton openCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("/com/openbravo/images/password.png"), AppLocal.getIntString("label.opencash"), WidgetsBuilder.SIZE_BIG);
+            openCash.setAlignmentX(Component.CENTER_ALIGNMENT);
+            openCash.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    openCash(evt);
+                }
+            });
+            container.add(openCash);
+        }
         this.add(container);
     }
     
