@@ -48,6 +48,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
     private CustomerInfoExt customerext;
     
     private double m_dPaid;
+    private double partAmount;
     private double m_dTotal;
 
     /** Creates new form JPaymentDebt */
@@ -62,10 +63,11 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         
         this.customerext = customerext;
         m_dTotal = dTotal;
+        this.partAmount = partAmount;
         
         m_jTendered.reset();
         
@@ -117,7 +119,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         } else {
             Double value = m_jTendered.getDoubleValue();
             if (value == null || value == 0.0) {
-                m_dPaid = m_dTotal;
+                m_dPaid = this.partAmount;
             } else {
                 m_dPaid = value;
             } 

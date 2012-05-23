@@ -2,7 +2,7 @@
 //    Based upon Openbravo POS
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//                       2012 Scil (http://scil.coop)
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
 //    This file is part of POS-Tech.
 //
@@ -27,7 +27,10 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
@@ -52,7 +55,9 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private boolean accepted;
     
     private AppView app;
-    private double m_dTotal; 
+    private double m_dTotal;
+    private int parts;
+    private double nextPartAmount; // Rounded part amount to get exactly total
     private CustomerInfoExt customerext;
     private DataLogicSystem dlSystem;
     
@@ -101,6 +106,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         accepted = false;
         
         m_dTotal = total;
+        this.parts = 1;
         
         this.customerext = customerext;        
 
@@ -115,6 +121,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             accepted = true;            
         } else {
             getRootPane().setDefaultButton(m_jButtonOK);
+            refreshParts();
             printState();
             setVisible(true);
         }
@@ -265,7 +272,30 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal - m_aPaymentInfo.getTotal())));
         m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());
         m_jTabPayment.setSelectedIndex(0); // selecciono el primero
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
+        double remaining = m_dTotal - m_aPaymentInfo.getTotal();
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
+    }
+    
+    private void refreshParts() {
+        double partAmount = this.m_dTotal / this.parts;
+        int remainingParts = this.parts - this.m_aPaymentInfo.size();
+        if (remainingParts < 0) {
+            // Not usefull isn't it ?
+            this.nextPartAmount = m_dTotal - m_aPaymentInfo.getTotal();
+        } else {
+            double roundedPartAmount = (double)Math.round(partAmount * 100) / 100;
+            if (remainingParts == 1) {
+                // Last one is unlucky (or not)
+                this.nextPartAmount = m_dTotal - m_aPaymentInfo.getTotal();
+            } else {
+                this.nextPartAmount = roundedPartAmount;
+            }
+        }
+        this.jlblPartsNumber.setText(String.valueOf(this.parts));
+        this.jlblPartAmount.setText(Formats.CURRENCY.formatValue(new Double(partAmount)));
+        // Reactivate current tab to refresh part
+        double remaining = m_dTotal - m_aPaymentInfo.getTotal();
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
     }
     
     protected static Window getWindow(Component parent) {
@@ -296,11 +326,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void initComponents() {
 
         jPanel4 = new javax.swing.JPanel();
-        m_jLblTotalEuros1 = new javax.swing.JLabel();
-        m_jTotalEuros = WidgetsBuilder.createImportantLabel();
         jPanel6 = new javax.swing.JPanel();
-        m_jLblRemainingEuros = new javax.swing.JLabel();
-        m_jRemaininglEuros = WidgetsBuilder.createImportantLabel();
         m_jButtonAdd = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
         m_jButtonRemove = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
         jPanel3 = new javax.swing.JPanel();
@@ -315,33 +341,53 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jButtonCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
                                                   AppLocal.getIntString("Button.Cancel"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
-
+        
+        // Total/remaining/part amount init
+        m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.totalcash"));
+        m_jTotalEuros = WidgetsBuilder.createImportantLabel();
+        m_jRemaininglEuros = WidgetsBuilder.createImportantLabel();
+        m_jLblRemainingEuros = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.remainingcash"));
+        JLabel jlblPartAmountLabel = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.partamount"));
+        jlblPartAmount = WidgetsBuilder.createImportantLabel();
+        WidgetsBuilder.inputStyle(jlblPartAmount);
+        WidgetsBuilder.inputStyle(m_jTotalEuros);
+        WidgetsBuilder.inputStyle(m_jRemaininglEuros);
+        
+        // Parts init
+        JLabel jlblParts = WidgetsBuilder.createLabel(AppLocal.getIntString("label.parts"));
+        jlblPartsNumber = WidgetsBuilder.createLabel(String.valueOf(parts));
+        WidgetsBuilder.inputStyle(jlblPartsNumber);
+        jbtnPartsPlus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
+        jbtnPartsMinus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
+        jbtnPartsPlus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                partsPlusActionPerformed(evt);
+            }
+        });
+        jbtnPartsMinus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                partsMinusActionPerformed(evt);
+            }
+        });
+        jbtnPartsPlus.setFocusable(false);
+        jbtnPartsMinus.setFocusable(false);
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(AppLocal.getIntString("payment.title")); // NOI18N
         setResizable(false);
 
-        m_jLblTotalEuros1.setText(AppLocal.getIntString("label.totalcash")); // NOI18N
+        // Total/remaining/part amount line
         jPanel4.add(m_jLblTotalEuros1);
-
-        m_jTotalEuros.setBackground(java.awt.Color.white);
-        m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jTotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jTotalEuros.setOpaque(true);
-        m_jTotalEuros.setRequestFocusEnabled(false);
         jPanel4.add(m_jTotalEuros);
 
         jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
+        jPanel4.add(m_jLblRemainingEuros);
+        jPanel4.add(m_jRemaininglEuros);
+        
+        jPanel4.add(jlblPartAmountLabel);
+        jPanel4.add(jlblPartAmount);
 
-        m_jLblRemainingEuros.setText(AppLocal.getIntString("label.remainingcash")); // NOI18N
-        jPanel6.add(m_jLblRemainingEuros);
-
-        m_jRemaininglEuros.setBackground(java.awt.Color.white);
-        m_jRemaininglEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jRemaininglEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jRemaininglEuros.setOpaque(true);
-        m_jRemaininglEuros.setRequestFocusEnabled(false);
-        jPanel6.add(m_jRemaininglEuros);
-
+        // Add/remove payment
         m_jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jButtonAddActionPerformed(evt);
@@ -377,6 +423,16 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
 
         jPanel5.setLayout(new java.awt.BorderLayout());
 
+        // Parts line
+        JPanel partsContainer = new JPanel();
+        partsContainer.add(jlblParts);
+        partsContainer.add(jbtnPartsMinus);
+        partsContainer.add(jlblPartsNumber);
+        partsContainer.add(jbtnPartsPlus);
+
+        jPanel5.add(partsContainer, java.awt.BorderLayout.LINE_START);
+
+        // Print/Ok/Cancel line
         m_jButtonPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileprint.png"))); // NOI18N
         WidgetsBuilder.adaptSize(m_jButtonPrint, WidgetsBuilder.SIZE_MEDIUM);
         m_jButtonPrint.setSelected(true);
@@ -405,7 +461,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             }
         });
         jPanel2.add(m_jButtonCancel);
-
+        
         jPanel5.add(jPanel2, java.awt.BorderLayout.LINE_END);
 
         getContentPane().add(jPanel5, java.awt.BorderLayout.SOUTH);
@@ -439,6 +495,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         PaymentInfo returnPayment = ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).executePayment();
         if (returnPayment != null) {
             m_aPaymentInfo.add(returnPayment);
+            this.refreshParts(); // Recalculate next part amount
             printState();
         }        
         
@@ -447,7 +504,8 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void m_jTabPaymentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_m_jTabPaymentStateChanged
 
         if (m_jTabPayment.getSelectedComponent() != null) {
-            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, m_dTotal - m_aPaymentInfo.getTotal(), m_sTransactionID);
+            double remaining = m_dTotal - m_aPaymentInfo.getTotal();
+            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
         }
         
     }//GEN-LAST:event_m_jTabPaymentStateChanged
@@ -468,8 +526,19 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         dispose();
         
     }//GEN-LAST:event_m_jButtonCancelActionPerformed
-   
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+    
+    private void partsPlusActionPerformed(java.awt.event.ActionEvent evt) {
+        this.parts++;
+        this.refreshParts();
+    }
+    
+    private void partsMinusActionPerformed(java.awt.event.ActionEvent evt) {
+        if (this.parts > 1) {
+            this.parts--;
+            this.refreshParts();
+        }
+    }
+    
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -486,6 +555,9 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private javax.swing.JLabel m_jRemaininglEuros;
     private javax.swing.JTabbedPane m_jTabPayment;
     private javax.swing.JLabel m_jTotalEuros;
-    // End of variables declaration//GEN-END:variables
     
+    private JLabel jlblPartsNumber;
+    private JButton jbtnPartsPlus;
+    private JButton jbtnPartsMinus;
+    private JLabel jlblPartAmount;
 }

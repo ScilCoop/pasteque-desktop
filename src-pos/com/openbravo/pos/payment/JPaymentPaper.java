@@ -41,7 +41,8 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     private JPaymentNotifier m_notifier;
     
     private double m_dTicket;
-    private double m_dTotal;    
+    private double m_dTotal;
+    private double partAmount;
     
     private String m_sPaper; // "paperin", "paperout"
     // private String m_sCustomer; 
@@ -59,9 +60,10 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jTendered.addEditorKeys(m_jKeys);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         
         m_dTotal = dTotal;
+        this.partAmount = partAmount;
         
         m_jTendered.reset();
         m_jTendered.activate();

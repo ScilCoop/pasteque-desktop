@@ -37,6 +37,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
 
     private double m_dPaid;
     private double m_dTotal;
+    private double partAmount;
     
     /** Creates new form JPaymentCash */
     public JPaymentCheque(JPaymentNotifier notifier) {
@@ -49,10 +50,10 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         m_jTendered.addEditorKeys(m_jKeys);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         
         m_dTotal = dTotal;
-        
+        this.partAmount = partAmount;
         
         m_jTendered.reset();
         m_jTendered.activate();
@@ -71,7 +72,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         
         Double value = m_jTendered.getDoubleValue();
         if (value == null) {
-            m_dPaid = m_dTotal;
+            m_dPaid = this.partAmount;
         } else {
             m_dPaid = value;
         } 

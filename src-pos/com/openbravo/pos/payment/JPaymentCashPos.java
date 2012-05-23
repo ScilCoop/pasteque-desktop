@@ -52,7 +52,8 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private JPaymentNotifier m_notifier;
 
     private double m_dPaid;
-    private double m_dTotal;    
+    private double m_dTotal;
+    private double partAmount;
     
     /** Creates new form JPaymentCash */
     public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
@@ -78,9 +79,10 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         
         m_dTotal = dTotal;
+        this.partAmount = partAmount;
         
         m_jTendered.reset();
         m_jTendered.activate();
@@ -104,16 +106,16 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
 
         Double value = m_jTendered.getDoubleValue();
         if (value == null || value == 0.0) {
-            m_dPaid = m_dTotal;
+            m_dPaid = this.partAmount;
         } else {            
             m_dPaid = value;
         }   
 
-        int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
+        int iCompare = RoundUtils.compare(m_dPaid, this.partAmount);
         
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         m_jChangeEuros.setText(iCompare > 0 
-                ? Formats.CURRENCY.formatValue(new Double(m_dPaid - m_dTotal))
+                ? Formats.CURRENCY.formatValue(new Double(m_dPaid - this.partAmount))
                 : null); 
         
         m_notifier.setStatus(m_dPaid > 0.0, iCompare >= 0);
