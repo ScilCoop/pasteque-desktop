@@ -2,7 +2,7 @@
 //    Based upon Openbravo POS
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//                       2012 Scil (http://scil.coop)
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
 //    This file is part of POS-Tech.
 //
@@ -31,6 +31,7 @@ import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.util.ReportUtils;
 import com.openbravo.pos.util.StringParser;
 import java.util.Map;
+import javax.swing.JLabel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import org.jvnet.substance.SubstanceLookAndFeel;
@@ -61,8 +62,12 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jtxtMachineHostname.getDocument().addDocumentListener(dirty);
         jcboLAF.addActionListener(dirty);
         m_jcboScreenType.addActionListener(dirty);
+        jtxtScreenDensity.getDocument().addDocumentListener(dirty);
         jcboMachineScreenmode.addActionListener(dirty);
         jcboTicketsBag.addActionListener(dirty);
+        
+        jcbShowTitlebar.addActionListener(dirty);
+        jcbShowFooterbar.addActionListener(dirty);
 
         jcboMachineDisplay.addActionListener(dirty);
         jcboConnDisplay.addActionListener(dirty);
@@ -136,6 +141,8 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         // Screen type values
         m_jcboScreenType.addItem("standard");
         m_jcboScreenType.addItem("touchscreen");
+        
+        
 
         jcboTicketsBag.addItem("simple");
         jcboTicketsBag.addItem("standard");
@@ -299,7 +306,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         jcboMachineScreenmode.setSelectedItem(config.getProperty("machine.screenmode"));
         m_jcboScreenType.setSelectedItem(config.getProperty("machine.screentype"));
+        jtxtScreenDensity.setText(config.getProperty("machine.screendensity"));
         jcboTicketsBag.setSelectedItem(config.getProperty("machine.ticketsbag"));
+
+        jcbShowTitlebar.setSelected(!config.getProperty("ui.showtitlebar").equals("0"));
+        jcbShowFooterbar.setSelected(!config.getProperty("ui.showfooterbar").equals("0"));
 
         StringParser p = new StringParser(config.getProperty("machine.printer"));
         String sparam = unifySerialInterface(p.nextToken(':'));
@@ -403,7 +414,11 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
         config.setProperty("machine.screenmode", comboValue(jcboMachineScreenmode.getSelectedItem()));
         config.setProperty("machine.screentype", comboValue(m_jcboScreenType.getSelectedItem()));
+        config.setProperty("machine.screendensity", jtxtScreenDensity.getText());
         config.setProperty("machine.ticketsbag", comboValue(jcboTicketsBag.getSelectedItem()));
+
+        config.setProperty("ui.showtitlebar", checkboxValue(jcbShowTitlebar));
+        config.setProperty("ui.showfooterbar", checkboxValue(jcbShowFooterbar));
 
         String sMachinePrinter = comboValue(jcboMachinePrinter.getSelectedItem());
         if ("epson".equals(sMachinePrinter) || "tmu220".equals(sMachinePrinter) || "star".equals(sMachinePrinter) || "ithaca".equals(sMachinePrinter) || "surepos".equals(sMachinePrinter)) {
@@ -479,6 +494,14 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
 
     private String comboValue(Object value) {
         return value == null ? "" : value.toString();
+    }
+    
+    private String checkboxValue(javax.swing.JCheckBox checkbox) {
+        if (checkbox.isSelected()) {
+            return "1";
+        } else {
+            return "0";
+        }
     }
 
     private void changeLAF() {
@@ -621,6 +644,17 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         
         jlblScreenType = new javax.swing.JLabel();
         m_jcboScreenType = new javax.swing.JComboBox();
+        
+        jtxtScreenDensity = new javax.swing.JTextField();
+        javax.swing.JLabel jlblScreenDensity = new JLabel();
+        jlblScreenDensity.setText(AppLocal.getIntString("label.machinescreendensity"));
+
+        javax.swing.JLabel jlblShowTitlebar = new javax.swing.JLabel();
+        javax.swing.JLabel jlblShowFooterbar = new javax.swing.JLabel();       
+        jlblShowTitlebar.setText(AppLocal.getIntString("label.showtitlebar"));
+        jlblShowFooterbar.setText(AppLocal.getIntString("label.showfooterbar"));
+        jcbShowTitlebar = new javax.swing.JCheckBox();
+        jcbShowFooterbar = new javax.swing.JCheckBox();
 
         jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("Label.CashMachine"))); // NOI18N
 
@@ -1076,6 +1110,20 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                         .addComponent(jlblScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    // Screen density
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jtxtScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    // Title and footer bars
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1102,6 +1150,21 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlblScreenType)
                     .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                // Screen density
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblScreenDensity)
+                    .addComponent(jtxtScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                // Title and footer bars
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblShowTitlebar)
+                    .addComponent(jcbShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblShowFooterbar)
+                    .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
@@ -1324,4 +1387,8 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
     // End of variables declaration//GEN-END:variables
     private javax.swing.JLabel jlblScreenType;
     private javax.swing.JComboBox m_jcboScreenType;
+    private javax.swing.JCheckBox jAutoHideMenu;
+    private javax.swing.JCheckBox jcbShowTitlebar;
+    private javax.swing.JCheckBox jcbShowFooterbar;
+    private javax.swing.JTextField jtxtScreenDensity;
 }
