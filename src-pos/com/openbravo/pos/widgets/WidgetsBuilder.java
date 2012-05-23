@@ -171,6 +171,11 @@ public class WidgetsBuilder {
         return icon;
     }
     
+    public static ImageIcon createIcon(String name) {
+        ImageIcon icon = new ImageIcon(WidgetsBuilder.class.getResource(name));
+        return createIcon(icon);
+    }
+    
     public static class TouchIcon extends ImageIcon {
     	private int fullHeight;
     	private int fullWidth;
@@ -209,4 +214,5 @@ public class WidgetsBuilder {
             g.translate(-marginLeft, -marginTop);
         }
     }
+    
 }

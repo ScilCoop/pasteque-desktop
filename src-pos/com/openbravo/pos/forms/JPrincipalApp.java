@@ -22,6 +22,7 @@
 package com.openbravo.pos.forms;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.pos.panels.JPanelOpenMoney;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -374,8 +375,8 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                 if (m_jMyView.requiresOpenedCash()
                         && !m_appview.isCashOpened()) {
                     // Hum hum
-                    m_jMyView = new JPanelNull(m_appview, new Exception("Cash must be opened"));
-                    sTaskClass = "JPanelNull";
+                    m_jMyView = new JPanelOpenMoney(m_appview, this, sTaskClass);
+                    sTaskClass = "JPanelOpenMoney_" + sTaskClass;
                     if (m_aCreatedViews.get(sTaskClass) == null) {
                         m_jMyView.getComponent().applyComponentOrientation(getComponentOrientation());
                         m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
