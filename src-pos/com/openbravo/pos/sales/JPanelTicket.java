@@ -564,7 +564,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void stateTransition(char cTrans) {
 
         if (cTrans == '\n') {
-            // Codigo de barras introducido
+            // Barcode entered
             if (m_sBarcode.length() > 0) {            
                 String sCode = m_sBarcode.toString();
                 if (sCode.startsWith("c")) {
@@ -603,26 +603,29 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 Toolkit.getDefaultToolkit().beep();
             }
         } else {
-            // otro caracter
-            // Esto es para el codigo de barras...
+            // Other character
             m_sBarcode.append(cTrans);
 
-            // Esto es para el los productos normales...
+            // "delete" key
             if (cTrans == '\u007f') { 
                 stateToZero();
 
             } else if ((cTrans == '0') 
                     && (m_iNumberStatus == NUMBER_INPUTZERO)) {
+                // 00 stays 0
                 m_jPrice.setText("0");            
-            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
+            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3'
+                    || cTrans == '4' || cTrans == '5' || cTrans == '6'
+                    || cTrans == '7' || cTrans == '8' || cTrans == '9')
                     && (m_iNumberStatus == NUMBER_INPUTZERO)) { 
-                // Un numero entero
                 m_jPrice.setText(Character.toString(cTrans));
                 m_iNumberStatus = NUMBER_INPUTINT;    
                 m_iNumberStatusInput = NUMBERVALID;
-            } else if ((cTrans == '0' || cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
-                       && (m_iNumberStatus == NUMBER_INPUTINT)) { 
-                // Un numero entero
+            } else if ((cTrans == '0' || cTrans == '1' || cTrans == '2'
+                    || cTrans == '3' || cTrans == '4' || cTrans == '5'
+                    || cTrans == '6' || cTrans == '7' || cTrans == '8'
+                    || cTrans == '9')
+                    && (m_iNumberStatus == NUMBER_INPUTINT)) { 
                 m_jPrice.setText(m_jPrice.getText() + cTrans);
 
             } else if (cTrans == '.' && m_iNumberStatus == NUMBER_INPUTZERO) {
@@ -633,60 +636,81 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 m_iNumberStatus = NUMBER_INPUTDEC;
 
             } else if ((cTrans == '0')
-                       && (m_iNumberStatus == NUMBER_INPUTZERODEC || m_iNumberStatus == NUMBER_INPUTDEC)) { 
-                // Un numero decimal
+                       && (m_iNumberStatus == NUMBER_INPUTZERODEC
+                       || m_iNumberStatus == NUMBER_INPUTDEC)) { 
+                // Decimal 0
                 m_jPrice.setText(m_jPrice.getText() + cTrans);
-            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
-                       && (m_iNumberStatus == NUMBER_INPUTZERODEC || m_iNumberStatus == NUMBER_INPUTDEC)) { 
-                // Un numero decimal
+            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3'
+                    || cTrans == '4' || cTrans == '5' || cTrans == '6'
+                    || cTrans == '7' || cTrans == '8' || cTrans == '9')
+                    && (m_iNumberStatus == NUMBER_INPUTZERODEC
+                    || m_iNumberStatus == NUMBER_INPUTDEC)) { 
+                // Decimal digit
                 m_jPrice.setText(m_jPrice.getText() + cTrans);
                 m_iNumberStatus = NUMBER_INPUTDEC;
                 m_iNumberStatusInput = NUMBERVALID;
 
             } else if (cTrans == '*' 
-                    && (m_iNumberStatus == NUMBER_INPUTINT || m_iNumberStatus == NUMBER_INPUTDEC)) {
+                    && (m_iNumberStatus == NUMBER_INPUTINT
+                    || m_iNumberStatus == NUMBER_INPUTDEC)) {
+                // Switch to multiply state
                 m_jPor.setText("x");
                 m_iNumberStatus = NUMBER_PORZERO;            
             } else if (cTrans == '*' 
-                    && (m_iNumberStatus == NUMBER_INPUTZERO || m_iNumberStatus == NUMBER_INPUTZERODEC)) {
+                    && (m_iNumberStatus == NUMBER_INPUTZERO
+                    || m_iNumberStatus == NUMBER_INPUTZERODEC)) {
+                // Switch to multiply state
                 m_jPrice.setText("0");
                 m_jPor.setText("x");
                 m_iNumberStatus = NUMBER_PORZERO;       
 
             } else if ((cTrans == '0') 
                     && (m_iNumberStatus == NUMBER_PORZERO)) {
-                m_jPor.setText("x0");            
-            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
+                // 00 stays 0
+                m_jPor.setText("x0");
+            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3'
+                    || cTrans == '4' || cTrans == '5' || cTrans == '6'
+                    || cTrans == '7' || cTrans == '8' || cTrans == '9')
                     && (m_iNumberStatus == NUMBER_PORZERO)) { 
-                // Un numero entero
+                // First digit entered in multiply
                 m_jPor.setText("x" + Character.toString(cTrans));
                 m_iNumberStatus = NUMBER_PORINT;            
                 m_iNumberStatusPor = NUMBERVALID;
-            } else if ((cTrans == '0' || cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
-                       && (m_iNumberStatus == NUMBER_PORINT)) { 
-                // Un numero entero
+            } else if ((cTrans == '0' || cTrans == '1' || cTrans == '2'
+                    || cTrans == '3' || cTrans == '4' || cTrans == '5'
+                    || cTrans == '6' || cTrans == '7' || cTrans == '8'
+                    || cTrans == '9')
+                    && (m_iNumberStatus == NUMBER_PORINT)) { 
+                // Next digit entered in multiply
                 m_jPor.setText(m_jPor.getText() + cTrans);
 
             } else if (cTrans == '.' && m_iNumberStatus == NUMBER_PORZERO) {
+                // Switch to multiply decimals
                 m_jPor.setText("x0.");
                 m_iNumberStatus = NUMBER_PORZERODEC;            
             } else if (cTrans == '.' && m_iNumberStatus == NUMBER_PORINT) {
+                // Switch to multiply decimals
                 m_jPor.setText(m_jPor.getText() + ".");
                 m_iNumberStatus = NUMBER_PORDEC;
 
             } else if ((cTrans == '0')
-                       && (m_iNumberStatus == NUMBER_PORZERODEC || m_iNumberStatus == NUMBER_PORDEC)) { 
-                // Un numero decimal
+                       && (m_iNumberStatus == NUMBER_PORZERODEC
+                       || m_iNumberStatus == NUMBER_PORDEC)) { 
+                // Decimal 0
                 m_jPor.setText(m_jPor.getText() + cTrans);
-            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3' || cTrans == '4' || cTrans == '5' || cTrans == '6' || cTrans == '7' || cTrans == '8' || cTrans == '9')
-                       && (m_iNumberStatus == NUMBER_PORZERODEC || m_iNumberStatus == NUMBER_PORDEC)) { 
-                // Un numero decimal
+            } else if ((cTrans == '1' || cTrans == '2' || cTrans == '3'
+                    || cTrans == '4' || cTrans == '5' || cTrans == '6'
+                    || cTrans == '7' || cTrans == '8' || cTrans == '9')
+                    && (m_iNumberStatus == NUMBER_PORZERODEC
+                    || m_iNumberStatus == NUMBER_PORDEC)) { 
+                // Decimal digit
                 m_jPor.setText(m_jPor.getText() + cTrans);
                 m_iNumberStatus = NUMBER_PORDEC;            
                 m_iNumberStatusPor = NUMBERVALID;  
             
             } else if (cTrans == '\u00a7' 
-                    && m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERZERO) {
+                    && m_iNumberStatusInput == NUMBERVALID
+                    && m_iNumberStatusPor == NUMBERZERO) {
                 // Scale button pressed and a number typed as a price
                 if (m_App.getDeviceScale().existsScale() && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                     try {
@@ -705,7 +729,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     Toolkit.getDefaultToolkit().beep();
                 }
             } else if (cTrans == '\u00a7' 
-                    && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO) {
+                    && m_iNumberStatusInput == NUMBERZERO
+                    && m_iNumberStatusPor == NUMBERZERO) {
                 // Scale button pressed and no number typed.
                 int i = m_ticketlines.getSelectedIndex();
                 if (i < 0){
@@ -730,11 +755,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     Toolkit.getDefaultToolkit().beep();
                 }      
                 
-            // Add one product more to the selected line
-            } else if (cTrans == '+' 
-                    && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO) {
+            // + without input: increment selected line quantity
+            } else if (cTrans == '+'
+                    && m_iNumberStatusInput == NUMBERZERO
+                    && m_iNumberStatusPor == NUMBERZERO) {
                 int i = m_ticketlines.getSelectedIndex();
-                if (i < 0){
+                if (i < 0) {
                     Toolkit.getDefaultToolkit().beep();
                 } else {
                     TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
@@ -750,9 +776,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     }
                 }
 
-            // Delete one product of the selected line
+            // - without input: decrement selected line quantity
+            // Remove line if quantity is set to 0
             } else if (cTrans == '-' 
-                    && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERZERO
+                    && m_iNumberStatusInput == NUMBERZERO
+                    && m_iNumberStatusPor == NUMBERZERO
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 
                 int i = m_ticketlines.getSelectedIndex();
@@ -779,9 +807,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     }
                 }
 
-            // Set n products to the selected line
+            // + with multiply input (without price): replace quantity
             } else if (cTrans == '+' 
-                    && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERVALID) {
+                    && m_iNumberStatusInput == NUMBERZERO
+                    && m_iNumberStatusPor == NUMBERVALID) {
                 int i = m_ticketlines.getSelectedIndex();
                 if (i < 0){
                     Toolkit.getDefaultToolkit().beep();
@@ -799,9 +828,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     }
                 }
 
-            // Set n negative products to the selected line
+            // - with multiply input (without price): set negative quantity
             } else if (cTrans == '-' 
-                    && m_iNumberStatusInput == NUMBERZERO && m_iNumberStatusPor == NUMBERVALID
+                    && m_iNumberStatusInput == NUMBERZERO
+                    && m_iNumberStatusPor == NUMBERVALID
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 
                 int i = m_ticketlines.getSelectedIndex();
@@ -817,35 +847,41 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     }           
                 }
 
-            // Anadimos 1 producto
+            // + with price input (without multiply): create an empty line
+            // with entered price
             } else if (cTrans == '+' 
-                    && m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERZERO
+                    && m_iNumberStatusInput == NUMBERVALID
+                    && m_iNumberStatusPor == NUMBERZERO
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 ProductInfoExt product = getInputProduct();
                 addTicketLine(product, 1.0, product.getPriceSell());
                 
-            // Anadimos 1 producto con precio negativo
+            // - with price input (without multiply): create an empty line
+            // with negative entered price
             } else if (cTrans == '-' 
                     && m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERZERO
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 ProductInfoExt product = getInputProduct();
                 addTicketLine(product, 1.0, -product.getPriceSell());
 
-            // Anadimos n productos
+            // + with price and multiply: create an empty line with entered price
+            // and quantity set to entered multiply
             } else if (cTrans == '+' 
-                    && m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERVALID
+                    && m_iNumberStatusInput == NUMBERVALID
+                    && m_iNumberStatusPor == NUMBERVALID
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 ProductInfoExt product = getInputProduct();
                 addTicketLine(product, getPorValue(), product.getPriceSell());
 
-            // Anadimos n productos con precio negativo ?
+            // - with price and multiply: create an empty line with entered
+            // negative price and quantity set to entered multiply
             } else if (cTrans == '-' 
                     && m_iNumberStatusInput == NUMBERVALID && m_iNumberStatusPor == NUMBERVALID
                     && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                 ProductInfoExt product = getInputProduct();
                 addTicketLine(product, getPorValue(), -product.getPriceSell());
 
-            // Totals() Igual;
+            // Space bar or =: go to payments
             } else if (cTrans == ' ' || cTrans == '=') {
                 if (m_oTicket.getLinesCount() > 0) {
                     

@@ -87,7 +87,11 @@ public class PanelReportBean extends JPanelReport {
     
     public String getTitle() {
         return title;
-    } 
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
     
     public void setReport(String report) {
         this.report = report;

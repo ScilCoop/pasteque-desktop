@@ -66,5 +66,9 @@ public class AttributesPanel extends JPanelTable2 {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Attributes");
-    }        
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

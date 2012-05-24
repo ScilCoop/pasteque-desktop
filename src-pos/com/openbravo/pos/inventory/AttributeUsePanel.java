@@ -103,6 +103,10 @@ public class AttributeUsePanel extends JPanelTable2 {
     public String getTitle() {
         return AppLocal.getIntString("Menu.AttributeUse");
     }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 
     private class ReloadActionListener implements ActionListener {
         @Override

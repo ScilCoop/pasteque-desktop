@@ -147,7 +147,11 @@ public class WidgetsBuilder {
     }
     
     public static JLabel createImportantLabel() {
-        JLabel lbl = new JLabel();
+        return createImportantLabel(null);
+    }
+    
+    public static JLabel createImportantLabel(String text) {
+        JLabel lbl = new JLabel(text);
         setupLabel(lbl, SIZE_BIG);
         
         return lbl;
@@ -157,6 +161,15 @@ public class WidgetsBuilder {
         JLabel lbl = new JLabel();
         setupLabel(lbl, SIZE_SMALL);
         return lbl;
+    }
+    
+    /** Make a label looks like an input field. */
+    public static void inputStyle(JLabel label) {
+        label.setBackground(java.awt.Color.white);
+        label.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        label.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        label.setOpaque(true);
+        label.setRequestFocusEnabled(false);
     }
     
     public static ImageIcon createIcon(ImageIcon icon) {
@@ -169,6 +182,11 @@ public class WidgetsBuilder {
             }
         }
         return icon;
+    }
+    
+    public static ImageIcon createIcon(String name) {
+        ImageIcon icon = new ImageIcon(WidgetsBuilder.class.getResource(name));
+        return createIcon(icon);
     }
     
     public static class TouchIcon extends ImageIcon {
@@ -209,4 +227,5 @@ public class WidgetsBuilder {
             g.translate(-marginLeft, -marginTop);
         }
     }
+    
 }

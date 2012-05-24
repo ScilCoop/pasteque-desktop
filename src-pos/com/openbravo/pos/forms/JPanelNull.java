@@ -45,6 +45,11 @@ public class JPanelNull extends JPanel implements JPanelView {
     public String getTitle() {
         return null;
     }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
+    
     public void activate() throws BasicException {
     }
     public boolean deactivate() {

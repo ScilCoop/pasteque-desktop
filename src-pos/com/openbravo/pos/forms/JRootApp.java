@@ -2,7 +2,7 @@
 //    Based upon Openbravo POS
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//                       2012 Scil (http://scil.coop)
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
 //    This file is part of POS-Tech.
 //
@@ -90,7 +90,6 @@ public class JRootApp extends JPanel implements AppView {
 
         m_aBeanFactories = new HashMap<String, BeanFactory>();
         
-        // Inicializo los componentes visuales
         initComponents ();            
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));   
     }
@@ -98,7 +97,6 @@ public class JRootApp extends JPanel implements AppView {
     public boolean initApp(AppProperties props) {
         
         m_props = props;
-        //setPreferredSize(new java.awt.Dimension(800, 600));
 
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
@@ -158,24 +156,34 @@ public class JRootApp extends JPanel implements AppView {
             }   
         }
         
-        // Cargamos las propiedades de base de datos
+        // Load host properties from resources
         m_propsdb = m_dlSystem.getResourceAsProperties(m_props.getHost() + "/properties");
-        
-        // creamos la caja activa si esta no existe      
+        // Load cash token
         try {
+            // Get cash token from resources
             String sActiveCashIndex = m_propsdb.getProperty("activecash");
+            // Check active cash in database if found in resources
             Object[] valcash = sActiveCashIndex == null
                     ? null
                     : m_dlSystem.findActiveCash(sActiveCashIndex);
             if (valcash == null || !m_props.getHost().equals(valcash[0])) {
-                // no la encuentro o no es de mi host por tanto creo una...
-                setActiveCash(UUID.randomUUID().toString(), m_dlSystem.getSequenceCash(m_props.getHost()) + 1, new Date(), null);
+                // No active cash found or token affected to an other host
+                // Create a new one
+                setActiveCash(UUID.randomUUID().toString(),
+                              m_dlSystem.getSequenceCash(m_props.getHost()) + 1,
+                              null, null);
 
-                // creamos la caja activa      
-                m_dlSystem.execInsertCash(
-                        new Object[] {getActiveCashIndex(), m_props.getHost(), getActiveCashSequence(), getActiveCashDateStart(), getActiveCashDateEnd()});                  
+                // Insert new token in database
+                m_dlSystem.execInsertCash(new Object[] {getActiveCashIndex(),
+                                          m_props.getHost(),
+                                          getActiveCashSequence(),
+                                          getActiveCashDateStart(),
+                                          getActiveCashDateEnd()});
             } else {
-                setActiveCash(sActiveCashIndex, (Integer) valcash[1], (Date) valcash[2], (Date) valcash[3]);
+                // Active cash found, set it
+                setActiveCash(sActiveCashIndex, (Integer) valcash[1],
+                              (Date) valcash[2],
+                              (Date) valcash[3]);
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos
@@ -287,6 +295,11 @@ public class JRootApp extends JPanel implements AppView {
     public Date getActiveCashDateEnd(){
         return m_dActiveCashDateEnd;
     }
+    
+    public boolean isCashOpened() {
+        return m_dActiveCashDateStart != null;
+    }
+    
     public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
         m_sActiveCashIndex = sIndex;
         m_iActiveCashSequence = iSeq;
@@ -436,7 +449,7 @@ public class JRootApp extends JPanel implements AppView {
             ee.printStackTrace();
         }
     }
-    // La accion del selector
+    // Action performed when clicking on a people button
     private class AppUserAction extends AbstractAction {
         
         private AppUser m_actionuser;
@@ -452,20 +465,22 @@ public class JRootApp extends JPanel implements AppView {
         }
         
         public void actionPerformed(ActionEvent evt) {
-            // String sPassword = m_actionuser.getPassword();
+            // Try auto-logging if user has no password set
             if (m_actionuser.authenticate()) {
-                // p'adentro directo, no tiene password        
+                // It works!
                 openAppView(m_actionuser);         
             } else {
-                // comprobemos la clave antes de entrar...
+                // Show password input
                 String sPassword = JPasswordDialog.showEditPassword(JRootApp.this, 
                         AppLocal.getIntString("Label.Password"),
                         m_actionuser.getName(),
                         m_actionuser.getIcon());
                 if (sPassword != null) {
                     if (m_actionuser.authenticate(sPassword)) {
+                        // Password is valid, enter app
                         openAppView(m_actionuser);                
                     } else {
+                        // Wrong password, show message
                         MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
                         msg.show(JRootApp.this);                        
                     }
@@ -479,8 +494,9 @@ public class JRootApp extends JPanel implements AppView {
         cl.show(m_jPanelContainer, view);  
     }
     
+    /** Enter app, show main screen with selected user. */
     private void openAppView(AppUser user) {
-        
+        // Make sure app is not already opened before continuing
         if (closeAppView()) {
 
             m_principalapp = new JPrincipalApp(this, user);
@@ -496,7 +512,10 @@ public class JRootApp extends JPanel implements AppView {
             m_principalapp.activate();
         }
     }
-       
+    
+    /** Return to login screen.
+     * @return True if not opened or successfuly closed, false if close failed.
+     */
     public boolean closeAppView() {
         
         if (m_principalapp == null) {

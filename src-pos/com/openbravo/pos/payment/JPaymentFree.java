@@ -40,6 +40,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
     
     private double m_dPaid;
     private double m_dTotal;
+    private double partAmount;
     private JPaymentNotifier m_notifier;
     
     /** Creates new form JPaymentFree */
@@ -50,9 +51,10 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
     }
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         
         m_dTotal = dTotal;
+        this.partAmount = partAmount;
         
         // m_jTotal.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
         m_jTendered.reset();
@@ -72,7 +74,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         
         Double value = m_jTendered.getDoubleValue();
         if (value == null) {
-            m_dPaid = m_dTotal;
+            m_dPaid = this.partAmount;
         } else {
             m_dPaid = value;
         } 

@@ -80,5 +80,9 @@ public class TaxCustCategoriesPanel extends JPanelTable {
         
     public String getTitle() {
         return AppLocal.getIntString("Menu.TaxCustCategories");
-    }     
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

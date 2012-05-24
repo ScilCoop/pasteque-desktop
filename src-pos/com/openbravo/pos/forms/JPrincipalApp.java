@@ -1,25 +1,28 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.forms;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.pos.panels.JPanelOpenMoney;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -31,6 +34,7 @@ import javax.swing.*;
 import com.openbravo.beans.RoundedBorder;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.JMessageDialog;
+import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
@@ -267,7 +271,8 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     
     public void activate() {
         
-        setMenuVisible(getBounds().width > 800);
+        boolean menuVisible = AppConfig.loadedInstance.getProperty("ui.autohidemenu").equals("0");
+        setMenuVisible(menuVisible);
         
         // arranco la primera opcion
         if (m_actionfirst != null) {
@@ -334,22 +339,26 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         return m_appuser;
     }
     
+    /** Change main panel content to a new task.
+     * @param sTaskClass Task class name, the class must implement JPanelView.
+     */
     public void showTask(String sTaskClass) {
          
-        m_appview.waitCursorBegin();       
-         
-        if (m_appuser.hasPermission(sTaskClass)) {            
-            
+        m_appview.waitCursorBegin();
+        
+        if (m_appuser.hasPermission(sTaskClass)) {
+            // Load view from already set views
             JPanelView m_jMyView = (JPanelView) m_aCreatedViews.get(sTaskClass);
 
-            // cierro la antigua
-            if (m_jLastView == null || (m_jMyView != m_jLastView && m_jLastView.deactivate())) {
+            // Disable previous task if any and continue
+            if (m_jLastView == null
+                    || (m_jMyView != m_jLastView && m_jLastView.deactivate())) {
 
-                // Construct the new view
                 if (m_jMyView == null) {   
-                    
+                    // The view was not in cache, create it
                     // Is the view prepared
                     m_jMyView = m_aPreparedViews.get(sTaskClass);
+                    
                     if (m_jMyView == null) {   
                         // The view is not prepared. Try to get as a Bean...
                         try {
@@ -358,32 +367,46 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                             m_jMyView = new JPanelNull(m_appview, e);
                         }
                     }
-                    
+                    // Set the view
                     m_jMyView.getComponent().applyComponentOrientation(getComponentOrientation());
                     m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
                     m_aCreatedViews.put(sTaskClass, m_jMyView);
                 }
                 
-                // ejecuto la tarea
+                // Check if view requires that the cash is opened and switch
+                if (m_jMyView.requiresOpenedCash()
+                        && !m_appview.isCashOpened()) {
+                    // Hum hum
+                    m_jMyView = new JPanelOpenMoney(m_appview, this, sTaskClass);
+                    sTaskClass = "JPanelOpenMoney_" + sTaskClass;
+                    if (m_aCreatedViews.get(sTaskClass) == null) {
+                        m_jMyView.getComponent().applyComponentOrientation(getComponentOrientation());
+                        m_jPanelContainer.add(m_jMyView.getComponent(), sTaskClass);
+                        m_aCreatedViews.put(sTaskClass, m_jMyView);
+                    }
+                }
+                
+                // Activate view
                 try {
                     m_jMyView.activate();
                 } catch (BasicException e) {
                     JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notactive"), e));            
                 }
 
-                // se tiene que mostrar el panel                
+                // Set it as active view
                 m_jLastView = m_jMyView;
 
-                setMenuVisible(getBounds().width > 800);
+                boolean menuVisible = AppConfig.loadedInstance.getProperty("ui.autohidemenu").equals("0");
+                setMenuVisible(menuVisible);
 
-                showView(sTaskClass);   
-                // Y ahora que he cerrado la antigua me abro yo            
+                // Show view and title
+                showView(sTaskClass);
                 String sTitle = m_jMyView.getTitle();
                 m_jPanelTitle.setVisible(sTitle != null);
                 m_jTitle.setText(sTitle);       
             }
         } else  {
-            // No hay permisos para ejecutar la accion...
+            // User does not have permission to show the task
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notpermissions")));            
         }
         m_appview.waitCursorEnd();       

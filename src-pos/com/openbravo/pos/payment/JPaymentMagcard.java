@@ -49,6 +49,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
 
     private double m_dPaid;
     private double m_dTotal;
+    private double partAmount;
     
     /** Creates new form JPaymentCash */
     public JPaymentMagcard(AppView app, JPaymentNotifier notifier) {
@@ -72,7 +73,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
 
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
         this.transaction = transID;
         
         if (m_paymentgateway == null) {
@@ -83,6 +84,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         }
 
         m_dTotal = dTotal;
+        this.partAmount = partAmount;
         
         
         m_jTendered.reset();
@@ -115,7 +117,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         
         Double value = m_jTendered.getDoubleValue();
         if (value == null) {
-            m_dPaid = m_dTotal;
+            m_dPaid = partAmount;
         } else {
             m_dPaid = value;
         } 

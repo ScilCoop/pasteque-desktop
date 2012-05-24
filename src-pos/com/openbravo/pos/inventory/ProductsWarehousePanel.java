@@ -137,6 +137,10 @@ public class ProductsWarehousePanel extends JPanelTable2 {
         }
     }
 
+    public boolean requiresOpenedCash() {
+        return false;
+    }
+    
     private class WarehouseSerializerRead implements SerializerRead {
         public Object readValues(DataRead dr) throws BasicException {
             return new Object[] {

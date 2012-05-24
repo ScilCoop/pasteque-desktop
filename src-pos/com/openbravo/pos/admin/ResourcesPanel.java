@@ -87,5 +87,9 @@ public class ResourcesPanel extends JPanelTable {
     
     public String getTitle() {
         return AppLocal.getIntString("Menu.Resources");
-    }        
+    }
+    
+    public boolean requiresOpenedCash() {
+        return false;
+    }
 }

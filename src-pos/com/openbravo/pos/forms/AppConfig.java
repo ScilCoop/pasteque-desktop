@@ -130,6 +130,10 @@ public class AppConfig implements AppProperties {
         }
     }
     
+    /** The defaults values. These values are taken when the property is not
+     * found in file. These values are not saved in properties files if they
+     * are not set.
+     */
     private static HashMap<String, String> DEFAULT_VALUES;
     static {
         DEFAULT_VALUES = new HashMap<String, String>();
@@ -143,12 +147,13 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.fontsize", "12");
         DEFAULT_VALUES.put("ui.fontsizebig", "14");
         DEFAULT_VALUES.put("ui.fontsizesmall", "10");
-        DEFAULT_VALUES.put("ui.showtitlebar", "1");
-        DEFAULT_VALUES.put("ui.showfooterbar", "1");
         DEFAULT_VALUES.put("ui.showupdownbuttons", "1");
-        DEFAULT_VALUES.put("machine.screendensity", "72"); // in pixel per inch
     }
     
+    /** Load "default file", which values are expanded or overriden by the
+     * actually property file.
+     * The properties that then saved along other in the properties file.
+     */
     private void loadDefault() {
         
         m_propsconfig = new Properties();
@@ -221,6 +226,11 @@ public class AppConfig implements AppProperties {
 
         m_propsconfig.setProperty("machine.uniqueinstance", "false");
         
-        // 
+        // UI stuff
+        m_propsconfig.setProperty("machine.screendensity", "72"); // In pixel per inch
+        m_propsconfig.setProperty("ui.autohidemenu", "0");
+        m_propsconfig.setProperty("ui.showtitlebar", "1");
+        m_propsconfig.setProperty("ui.showfooterbar", "1");
+        
     }
 }
