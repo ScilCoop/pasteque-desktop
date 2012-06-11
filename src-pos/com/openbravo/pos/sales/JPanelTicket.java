@@ -1208,54 +1208,54 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         java.awt.GridBagConstraints gridBagConstraints;
 
-        m_jPanContainer = new javax.swing.JPanel();
-        m_jOptions = new javax.swing.JPanel();
-        m_jButtons = new javax.swing.JPanel();
-        m_jTicketId = WidgetsBuilder.createLabel();
-        btnCustomer = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")));
-        btnSplit = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")));
-        m_jButtonsExt = new javax.swing.JPanel();
-        m_jbtnScale = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/scale.png")));
-        m_jPanelBag = new javax.swing.JPanel();
-        m_jPanTicket = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        m_jUp = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")));
-        m_jDown = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")));
-        m_jDelete = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png")));
-        m_jList = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search22.png")));
-        m_jEditLine = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png")));
-        m_jbtnLineDiscount = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/discount.png")));
-        jEditAttributes = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png")));
-        m_jPanelCentral = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        m_jPanTotals = new javax.swing.JPanel();
+        JPanel m_jPanContainer = new JPanel(); // The main container
+        m_jButtonsExt = new JPanel();
+        m_jbtnScale = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/scale.png")));
+        m_jPanelBag = new JPanel();
+        m_jPanTicket = new JPanel();
+        jPanel5 = new JPanel();
+        jPanel2 = new JPanel();
+        m_jUp = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")));
+        m_jDown = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")));
+        m_jDelete = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png")));
+        m_jList = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/search22.png")));
+        m_jEditLine = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png")));
+        m_jbtnLineDiscount = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/discount.png")));
+        jEditAttributes = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png")));
+        m_jPanelCentral = new JPanel();
+        jPanel4 = new JPanel();
+        m_jPanTotals = new JPanel();
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
         m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel();
         m_jSubtotalEuros = WidgetsBuilder.createLabel();
         m_jTaxesEuros = WidgetsBuilder.createLabel();
         m_jLblTotalEuros2 = WidgetsBuilder.createLabel();
         m_jLblTotalEuros3 = WidgetsBuilder.createLabel();
-        m_jPanEntries = new javax.swing.JPanel();
+        m_jPanEntries = new JPanel();
         m_jNumberKeys = new JNumberKeys();
-        jPanel9 = new javax.swing.JPanel();
+        jPanel9 = new JPanel();
         m_jPrice = WidgetsBuilder.createLabel();
         m_jPor = WidgetsBuilder.createLabel();
         m_jEnter = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png")));
-        m_jTax = new javax.swing.JComboBox();
-        m_jaddtax = new javax.swing.JToggleButton();
-        m_jKeyFactory = new javax.swing.JTextField();
-        catcontainer = new javax.swing.JPanel();
-        m_jInputContainer = new javax.swing.JPanel();
+        m_jTax = new JComboBox();
+        m_jaddtax = new JToggleButton();
+        m_jKeyFactory = new JTextField();
+        catcontainer = new JPanel();
+        m_jInputContainer = new JPanel();
 
-        setBackground(new java.awt.Color(255, 204, 153));
-        setLayout(new java.awt.CardLayout());
+        this.setBackground(new Color(255, 204, 153));
+        this.setLayout(new CardLayout());
 
-        m_jPanContainer.setLayout(new javax.swing.BoxLayout(m_jPanContainer, javax.swing.BoxLayout.Y_AXIS));
+        m_jPanContainer.setLayout(new GridBagLayout());
+        GridBagConstraints cstr = null;
 
         // Tickets buttons part
-        m_jOptions.setLayout(new java.awt.BorderLayout());
+        JPanel m_jOptions = new JPanel();
+        m_jOptions.setLayout(new GridBagLayout());
 
+        JPanel m_jButtons = new JPanel();
+        
+        m_jTicketId = WidgetsBuilder.createLabel();
         m_jTicketId.setBackground(java.awt.Color.white);
         m_jTicketId.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         m_jTicketId.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
@@ -1265,6 +1265,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jButtons.add(m_jTicketId);
 
         // Customers list button
+        btnCustomer = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")));
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setRequestFocusEnabled(false);
@@ -1276,6 +1277,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jButtons.add(btnCustomer);
 
         // Split ticket button
+        btnSplit = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")));
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
         btnSplit.setRequestFocusEnabled(false);
@@ -1286,19 +1288,37 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         m_jButtons.add(btnSplit);
 
-        m_jOptions.add(m_jButtons, java.awt.BorderLayout.LINE_START);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        m_jOptions.add(m_jButtons, cstr);
 
+        //m_jPanelBag.setLayout(new java.awt.BorderLayout());
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        m_jOptions.add(m_jPanelBag, cstr);
+        
         // Extra buttons
-        m_jButtonsExt.setLayout(new javax.swing.BoxLayout(m_jButtonsExt, javax.swing.BoxLayout.LINE_AXIS));
+        //m_jButtonsExt.setLayout(new javax.swing.BoxLayout(m_jButtonsExt, BoxLayout.LINE_AXIS));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 2;
+        cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.anchor = GridBagConstraints.LINE_END;
+        m_jOptions.add(m_jButtonsExt, cstr);
 
-        m_jOptions.add(m_jButtonsExt, java.awt.BorderLayout.LINE_END);
-
-        m_jPanelBag.setLayout(new java.awt.BorderLayout());
-        m_jOptions.add(m_jPanelBag, java.awt.BorderLayout.CENTER);
+        
         // Pack buttons line
         m_jOptions.setMaximumSize(new java.awt.Dimension(m_jOptions.getMaximumSize().width, m_jOptions.getPreferredSize().height));
 
-        m_jPanContainer.add(m_jOptions);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        m_jPanContainer.add(m_jOptions, cstr);
+        
         
         // Second panel line: ticket and input keyboard
         m_jInputContainer.setLayout(new javax.swing.BoxLayout(m_jInputContainer, javax.swing.BoxLayout.X_AXIS));
@@ -1586,13 +1606,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jInputContainer.add(m_jPanEntries);
 
-        m_jPanContainer.add(m_jInputContainer);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        m_jPanContainer.add(m_jInputContainer, cstr);
 
         // Last line: catalog selector
         catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         catcontainer.setLayout(new java.awt.BorderLayout());
-        m_jPanContainer.add(catcontainer);
-        add(m_jPanContainer, "ticket");
+        
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 2;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        m_jPanContainer.add(catcontainer, cstr);
+        this.add(m_jPanContainer, "ticket");
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jbtnScaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnScaleActionPerformed
@@ -1779,7 +1811,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
     private javax.swing.JButton m_jDelete;
     private javax.swing.JButton m_jDown;
@@ -1791,8 +1822,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JLabel m_jLblTotalEuros3;
     private javax.swing.JButton m_jList;
     private JNumberKeys m_jNumberKeys;
-    private javax.swing.JPanel m_jOptions;
-    private javax.swing.JPanel m_jPanContainer;
     private javax.swing.JPanel m_jPanEntries;
     private javax.swing.JPanel m_jPanTicket;
     private javax.swing.JPanel m_jPanTotals;
