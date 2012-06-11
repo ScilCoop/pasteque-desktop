@@ -83,32 +83,30 @@ implements JPanelView {
     
     private void initComponents() {
         GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.CENTER;
-        gridbag.setConstraints(this, constraints);
+        GridBagConstraints cstr = null;
+
         this.setLayout(gridbag);
         
-        JPanel container = new JPanel();
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-        
         JLabel cashClosed = WidgetsBuilder.createLabel(AppLocal.getIntString("message.cashisclosed"));
-        cashClosed.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        cashClosed.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        cashClosed.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
-        cashClosed.setAlignmentX(Component.CENTER_ALIGNMENT);
-        container.add(cashClosed);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.weighty = 0.5;
+        this.add(cashClosed, cstr);
 
         if (this.principalApp.getUser().hasPermission("button.openmoney")) {
             JButton openCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("/com/openbravo/images/password.png"), AppLocal.getIntString("label.opencash"), WidgetsBuilder.SIZE_BIG);
-            openCash.setAlignmentX(Component.CENTER_ALIGNMENT);
             openCash.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     openCash(evt);
                 }
             });
-            container.add(openCash);
+            cstr = new GridBagConstraints();
+            cstr.gridx = 0;
+            cstr.gridy = 1;
+            cstr.weighty = 0.5;
+            this.add(openCash, cstr);
         }
-        this.add(container);
     }
     
     private void openCash(java.awt.event.ActionEvent evt) {
