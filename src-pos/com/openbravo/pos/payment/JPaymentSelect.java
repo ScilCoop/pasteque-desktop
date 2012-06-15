@@ -279,7 +279,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void refreshParts() {
         double partAmount = this.m_dTotal / this.parts;
         int remainingParts = this.parts - this.m_aPaymentInfo.size();
-        if (remainingParts < 0) {
+        if (remainingParts <= 0) {
             // Not usefull isn't it ?
             this.nextPartAmount = m_dTotal - m_aPaymentInfo.getTotal();
         } else {
@@ -291,7 +291,10 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
                 this.nextPartAmount = roundedPartAmount;
             }
         }
+        // Refresh display
         this.jlblPartsNumber.setText(String.valueOf(this.parts));
+        this.jlblPartAmount.setVisible(this.parts != 1);
+        this.jlblPartAmountLabel.setVisible(this.parts != 1);
         this.jlblPartAmount.setText(Formats.CURRENCY.formatValue(new Double(partAmount)));
         // Reactivate current tab to refresh part
         double remaining = m_dTotal - m_aPaymentInfo.getTotal();
@@ -347,7 +350,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
         m_jRemaininglEuros = WidgetsBuilder.createImportantLabel();
         m_jLblRemainingEuros = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.remainingcash"));
-        JLabel jlblPartAmountLabel = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.partamount"));
+        jlblPartAmountLabel = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.partamount"));
         jlblPartAmount = WidgetsBuilder.createImportantLabel();
         WidgetsBuilder.inputStyle(jlblPartAmount);
         WidgetsBuilder.inputStyle(m_jTotalEuros);
@@ -486,6 +489,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void m_jButtonRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jButtonRemoveActionPerformed
 
         m_aPaymentInfo.removeLast();
+        this.refreshParts(); // Recalculate next part amount
         printState();        
         
     }//GEN-LAST:event_m_jButtonRemoveActionPerformed
@@ -559,5 +563,6 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private JLabel jlblPartsNumber;
     private JButton jbtnPartsPlus;
     private JButton jbtnPartsMinus;
+    private JLabel jlblPartAmountLabel;
     private JLabel jlblPartAmount;
 }
