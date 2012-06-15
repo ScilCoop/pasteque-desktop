@@ -1,21 +1,23 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.inventory;
 
@@ -107,13 +109,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.getDocument().addDocumentListener(dirty);
         txtAttributes.getDocument().addDocumentListener(dirty);
 
-        FieldsManager fm = new FieldsManager();
-        m_jPriceBuy.getDocument().addDocumentListener(fm);
-        m_jPriceSell.getDocument().addDocumentListener(new PriceSellManager());
-        m_jTax.addActionListener(fm);
-
+        m_jTax.addActionListener(new TaxCatManager());
         m_jPriceSellTax.getDocument().addDocumentListener(new PriceTaxManager());
-        m_jmargin.getDocument().addDocumentListener(new MarginManager());
 
         writeValueEOF();
     }
@@ -357,6 +354,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         return this;
     }
 
+    // Single field update functions
+    
     private void calculateMargin() {
 
         if (!reportlock) {
@@ -391,7 +390,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }
 
-    private void calculatePriceSellfromMargin() {
+    private void calculatePriceSellFromMargin() {
 
         if (!reportlock) {
             reportlock = true;
@@ -410,7 +409,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     }
 
-    private void calculatePriceSellfromPST() {
+    private void calculatePriceSellFromPST() {
 
         if (!reportlock) {
             reportlock = true;
@@ -437,83 +436,50 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             priceselllock = false;
         }
     }
-
-    private class PriceSellManager implements DocumentListener {
-        public void changedUpdate(DocumentEvent e) {
-            if (!priceselllock) {
-                priceselllock = true;
-                pricesell = readCurrency(m_jPriceSell.getText());
-                priceselllock = false;
-            }
-            calculateMargin();
-            calculatePriceSellTax();
+    
+    // Fields update procedures based upon single field functions
+    
+    private void updatePricesFromPriceSell() {
+        if (!priceselllock) {
+            priceselllock = true;
+            pricesell = readCurrency(m_jPriceSell.getText());
+            priceselllock = false;
         }
-        public void insertUpdate(DocumentEvent e) {
-            if (!priceselllock) {
-                priceselllock = true;
-                pricesell = readCurrency(m_jPriceSell.getText());
-                priceselllock = false;
-            }
-            calculateMargin();
-            calculatePriceSellTax();
-        }
-        public void removeUpdate(DocumentEvent e) {
-            if (!priceselllock) {
-                priceselllock = true;
-                pricesell = readCurrency(m_jPriceSell.getText());
-                priceselllock = false;
-            }
-            calculateMargin();
-            calculatePriceSellTax();
-        }
+        calculatePriceSellTax();
+        updatePricesFromPriceSellTax(); // update prices from rounded tax sell
     }
+    
+    private void updatePricesFromPriceSellTax() {
+        calculatePriceSellFromPST();
+        calculateMargin();
+    }
+    
+    // Update managers, triggers update procedures
 
-    private class FieldsManager implements DocumentListener, ActionListener {
+    private class TaxCatManager implements DocumentListener, ActionListener {
         public void changedUpdate(DocumentEvent e) {
-            calculateMargin();
-            calculatePriceSellTax();
+            updatePricesFromPriceSell();
         }
         public void insertUpdate(DocumentEvent e) {
-            calculateMargin();
-            calculatePriceSellTax();
+            updatePricesFromPriceSell();
         }
         public void removeUpdate(DocumentEvent e) {
-            calculateMargin();
-            calculatePriceSellTax();
+            updatePricesFromPriceSell();
         }
         public void actionPerformed(ActionEvent e) {
-            calculateMargin();
-            calculatePriceSellTax();
+            updatePricesFromPriceSell();
         }
     }
 
     private class PriceTaxManager implements DocumentListener {
         public void changedUpdate(DocumentEvent e) {
-            calculatePriceSellfromPST();
-            calculateMargin();
+            updatePricesFromPriceSellTax();
         }
         public void insertUpdate(DocumentEvent e) {
-            calculatePriceSellfromPST();
-            calculateMargin();
+            updatePricesFromPriceSellTax();
         }
         public void removeUpdate(DocumentEvent e) {
-            calculatePriceSellfromPST();
-            calculateMargin();
-        }
-    }
-
-    private class MarginManager implements DocumentListener  {
-        public void changedUpdate(DocumentEvent e) {
-            calculatePriceSellfromMargin();
-            calculatePriceSellTax();
-        }
-        public void insertUpdate(DocumentEvent e) {
-            calculatePriceSellfromMargin();
-            calculatePriceSellTax();
-        }
-        public void removeUpdate(DocumentEvent e) {
-            calculatePriceSellfromMargin();
-            calculatePriceSellTax();
+            updatePricesFromPriceSellTax();
         }
     }
 
@@ -584,48 +550,48 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         setLayout(null);
 
-	// Window title
-	m_jTitle.setFont(new java.awt.Font("SansSerif", 3, 18));
+        // Window title
+        m_jTitle.setFont(new java.awt.Font("SansSerif", 3, 18));
         add(m_jTitle);
         m_jTitle.setBounds(10, 10, 320, 30);
 
 
-	// General section
-	// Reference form
+        // General section
+        // Reference form
         jLabel1.setText(AppLocal.getIntString("label.prodref")); // NOI18N
         add(jLabel1);
         jLabel1.setBounds(10, 50, 80, 15);
         add(m_jRef);
         m_jRef.setBounds(90, 50, 70, 19);
 
-	// Name form
+        // Name form
         jLabel2.setText(AppLocal.getIntString("label.prodname")); // NOI18N
         add(jLabel2);
         jLabel2.setBounds(180, 50, 70, 15);
         add(m_jName);
         m_jName.setBounds(250, 50, 220, 19);
 
-	// First pane
+        // First pane
         jPanel1.setLayout(null);
-	// Image
+        // Image
         jPanel1.add(m_jImage);
         m_jImage.setBounds(340, 20, 200, 180);
 
-	// Tax category
+        // Tax category
         jLabel7.setText(AppLocal.getIntString("label.taxcategory")); // NOI18N
         jPanel1.add(jLabel7);
         jLabel7.setBounds(10, 20, 150, 15);
         jPanel1.add(m_jTax);
         m_jTax.setBounds(160, 20, 170, 20);
 
-	// Category
+        // Category
         jLabel5.setText(AppLocal.getIntString("label.prodcategory")); // NOI18N
         jPanel1.add(jLabel5);
         jLabel5.setBounds(10, 50, 150, 15);
         jPanel1.add(m_jCategory);
         m_jCategory.setBounds(160, 50, 170, 20);
 
-	// Price sell with VAT
+        // Price sell with VAT
         jLabel16.setText(AppLocal.getIntString("label.prodpriceselltax")); // NOI18N
         jPanel1.add(jLabel16);
         jLabel16.setBounds(10, 80, 150, 15);
@@ -635,18 +601,20 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel1.add(m_jCodetype);
         m_jCodetype.setBounds(250, 80, 80, 20);
 
-	// Price Sell without VAT followed by margin
+        // Price Sell without VAT followed by margin
         jLabel4.setText(AppLocal.getIntString("label.prodpricesell")); // NOI18N
         jPanel1.add(jLabel4);
         jLabel4.setBounds(10, 110, 150, 15);
         m_jPriceSell.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        m_jPriceSell.setEditable(false);
         jPanel1.add(m_jPriceSell);
         m_jPriceSell.setBounds(160, 110, 80, 19);
         m_jmargin.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        m_jmargin.setEditable(false);
         jPanel1.add(m_jmargin);
         m_jmargin.setBounds(250, 110, 80, 19);
 
-	// Buy price
+        // Buy price
         jLabel3.setText(AppLocal.getIntString("label.prodpricebuy")); // NOI18N
         jPanel1.add(jLabel3);
         jLabel3.setBounds(10, 140, 150, 15);
@@ -654,7 +622,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel1.add(m_jPriceBuy);
         m_jPriceBuy.setBounds(160, 140, 80, 19);
 
-	// Barcode
+        // Barcode
         jLabel6.setText(AppLocal.getIntString("label.prodbarcode")); // NOI18N
         jPanel1.add(jLabel6);
         jLabel6.setBounds(10, 170, 150, 15);
@@ -662,7 +630,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCode.setBounds(160, 170, 170, 19);
 
 
-	// Attributes
+        // Attributes
         jLabel13.setText(AppLocal.getIntString("label.attributes")); // NOI18N
         jPanel1.add(jLabel13);
         jLabel13.setBounds(10, 200, 150, 15);
@@ -671,7 +639,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodgeneral"), jPanel1); // NOI18N
 
-	// Stock panel
+        // Stock panel
         jPanel2.setLayout(null);
 
         jLabel9.setText(AppLocal.getIntString("label.prodstockcost")); // NOI18N
@@ -724,7 +692,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.prodstock"), jPanel2); // NOI18N
 
-	// Properties panel
+        // Properties panel
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel3.setLayout(new java.awt.BorderLayout());
 
