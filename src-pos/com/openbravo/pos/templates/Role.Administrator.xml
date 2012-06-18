@@ -48,7 +48,7 @@
     <class name="/com/openbravo/reports/customersb.bs"/>
     <class name="/com/openbravo/reports/customersdiary.bs"/>
     <class name="com.openbravo.pos.inventory.TaxCustCategoriesPanel"/>
-    <class name="com.openbravo.pos.forms.MenuStockManagement"/>
+    <class name="com.openbravo.pos.forms.MenuCatalogManagement"/>
     <class name="com.openbravo.pos.inventory.ProductsPanel"/>
     <class name="com.openbravo.pos.inventory.ProductsWarehousePanel"/>
     <class name="com.openbravo.pos.inventory.CategoriesPanel"/>
@@ -56,8 +56,10 @@
     <class name="com.openbravo.pos.inventory.AttributeValuesPanel"/>
     <class name="com.openbravo.pos.inventory.AttributeSetsPanel"/>
     <class name="com.openbravo.pos.inventory.AttributeUsePanel"/>
+    <class name="com.openbravo.pos.forms.MenuTaxesManagement"/>
     <class name="com.openbravo.pos.inventory.TaxPanel"/>
     <class name="com.openbravo.pos.inventory.TaxCategoriesPanel"/>
+    <class name="com.openbravo.pos.forms.MenuStockManagement"/>
     <class name="com.openbravo.pos.inventory.StockDiaryPanel"/>
     <class name="com.openbravo.pos.inventory.StockManagement"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
