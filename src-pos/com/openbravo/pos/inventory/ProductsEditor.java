@@ -21,24 +21,26 @@
 
 package com.openbravo.pos.inventory;
 
-import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.*;
-import java.awt.image.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import com.openbravo.pos.forms.AppLocal;
-import com.openbravo.format.Formats;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.EditorRecord;
 import com.openbravo.data.user.DirtyManager;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.forms.AppConfig;
+import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.sales.TaxesLogic;
+
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.*;
 import java.util.Date;
 import java.util.UUID;
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 /**
  *
@@ -367,7 +369,13 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             if (dPriceBuy == null || dPriceSell == null) {
                 m_jmargin.setText(null);
             } else {
-                m_jmargin.setText(Formats.PERCENT.formatValue(new Double(dPriceSell.doubleValue() / dPriceBuy.doubleValue() - 1.0)));
+                String marginTypeProp = AppConfig.loadedInstance.getProperty("ui.margintype");
+                if (marginTypeProp.equals("rate")) {
+                    double ratio = dPriceBuy.doubleValue() / dPriceSell.doubleValue();
+                    m_jmargin.setText(Formats.DOUBLE.formatValue(ratio));
+                } else {
+                    m_jmargin.setText(Formats.PERCENT.formatValue(new Double(dPriceSell.doubleValue() / dPriceBuy.doubleValue() - 1.0)));
+                }
             }
             reportlock = false;
         }

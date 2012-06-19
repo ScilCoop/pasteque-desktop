@@ -66,6 +66,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jtxtScreenDensity.getDocument().addDocumentListener(dirty);
         jcboMachineScreenmode.addActionListener(dirty);
         jcboTicketsBag.addActionListener(dirty);
+        jcboMarginType.addActionListener(dirty);
         
         jcbShowTitlebar.addActionListener(dirty);
         jcbShowFooterbar.addActionListener(dirty);
@@ -149,6 +150,10 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jcboTicketsBag.addItem("simple");
         jcboTicketsBag.addItem("standard");
         jcboTicketsBag.addItem("restaurant");
+        
+        // Margin type values
+        jcboMarginType.addItem("margin");
+        jcboMarginType.addItem("rate");
 
         // Printer 1
         jcboMachinePrinter.addItem("screen");
@@ -310,6 +315,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         m_jcboScreenType.setSelectedItem(config.getProperty("machine.screentype"));
         jtxtScreenDensity.setText(config.getProperty("machine.screendensity"));
         jcboTicketsBag.setSelectedItem(config.getProperty("machine.ticketsbag"));
+        jcboMarginType.setSelectedItem(config.getProperty("ui.margintype"));
 
         jcbShowTitlebar.setSelected(!config.getProperty("ui.showtitlebar").equals("0"));
         jcbShowFooterbar.setSelected(!config.getProperty("ui.showfooterbar").equals("0"));
@@ -419,6 +425,7 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         config.setProperty("machine.screentype", comboValue(m_jcboScreenType.getSelectedItem()));
         config.setProperty("machine.screendensity", jtxtScreenDensity.getText());
         config.setProperty("machine.ticketsbag", comboValue(jcboTicketsBag.getSelectedItem()));
+        config.setProperty("ui.margintype", comboValue(jcboMarginType.getSelectedItem()));
 
         config.setProperty("ui.showtitlebar", checkboxValue(jcbShowTitlebar));
         config.setProperty("ui.showfooterbar", checkboxValue(jcbShowFooterbar));
@@ -659,6 +666,9 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
         jlblShowFooterbar.setText(AppLocal.getIntString("label.showfooterbar"));
         jcbShowTitlebar = new javax.swing.JCheckBox();
         jcbShowFooterbar = new javax.swing.JCheckBox();
+        
+        javax.swing.JLabel jlblMarginType = new javax.swing.JLabel(AppLocal.getIntString("Label.MarginType"));
+        jcboMarginType = new javax.swing.JComboBox();
         
         javax.swing.JLabel jlblAutoHideMenu = new javax.swing.JLabel();
         jlblAutoHideMenu.setText(AppLocal.getIntString("label.autohidemenu"));
@@ -1138,11 +1148,16 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                         .addComponent(jlblAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    
+                    // Tickets
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboTicketsBag, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jcboTicketsBag, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    // Margin type
+                    .addGroup(jPanel13Layout.createSequentialGroup()
+                        .addComponent(jlblMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jcboMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel13Layout.setVerticalGroup(
@@ -1184,11 +1199,17 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jlblAutoHideMenu)
                     .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                
+                // Tickets
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
                     .addComponent(jcboTicketsBag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                // Margin type
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jlblMarginType)
+                    .addComponent(jcboMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -1412,4 +1433,5 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
     private javax.swing.JCheckBox jcbShowFooterbar;
     private javax.swing.JTextField jtxtScreenDensity;
     private javax.swing.JCheckBox jcbAutoHideMenu;
+    private javax.swing.JComboBox jcboMarginType;
 }
