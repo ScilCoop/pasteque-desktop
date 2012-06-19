@@ -117,43 +117,50 @@ public class JRootApp extends JPanel implements AppView {
             
             // Create or upgrade database
             
-            String sScript = sDBVersion == null 
-                    ? m_dlSystem.getInitScript() + "-create.sql"
-                    : m_dlSystem.getInitScript() + "-upgrade-" + sDBVersion + ".sql";
-
-            if (JRootApp.class.getResource(sScript) == null) {
-                JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, sDBVersion == null
+            String[] sScripts = null;
+            if (sDBVersion == null) {
+                sScripts = new String[2];
+            	sScripts[0] = m_dlSystem.getInitScript() + "-create.sql";
+            	sScripts[1] = m_dlSystem.getInitScript() + "-create-data.sql";
+            } else {
+                sScripts = new String[1];
+            	sScripts[0] = m_dlSystem.getInitScript() + "-upgrade-" + sDBVersion + ".sql";
+            }
+            // Check if scripts exists
+            for (String script : sScripts) {
+                if (JRootApp.class.getResource(script) == null) {
+                    JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, sDBVersion == null
                             ? AppLocal.getIntString("message.databasenotsupported", session.DB.getName()) // Create script does not exists. Database not supported
                             : AppLocal.getIntString("message.noupdatescript"))); // Upgrade script does not exist.
-                session.close();
-                return false;
-            } else {
-                // Create or upgrade script exists.
-                if (JOptionPane.showConfirmDialog(this
-                        , AppLocal.getIntString(sDBVersion == null ? "message.createdatabase" : "message.updatedatabase")
-                        , AppLocal.getIntString("message.title")
-                        , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {  
-
-                    try {
-                        BatchSentence bsentence = new BatchSentenceResource(session, sScript);
+                    session.close();
+                    return false;
+                }
+            }
+            // Create or upgrade script exists.
+            if (JOptionPane.showConfirmDialog(this
+                    , AppLocal.getIntString(sDBVersion == null ? "message.createdatabase" : "message.updatedatabase")
+                    , AppLocal.getIntString("message.title")
+                    , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {  
+                try {
+                    for (String script : sScripts) {
+                        BatchSentence bsentence = new BatchSentenceResource(session, script);
                         bsentence.putParameter("APP_ID", Matcher.quoteReplacement(AppLocal.APP_ID));
                         bsentence.putParameter("APP_NAME", Matcher.quoteReplacement(AppLocal.APP_NAME));
                         bsentence.putParameter("DB_VERSION", Matcher.quoteReplacement(AppLocal.DB_VERSION));
-
                         java.util.List l = bsentence.list();
                         if (l.size() > 0) {
                             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("Database.ScriptWarning"), l.toArray(new Throwable[l.size()])));
                         }
-                   } catch (BasicException e) {
-                        JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, AppLocal.getIntString("Database.ScriptError"), e));
-                        session.close();
-                        return false;
-                    }     
-                } else {
+                    }
+                } catch (BasicException e) {
+                    JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, AppLocal.getIntString("Database.ScriptError"), e));
                     session.close();
                     return false;
-                }
-            }   
+                }     
+            } else {
+                session.close();
+                return false;
+            }
         }
         
         // Load host properties from resources
