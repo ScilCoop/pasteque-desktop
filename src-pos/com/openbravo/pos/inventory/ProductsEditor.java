@@ -113,6 +113,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         m_jTax.addActionListener(new TaxCatManager());
         m_jPriceSellTax.getDocument().addDocumentListener(new PriceTaxManager());
+        m_jPriceBuy.getDocument().addDocumentListener(new PriceBuyManager());
 
         writeValueEOF();
     }
@@ -462,6 +463,10 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         calculateMargin();
     }
     
+    private void updatePricesFromPriceBuy() {
+        calculateMargin();
+    }
+    
     // Update managers, triggers update procedures
 
     private class TaxCatManager implements DocumentListener, ActionListener {
@@ -488,6 +493,18 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
         public void removeUpdate(DocumentEvent e) {
             updatePricesFromPriceSellTax();
+        }
+    }
+    
+    private class PriceBuyManager implements DocumentListener {
+        public void changedUpdate(DocumentEvent e) {
+            updatePricesFromPriceBuy();
+        }
+        public void insertUpdate(DocumentEvent e) {
+            updatePricesFromPriceBuy();
+        }
+        public void removeUpdate(DocumentEvent e) {
+            updatePricesFromPriceBuy();
         }
     }
 
