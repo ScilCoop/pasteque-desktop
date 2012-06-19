@@ -431,12 +431,26 @@ public class JRootApp extends JPanel implements AppView {
 
             JFlowPanel jPeople = new JFlowPanel();
             jPeople.applyComponentOrientation(getComponentOrientation());
-           
+            
             java.util.List people = m_dlSystem.listPeopleVisible();
-                     
+            String[] enabledUsers = m_props.getEnabledUsers();
+            
             for (int i = 0; i < people.size(); i++) {
                  
                 AppUser user = (AppUser) people.get(i);
+                // Check if user is not disabled on this machine
+                if (enabledUsers != null) {
+                    boolean enabled = false;
+                    for (String id : enabledUsers) {
+                        if (id.equals(user.getId())) {
+                            enabled = true;
+                            break;
+                        }
+                    }
+                    if (!enabled) {
+                        continue;
+                    }
+                }
 
                 JButton btn = new JButton(new AppUserAction(user));
                 btn.applyComponentOrientation(getComponentOrientation());

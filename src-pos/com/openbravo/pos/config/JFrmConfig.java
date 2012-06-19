@@ -1,23 +1,31 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.config;
+
+import com.openbravo.data.loader.Session;
+import com.openbravo.pos.forms.AppViewConnection;
+import com.openbravo.pos.forms.BeanFactory;
+import com.openbravo.pos.forms.DataLogicSystem;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -28,12 +36,12 @@ import javax.imageio.ImageIO;
 import javax.swing.UIManager;
 
 /**
- *
- * @author adrianromero
+ * The standalone configuration panel.
  */
 public class JFrmConfig extends javax.swing.JFrame {
     
     private JPanelConfiguration config;
+    private Session session;
     
     /** Creates new form JFrmConfig */
     public JFrmConfig(AppProperties props) {
@@ -48,7 +56,20 @@ public class JFrmConfig extends javax.swing.JFrame {
         
         addWindowListener(new MyFrameListener()); 
         
-        config = new JPanelConfiguration(props);
+        String dlsBean = "com.openbravo.pos.forms.DataLogicSystem";
+        DataLogicSystem dls = null;
+        try {
+            this.session = AppViewConnection.createSession(props);
+            Class bfclass = Class.forName(dlsBean);
+            if (BeanFactory.class.isAssignableFrom(bfclass)) {
+                BeanFactory bf = (BeanFactory) bfclass.newInstance();
+                dls = (DataLogicSystem) bf.getBean();
+                dls.init(this.session);
+            }
+        } catch (Exception e) {
+        }
+        
+        config = new JPanelConfiguration(props, dls);
         
         getContentPane().add(config, BorderLayout.CENTER);
        
@@ -61,6 +82,10 @@ public class JFrmConfig extends javax.swing.JFrame {
     private class MyFrameListener extends WindowAdapter{
         
         public void windowClosing(WindowEvent evt) {
+            if (session != null) {
+                session.close();
+                session = null;
+            }
             if (config.deactivate()) {
                 dispose();
             }
@@ -82,7 +107,7 @@ public class JFrmConfig extends javax.swing.JFrame {
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         setBounds((screenSize.width-731)/2, (screenSize.height-679)/2, 731, 679);
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */

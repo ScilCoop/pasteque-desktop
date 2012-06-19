@@ -76,6 +76,21 @@ public class AppConfig implements AppProperties {
         return prop;
     }
     
+    /** Shortcut to getProperty("users.activated") with parsing.
+     * @returns The list of activated user ids or null if all.
+     */
+    public String[] getEnabledUsers() {
+        String prop = getProperty("users.activated");
+        if (prop.equals("all")) {
+            return null;
+        }
+        String ids[] = prop.split(",");
+        for (String id : ids) {
+            id = id.trim();
+        }
+        return ids;
+    }
+    
     public String getHost() {
         return getProperty("machine.hostname");
     } 
@@ -188,7 +203,9 @@ public class AppConfig implements AppProperties {
         Locale l = Locale.getDefault();
         m_propsconfig.setProperty("user.language", l.getLanguage());
         m_propsconfig.setProperty("user.country", l.getCountry());
-        m_propsconfig.setProperty("user.variant", l.getVariant());     
+        m_propsconfig.setProperty("user.variant", l.getVariant());
+        
+        m_propsconfig.setProperty("users.activated", "all");
         
         m_propsconfig.setProperty("swing.defaultlaf", System.getProperty("swing.defaultlaf", "javax.swing.plaf.metal.MetalLookAndFeel"));
         

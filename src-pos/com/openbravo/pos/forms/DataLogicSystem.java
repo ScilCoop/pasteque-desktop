@@ -2,7 +2,7 @@
 //    Based upon Openbravo POS
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//                       2012 Scil (http://scil.coop)
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
 //    This file is part of POS-Tech.
 //
@@ -23,6 +23,7 @@ package com.openbravo.pos.forms;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
@@ -47,7 +48,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     private SentenceFind m_dbversion;
     private SentenceExec m_dummy;
     
-    protected SentenceList m_peoplevisible;  
+    protected SentenceList m_people;
+    protected SentenceList m_peoplevisible;
     protected SentenceFind m_peoplebycard;  
     protected SerializerRead peopleread;
     
@@ -89,6 +91,11 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         };
 
+        m_people = new StaticSentence(s
+            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE"
+            , null
+            , peopleread);
+        
         m_peoplevisible = new StaticSentence(s
             , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
             , null
@@ -154,6 +161,9 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
     public final void execDummy() throws BasicException {
         m_dummy.exec();
+    }
+    public final List<AppUser> listPeople() throws BasicException {
+        return (List<AppUser>)m_people.list();
     }
     public final List listPeopleVisible() throws BasicException {
         return m_peoplevisible.list();
