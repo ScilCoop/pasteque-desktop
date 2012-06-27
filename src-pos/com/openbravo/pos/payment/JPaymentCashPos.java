@@ -90,11 +90,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         printState();        
     }
     public PaymentInfo executePayment() {
-        if (m_dPaid - m_dTotal >= 0.0) {
-            // pago completo
-            return new PaymentInfoCash(m_dTotal, m_dPaid);
+        if (this.m_dPaid - this.partAmount >= 0.0) {
+            // Full part payment
+            return new PaymentInfoCash(this.partAmount, this.m_dPaid);
         } else {
-            // pago parcial
+            // Partial part amount
             return new PaymentInfoCash(m_dPaid, m_dPaid);
         }        
     }
@@ -111,14 +111,15 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             m_dPaid = value;
         }   
 
-        int iCompare = RoundUtils.compare(m_dPaid, this.m_dTotal);
+        int iCompare = RoundUtils.compare(m_dPaid, this.partAmount);
+        boolean fullPayment = RoundUtils.compare(m_dPaid, this.m_dTotal) >= 0;
         
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         m_jChangeEuros.setText(iCompare > 0 
                 ? Formats.CURRENCY.formatValue(new Double(m_dPaid - this.partAmount))
                 : null); 
         
-        m_notifier.setStatus(m_dPaid > 0.0, iCompare >= 0);
+        m_notifier.setStatus(m_dPaid > 0.0, fullPayment);
     }
     
     private class RecalculateState implements PropertyChangeListener {
