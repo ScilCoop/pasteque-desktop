@@ -337,6 +337,9 @@
         <copy file="${basedir}/configure.bat" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/start.sh" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/configure.sh" todir="${basedir}/build/zip"/>
+        <copy file="${basedir}/pos-tech" todir="${basedir}/build/zip"/>
+        <copy file="${basedir}/pos-tech.desktop" todir="${basedir}/build/zip"/>
+        <copy file="${basedir}/install.sh" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/pos-tech-logo-128.png" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/README" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/logging.properties" todir="${basedir}/build/zip"/>
