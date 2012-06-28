@@ -31,6 +31,7 @@
     submenu = group.addSubmenu("/com/openbravo/images/contents.png", "Menu.Customers", "com.openbravo.pos.forms.MenuCustomers");
         submenu.addTitle("Menu.Customers");
         submenu.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.CustomersManagement", "com.openbravo.pos.customers.CustomersPanel");
+        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.TaxCustCategories", "com.openbravo.pos.inventory.TaxCustCategoriesPanel");
         submenu.addTitle("Menu.Customers.Reports");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.CustomersReport", "/com/openbravo/reports/customers.bs");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.CustomersBReport", "/com/openbravo/reports/customersb.bs");
