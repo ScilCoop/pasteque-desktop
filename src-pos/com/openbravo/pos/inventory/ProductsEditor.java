@@ -366,7 +366,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
             Double dPriceBuy = readCurrency(m_jPriceBuy.getText());
             Double dPriceSell = (Double) pricesell;
-
             if (dPriceBuy == null || dPriceSell == null) {
                 m_jmargin.setText(null);
             } else {
@@ -405,12 +404,28 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             reportlock = true;
 
             Double dPriceBuy = readCurrency(m_jPriceBuy.getText());
-            Double dMargin = readPercent(m_jmargin.getText());
-
-            if (dMargin == null || dPriceBuy == null) {
-                setPriceSell(null);
+            String marginMode = AppConfig.loadedInstance.getProperty("ui.margintype");
+            if (marginMode.equals("rate")) {
+                // Rate mode
+                Double rate = null;
+                try {
+                    rate = (Double) Formats.DOUBLE.parseValue(m_jmargin.getText());
+                } catch (BasicException e) {
+                }
+                if (rate == null || dPriceBuy == null) {
+                    setPriceSell(null);
+                } else {
+                    double sellPrice = dPriceBuy.doubleValue() / rate;
+                    setPriceSell(new Double(sellPrice));
+                }
             } else {
-                setPriceSell(new Double(dPriceBuy.doubleValue() * (1.0 + dMargin.doubleValue())));
+                // Default margin mode
+                Double dMargin = readPercent(m_jmargin.getText());
+                if (dMargin == null || dPriceBuy == null) {
+                    setPriceSell(null);
+                } else {
+                    setPriceSell(new Double(dPriceBuy.doubleValue() * (1.0 + dMargin.doubleValue())));
+                }
             }
 
             reportlock = false;
@@ -464,7 +479,23 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     }
     
     private void updatePricesFromPriceBuy() {
-        calculateMargin();
+        String setMode = AppConfig.loadedInstance.getProperty("prices.setmode");
+        if (setMode.equals("buy")) {
+            Double dPriceBuy = readCurrency(m_jPriceBuy.getText());
+            if (dPriceBuy == null || dPriceBuy == 0.0) {
+                // Don't touch anything if 0, it would break margin
+                return;
+            }
+            // Update sell price, margin is fixed
+            calculatePriceSellFromMargin();
+            calculatePriceSellTax();
+            // Unround sell price from rounded tax price
+            calculatePriceSellFromPST();
+            calculateMargin();
+        } else {
+            // Default mode taxed, update margin and keep sell prices
+            calculateMargin();
+        }
     }
     
     // Update managers, triggers update procedures
