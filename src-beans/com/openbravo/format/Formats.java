@@ -21,6 +21,7 @@ package com.openbravo.format;
 
 import java.text.*;
 import java.util.Date;
+import java.util.Locale;
 import com.openbravo.basic.BasicException;
 
 public abstract class Formats {
@@ -178,6 +179,10 @@ public abstract class Formats {
             return m_doubleformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
         }   
         protected Object parseValueInt(String value) throws ParseException {
+            // Quickuglyfix for locale fr_FR: '.' may be used as ',' with numpad
+            if (Locale.getDefault().equals(Locale.FRANCE)) {
+                value = value.replace(".", ",");
+            }
             return new Double(m_doubleformat.parse(value).doubleValue());
         }
         public int getAlignment() {
@@ -190,6 +195,10 @@ public abstract class Formats {
         }   
         protected Object parseValueInt(String value) throws ParseException {
             try {
+                // Quickuglyfix for locale fr_FR: '.' may be used as ',' with numpad
+                if (Locale.getDefault().equals(Locale.FRANCE)) {
+                    value = value.replace(".", ",");
+                }
                 return new Double(m_percentformat.parse(value).doubleValue());
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
@@ -206,6 +215,10 @@ public abstract class Formats {
         }   
         protected Object parseValueInt(String value) throws ParseException {
             try {
+                // Quickuglyfix for locale fr_FR: '.' may be used as ',' with numpad
+                if (Locale.getDefault().equals(Locale.FRANCE)) {
+                    value = value.replace(".", ",");
+                }
                 return new Double(m_currencyformat.parse(value).doubleValue());
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
