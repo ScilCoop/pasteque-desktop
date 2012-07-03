@@ -663,10 +663,12 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jLabel4.setBounds(10, 110, 150, 15);
         m_jPriceSell.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         m_jPriceSell.setEditable(false);
+        m_jPriceSell.setFocusable(false);
         jPanel1.add(m_jPriceSell);
         m_jPriceSell.setBounds(160, 110, 80, 19);
         m_jmargin.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         m_jmargin.setEditable(false);
+        m_jmargin.setFocusable(false);
         jPanel1.add(m_jmargin);
         m_jmargin.setBounds(250, 110, 80, 19);
 
