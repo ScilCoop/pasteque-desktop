@@ -41,10 +41,10 @@
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Products", "com.openbravo.pos.inventory.ProductsPanel");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Auxiliar", "com.openbravo.pos.inventory.AuxiliarPanel");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Categories", "com.openbravo.pos.inventory.CategoriesPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Attributes", "com.openbravo.pos.inventory.AttributesPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.AttributeValues", "com.openbravo.pos.inventory.AttributeValuesPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.AttributeSets", "com.openbravo.pos.inventory.AttributeSetsPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.AttributeUse", "com.openbravo.pos.inventory.AttributeUsePanel");
+        submenu.addPanel("/com/openbravo/images/colorize.png", "Menu.Attributes", "com.openbravo.pos.inventory.AttributesPanel");
+        submenu.addPanel("/com/openbravo/images/colorize_abc.png", "Menu.AttributeValues", "com.openbravo.pos.inventory.AttributeValuesPanel");
+        submenu.addPanel("/com/openbravo/images/colorize_3.png", "Menu.AttributeSets", "com.openbravo.pos.inventory.AttributeSetsPanel");
+        submenu.addPanel("/com/openbravo/images/colorize_star.png", "Menu.AttributeUse", "com.openbravo.pos.inventory.AttributeUsePanel");
         submenu.addTitle("Menu.CatalogManagement.Reports");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.Products", "/com/openbravo/reports/products.bs");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.ProductLabels", "/com/openbravo/reports/productlabels.bs");
