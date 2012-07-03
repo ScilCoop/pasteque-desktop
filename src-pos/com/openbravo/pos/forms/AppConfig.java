@@ -165,6 +165,7 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.showupdownbuttons", "1");
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
+        DEFAULT_VALUES.put("prices.roundto", "0");
     }
     
     /** Load "default file", which values are expanded or overriden by the

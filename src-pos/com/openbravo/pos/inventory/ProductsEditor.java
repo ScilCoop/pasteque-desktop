@@ -679,6 +679,11 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jPriceBuy.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jPanel1.add(m_jPriceBuy);
         m_jPriceBuy.setBounds(160, 140, 80, 19);
+        m_jPriceBuy.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                priceBuyKeyTyped(evt);
+            }
+        });
 
         // Barcode
         jLabel6.setText(AppLocal.getIntString("label.prodbarcode")); // NOI18N
@@ -776,6 +781,29 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
     }//GEN-LAST:event_m_jInCatalogActionPerformed
 
+
+    private void priceBuyKeyTyped(java.awt.event.KeyEvent evt) {
+        if (evt.getKeyChar() == '\n') {
+            // Enter, round taxed price to configured one if set
+            String strRound = AppConfig.loadedInstance.getProperty("prices.roundto");
+            if (!strRound.equals("0")) {
+                float round = Float.valueOf(strRound);
+                Double priceSellTax = readCurrency(m_jPriceSellTax.getText());
+                if (priceSellTax != null) {
+                    double min = priceSellTax - priceSellTax % round;
+                    double max = min + round;
+                    double newPrice = 0;
+                    if (priceSellTax - min < max - priceSellTax) {
+                        newPrice = min;
+                    } else {
+                        newPrice = max;
+                    }
+                    m_jPriceSellTax.setText(Formats.CURRENCY.formatValue(newPrice));
+                    updatePricesFromPriceSellTax();
+                }
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
