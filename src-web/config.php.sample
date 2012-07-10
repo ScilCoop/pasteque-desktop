@@ -1,0 +1,12 @@
+<?php
+
+class Config {
+    $db_type = "mysql";
+    $host = "localhost";
+    $port = 3306;
+    $database = "pos-tech";
+    $user = "user";
+    $password = "password";
+}
+
+?>
