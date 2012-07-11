@@ -1666,13 +1666,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             if (discountRate > 0.005) {
 
                 String sdiscount = Formats.PERCENT.formatValue(discountRate);
-                m_oTicket.insertLine(index + 1,
-                    new TicketLineInfo(
+                TicketLineInfo newLine = new TicketLineInfo(
                         AppLocal.getIntString("label.discount") + " " + sdiscount,
                         line.getProductTaxCategoryID(),
                         line.getMultiply(),
                         -line.getPrice () * discountRate,
-                        line.getTaxInfo()));
+                        line.getTaxInfo());
+                newLine.setDiscount(true);
+                m_oTicket.insertLine(index + 1, newLine);                    
                 this.refreshTicket();
                 this.setSelectedIndex(index + 1);
             } else {

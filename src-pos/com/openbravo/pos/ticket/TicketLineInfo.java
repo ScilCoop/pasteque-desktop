@@ -183,6 +183,15 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public String getProductID() {
         return productid;
     }
+    
+    public boolean isDiscount() {
+        String strDisc = attributes.getProperty("discount");
+        return strDisc != null && strDisc.equals("true");
+    }
+    
+    public void setDiscount(boolean discount) {
+        attributes.setProperty("discount", discount ? "true" : "false");
+    }
 
     public String getProductName() {
         return attributes.getProperty("product.name");
