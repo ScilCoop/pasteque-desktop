@@ -1,21 +1,23 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.ticket;
 
@@ -84,6 +86,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
             pid = product.getID();
             attributes.setProperty("product.name", product.getName());
             attributes.setProperty("product.com", product.isCom() ? "true" : "false");
+            attributes.setProperty("product.scale", product.isScale() ? "true" : "false");
             if (product.getAttributeSetID() != null) {
                 attributes.setProperty("product.attsetid", product.getAttributeSetID());
             }
@@ -211,6 +214,10 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public boolean isProductCom() {
         return "true".equals(attributes.getProperty("product.com"));
+    }
+
+    public boolean isProductScale() {
+        return "true".equals(attributes.getProperty("product.scale"));
     }
 
     public String getProductTaxCategoryID() {
