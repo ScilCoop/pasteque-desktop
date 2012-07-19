@@ -42,6 +42,45 @@ class AttributeDAO {
         }
         return $attrs;
     }
+
+    function createAttribute($attribute) {
+        $attr = array();
+        $attr['NAME'] = $attribute->label;
+        $id = md5(time() . rand());
+        $attr['ID'] = $id;
+        return $this->bidorm->addOne($attr, "ATTRIBUTE");
+    }
+
+    function deleteAttribute($id) {
+        return $this->bidorm->delete("ATTRIBUTE", "ID", $id);
+    }
+
+    function updateAttribute($attribute) {
+        $attr = array();
+        $attr['ID'] = $attribute->id;
+        $attr['NAME'] = $attribute->label;
+        return $this->bidorm->updateOne($attr, "ATTRIBUTE", "ID");
+    }
+
+    function createValue($value, $attr_id) {
+        $val = array();
+        $val['VALUE'] = $value->label;
+        $val['ATTRIBUTE_ID'] = $attr_id;
+        $id = md5(time() . rand());
+        $val['ID'] = $id;
+        return $this->bidorm->addOne($val, "ATTRIBUTEVALUE");
+    }
+
+    function deleteValue($id) {
+        return $this->bidorm->delete("ATTRIBUTEVALUE", "ID", $id);
+    }
+
+    function updateValue($value) {
+        $val = array();
+        $val['ID'] = $value->id;
+        $val['VALUE'] = $value->label;
+        return $this->bidorm->updateOne($val, "ATTRIBUTEVALUE", "ID");
+    }
 }
 
 ?>

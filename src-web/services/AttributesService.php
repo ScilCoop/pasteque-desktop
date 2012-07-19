@@ -29,6 +29,41 @@ class AttributesService {
         return $attrs;
     }
 
+    static function createAttribute($attr) {
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->createAttribute($attr);
+    }
+
+    static function deleteAttribute($id) {
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->deleteAttribute($id);
+    }
+
+    static function updateAttribute($attr) {
+        if ($attr->id == null) {
+            return false;
+        }
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->updateAttribute($attr);
+    }
+
+    static function createValue($value, $attr_id) {
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->createValue($value, $attr_id);
+    }
+
+    static function deleteValue($id) {
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->deleteValue($id);
+    }
+
+    static function updateValue($val) {
+        if ($val->id == null) {
+            return false;
+        }
+        $attrsDAO = DAOFactory::getAttributeDAO();
+        return $attrsDAO->updateValue($val);
+    }
 }
 
 ?>

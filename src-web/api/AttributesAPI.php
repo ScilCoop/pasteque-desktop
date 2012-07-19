@@ -27,6 +27,51 @@ switch ($action) {
 case 'getAll':
     $ret = AttributesService::getAll();
     break;
+case 'createVal':
+    if (!isset($_GET['label']) || !isset($_GET['attr_id'])) {
+        $ret = false;
+        break;
+    }
+    $val = new AttributeValue($_GET['label']);
+    $ret = AttributesService::createValue($val, $_GET['attr_id']);
+    break;
+case 'deleteVal':
+    if (!isset($_GET['id'])) {
+        $ret = false;
+        break;
+    }
+    $ret = AttributesService::deleteValue($_GET['id']);
+    break;
+case 'updateVal':
+    if (!isset($_GET['id']) || !isset($_GET['label'])) {
+        $ret = false;
+        break;
+    }
+    $val = AttributeValue::__build($_GET['id'], $_GET['label']);
+    $ret = AttributesService::updateValue($val);
+    break;
+case 'createAttr':
+    if (!isset($_GET['label'])) {
+        $ret = false;
+    }
+    $attr = new Attribute($_GET['label']);
+    $ret = AttributesService::createAttribute($attr);
+    break;
+case 'deleteAttr':
+    if (!isset($_GET['id'])) {
+        $ret = false;
+        break;
+    }
+    $ret = AttributesService::deleteAttribute($_GET['id']);
+    break;
+case 'updateAttr':
+    if (!isset($_GET['id']) || !isset($_GET['label'])) {
+        $ret = false;
+        break;
+    }
+    $attr = Attribute::__build($_GET['id'], $_GET['label']);
+    $ret = AttributesService::updateAttribute($attr);
+    break;
 }
 
 echo(json_encode($ret));
