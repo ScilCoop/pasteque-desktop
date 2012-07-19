@@ -24,6 +24,7 @@ require_once(dirname(dirname(__FILE__)) . "/config.php");
 
 require_once(dirname(__FILE__) . "/TaxCatDAO.php");
 require_once(dirname(__FILE__) . "/TaxDAO.php");
+require_once(dirname(__FILE__) . "/AttributeDAO.php");
 
 class DAOFactory {
 
@@ -51,6 +52,10 @@ class DAOFactory {
 
     static function getTaxDAO() {
         return new TaxDAO(DAOFactory::bidorm());
+    }
+
+    static function getAttributeDAO() {
+        return new AttributeDAO(DAOFactory::bidorm());
     }
 }
 
