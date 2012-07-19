@@ -26,6 +26,14 @@ $ret = null;
 switch ($action) {
 case 'getAll':
     $ret = TaxesService::getAll();
+    break;
+case 'updateCat':
+    if (!isset($_GET['id']) || !isset($_GET['label'])) {
+        $ret = false;
+    }
+    $cat = TaxCat::__build($_GET['id'], $_GET['label']);
+    $ret = TaxesService::updateCat($cat);
+    break;
 }
 
 echo(json_encode($ret));

@@ -34,6 +34,13 @@ class TaxCatDAO {
         }
         return $taxcats;
     }
+
+    function updateCat($cat) {
+        $dbcat = array();
+        $dbcat['ID'] = $cat->getId();
+        $dbcat['NAME'] = $cat->label;
+        return $this->bidorm->updateOne($dbcat, "TAXCATEGORIES", "ID");
+    }
 }
 
 ?>
