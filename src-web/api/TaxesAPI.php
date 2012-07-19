@@ -30,9 +30,18 @@ case 'getAll':
 case 'updateCat':
     if (!isset($_GET['id']) || !isset($_GET['label'])) {
         $ret = false;
+        break;
     }
     $cat = TaxCat::__build($_GET['id'], $_GET['label']);
     $ret = TaxesService::updateCat($cat);
+    break;
+case 'createCat':
+    if (!isset($_GET['label'])) {
+        $ret = false;
+        break;
+    }
+    $cat = new TaxCat($_GET['label']);
+    $ret = TaxesService::createCat($cat);
     break;
 }
 

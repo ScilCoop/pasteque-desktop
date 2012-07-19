@@ -42,6 +42,11 @@ class TaxesService {
         $taxcatDAO = DAOFactory::getTaxCatDAO();
         return $taxcatDAO->updateCat($cat);
     }
+
+    static function createCat($cat) {
+        $taxcatDAO = DAOFactory::getTaxCatDAO();
+        return $taxcatDAO->createCat($cat);
+    }
 }
 
 ?>

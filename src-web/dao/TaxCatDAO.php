@@ -41,6 +41,14 @@ class TaxCatDAO {
         $dbcat['NAME'] = $cat->label;
         return $this->bidorm->updateOne($dbcat, "TAXCATEGORIES", "ID");
     }
+
+    function createCat($cat) {
+        $dbcat = array();
+        $dbcat['NAME'] = $cat->label;
+        $id = md5(time() . rand());
+        $dbcat['ID'] = $id;
+        return $this->bidorm->addOne($dbcat, "TAXCATEGORIES");
+    }
 }
 
 ?>
