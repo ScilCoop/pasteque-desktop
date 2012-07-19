@@ -236,11 +236,11 @@ class BidORM {
         }
     }
 
-    function deleteOne($table, $idField, $id) {
+    function delete($table, $idField, $id) {
         $this->connector->open();
         $idField = $this->escape($idField);
         $id = $this->escape($id);
-        $request = sprintf("DELETE FROM %s WHERE %s = %s",
+        $request = sprintf("DELETE FROM %s WHERE %s = \"%s\"",
                            $table,
                            $idField,
                            $id);

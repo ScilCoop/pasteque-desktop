@@ -43,6 +43,13 @@ case 'createCat':
     $cat = new TaxCat($_GET['label']);
     $ret = TaxesService::createCat($cat);
     break;
+case 'deleteCat':
+    if (!isset($_GET['id'])) {
+        $ret = false;
+        break;
+    }
+    $id = $_GET['id'];
+    $ret = TaxesService::deleteCat($id);
 }
 
 echo(json_encode($ret));

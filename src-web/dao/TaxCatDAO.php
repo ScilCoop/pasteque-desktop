@@ -49,6 +49,11 @@ class TaxCatDAO {
         $dbcat['ID'] = $id;
         return $this->bidorm->addOne($dbcat, "TAXCATEGORIES");
     }
+
+    function deleteCat($id) {
+        $this->bidorm->delete("TAXES", "CATEGORY", $id);
+        return $this->bidorm->delete("TAXCATEGORIES", "ID", $id);
+    }
 }
 
 ?>
