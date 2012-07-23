@@ -20,17 +20,24 @@
 
 require_once(dirname(dirname(__FILE__)) . "/models/Tax.php");
 require_once(dirname(dirname(__FILE__)) . "/models/TaxCat.php");
-require_once(dirname(dirname(__FILE__)) . "/dao/DAOFactory.php");
+require_once(dirname(dirname(__FILE__)) . "/PDOBuilder.php");
 
 class TaxesService {
 
     static function getAll() {
-        $taxcatDAO = DAOFactory::getTaxCatDAO();
-        $taxDAO = DAOFactory::getTaxDAO();
-        $taxcats = $taxcatDAO->getTaxCats();
-        foreach ($taxcats as $taxcat) {
-            $tax = $taxDAO->getTaxesFromCat($taxcat->id);
-            $taxcat->addTax($tax);
+        $taxcats = array();
+        $pdo = PDOBuilder::getPDO();
+        $sql = "SELECT * FROM TAXCATEGORIES";
+        foreach ($pdo->query($sql) as $db_taxcat) {
+            $taxcat = TaxCat::__build($db_taxcat['ID'], $db_taxcat['NAME']);
+            $sqltax = 'SELECT * FROM TAXES WHERE CATEGORY = "' . $db_taxcat['ID'] . '"';
+            foreach ($pdo->query($sqltax) as $db_tax) {
+                $tax = Tax::__build($db_tax['ID'], $db_tax['CATEGORY'],
+                                    $db_tax['NAME'], $db_tax['VALIDFROM'],
+                                    $db_tax['RATE']);
+                $taxcat->addTax($tax);
+            }
+            $taxcats[] = $taxcat;
         }
         return $taxcats;
     }
@@ -39,18 +46,24 @@ class TaxesService {
         if ($cat->getId() == null) {
             return false;
         }
-        $taxcatDAO = DAOFactory::getTaxCatDAO();
-        return $taxcatDAO->updateCat($cat);
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare('UPDATE TAXCATEGORIES SET NAME = :name '
+                              . 'WHERE ID = :id');
+        return $stmt->execute(array(':name' => $cat->label, ':id' => $cat->id));
     }
 
     static function createCat($cat) {
-        $taxcatDAO = DAOFactory::getTaxCatDAO();
-        return $taxcatDAO->createCat($cat);
+        $pdo = PDOBuilder::getPDO();
+        $id = md5(time() . rand());
+        $stmt = $pdo->prepare('INSERT INTO TAXCATEGORIES (ID, NAME) VALUES '
+                              . '(:id, :name)');
+        return $stmt->execute(array(':id' => $id, ':name' => $cat->label));
     }
 
     static function deleteCat($id) {
-        $taxcatDAO = DAOFactory::getTaxCatDAO();
-        return $taxcatDAO->deleteCat($id);
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare('DELETE FROM TAXCATEGORIES WHERE ID = :id');
+        return $stmt->execute(array(':id' => $id));
     }
 }
 
