@@ -29,7 +29,7 @@
     <!-- program name -->
     <property name="name" value="pos-tech"/>
     <!-- project version -->
-    <property name="version" value="1.1.0_beta1"/>
+    <property name="version" value="1.1.0_beta2"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
