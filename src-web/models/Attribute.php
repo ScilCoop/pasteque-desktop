@@ -35,7 +35,7 @@ class Attribute {
         $this->values = array();
     }
 
-    function add_value($value) {
+    function addValue($value) {
         $this->values[] = $value;
     }
 }
