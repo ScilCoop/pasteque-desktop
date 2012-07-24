@@ -65,6 +65,42 @@ class TaxesService {
         $stmt = $pdo->prepare('DELETE FROM TAXCATEGORIES WHERE ID = :id');
         return $stmt->execute(array(':id' => $id));
     }
+
+    static function updateTax($tax) {
+        if ($tax->id == null) {
+            return false;
+        }
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare('UPDATE TAXES SET NAME = :name, VALIDFROM = :valid, '
+                              . 'CATEGORY = :cat, RATE = :rate '
+                              . 'WHERE ID = :id');
+        $date = strftime("%Y-%m-%d %H:%M:%S", $tax->start_date);
+        return $stmt->execute(array(':name' => $tax->label,
+                                    ':valid' => $date,
+                                    ':cat' => $tax->tax_cat_id,
+                                    ':rate' => $tax->rate,
+                                    ':id' => $tax->id));
+    }
+
+    static function createTax($tax) {
+        $pdo = PDOBuilder::getPDO();
+        $id = md5(time() . rand());
+        $stmt = $pdo->prepare('INSERT INTO TAXES (ID, NAME, VALIDFROM, '
+                              . 'CATEGORY, RATE) VALUES '
+                              . '(:id, :name, :valid, :cat, :rate)');
+        $date = strftime("%Y-%m-%d %H:%M:%S", $tax->start_date);
+        return $stmt->execute(array(':name' => $tax->label,
+                                    ':valid' => $date,
+                                    ':cat' => $tax->tax_cat_id,
+                                    ':rate' => $tax->rate,
+                                    ':id' => $id));
+    }
+
+    static function deleteTax($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("DELETE FROM TAXES WHERE ID = :id");
+        return $stmt->execute(array(':id' => $id));
+    }
 }
 
 ?>

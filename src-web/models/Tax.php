@@ -35,7 +35,7 @@ class Tax {
     function __construct($tax_cat_id, $label, $start_date, $rate) {
         $this->tax_cat_id = $tax_cat_id;
         $this->label = $label;
-        if (is_string($start_date)) {
+        if (!preg_match('%^\\d*$%', $start_date) && !is_int($start_date)) {
             $start_date = strtotime($start_date);
         }
         $this->start_date = $start_date;

@@ -50,6 +50,41 @@ case 'deleteCat':
     }
     $id = $_GET['id'];
     $ret = TaxesService::deleteCat($id);
+    break;
+case 'updateTax':
+    if (!isset($_GET['id']) || !isset($_GET['cat']) || !isset($_GET['rate'])
+        || !isset($_GET['label']) || !isset($_GET['start_date'])) {
+        $ret = false;
+        break;
+    }
+    $id = $_GET['id'];
+    $cat = $_GET['cat'];
+    $validFrom = $_GET['start_date'];
+    $rate = $_GET['rate'];
+    $name = $_GET['label'];
+    $tax = Tax::__build($id, $cat, $name, $validFrom, $rate);
+    $ret = TaxesService::updateTax($tax);
+    break;
+case 'createTax':
+    if (!isset($_GET['cat']) || !isset($_GET['rate'])
+        || !isset($_GET['label']) || !isset($_GET['start_date'])) {
+        $ret = false;
+        break;
+    }
+    $cat = $_GET['cat'];
+    $validFrom = $_GET['start_date'];
+    $rate = $_GET['rate'];
+    $name = $_GET['label'];
+    $tax = new Tax($cat, $name, $validFrom, $rate);
+    $ret = TaxesService::createTax($tax);
+    break;
+case 'deleteTax':
+    if (!isset($_GET['id'])) {
+        $ret = false;
+        break;
+    }
+    $ret = TaxesService::deleteTax($_GET['id']);
+    break;
 }
 
 echo(json_encode($ret));
