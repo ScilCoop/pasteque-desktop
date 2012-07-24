@@ -24,6 +24,13 @@ $action = $_GET['action'];
 $ret = null;
 
 switch ($action) {
+case 'get':
+    if (!isset($_GET['id'])) {
+        $ret = false;
+        break;
+    }
+    $ret = TaxesService::get($_GET['id']);
+    break;
 case 'getAll':
     $ret = TaxesService::getAll();
     break;

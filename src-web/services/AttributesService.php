@@ -23,22 +23,38 @@ require_once(dirname(dirname(__FILE__)) . "/PDOBuilder.php");
 
 class AttributesService {
 
+    private static function buildDBAttr($db_attr, $pdo) {
+        $attr = Attribute::__build($db_attr['ID'], $db_attr['NAME']);
+        $valstmt = $pdo->prepare("SELECT * FROM ATTRIBUTEVALUE WHERE "
+                                 . "ATTRIBUTE_ID = :id");
+        $valstmt->execute(array(':id' => $db_attr['ID']));
+        while ($db_val = $valstmt->fetch()) {
+            $val = AttributeValue::__build($db_val['ID'], $db_val['VALUE']);
+            $attr->addValue($val);
+        }
+        return $attr;
+    }
+
     static function getAll() {
         $pdo = PDOBuilder::getPDO();
         $attrs = array();
         $sql = "SELECT * FROM ATTRIBUTE";
         foreach ($pdo->query($sql) as $db_attr) {
-            $attr = Attribute::__build($db_attr['ID'], $db_attr['NAME']);
-            $valstmt = $pdo->prepare("SELECT * FROM ATTRIBUTEVALUE WHERE "
-                                     . "ATTRIBUTE_ID = :id");
-            $valstmt->execute(array(':id' => $db_attr['ID']));
-            while ($db_val = $valstmt->fetch()) {
-                $val = AttributeValue::__build($db_val['ID'], $db_val['VALUE']);
-                $attr->addValue($val);
-            }
+            $attr = AttributesService::buildDBAttr($db_attr, $pdo);
             $attrs[] = $attr;
         }
         return $attrs;
+    }
+
+    static function get($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("SELECT * FROM ATTRIBUTE WHERE ID = :id");
+        if ($stmt->execute(array(':id' => $id)) !== false) {
+            if ($row = $stmt->fetch()) {
+                return AttributesService::buildDBAttr($row, $pdo);
+            }
+        }
+        return null;        
     }
 
     static function createAttribute($attr) {

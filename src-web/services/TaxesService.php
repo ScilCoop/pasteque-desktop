@@ -24,22 +24,38 @@ require_once(dirname(dirname(__FILE__)) . "/PDOBuilder.php");
 
 class TaxesService {
 
+    private static function buildDBTaxCat($db_taxcat, $pdo) {
+        $taxcat = TaxCat::__build($db_taxcat['ID'], $db_taxcat['NAME']);
+        $sqltax = 'SELECT * FROM TAXES WHERE CATEGORY = "' . $db_taxcat['ID'] . '"';
+        foreach ($pdo->query($sqltax) as $db_tax) {
+            $tax = Tax::__build($db_tax['ID'], $db_tax['CATEGORY'],
+                                $db_tax['NAME'], $db_tax['VALIDFROM'],
+                                $db_tax['RATE']);
+            $taxcat->addTax($tax);
+        }
+        return $taxcat;
+    }
+
     static function getAll() {
         $taxcats = array();
         $pdo = PDOBuilder::getPDO();
         $sql = "SELECT * FROM TAXCATEGORIES";
         foreach ($pdo->query($sql) as $db_taxcat) {
-            $taxcat = TaxCat::__build($db_taxcat['ID'], $db_taxcat['NAME']);
-            $sqltax = 'SELECT * FROM TAXES WHERE CATEGORY = "' . $db_taxcat['ID'] . '"';
-            foreach ($pdo->query($sqltax) as $db_tax) {
-                $tax = Tax::__build($db_tax['ID'], $db_tax['CATEGORY'],
-                                    $db_tax['NAME'], $db_tax['VALIDFROM'],
-                                    $db_tax['RATE']);
-                $taxcat->addTax($tax);
-            }
+            $taxcat = TaxesService::buildDBTaxCat($db_taxcat, $pdo);
             $taxcats[] = $taxcat;
         }
         return $taxcats;
+    }
+
+    static function get($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("SELECT * FROM TAXCATEGORIES WHERE ID = :id");
+        if ($stmt->execute(array(':id' => $id))) {
+            if ($row = $stmt->fetch()) {
+                return TaxesService::buildDBTaxCat($row, $pdo);
+            }
+        }
+        return null;
     }
 
     static function updateCat($cat) {

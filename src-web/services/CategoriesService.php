@@ -23,16 +23,32 @@ require_once(dirname(dirname(__FILE__)) . "/PDOBuilder.php");
 
 class CategoriesService {
 
+    private static function buildDBCat($db_cat) {
+        return Category::__build($db_cat['ID'], $db_cat['PARENTID'],
+                                 $db_cat['NAME']);
+    }
+
     static function getAll() {
         $cats = array();
         $pdo = PDOBuilder::getPDO();
         $sql = "SELECT * FROM CATEGORIES";
         foreach ($pdo->query($sql) as $db_cat) {
-            $cat = Category::__build($db_cat['ID'], $db_cat['PARENTID'],
-                                     $db_cat['NAME']);
+            $cat = CategoriesService::buildDBCat($db_cat);
             $cats[] = $cat;
         }
         return $cats;
+    }
+
+    static function get($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("SELECT * FROM CATEGORIES WHERE ID = :id");
+        if ($stmt->execute(array(':id' => $id))) {
+            if ($row = $stmt->fetch()) {
+                $cat = CategoriesService::buildDBCat($row);
+                return $cat;
+            }
+        }
+        return null;
     }
 
     static function updateCat($cat) {
