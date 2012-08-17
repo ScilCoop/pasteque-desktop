@@ -43,8 +43,8 @@ class ProductLight {
         $this->reference = $ref;
         $this->label = $label;
         $this->price_sell = $price_sell;
-        $visible ? $this->visible = true : $this->visible = false; // bool conversion
-        $scaled ? $this->scaled = true : $this->scaled = false;
+        $this->visible = $visible;
+        $this->scaled = $scaled;
         $this->barcode = $barcode;
         $this->price_buy = $price_buy;
     }

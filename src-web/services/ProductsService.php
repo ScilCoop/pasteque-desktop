@@ -26,33 +26,41 @@ require_once(dirname(dirname(__FILE__)) . "/PDOBuilder.php");
 
 class ProductsService {
 
-    private static function buildDBLightPrd($db_prd) {
+    private static function buildDBLightPrd($db_prd, $pdo) {
+        $stmt = $pdo->prepare("SELECT * FROM PRODUCTS_CAT WHERE PRODUCT = :id");
+        $stmt->execute(array(':id' => $db_prd['ID']));
+        $visible = ($stmt->fetch() !== false);
         return ProductLight::__build($db_prd['ID'], $db_prd['REFERENCE'],
                                      $db_prd['NAME'], $db_prd['PRICESELL'],
-                                     $db_prd['ISCOM'], $db_prd['ISSCALE'],
+                                     $visible,
+                                     ord($db_prd['ISSCALE']) == 1,
                                      $db_prd['CODE'], $db_prd['PRICEBUY']);
     }
 
-    private static function buildDBPrd($db_prd) {
+    private static function buildDBPrd($db_prd, $pdo) {
         $cat = CategoriesService::get($db_prd['CATEGORY']);
         $tax_cat = TaxesService::get($db_prd['TAXCAT']);
         $attr = AttributesService::get($db_prd['ATTRIBUTES']);
+        $stmt = $pdo->prepare("SELECT * FROM PRODUCTS_CAT WHERE PRODUCT = :id");
+        $stmt->execute(array(':id' => $db_prd['ID']));
+        $visible = ($stmt->fetch() !== false);
         return Product::__build($db_prd['ID'], $db_prd['REFERENCE'],
                                 $db_prd['NAME'], $db_prd['PRICESELL'],
-                                $cat, $tax_cat, $db_prd['ISCOM'],
-                                $db_prd['ISSCALE'], $db_prd['PRICEBUY'],
-                                $attr, $db_prd['CODE']);
+                                $cat, $tax_cat, $visible,
+                                ord($db_prd['ISSCALE']) == 1,
+                                $db_prd['PRICEBUY'], $attr, $db_prd['CODE']);
     }
 
     static function getAll($full = false) {
         $prds = array();
         $pdo = PDOBuilder::getPDO();
-        $sql = "SELECT * FROM PRODUCTS";
-        foreach ($pdo->query($sql) as $db_prd) {
+        $stmt = $pdo->prepare("SELECT * FROM PRODUCTS");
+        $stmt->execute();
+        while ($db_prd = $stmt->fetch()) {
             if ($full) {
-                $prd = ProductsService::buildDBPrd($db_prd);
+                $prd = ProductsService::buildDBPrd($db_prd, $pdo);
             } else {
-                $prd = ProductsService::buildDBLightPrd($db_prd);
+                $prd = ProductsService::buildDBLightPrd($db_prd, $pdo);
             }
             $prds[] = $prd;
         }
@@ -64,7 +72,7 @@ class ProductsService {
         $stmt = $pdo->prepare("SELECT * FROM PRODUCTS WHERE ID = :id");
         if ($stmt->execute(array(':id' => $id))) {
             if ($row = $stmt->fetch()) {
-                $prd = ProductsService::buildDBPrd($row);
+                $prd = ProductsService::buildDBPrd($row, $pdo);
                 return $prd;
             }
         }
