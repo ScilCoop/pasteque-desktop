@@ -28,12 +28,17 @@ class TaxesService {
         $taxcat = TaxCat::__build($db_taxcat['ID'], $db_taxcat['NAME']);
         $sqltax = 'SELECT * FROM TAXES WHERE CATEGORY = "' . $db_taxcat['ID'] . '"';
         foreach ($pdo->query($sqltax) as $db_tax) {
-            $tax = Tax::__build($db_tax['ID'], $db_tax['CATEGORY'],
-                                $db_tax['NAME'], $db_tax['VALIDFROM'],
-                                $db_tax['RATE']);
+            $tax = TaxesService::buildDBTax($db_tax);
             $taxcat->addTax($tax);
         }
         return $taxcat;
+    }
+
+    private static function buildDBTax($db_tax) {
+        $tax = Tax::__build($db_tax['ID'], $db_tax['CATEGORY'],
+                            $db_tax['NAME'], $db_tax['VALIDFROM'],
+                            $db_tax['RATE']);
+        return $tax;
     }
 
     static function getAll() {
@@ -80,6 +85,17 @@ class TaxesService {
         $pdo = PDOBuilder::getPDO();
         $stmt = $pdo->prepare('DELETE FROM TAXCATEGORIES WHERE ID = :id');
         return $stmt->execute(array(':id' => $id));
+    }
+
+    static function getTax($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("SELECT * FROM TAXES WHERE ID = :id");
+        if ($stmt->execute(array(':id' => $id))) {
+            if ($row = $stmt->fetch()) {
+                return TaxesService::buildDBTax($row, $pdo);
+            }
+        }
+        return null;
     }
 
     static function updateTax($tax) {
