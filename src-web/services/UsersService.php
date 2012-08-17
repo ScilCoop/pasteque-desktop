@@ -25,7 +25,7 @@ class UsersService {
 
     private static function buildDBUser($db_user, $pdo) {
         $stmt = $pdo->prepare("SELECT PERMISSIONS FROM ROLES WHERE ID = :id");
-        if ($stmt->execute(array(':id' => $db_user['ID']))) {
+        if ($stmt->execute(array(':id' => $db_user['ROLE']))) {
             if ($row = $stmt->fetch()) {
                 $permissions = $row['PERMISSIONS'];
             }
@@ -49,7 +49,7 @@ class UsersService {
 
     static function get($id) {
         $pdo = PDOBuilder::getPDO();
-        $stmt = $pdo->prepare("SELECT * FROM USERS WHERE ID = :id");
+        $stmt = $pdo->prepare("SELECT * FROM PEOPLE WHERE ID = :id");
         if ($stmt->execute(array(':id' => $id))) {
             if ($row = $stmt->fetch()) {
                 return UsersService::buildDBUser($row, $pdo);

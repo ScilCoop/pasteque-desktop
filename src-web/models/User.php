@@ -27,7 +27,7 @@ class User {
 
     static function __build($id, $name, $password, $permissions) {
         $user = new User($name, $password, $permissions);
-        $prd->id = $id;
+        $user->id = $id;
         return $user;
     }
 
