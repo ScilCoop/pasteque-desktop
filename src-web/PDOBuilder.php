@@ -10,7 +10,8 @@ class PDOBuilder {
             $dsn = "mysql:dbname=" . Config::$database . ";host="
                    . Config::$host . ";port=" . Config::$port;
             try {
-                return new PDO($dsn, Config::$user, Config::$password);
+                return new PDO($dsn, Config::$user, Config::$password,
+                               array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES \'UTF8\''));
             } catch (PDOException $e) {
                 die("Connexion error " . $e);
             }
