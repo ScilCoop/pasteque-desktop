@@ -40,6 +40,14 @@ class Cash {
         $this->openDate = $openDate;
         $this->closeDate = $closeDate;
     }
+
+    function isClosed() {
+        return $this->closeDate != null;
+    }
+
+    function isOpened() {
+        return $this->openDate != null;
+    }
 }
 
 ?>

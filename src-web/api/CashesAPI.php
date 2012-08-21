@@ -26,10 +26,42 @@ $ret = null;
 switch ($action) {
 case 'get':
     if (!isset($_GET['host'])) {
-       $ret = false;
-       break;
+        $ret = false;
+        break;
     }
     $ret = CashesService::getHost($_GET['host']);
+    if ($ret == null || $ret->isClosed()) {
+        // Create a new one
+        if (CashesService::add($_GET['host'])) {
+            $ret = CashesService::getHost($_GET['host']);
+        }
+    }
+    break;
+case 'update':
+    $json = json_decode($_POST['cash']);
+    $open = null;
+    if (property_exists($json, 'openDate')) {
+        $open = $json->openDate;
+    }
+    $close = null;
+    if (property_exists($json, 'closeDate')) {
+        $close = $json->closeDate;
+    }
+    $host = $json->host;
+    $cash = Cash::__build($json->id, $host, -1, $open, $close);
+    $ret = array();
+    $ret['result'] = CashesService::update($cash);
+    $lastCash = CashesService::getHost($host);
+    if ($lastCash != null && $lastCash->isClosed()) {
+        if (CashesService::add($host)) {
+            $newCash = CashesService::getHost($host);
+        } else {
+            $newCash = null;
+        }
+        $ret['cash'] = $newCash;
+    } else {
+        $ret['cash'] = $lastCash;
+    }
     break;
 }
 

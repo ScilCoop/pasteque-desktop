@@ -33,3 +33,7 @@ function stdtimefstr($date) {
         return null;
     }
 }
+
+function stdstrftime($time) {
+    return strftime("%Y-%m-%d %H:%M:%S", $time);
+}
