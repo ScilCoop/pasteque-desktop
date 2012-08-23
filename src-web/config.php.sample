@@ -1,6 +1,6 @@
 <?php
 
-class Config {
+class Config extends PDOBuilder {
     static $db_type = "mysql";
     static $host = "localhost";
     static $port = 3306;
