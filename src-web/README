@@ -1,0 +1,25 @@
+==== POS-Tech Web ====
+
+This part is a web extension of the base POS-Tech. It must be deployed along it
+but stays independant.
+
+== Installation and configuration ==
+
+-- Web server configuration --
+
+Configure our web server to point to the htdocs and api directories.
+
+The first one is the web back office, the second one is an http remote API
+required for optional clients like the Android client.
+
+-- Site configuration
+
+Copy config.php.sample to config.php and set the values according to your
+POS-Tech configuration.
+
+== Licencing ==
+
+POS-Tech web is licenced under GNU General Public Licence version 3 or (at your
+option) any later version.
+
+See licencing/gpl-3.0.txt for the whole licence text.
