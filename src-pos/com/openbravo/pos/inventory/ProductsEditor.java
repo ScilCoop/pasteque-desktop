@@ -500,16 +500,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     
     // Update managers, triggers update procedures
 
-    private class TaxCatManager implements DocumentListener, ActionListener {
-        public void changedUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void insertUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void removeUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
+    private class TaxCatManager implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             updatePricesFromPriceSell();
         }
