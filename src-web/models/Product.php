@@ -50,8 +50,16 @@ class ProductLight {
     }
 }
 
-class Product extends ProductLight {
+class Product {
 
+    public $id;
+    public $reference;
+    public $barcode;
+    public $label;
+    public $price_buy;
+    public $price_sell;
+    public $visible;
+    public $scaled;
     public $category;
     public $tax_cat;
     public $attributes_set;
@@ -69,8 +77,13 @@ class Product extends ProductLight {
     function __construct($ref, $label, $price_sell, $category,
                          $tax_cat, $visible, $scaled, $price_buy = null,
                          $attributes_set = null, $barcode = null) {
-        parent::__construct($ref, $label, $price_sell, $visible, $scaled,
-                            $barcode, $price_buy);
+        $this->reference = $ref;
+        $this->label = $label;
+        $this->price_sell = $price_sell;
+        $this->visible = $visible;
+        $this->scaled = $scaled;
+        $this->barcode = $barcode;
+        $this->price_buy = $price_buy;
         $this->category = $category;
         $this->tax_cat = $tax_cat;
         $this->attributes_set = $attributes_set;
