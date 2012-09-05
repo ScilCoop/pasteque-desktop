@@ -86,7 +86,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 new Field("STOCKVOLUME", Datas.DOUBLE, Formats.DOUBLE),
                 new Field("ISCATALOG", Datas.BOOLEAN, Formats.BOOLEAN),
                 new Field("CATORDER", Datas.INT, Formats.INT),
-                new Field("PROPERTIES", Datas.BYTES, Formats.NULL));
+                new Field("PROPERTIES", Datas.BYTES, Formats.NULL),
+                new Field("DISCOUNTENABLED", Datas.BOOLEAN, Formats.BOOLEAN),
+                new Field("DISCOUNTRATE", Datas.DOUBLE, Formats.DOUBLE));
     }
 
     public void init(Session s){
@@ -101,7 +103,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final ProductInfoExt getProductInfo(String id) throws BasicException {
         return (ProductInfoExt) new PreparedSentence(s,
             "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES "
+            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
+            + "DISCOUNTENABLED, DISCOUNTRATE "
             + "FROM PRODUCTS WHERE ID = ?",
             SerializerWriteString.INSTANCE,
             ProductInfoExt.getSerializerRead()).find(id);
@@ -111,7 +114,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final ProductInfoExt getProductInfoByCode(String sCode) throws BasicException {
         return (ProductInfoExt) new PreparedSentence(s,
             "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES "
+            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
+            + "DISCOUNTENABLED, DISCOUNTRATE "
             + "FROM PRODUCTS WHERE CODE = ?",
             SerializerWriteString.INSTANCE,
             ProductInfoExt.getSerializerRead()).find(sCode);
@@ -122,6 +126,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return (ProductInfoExt) new PreparedSentence(s,
             "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
             + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES "
+            + "DISCOUNTENBALED, DISCOUNTRATE "
             + "FROM PRODUCTS WHERE REFERENCE = ?",
             SerializerWriteString.INSTANCE,
             ProductInfoExt.getSerializerRead()).find(sReference);
@@ -152,7 +157,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new PreparedSentence(s,
             "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
             + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
-            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE "
             + "FROM PRODUCTS P, PRODUCTS_CAT O "
             + "WHERE P.ID = O.PRODUCT AND P.CATEGORY = ? "
             + "ORDER BY O.CATORDER, P.NAME",
@@ -165,7 +171,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new PreparedSentence(s,
             "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
             + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
-            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE "
             + "FROM PRODUCTS P, PRODUCTS_CAT O, PRODUCTS_COM M "
             + "WHERE P.ID = O.PRODUCT AND P.ID = M.PRODUCT2 "
             + "AND M.PRODUCT = ? AND P.ISCOM = " + s.DB.TRUE() + " "
@@ -180,7 +187,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             new QBFBuilder(
                 "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES "
+                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
                 + "WHERE ?(QBF_FILTER) "
                 + "ORDER BY REFERENCE",
@@ -198,7 +205,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             new QBFBuilder(
                 "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES "
+                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
                 + "WHERE ISCOM = " + s.DB.FALSE() + " AND ?(QBF_FILTER) "
                 + "ORDER BY REFERENCE",
@@ -216,7 +223,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             new QBFBuilder(
                 "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES "
+                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS WHERE ISCOM = " + s.DB.TRUE()
                 + " AND ?(QBF_FILTER) "
                 + "ORDER BY REFERENCE",
@@ -594,7 +601,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "P.ATTRIBUTESET_ID, P.IMAGE, P.STOCKCOST, P.STOCKVOLUME, "
                 + "CASE WHEN C.PRODUCT IS NULL THEN " + s.DB.FALSE()
                 + " ELSE " + s.DB.TRUE() + " END, "
-                + "C.CATORDER, P.ATTRIBUTES "
+                + "C.CATORDER, P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
                 + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C "
                 + "ON P.ID = C.PRODUCT "
                 + "WHERE ?(QBF_FILTER) "
@@ -616,11 +623,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, "
                     + "ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, "
                     + "ATTRIBUTESET_ID, IMAGE, STOCKCOST, STOCKVOLUME, "
-                    + "ATTRIBUTES) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     new SerializerWriteBasicExt(productsRow.getDatas(),
                         new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                             16})).exec(params);
+                             16, 17, 18})).exec(params);
                 if (i > 0 && ((Boolean)values[14]).booleanValue()) {
                     return new PreparedSentence(s,
                         "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) "
@@ -644,11 +651,12 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     + "NAME = ?, ISCOM = ?, ISSCALE = ?, PRICEBUY = ?, "
                     + "PRICESELL = ?, CATEGORY = ?, TAXCAT = ?, "
                     + "ATTRIBUTESET_ID = ?, IMAGE = ?, STOCKCOST = ?, "
-                    + "STOCKVOLUME = ?, ATTRIBUTES = ? "
+                    + "STOCKVOLUME = ?, ATTRIBUTES = ?, DISCOUNTENABLED = ?, "
+                    + "DISCOUNTRATE = ? "
                     + "WHERE ID = ?",
                     new SerializerWriteBasicExt(productsRow.getDatas(),
                         new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
-                            16, 0})).exec(params);
+                            16, 17, 18, 0})).exec(params);
                 if (i > 0) {
                     if (((Boolean)values[14]).booleanValue()) {
                         if (new PreparedSentence(s,
