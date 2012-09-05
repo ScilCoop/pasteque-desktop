@@ -112,8 +112,9 @@ public class JRootApp extends JPanel implements AppView {
         m_dlSystem = (DataLogicSystem) getBean("com.openbravo.pos.forms.DataLogicSystem");
         
         // Create or upgrade the database if database version is not the expected
-        String sDBVersion = readDataBaseVersion();        
-        if (!AppLocal.DB_VERSION.equals(sDBVersion)) {
+        String sDBVersion = readDataBaseVersion();
+        boolean upgradeAsked = false;
+        while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
             
             // Create or upgrade database
             
@@ -137,11 +138,12 @@ public class JRootApp extends JPanel implements AppView {
                 }
             }
             // Create or upgrade script exists.
-            if (JOptionPane.showConfirmDialog(this
+            if ( upgradeAsked || JOptionPane.showConfirmDialog(this
                     , AppLocal.getIntString(sDBVersion == null ? "message.createdatabase" : "message.updatedatabase")
                     , AppLocal.getIntString("message.title")
                     , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {  
                 try {
+                    upgradeAsked = true;
                     for (String script : sScripts) {
                         BatchSentence bsentence = new BatchSentenceResource(session, script);
                         bsentence.putParameter("APP_ID", Matcher.quoteReplacement(AppLocal.APP_ID));
@@ -161,6 +163,7 @@ public class JRootApp extends JPanel implements AppView {
                 session.close();
                 return false;
             }
+            sDBVersion = readDataBaseVersion();
         }
         
         // Load host properties from resources
