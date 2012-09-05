@@ -199,7 +199,7 @@ public class ProductInfoExt {
     }
 
     public double getDiscountRate() {
-        return this.discountRate / 100.0;
+        return this.discountRate;
     }
     public void setDiscountRate(double rate) {
         this.discountRate = rate;

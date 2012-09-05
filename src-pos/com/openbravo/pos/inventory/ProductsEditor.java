@@ -162,7 +162,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
         enableDiscount.setSelected(false);
-        discountRate.setText(null);
+        discountRate.setText(Formats.PERCENT.formatValue(0.0));
         reportlock = false;
 
         // Los habilitados
@@ -213,7 +213,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
         enableDiscount.setSelected(false);
-        discountRate.setText(null);
+        discountRate.setText(Formats.PERCENT.formatValue(0.0));
         reportlock = false;
 
         // Los habilitados
@@ -265,7 +265,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
         enableDiscount.setSelected(((Boolean)myprod[17]).booleanValue());
-        discountRate.setText(Formats.DOUBLE.formatValue(myprod[18]));
+        discountRate.setText(Formats.PERCENT.formatValue(myprod[18]));
         reportlock = false;
 
         // Los habilitados
@@ -318,7 +318,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
         enableDiscount.setSelected(((Boolean)myprod[17]).booleanValue());
-        discountRate.setText(Formats.DOUBLE.formatValue(myprod[18]));
+        discountRate.setText(Formats.PERCENT.formatValue(myprod[18]));
         reportlock = false;
 
         // Los habilitados
@@ -368,7 +368,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[15] = Formats.INT.parseValue(m_jCatalogOrder.getText());
         myprod[16] = Formats.BYTEA.parseValue(txtAttributes.getText());
         myprod[17] = Boolean.valueOf(this.enableDiscount.isSelected());
-        myprod[18] = Formats.DOUBLE.parseValue(this.discountRate.getText());
+        myprod[18] = Formats.PERCENT.parseValue(this.discountRate.getText());
 
         return myprod;
     }
