@@ -391,7 +391,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             } else {
                 String marginTypeProp = AppConfig.loadedInstance.getProperty("ui.margintype");
                 if (marginTypeProp.equals("rate")) {
-                    double ratio = dPriceBuy.doubleValue() / dPriceSell.doubleValue();
+                    double ratio = dPriceSell.doubleValue() / dPriceBuy.doubleValue();
                     m_jmargin.setText(Formats.DOUBLE.formatValue(ratio));
                 } else {
                     m_jmargin.setText(Formats.PERCENT.formatValue(new Double(dPriceSell.doubleValue() / dPriceBuy.doubleValue() - 1.0)));
@@ -520,16 +520,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     
     // Update managers, triggers update procedures
 
-    private class TaxCatManager implements DocumentListener, ActionListener {
-        public void changedUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void insertUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void removeUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
+    private class TaxCatManager implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             updatePricesFromPriceSell();
         }
