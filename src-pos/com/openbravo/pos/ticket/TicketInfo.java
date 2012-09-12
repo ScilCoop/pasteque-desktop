@@ -61,6 +61,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<PaymentInfo> payments;
     private List<TicketTaxInfo> taxes;
     private String m_sResponse;
+    private Integer customersCount;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -88,6 +89,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(m_dDate);
         out.writeObject(attributes);
         out.writeObject(m_aLines);
+        out.writeObject(this.customersCount);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
@@ -99,6 +101,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_dDate = (Date) in.readObject();
         attributes = (Properties) in.readObject();
         m_aLines = (List<TicketLineInfo>) in.readObject();
+        this.customersCount = (Integer) in.readObject();
         m_User = null;
         m_sActiveCash = null;
 
@@ -137,7 +140,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.attributes = (Properties) attributes.clone();
         t.m_User = m_User;
         t.m_Customer = m_Customer;
-
+        if (this.customersCount != null) {
+            t.customersCount = this.customersCount;
+        }
         t.m_aLines = new ArrayList<TicketLineInfo>();
         for (TicketLineInfo l : m_aLines) {
             t.m_aLines.add(l.copyTicketLine());
@@ -267,6 +272,18 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public Properties getProperties() {
         return attributes;
+    }
+
+    public Integer getCustomersCount() {
+        return this.customersCount;
+    }
+
+    public void setCustomersCount(Integer count) {
+        this.customersCount = count;
+    }
+
+    public boolean hasCustomersCount() {
+        return this.customersCount != null;
     }
 
     public TicketLineInfo getLine(int index) {
@@ -476,5 +493,13 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public String printTotalPaid() {
         return Formats.CURRENCY.formatValue(new Double(getTotalPaid()));
+    }
+
+    public String printCustomersCount() {
+        if (this.hasCustomersCount()) {
+            return Formats.INT.formatValue(this.customersCount);
+        } else {
+            return "";
+        }
     }
 }

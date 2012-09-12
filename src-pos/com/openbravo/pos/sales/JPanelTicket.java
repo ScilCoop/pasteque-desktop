@@ -280,6 +280,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         return m_oTicket;
     }
     
+    public void setCustomersCount(int count) {
+        this.m_oTicket.setCustomersCount(count);
+        this.refreshTicketLabel();
+    }
+
+    private void refreshTicketLabel() {
+        String name = m_oTicket.getName(m_oTicketExt);
+        if (m_oTicket.hasCustomersCount()) {
+            name += " (" + m_oTicket.getCustomersCount() + ")";
+        }
+        m_jTicketId.setText(name);
+    }
+
     private void refreshTicket() {
         
         CardLayout cl = (CardLayout)(getLayout());
@@ -311,7 +324,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }  
         
             // The ticket name
-            m_jTicketId.setText(m_oTicket.getName(m_oTicketExt));
+            this.refreshTicketLabel();
 
             // Limpiamos todas las filas y anadimos las del ticket actual
             m_ticketlines.clearTicketLines();

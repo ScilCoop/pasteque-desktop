@@ -35,31 +35,27 @@ import com.openbravo.pos.forms.AppLocal;
  * @author  adrian
  */
 public class JNumberDialog extends javax.swing.JDialog {
+
+    public static final int INT_POSITIVE = 0;
+    public static final int DOUBLE_POSITIVE = 1;
     
     private Double m_value;
     
     /** Creates new form JNumberDialog */
-    public JNumberDialog(java.awt.Frame parent, boolean modal) {
+    public JNumberDialog(java.awt.Frame parent, boolean modal, int type) {
         super(parent, modal);
-        init();
+        init(type);
     }
     
     /** Creates new form JNumberDialog */
-    public JNumberDialog(java.awt.Dialog parent, boolean modal) {
+    public JNumberDialog(java.awt.Dialog parent, boolean modal, int type) {
         super(parent, modal);
-        init();
+        init(type);
     }
     
-    private void init() {
-        
-        /*if (m_resources == null) {
-            m_resources = new LocaleResources();
-            m_resources.addBundleName("beans_messages");
-        }*/
-        
-        initComponents();        
-        getRootPane().setDefaultButton(jcmdOK);   
-        
+    private void init(int type) {
+        initComponents(type);
+        getRootPane().setDefaultButton(jcmdOK);
         m_jnumber.addEditorKeys(m_jKeys);
         m_jnumber.reset();
         m_jnumber.setDoubleValue(0.0);
@@ -76,21 +72,21 @@ public class JNumberDialog extends javax.swing.JDialog {
         m_lblMessage.setIcon(icon);
     }
     
-    public static Double showEditNumber(Component parent, String title) {
-        return showEditNumber(parent, title, null, null);
+    public static Double showEditNumber(Component parent, int type, String title) {
+        return showEditNumber(parent, type, title, null, null);
     }
-    public static Double showEditNumber(Component parent, String title, String message) {
-        return showEditNumber(parent, title, message, null);
+    public static Double showEditNumber(Component parent, int type, String title, String message) {
+        return showEditNumber(parent, type, title, message, null);
     }
-    public static Double showEditNumber(Component parent, String title, String message, Icon icon) {
+    public static Double showEditNumber(Component parent, int type, String title, String message, Icon icon) {
         
         Window window = SwingUtilities.windowForComponent(parent);
         
         JNumberDialog myMsg;
         if (window instanceof Frame) { 
-            myMsg = new JNumberDialog((Frame) window, true);
+            myMsg = new JNumberDialog((Frame) window, true, type);
         } else {
-            myMsg = new JNumberDialog((Dialog) window, true);
+            myMsg = new JNumberDialog((Dialog) window, true, type);
         }
         
         myMsg.setTitle(title, message, icon);
@@ -98,7 +94,7 @@ public class JNumberDialog extends javax.swing.JDialog {
         return myMsg.m_value;
     }
     
-    private void initComponents() {
+    private void initComponents(int type) {
 
         jPanel1 = new javax.swing.JPanel();
         jcmdOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
@@ -112,7 +108,14 @@ public class JNumberDialog extends javax.swing.JDialog {
         jPanel3 = new javax.swing.JPanel();
         m_jKeys = new JEditorKeys();
         jPanel4 = new javax.swing.JPanel();
-        m_jnumber = new JEditorDoublePositive();
+        switch (type) {
+        case INT_POSITIVE:
+            m_jnumber = new JEditorIntegerPositive();
+            break;
+        case DOUBLE_POSITIVE:
+        default:
+            m_jnumber = new JEditorDoublePositive();
+        }
         m_jPanelTitle = new javax.swing.JPanel();
         m_lblMessage = new javax.swing.JLabel();
 
@@ -183,7 +186,7 @@ public class JNumberDialog extends javax.swing.JDialog {
         setBounds((screenSize.width-width)/2, (screenSize.height-height)/2, width, height);
     }
 
-    private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdOKActionPerformed
+    private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {
 
 
         m_value = m_jnumber.getDoubleValue();
@@ -191,21 +194,21 @@ public class JNumberDialog extends javax.swing.JDialog {
         dispose();
 
         
-    }//GEN-LAST:event_jcmdOKActionPerformed
+    }
 
-    private void jcmdCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdCancelActionPerformed
-
-        setVisible(false);
-        dispose();
-        
-    }//GEN-LAST:event_jcmdCancelActionPerformed
-
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void jcmdCancelActionPerformed(java.awt.event.ActionEvent evt) {
 
         setVisible(false);
         dispose();
         
-    }//GEN-LAST:event_formWindowClosing
+    }
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {
+
+        setVisible(false);
+        dispose();
+        
+    }
     
     
     private javax.swing.JPanel jPanel1;
@@ -217,7 +220,7 @@ public class JNumberDialog extends javax.swing.JDialog {
     private javax.swing.JButton jcmdOK;
     private JEditorKeys m_jKeys;
     private javax.swing.JPanel m_jPanelTitle;
-    private JEditorDoublePositive m_jnumber;
+    private JEditorNumber m_jnumber;
     private javax.swing.JLabel m_lblMessage;
     
 }

@@ -243,6 +243,12 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         printState();
         m_panelticket.setActiveTicket(null, null);
     }
+
+    public void setCustomersCount(int count) {
+        if (m_PlaceCurrent != null) {
+             m_panelticket.setCustomersCount(count);
+        }
+    }
     
     public boolean viewTables(CustomerInfo c) {
         // deberiamos comprobar si estamos en reservations o en tables...
