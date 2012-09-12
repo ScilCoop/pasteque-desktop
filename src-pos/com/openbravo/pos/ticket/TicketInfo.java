@@ -110,6 +110,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public void readValues(DataRead dr) throws BasicException {
+        // Check DataLogicSales to map fields on dr indexes
         m_sId = dr.getString(1);
         tickettype = dr.getInt(2).intValue();
         m_iTicketId = dr.getInt(3).intValue();
@@ -124,6 +125,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         }
         m_User = new UserInfo(dr.getString(7), dr.getString(8));
         m_Customer = new CustomerInfoExt(dr.getString(9));
+        this.customersCount = dr.getInt(10);
         m_aLines = new ArrayList<TicketLineInfo>();
 
         payments = new ArrayList<PaymentInfo>();

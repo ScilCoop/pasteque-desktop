@@ -367,10 +367,14 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
-        TicketInfo ticket = (TicketInfo) new PreparedSentence(s
-                , "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID WHERE T.TICKETTYPE = ? AND T.TICKETID = ?"
-                , SerializerWriteParams.INSTANCE
-                , new SerializerReadClass(TicketInfo.class))
+        TicketInfo ticket = (TicketInfo) new PreparedSentence(s,
+                "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, "
+                + "R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER, T.CUSTCOUNT "
+                + "FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID "
+                + "LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID "
+                + "WHERE T.TICKETTYPE = ? AND T.TICKETID = ?",
+                SerializerWriteParams.INSTANCE,
+                new SerializerReadClass(TicketInfo.class))
                 .find(new DataParams() { public void writeValues() throws BasicException {
                     setInt(1, tickettype);
                     setInt(2, ticketid);
@@ -435,15 +439,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }});
 
                 // new ticket
-                new PreparedSentence(s
-                    , "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, CUSTOMER) VALUES (?, ?, ?, ?, ?)"
-                    , SerializerWriteParams.INSTANCE
+                new PreparedSentence(s,
+                    "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, "
+                    + "CUSTOMER, CUSTCOUNT) VALUES (?, ?, ?, ?, ?, ?)",
+                    SerializerWriteParams.INSTANCE
                     ).exec(new DataParams() { public void writeValues() throws BasicException {
                         setString(1, ticket.getId());
                         setInt(2, ticket.getTicketType());
                         setInt(3, ticket.getTicketId());
                         setString(4, ticket.getUser().getId());
                         setString(5, ticket.getCustomerId());
+                        setInt(6, ticket.getCustomersCount());
                     }});
 
                 SentenceExec ticketlineinsert = new PreparedSentence(s
