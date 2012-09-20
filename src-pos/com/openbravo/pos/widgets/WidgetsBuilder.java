@@ -158,7 +158,11 @@ public class WidgetsBuilder {
     }
     
     public static JLabel createSmallLabel() {
-        JLabel lbl = new JLabel();
+        return createSmallLabel(null);
+    }
+
+    public static JLabel createSmallLabel(String text) {
+        JLabel lbl = new JLabel(text);
         setupLabel(lbl, SIZE_SMALL);
         return lbl;
     }

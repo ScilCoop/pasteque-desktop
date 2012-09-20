@@ -46,6 +46,7 @@ import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.scale.DeviceScale;
 import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerFactory;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -612,16 +613,12 @@ public class JRootApp extends JPanel implements AppView {
         m_jPanelTitle = new javax.swing.JPanel();
         m_jLblTitle = new javax.swing.JLabel();
         poweredby = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         m_jPanelContainer = new javax.swing.JPanel();
         m_jPanelLogin = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
+        postechLogo = new javax.swing.JLabel();
         m_jLogonName = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
         m_jClose = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         m_txtKeys = new javax.swing.JTextField();
@@ -633,6 +630,7 @@ public class JRootApp extends JPanel implements AppView {
         setPreferredSize(new java.awt.Dimension(1024, 768));
         setLayout(new java.awt.BorderLayout());
 
+        // Header bar
     	if (cfg == null || cfg.getProperty("ui.showtitlebar").equals("1")) {
             m_jPanelTitle.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
             m_jPanelTitle.setLayout(new java.awt.BorderLayout());
@@ -645,41 +643,40 @@ public class JRootApp extends JPanel implements AppView {
             poweredby.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
             m_jPanelTitle.add(poweredby, java.awt.BorderLayout.LINE_END);
 
-            jLabel2.setPreferredSize(new java.awt.Dimension(142, 34));
-            m_jPanelTitle.add(jLabel2, java.awt.BorderLayout.LINE_START);
-
             add(m_jPanelTitle, java.awt.BorderLayout.NORTH);
         }
 
         m_jPanelContainer.setLayout(new java.awt.CardLayout());
 
-        m_jPanelLogin.setLayout(new java.awt.BorderLayout());
+        // Main login content
+        m_jPanelLogin.setLayout(new GridBagLayout());
+        GridBagConstraints c = null;
 
-        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.Y_AXIS));
-
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/logo.png"))); // NOI18N
-        jLabel1.setAlignmentX(0.5F);
-        jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jLabel1.setMaximumSize(new java.awt.Dimension(800, 1024));
-        jLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jPanel4.add(jLabel1);
-
-        m_jPanelLogin.add(jPanel4, java.awt.BorderLayout.CENTER);
-
+        // Logo
+        postechLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        postechLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/logo.png"))); // NOI18N
+        postechLogo.setAlignmentX(0.5F);
+        postechLogo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        postechLogo.setMaximumSize(new java.awt.Dimension(800, 1024));
+        postechLogo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 0;
+        c.weighty = 3;
+        m_jPanelLogin.add(postechLogo, c);
+        // Login frame
         m_jLogonName.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         m_jLogonName.setLayout(new java.awt.BorderLayout());
-
+        // Scroll
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         jScrollPane1.setPreferredSize(new java.awt.Dimension(510, 118));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(510, 118));
         m_jLogonName.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jPanel8.setLayout(new java.awt.GridLayout(0, 1, 5, 5));
-
+        // Close button
         m_jClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/exit.png"))); // NOI18N
         m_jClose.setText(AppLocal.getIntString("Button.Close")); // NOI18N
         m_jClose.setFocusPainted(false);
@@ -691,12 +688,9 @@ public class JRootApp extends JPanel implements AppView {
                 m_jCloseActionPerformed(evt);
             }
         });
-        jPanel8.add(m_jClose);
-
-        jPanel2.add(jPanel8, java.awt.BorderLayout.NORTH);
-
+        jPanel2.add(m_jClose, java.awt.BorderLayout.NORTH);
+        // Login by scan
         jPanel1.setLayout(null);
-
         m_txtKeys.setPreferredSize(new java.awt.Dimension(0, 0));
         m_txtKeys.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -705,19 +699,31 @@ public class JRootApp extends JPanel implements AppView {
         });
         jPanel1.add(m_txtKeys);
         m_txtKeys.setBounds(0, 0, 0, 0);
-
         jPanel2.add(jPanel1, java.awt.BorderLayout.CENTER);
-
         m_jLogonName.add(jPanel2, java.awt.BorderLayout.LINE_END);
-
-        jPanel5.add(m_jLogonName);
-
-        m_jPanelLogin.add(jPanel5, java.awt.BorderLayout.SOUTH);
-
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.weighty = 1;
+        c.anchor = GridBagConstraints.SOUTH;
+        m_jPanelLogin.add(m_jLogonName, c);
+        // Version
+        String version = String.format(AppLocal.getIntString("Label.Version"),
+                                       AppLocal.APP_VERSION);
+        JLabel versionLabel = WidgetsBuilder.createSmallLabel(version);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 2;
+        c.weighty = 0.1;
+        c.weightx = 1;
+        int versionInset = WidgetsBuilder.dipToPx(5);
+        c.insets = new Insets(0, 0, 0, versionInset);
+        c.anchor = GridBagConstraints.LINE_END;
+        m_jPanelLogin.add(versionLabel, c);
         m_jPanelContainer.add(m_jPanelLogin, "login");
-
         add(m_jPanelContainer, java.awt.BorderLayout.CENTER);
 
+        // Footer bar
         if (cfg == null || cfg.getProperty("ui.showfooterbar").equals("1")) {
             m_jPanelDown.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
             m_jPanelDown.setLayout(new java.awt.BorderLayout());
@@ -742,14 +748,10 @@ public class JRootApp extends JPanel implements AppView {
         processKey(evt.getKeyChar());
     }
 
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel postechLogo;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton m_jClose;
     private javax.swing.JLabel m_jHost;
