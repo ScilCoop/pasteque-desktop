@@ -16,6 +16,7 @@ import org.krysalis.barcode4j.HumanReadablePlacement;
 import org.krysalis.barcode4j.impl.AbstractBarcodeBean;
 import org.krysalis.barcode4j.impl.codabar.CodabarBean;
 import org.krysalis.barcode4j.impl.code128.Code128Bean;
+import org.krysalis.barcode4j.impl.code128.DefaultCode128Encoder;
 import org.krysalis.barcode4j.impl.code39.Code39Bean;
 import org.krysalis.barcode4j.impl.int2of5.Interleaved2Of5Bean;
 import org.krysalis.barcode4j.impl.postnet.POSTNETBean;
@@ -91,7 +92,8 @@ public class BarcodeImage {
     }
     
     public static Image getBarcode128(String value) {
-        AbstractBarcodeBean barcode = new Code128Bean();
+        Code128Bean barcode = new Code128Bean();
+        barcode.setCodeset(DefaultCode128Encoder.CODESET_B);
         barcode.setMsgPosition(HumanReadablePlacement.HRP_NONE);
         return getBarcode(value, barcode); 
     }
