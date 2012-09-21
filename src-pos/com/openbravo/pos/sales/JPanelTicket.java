@@ -650,8 +650,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // Other character
             m_sBarcode.append(cTrans);
 
-            // "delete" key
-            if (cTrans == '\u007f') { 
+            // "delete" or "/" (for numpad) key
+            if (cTrans == '\u007f' || cTrans == '/') { 
                 stateToZero();
 
             } else if ((cTrans == '0') 
