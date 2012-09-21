@@ -68,11 +68,11 @@
             <text>${ticket.getCustomer().printTaxid()}</text>
         </line>  
         #end
-        #if ($place != "")
+        #if ($ticket.hasCustomersCount())
         <line>
-            <text align="left" length="15">Table:</text>
-            <text>${place}</text>
-        </line>  
+            <text align="left" length="15">Places:</text>
+            <text>${ticket.printCustomersCount()}</text>
+        </line>
         #end
         <line></line>    
         <line>
