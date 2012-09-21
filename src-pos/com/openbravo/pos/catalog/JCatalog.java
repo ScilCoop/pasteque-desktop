@@ -59,7 +59,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
      private Set<String> m_categoriesset = new HashSet<String>();
         
     private ThumbNailBuilder tnbbutton;
-    private ThumbNailBuilder tnbcat;
+    private ThumbNailBuilder tnbcat, tnbsubcat;
     
     private CategoryInfo showingcategory = null;
         
@@ -79,7 +79,8 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jListCategories.addListSelectionListener(this);                
         m_jscrollcat.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         
-        tnbcat = new ThumbNailBuilder(32, 32, "com/openbravo/images/folder_yellow.png");           
+        tnbcat = new ThumbNailBuilder(32, 32, "com/openbravo/images/folder_yellow.png");
+        tnbsubcat = new ThumbNailBuilder(width, height, "com/openbravo/images/folder_yellow.png");
         tnbbutton = new ThumbNailBuilder(width, height, "com/openbravo/images/package.png");
     }
     
@@ -192,7 +193,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 java.util.List<CategoryInfo> categories = m_dlSales.getSubcategories(catid);
                 for (CategoryInfo cat : categories) {
 
-                    jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(cat.getImage(), cat.getName())), new SelectedCategory(cat));
+                    jcurrTab.addButton(new ImageIcon(tnbsubcat.getThumbNailText(cat.getImage(), cat.getName())), new SelectedCategory(cat));
                 }
                 
                 // Add products
@@ -253,7 +254,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     }
     
     private void showSubcategoryPanel(CategoryInfo category) {
-        selectIndicatorPanel(new ImageIcon(tnbbutton.getThumbNail(category.getImage())), category.getName());
+        selectIndicatorPanel(new ImageIcon(tnbsubcat.getThumbNail(category.getImage())), category.getName());
         selectCategoryPanel(category.getID());
         showingcategory = category;
     }
@@ -456,6 +457,8 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         m_lblIndicator.setText("jLabel1");
+        m_lblIndicator.setVerticalTextPosition(JLabel.BOTTOM);
+        m_lblIndicator.setHorizontalTextPosition(JLabel.CENTER);
         jPanel4.add(m_lblIndicator, java.awt.BorderLayout.NORTH);
 
         m_jSubCategories.add(jPanel4, java.awt.BorderLayout.CENTER);
