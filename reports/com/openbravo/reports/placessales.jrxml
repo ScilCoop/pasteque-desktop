@@ -10,6 +10,7 @@
 	<field name="STARTDATE" class="java.util.Date"/>
 	<field name="ENDDATE" class="java.util.Date"/>
 	<field name="COUNT" class="java.lang.Integer"/>
+	<field name="PRICE" class="java.lang.Double"/>
 	<variable name="TOTALPLACES" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[new Integer(($F{CUSTCOUNT} != null) ? ($F{CUSTCOUNT}.intValue() * $F{COUNT}.intValue()) : 0)]]></variableExpression>
 		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
@@ -17,6 +18,10 @@
 	<variable name="TOTALCOUNT" class="java.lang.Integer" calculation="Sum">
 		<variableExpression><![CDATA[($F{CUSTCOUNT} != null) ? $F{COUNT} : new Integer(0)]]></variableExpression>
 		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="TOTALPRICE" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[($F{CUSTCOUNT} != null) ? $F{PRICE} : new Double(0.0)]]></variableExpression>
+		<initialValueExpression><![CDATA[new Double(0.0)]]></initialValueExpression>
 	</variable>
 	<background>
 		<band/>
@@ -274,7 +279,7 @@
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="30">
+		<band height="50">
 			<textField pattern="" isBlankWhenNull="false">
 				<reportElement key="textField-15" mode="Opaque" x="280" y="10" width="110" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
 				<box>
@@ -303,6 +308,38 @@
 			</textField>
 			<line>
 				<reportElement key="line-3" mode="Opaque" x="0" y="10" width="535" height="1" forecolor="#000000" backcolor="#FFFFFF"/>
+				<graphicElement fill="Solid">
+					<pen lineWidth="0.25" lineStyle="Solid"/>
+				</graphicElement>
+			</line>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement key="textField-15" mode="Opaque" x="280" y="30" width="110" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{Label.AveragePrice}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement key="textField-5" mode="Opaque" x="400" y="30" width="110" height="20" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<font fontName="Dialog" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[com.openbravo.format.Formats.CURRENCY.formatValue(new Double(new Double($V{TOTALPRICE}.toString()).doubleValue() / new Double($V{TOTALCOUNT}.toString()).doubleValue()))]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement key="line-3" mode="Opaque" x="0" y="30" width="535" height="1" forecolor="#000000" backcolor="#FFFFFF"/>
 				<graphicElement fill="Solid">
 					<pen lineWidth="0.25" lineStyle="Solid"/>
 				</graphicElement>
