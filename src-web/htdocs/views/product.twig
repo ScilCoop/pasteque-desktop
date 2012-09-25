@@ -1,0 +1,52 @@
+{% extends layout %}
+
+{% block title %}Gestion des produits{% endblock %}
+{% block description %}Interface de gestion des porduits.{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+<div class="arianne"><a href="{{ path('products_list') }}">Gestion des produits</a></div>
+<h2>{{ product.label }}</h2>
+<div></div>
+
+
+<dl>
+
+<dt>Réference<dt>
+<dd>{{ product.reference }}</dd>
+
+<dt>Code<dt>
+<dd>{{ product.barcode }}</dd>
+
+<dt>Prix d'achat<dt>
+<dd>{{ product.price_buy }}</dd>
+
+
+<dt>Prix de vente (hors taxe)<dt>
+<dd>{{ product_cplt.price_sell_round }}</dd>
+
+<dt>Prix de vente TTC<dt>
+<dd>{{ product_cplt.price_ttc }}</dd>
+
+
+<dt>Marge<dt>
+<dd>{{ product_cplt.marge }}</dd>
+
+
+
+
+<dt>Taxe<dt>
+<dd>{{ product.tax_cat.label }}</dd>
+
+{% if product.scaled==1 %}<p>Ce produit est vendu au poids.</p>{% endif %}
+
+
+{% if product.visible==1 %}<p>Ce produit a été substitué par un autre.</p>{% endif %}
+
+
+</dl>
+
+<ul>
+<li><a href="{{ path('product_edit', { 'id': product.id } ) }}">Modifer</a></li>
+</ul>
+{% endblock %}

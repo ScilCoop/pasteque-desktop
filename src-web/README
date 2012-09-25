@@ -17,6 +17,9 @@ required for optional clients like the Android client.
 Copy config.php.sample to config.php and set the values according to your
 POS-Tech configuration.
 
+Copy htdocs/.htaccess.sample to htdocs/.htaccess and check the file to fit
+your configuration.
+
 == Licencing ==
 
 POS-Tech web is licenced under GNU General Public Licence version 3 or (at your

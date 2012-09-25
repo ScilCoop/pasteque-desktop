@@ -1,0 +1,25 @@
+{% extends layout %}
+
+{% block title %}Gestion des produits{% endblock %}
+{% block description %}Interface de gestion des porduits.{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+<div class="arianne">
+	<a href="{{ path('products_list') }}">Gestion des produits</a> >
+	<a href="{{ path('product',{ 'id': product.id }) }}">{{ product.barcode }} - {{ product.label }}</a>
+
+</div>
+<h2>Modification : {{ product.label }}</h2>
+
+
+{% if modify %}<p>Vos modifications ont bien été enregistré.</p>{% endif %}
+<form method="post" action="{{ path('product_edit',{id:product.id }) }}" > 
+
+
+{{form_widget(form) }}
+    <input type="submit" value="Enregister" id="send" name="send">
+    
+</form>
+
+{% endblock %}

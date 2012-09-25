@@ -1,0 +1,22 @@
+{% extends layout %}
+{% set active = 'form' %}
+
+{% block title %}Contact{% endblock %}
+{% block description %}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+<h2 id="title" class="contact">Contact</h2>
+
+
+
+<p>Pour nous laisser un petit message, un idée ou une bonne blague...</p>
+{% if sent %}<p>Your message has been sent.</p>{% endif %}
+<form method="post" action="{{ app.url_generator.generate('contact') }}" > 
+
+
+{{form_widget(form) }}
+    <input type="submit" value="Send message" id="send" name="send">
+    
+</form>
+{% endblock %}

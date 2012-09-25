@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
+	
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+				<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+		<link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+        <title>POS-Tech : {% block title %}{% endblock %}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="description" content="{% block description %}Web interface of POS-tech{% endblock %}" />
+        <meta name="keywords" content="{% block keywords %}Point of sales{% endblock %}" />
+
+	</head>
+	<body>
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">POS-Tech</a>
+          <div class="btn-group pull-right">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="icon-user"></i> Username
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="#">Profile</a></li>
+              <li class="divider"></li>
+              <li><a href="#">Sign Out</a></li>
+            </ul>
+          </div>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="active"><a href="{{ path('home') }}">Accueil</a></li>
+              <li><a href="{{ path('contact') }}">Contact</a></li>
+              <li><a href="{{ path('about') }}">A propos</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header"><a href="{{ path('catalog') }}">Gestion du  cataloque</a></li>
+				<li><a href="{{ path('products_list') }}">Gestion des produits </a></li>
+				<li><a href="{{ path('categories') }}">Gestion des catégories </a></li>
+				<li><a href="{{ path('suppliers') }}">Gestion des fournisseurs </a></li>
+			</ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">
+          		<div id="content">
+
+			{% block content %}{% endblock %}
+		</div>
+        </div><!--/span-->
+
+
+
+
+        
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>POS-Tech - 2012</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+
+
+	
+	</body>
+</html>

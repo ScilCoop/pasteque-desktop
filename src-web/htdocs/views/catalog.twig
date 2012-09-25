@@ -1,0 +1,15 @@
+{% extends layout %}
+
+{% block title %}Gestion du catalogue{% endblock %}
+{% block description %}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+<h2>Gestion du catalogue</h2>
+            <ul>
+             
+				<li><a href="{{ path('products_list') }}">Gestion des produits </a></li>
+				<li><a href="{{ path('categories') }}">Gestion des catégories </a></li>
+				<li><a href="{{ path('suppliers') }}">Gestion des fournisseurs </a></li>
+			</ul>
+{% endblock %}
