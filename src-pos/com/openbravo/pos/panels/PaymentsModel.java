@@ -49,6 +49,7 @@ public class PaymentsModel {
     private Double m_dSalesBase;
     private Double m_dSalesTaxes;
     private java.util.List<SalesLine> m_lsales;
+    private Integer custCount;
     
     private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
 
@@ -116,10 +117,15 @@ public class PaymentsModel {
         
         // Sales
         Object[] recsales = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COUNT(DISTINCT RECEIPTS.ID), SUM(TICKETLINES.UNITS * TICKETLINES.PRICE) " +
-            "FROM RECEIPTS, TICKETLINES WHERE RECEIPTS.ID = TICKETLINES.TICKET AND RECEIPTS.MONEY = ?",
+            "SELECT COUNT(DISTINCT RECEIPTS.ID), " +
+            "SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), " +
+            "SUM(TICKETS.CUSTCOUNT) " +
+            "FROM RECEIPTS, TICKETS, TICKETLINES " +
+            "WHERE RECEIPTS.ID = TICKETLINES.TICKET " +
+            "AND RECEIPTS.ID = TICKETS.ID " +
+            "AND RECEIPTS.MONEY = ?",
             SerializerWriteString.INSTANCE,
-            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE}))
+            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.INT}))
             .find(app.getActiveCashIndex());
         if (recsales == null) {
             p.m_iSales = null;
@@ -127,6 +133,7 @@ public class PaymentsModel {
         } else {
             p.m_iSales = (Integer) recsales[0];
             p.m_dSalesBase = (Double) recsales[1];
+            p.custCount = (Integer) recsales[2];
         }             
         
         // Taxes
@@ -161,6 +168,9 @@ public class PaymentsModel {
 
     public int getPayments() {
         return m_iPayments.intValue();
+    }
+    public int getCustomersCount() {
+        return custCount;
     }
     public double getTotal() {
         return m_dPaymentsTotal.doubleValue();
@@ -208,25 +218,40 @@ public class PaymentsModel {
     
     public int getSales() {
         return m_iSales == null ? 0 : m_iSales.intValue();
-    }    
+    }
+    /** Prints the number of tickets */
     public String printSales() {
         return Formats.INT.formatValue(m_iSales);
     }
+    public String printCustomersCount() {
+        return Formats.INT.formatValue(custCount);
+    }
+    /** Prints the subtotal */
     public String printSalesBase() {
         return Formats.CURRENCY.formatValue(m_dSalesBase);
-    }     
+    }
+    /** Print taxes total */
     public String printSalesTaxes() {
         return Formats.CURRENCY.formatValue(m_dSalesTaxes);
-    }     
+    }
+    /** Print total */
     public String printSalesTotal() {            
         return Formats.CURRENCY.formatValue((m_dSalesBase == null || m_dSalesTaxes == null)
                 ? null
                 : m_dSalesBase + m_dSalesTaxes);
-    }     
+    }
+    /** Get average sales per customer */
+    public String printSalesPerCustomer() {
+        if (custCount != 0) {
+            return Formats.CURRENCY.formatValue((m_dSalesBase + m_dSalesTaxes) / custCount);
+        } else {
+            return "";
+        }
+    }
     public List<SalesLine> getSaleLines() {
         return m_lsales;
     }
-    
+
     public AbstractTableModel getPaymentsModel() {
         return new AbstractTableModel() {
             public String getColumnName(int column) {
