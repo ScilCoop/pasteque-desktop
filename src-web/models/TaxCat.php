@@ -36,10 +36,23 @@ class TaxCat {
     }
 
     function addTax($tax) {
-        $this->taxes = $tax;
+        $this->taxes[] = $tax;
     }
 
     function getId() {
         return $this->id;
+    }
+
+    function getCurrentTax() {
+        $current = null;
+        $now = time();
+        foreach ($this->taxes as $tax) {
+            if ($current == null
+                || ($tax->start_date <= $now
+                    && $tax->start_date > $current->start_date)) {
+                $current = $tax;
+            }
+        }
+        return $current;
     }
 }

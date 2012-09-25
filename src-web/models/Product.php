@@ -89,6 +89,22 @@ class Product {
         $this->attributes_set = $attributes_set;
     }
 
+    function getTotalPrice() {
+        $currentTax = $this->tax_cat->getCurrentTax();
+        if ($currentTax != null) {
+            return $this->price_sell * (1 + $currentTax->rate);
+        } else {
+            return $this->price_sell;
+        }
+    }
+
+    function getMargin() {
+        if ($this->price_buy !== null) {
+            return $this->price_sell / $this->price_buy;
+        } else {
+            return null;
+        }
+    }
 }
 
 ?>

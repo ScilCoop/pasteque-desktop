@@ -24,12 +24,20 @@
 require_once(dirname(dirname(__FILE__)) . "/services/ProductsService.php");
 $request = $app['request'];
 $product = ProductsService::get($request->get('id'));
-$product_cplt['price_sell_round']=round($product->price_sell,2);
-$taux_tva=floatval($product->tax_cat->taxes->rate);
-$product_cplt['price_ttc']=$product->price_sell*(1+($taux_tva));
-$product_cplt['marge']=round(((($product->price_sell*100)/$product->price_buy)-100),2);
 
+$args = array('id' => $product->id,
+              'reference' => $product->reference,
+              'barcode' => $product->barcode,
+              'label' => $product->label,
+              'price_buy' => $product->price_buy,
+              'price_sell' => $product->price_sell,
+              'price_total' => $product->getTotalPrice(),
+              'margin' => $product->getMargin(),
+              'scaled' => $product->scaled,
+              'visible' => $product->visible,
+              'tax_label' => $product->tax_cat->label
+             );
 
-return $app['twig']->render('product.twig', array('product' => $product,'product_cplt' => $product_cplt ));
+return $app['twig']->render('product.twig', $args);
 
 ?>
