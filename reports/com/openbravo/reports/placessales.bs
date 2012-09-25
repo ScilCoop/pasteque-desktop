@@ -19,7 +19,7 @@
 
 report = new com.openbravo.pos.reports.PanelReportBean();
 
-report.setTitleKey("Menu.PlacesSells");
+report.setTitleKey("Menu.PlacesSales");
 report.setReport("/com/openbravo/reports/placessales");
 report.setResourceBundle("com/openbravo/reports/placessales_messages");
 
