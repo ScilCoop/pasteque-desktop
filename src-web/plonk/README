@@ -1,0 +1,15 @@
+Plonk is a stand-alone service to check registration validity.
+
+== Installation ==
+
+Make plonk.php accessible from your web server. You must have configured
+POS-Tech web on the parent directory (in config.php, see main README). Then
+configure the Plonk service by copying the plonk_conf.php.sample file to
+plonk-conf.php. Edit the desired values.
+
+== Usage ==
+
+Point plonk.php on your web browser and scan the barcode of your customer card.
+
+If it's valid, it will "plonk". If it's not valid it will "Replonk".
+

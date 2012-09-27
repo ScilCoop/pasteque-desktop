@@ -1,0 +1,10 @@
+<?php
+// Plonk service configuration file
+
+// $conf['product']: set to the id of the product to check.
+// Get it from the database
+$conf['product'] = "set here the product to check";
+// $conf['validity']: set the validity in second of the product.
+// 86400 is one day, 2592000 is 30 days.
+$conf['validity'] = 2592000;
+?>
