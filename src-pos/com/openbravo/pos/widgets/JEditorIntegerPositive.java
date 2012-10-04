@@ -17,28 +17,21 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.openbravo.pos.scale;
+package com.openbravo.pos.widgets;
 
-import com.openbravo.pos.widgets.JNumberDialog;
-import com.openbravo.pos.forms.AppLocal;
-import java.awt.Component;
-import javax.swing.ImageIcon;
+import com.openbravo.format.Formats;
 
-/**
- *
- * @author adrian
- */
-public class ScaleDialog implements Scale {
-
-    private Component parent;
-
-    public ScaleDialog(Component parent) {
-        this.parent = parent;
+public class JEditorIntegerPositive extends JEditorNumber {
+    
+    /** Creates a new instance of JEditorIntegerPositive */
+    public JEditorIntegerPositive() {
     }
-
-    public Double readWeight() throws ScaleException {
-        
-        // Set title for grams Kilos, ounzes, pounds, ...
-        return JNumberDialog.showEditNumber(parent, JNumberDialog.DOUBLE_POSITIVE, AppLocal.getIntString("label.scale"), AppLocal.getIntString("label.scaleinput"), new ImageIcon(ScaleDialog.class.getResource("/com/openbravo/images/scale.png")));
-    }
+    
+    protected Formats getFormat() {
+        return Formats.INT;
+    }   
+    
+    protected int getMode() {
+        return EditorKeys.MODE_INTEGER_POSITIVE;
+    }      
 }

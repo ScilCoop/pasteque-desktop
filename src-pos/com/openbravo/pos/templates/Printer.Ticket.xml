@@ -74,6 +74,12 @@
             <text>${place}</text>
         </line>  
         #end
+        #if ($ticket.hasCustomersCount())
+        <line>
+            <text align="left" length="15">Places:</text>
+            <text>${ticket.printCustomersCount()}</text>
+        </line>
+        #end
         <line></line>    
         <line>
             <text align ="left" length="17">Item</text>

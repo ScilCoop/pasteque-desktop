@@ -1,21 +1,24 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
+
 package com.openbravo.pos.ticket;
 
 import java.util.*;
@@ -58,6 +61,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<PaymentInfo> payments;
     private List<TicketTaxInfo> taxes;
     private String m_sResponse;
+    private Integer customersCount;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -85,6 +89,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(m_dDate);
         out.writeObject(attributes);
         out.writeObject(m_aLines);
+        out.writeObject(this.customersCount);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
@@ -96,6 +101,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_dDate = (Date) in.readObject();
         attributes = (Properties) in.readObject();
         m_aLines = (List<TicketLineInfo>) in.readObject();
+        this.customersCount = (Integer) in.readObject();
         m_User = null;
         m_sActiveCash = null;
 
@@ -104,6 +110,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     }
 
     public void readValues(DataRead dr) throws BasicException {
+        // Check DataLogicSales to map fields on dr indexes
         m_sId = dr.getString(1);
         tickettype = dr.getInt(2).intValue();
         m_iTicketId = dr.getInt(3).intValue();
@@ -118,6 +125,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         }
         m_User = new UserInfo(dr.getString(7), dr.getString(8));
         m_Customer = new CustomerInfoExt(dr.getString(9));
+        this.customersCount = dr.getInt(10);
         m_aLines = new ArrayList<TicketLineInfo>();
 
         payments = new ArrayList<PaymentInfo>();
@@ -134,7 +142,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.attributes = (Properties) attributes.clone();
         t.m_User = m_User;
         t.m_Customer = m_Customer;
-
+        if (this.customersCount != null) {
+            t.customersCount = this.customersCount;
+        }
         t.m_aLines = new ArrayList<TicketLineInfo>();
         for (TicketLineInfo l : m_aLines) {
             t.m_aLines.add(l.copyTicketLine());
@@ -266,6 +276,18 @@ public class TicketInfo implements SerializableRead, Externalizable {
         return attributes;
     }
 
+    public Integer getCustomersCount() {
+        return this.customersCount;
+    }
+
+    public void setCustomersCount(Integer count) {
+        this.customersCount = count;
+    }
+
+    public boolean hasCustomersCount() {
+        return this.customersCount != null;
+    }
+
     public TicketLineInfo getLine(int index) {
         return m_aLines.get(index);
     }
@@ -307,7 +329,21 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
         for (Iterator<TicketLineInfo> i = m_aLines.iterator(); i.hasNext();) {
             oLine = i.next();
-            dArticles += oLine.getMultiply();
+            if (!oLine.isDiscount()) {
+                if (oLine.isProductScale()) {
+                    if (oLine.getPrice() >= 0) {
+                        dArticles += 1;
+                    } else {
+                        dArticles -= 1;
+                    }
+                } else {
+                    if (oLine.getPrice() >= 0) {
+                        dArticles += oLine.getMultiply();
+                    } else {
+                        dArticles -= oLine.getMultiply();
+                    }
+                }
+            }
         }
 
         return dArticles;
@@ -459,5 +495,13 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public String printTotalPaid() {
         return Formats.CURRENCY.formatValue(new Double(getTotalPaid()));
+    }
+
+    public String printCustomersCount() {
+        if (this.hasCustomersCount()) {
+            return Formats.INT.formatValue(this.customersCount);
+        } else {
+            return "";
+        }
     }
 }

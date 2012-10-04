@@ -44,7 +44,8 @@
     <class name="com.openbravo.pos.customers.CustomersPanel"/>
     <class name="/com/openbravo/reports/customers.bs"/>
     <class name="/com/openbravo/reports/customersb.bs"/>
-    <class name="/com/openbravo/reports/customersdiary.bs"/>    
+    <class name="/com/openbravo/reports/customersdiary.bs"/>
+    <class name="/com/openbravo/reports/salesbycustomer.bs"/>
     <class name="com.openbravo.pos.inventory.TaxCustCategoriesPanel"/>    
     <class name="com.openbravo.pos.forms.MenuCatalogManagement"/>
     <class name="com.openbravo.pos.inventory.ProductsPanel"/>
@@ -75,7 +76,8 @@
     <class name="/com/openbravo/reports/closedproducts.bs"/>
     <class name="/com/openbravo/reports/taxes.bs"/>
     <class name="/com/openbravo/reports/chartsales.bs"/> 
-    <class name="/com/openbravo/reports/productsales.bs"/> 
+    <class name="/com/openbravo/reports/productsales.bs"/>
+    <class name="/com/openbravo/reports/placessales.bs"/>
     <class name="Menu.ChangePassword"/>
     <class name="button.print"/>
     <class name="button.opendrawer"/>

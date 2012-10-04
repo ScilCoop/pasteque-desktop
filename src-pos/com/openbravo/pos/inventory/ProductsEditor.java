@@ -110,6 +110,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.addActionListener(dirty);
         m_jCatalogOrder.getDocument().addDocumentListener(dirty);
         txtAttributes.getDocument().addDocumentListener(dirty);
+        this.enableDiscount.addActionListener(dirty);
+        this.discountRate.getDocument().addDocumentListener(dirty);
 
         m_jTax.addActionListener(new TaxCatManager());
         m_jPriceSellTax.getDocument().addDocumentListener(new PriceTaxManager());
@@ -159,6 +161,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setSelected(false);
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
+        enableDiscount.setSelected(false);
+        discountRate.setText(Formats.PERCENT.formatValue(0.0));
         reportlock = false;
 
         // Los habilitados
@@ -180,6 +184,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(false);
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(false);
+        enableDiscount.setEnabled(false);
+        discountRate.setEnabled(false);
 
         calculateMargin();
         calculatePriceSellTax();
@@ -206,6 +212,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setSelected(true);
         m_jCatalogOrder.setText(null);
         txtAttributes.setText(null);
+        enableDiscount.setSelected(false);
+        discountRate.setText(Formats.PERCENT.formatValue(0.0));
         reportlock = false;
 
         // Los habilitados
@@ -227,6 +235,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(true);
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(true);
+        enableDiscount.setEnabled(true);
+        discountRate.setEnabled(true);
 
         calculateMargin();
         calculatePriceSellTax();
@@ -254,6 +264,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(Formats.INT.formatValue(myprod[15]));
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
+        enableDiscount.setSelected(((Boolean)myprod[17]).booleanValue());
+        discountRate.setText(Formats.PERCENT.formatValue(myprod[18]));
         reportlock = false;
 
         // Los habilitados
@@ -275,6 +287,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(false);
         m_jCatalogOrder.setEnabled(false);
         txtAttributes.setEnabled(false);
+        enableDiscount.setEnabled(false);
+        discountRate.setEnabled(false);
 
         calculateMargin();
         calculatePriceSellTax();
@@ -303,6 +317,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jCatalogOrder.setText(Formats.INT.formatValue(myprod[15]));
         txtAttributes.setText(Formats.BYTEA.formatValue(myprod[16]));
         txtAttributes.setCaretPosition(0);
+        enableDiscount.setSelected(((Boolean)myprod[17]).booleanValue());
+        discountRate.setText(Formats.PERCENT.formatValue(myprod[18]));
         reportlock = false;
 
         // Los habilitados
@@ -324,14 +340,16 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         m_jInCatalog.setEnabled(true);
         m_jCatalogOrder.setEnabled(m_jInCatalog.isSelected());
         txtAttributes.setEnabled(true);
+        enableDiscount.setEnabled(true);
+        discountRate.setEnabled(true);
 
         calculateMargin();
         calculatePriceSellTax();
     }
 
     public Object createValue() throws BasicException {
-
-        Object[] myprod = new Object[17];
+        // See DataLogicSales.getProductCat*, myprod is mapped to sql fields
+        Object[] myprod = new Object[19];
         myprod[0] = m_id;
         myprod[1] = m_jRef.getText();
         myprod[2] = m_jCode.getText();
@@ -349,6 +367,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         myprod[14] = Boolean.valueOf(m_jInCatalog.isSelected());
         myprod[15] = Formats.INT.parseValue(m_jCatalogOrder.getText());
         myprod[16] = Formats.BYTEA.parseValue(txtAttributes.getText());
+        myprod[17] = Boolean.valueOf(this.enableDiscount.isSelected());
+        myprod[18] = Formats.PERCENT.parseValue(this.discountRate.getText());
 
         return myprod;
     }
@@ -371,7 +391,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
             } else {
                 String marginTypeProp = AppConfig.loadedInstance.getProperty("ui.margintype");
                 if (marginTypeProp.equals("rate")) {
-                    double ratio = dPriceBuy.doubleValue() / dPriceSell.doubleValue();
+                    double ratio = dPriceSell.doubleValue() / dPriceBuy.doubleValue();
                     m_jmargin.setText(Formats.DOUBLE.formatValue(ratio));
                 } else {
                     m_jmargin.setText(Formats.PERCENT.formatValue(new Double(dPriceSell.doubleValue() / dPriceBuy.doubleValue() - 1.0)));
@@ -500,16 +520,7 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     
     // Update managers, triggers update procedures
 
-    private class TaxCatManager implements DocumentListener, ActionListener {
-        public void changedUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void insertUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
-        public void removeUpdate(DocumentEvent e) {
-            updatePricesFromPriceSell();
-        }
+    private class TaxCatManager implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             updatePricesFromPriceSell();
         }
@@ -555,12 +566,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         }
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
@@ -603,6 +608,8 @@ public class ProductsEditor extends JPanel implements EditorRecord {
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         txtAttributes = new javax.swing.JTextArea();
+
+        JPanel discountPanel = new javax.swing.JPanel();
 
         setLayout(null);
 
@@ -766,9 +773,38 @@ public class ProductsEditor extends JPanel implements EditorRecord {
 
         jTabbedPane1.addTab(AppLocal.getIntString("label.properties"), jPanel3); // NOI18N
 
+        // Discount panel
+        discountPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        discountPanel.setLayout(null);
+
+        JLabel discEnableLbl = new JLabel();
+        discEnableLbl.setText(AppLocal.getIntString("Label.enableDiscount"));
+        discEnableLbl.setBounds(10, 20, 160, 15);
+        discountPanel.add(discEnableLbl);        
+        enableDiscount = new JCheckBox();
+        enableDiscount.setBounds(160, 20, 70, 19);
+        discountPanel.add(enableDiscount);
+
+        JLabel discRateLbl = new JLabel();
+        discRateLbl.setText(AppLocal.getIntString("Label.discountRate"));
+        discRateLbl.setBounds(10, 50, 160, 15);
+        discountPanel.add(discRateLbl);        
+        discountRate = new JTextField();
+        discountRate.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        discountRate.setBounds(160, 50, 70, 19);
+        discountPanel.add(discountRate);
+
+        jTabbedPane1.addTab(AppLocal.getIntString("Label.discounts"), discountPanel);
+
+        // Name form
+        jLabel2.setText(AppLocal.getIntString("label.prodname")); // NOI18N
+        add(jLabel2);
+        jLabel2.setBounds(180, 50, 70, 15);
+        add(m_jName);
+        m_jName.setBounds(250, 50, 220, 19);
         add(jTabbedPane1);
         jTabbedPane1.setBounds(10, 90, 560, 280);
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     private void m_jInCatalogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jInCatalogActionPerformed
 
@@ -846,5 +882,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     private javax.swing.JTextField m_jstockcost;
     private javax.swing.JTextField m_jstockvolume;
     private javax.swing.JTextArea txtAttributes;
-    // End of variables declaration//GEN-END:variables
+    private javax.swing.JCheckBox enableDiscount;
+    private javax.swing.JTextField discountRate;
 }

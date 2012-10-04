@@ -112,7 +112,8 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         }   
 
         int iCompare = RoundUtils.compare(m_dPaid, this.partAmount);
-        boolean fullPayment = RoundUtils.compare(m_dPaid, this.m_dTotal) >= 0;
+        boolean fullPayment = RoundUtils.compare(m_dPaid, this.m_dTotal) >= 0
+                              && this.m_dTotal - this.partAmount < 0.005;
         
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         m_jChangeEuros.setText(iCompare > 0 
