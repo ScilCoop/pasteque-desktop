@@ -67,6 +67,43 @@ class ProductsService {
         return $prds;
     }
 
+    
+    static function search($where = '', $groupby = '',$orderby='',$limit='',$having='',$full = false) {
+        $prds = array();
+        $pdo = PDOBuilder::getPDO();
+		$supplement_req="";
+		if(!empty($where)) $supplement_req.=" WHERE ".$where;
+		if(!empty($groupby)) $supplement_req.=" GROUP BY ".$groupby;
+		if(!empty($orderby)) $supplement_req.=" ORDER BY ".$orderby;
+		if(!empty($limit)) $supplement_req.=" LIMIT ".$limit;
+		if(!empty($having)) $supplement_req.=" HAVING ".$having;
+		$stmt = $pdo->prepare("SELECT * FROM PRODUCTS".$supplement_req);
+        $stmt->execute();
+        while ($db_prd = $stmt->fetch()) {
+            if ($full) {
+                $prd = ProductsService::buildDBPrd($db_prd, $pdo);
+            } else {
+                $prd = ProductsService::buildDBLightPrd($db_prd, $pdo);
+            }
+            $prds[] = $prd;
+        }
+        return $prds;
+    }
+
+    
+    static function getCount($where = '') {
+        $prds = array();
+        $pdo = PDOBuilder::getPDO();
+		$supplement_req="";
+		if(!empty($where)) $supplement_req.=" WHERE ".$where;
+		$stmt = $pdo->prepare("SELECT COUNT(*) FROM PRODUCTS".$supplement_req);
+        $stmt->execute();
+        if ($db_prd = $stmt->fetch()) {
+			return $db_prd[0];
+        }
+		return 0;
+    }
+
     static function get($id) {
         $pdo = PDOBuilder::getPDO();
         $stmt = $pdo->prepare("SELECT * FROM PRODUCTS WHERE ID = :id");
@@ -78,6 +115,30 @@ class ProductsService {
         }
         return null;
     }
+
+    static function getImage($id) {
+        $pdo = PDOBuilder::getPDO();
+        $stmt = $pdo->prepare("SELECT image FROM PRODUCTS WHERE ID = :id");
+        if ($stmt->execute(array(':id' => $id))) {
+            if ( $row = $stmt->fetch()) {
+				//var_dump($row);
+                //$data = mysql_fetch_assoc($res);
+                return $row['image'];
+            }
+        }
+       return null;
+    }
+
+	static function setImage($id,$fichier) {
+        $pdo = PDOBuilder::getPDO();
+        $image = file_get_contents($fichier);
+        $stmt = $pdo->prepare("UPDATE PRODUCTS SET image = :image  WHERE ID = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':image', $image, PDO::PARAM_LOB);
+ //       var_dump($stmt->query(array(':id' => $id,':image'=>$image)));
+       $stmt->execute(array(':id' => $id,':image'=>$image));
+    }
+
 
     static function update($prd) {
         $pdo = PDOBuilder::getPDO();

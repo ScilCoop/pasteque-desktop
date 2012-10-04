@@ -19,8 +19,10 @@
 //    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 
+$request = $app['request'];
+$sent=$request->get('send');
  
-    $form = $app['form.factory']
+$form = $app['form.factory']
 ->createBuilder('form')
 ->add('name', 'text', array('label' => 'Nom:'))
 ->add('email', 'email', array('label' => 'Email:'))

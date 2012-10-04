@@ -51,7 +51,7 @@ require_once(dirname(dirname(__FILE__)) . "/services/ProductsService.php");
 
 $request = $app['request'];
 $id=$request->get('id');
-$product = ProductsService::get($id);
+
 $tab_categories_sql=CategoriesService::getAll();
 $new = array();
 
@@ -71,16 +71,19 @@ foreach($tab_taxe_categories_sql as $cat)
 {
 $tab_taxe_categories[$cat->id]=trim($cat->label);
 }
-
-
-$data=$product;
-
-
-$taux_tva=floatval($product->tax_cat->taxes->rate);
-$data->price_ttc=$product->price_sell*(1+($taux_tva));
-$data->marge=round(((($product->price_sell*100)/$product->price_buy)-100),2);
-$data->tax_cat=$data->tax_cat->id;
-$data->category=$data->category->id;
+$data=array();
+$product=array('id'=>'new');
+if (is_numeric($id))
+{
+	$product = ProductsService::get($id);
+	//var_dump(ProductsService::get($id));
+	$data=$product;
+	$taux_tva=floatval($product->tax_cat->taxes[0]->rate);
+	$data->price_ttc=$product->price_sell*(1+($taux_tva));
+	$data->marge=round(((($product->price_sell*100)/$product->price_buy)-100),2);
+	$data->tax_cat=$data->tax_cat->id;
+	$data->category=$data->category->id;
+	}
 
 $form = $app['form.factory']
 ->createbuilder('form',$data)
@@ -109,7 +112,6 @@ $form = $app['form.factory']
             $data->tax_cat=TaxesService::get($data->tax_cat);
 			$data->category=CategoriesService::get($data->category);
 			ProductsService::update($data);
-
             return $app->redirect($app['url_generator']->generate(
                 'product',
                 array('id' => $id,'modify' => true)

@@ -7,9 +7,9 @@
 {% block content %}
 <h2>Gestion du catalogue</h2>
             <ul>
-             
-				<li><a href="{{ path('products_list') }}">Gestion des produits </a></li>
-				<li><a href="{{ path('categories') }}">Gestion des catégories </a></li>
-				<li><a href="{{ path('suppliers') }}">Gestion des fournisseurs </a></li>
+				<li><a href="{{ path('products_list') }}">{{ 'Menu.ProductsManagement'|trans }}</a></li>
+				<li><a href="{{ path('categories_list') }}">{{ 'Menu.CategoriesManagement'|trans }}</a></li>
+				<li><a href="{{ path('taxes_list') }}">{{ 'Menu.TaxesManagement'|trans }}</a></li>
+				<li><a href="{{ path('suppliers_list') }}">{{ 'Menu.SuppliersManagement'|trans }}</a></li>
 			</ul>
 {% endblock %}

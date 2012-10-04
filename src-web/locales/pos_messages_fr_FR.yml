@@ -1,0 +1,471 @@
+#    POS-Tech
+#    Based upon Openbravo POS
+#
+#    Copyright (C) 2007-2008 Openbravo, S.L.
+#                       2012 Scil (http://scil.coop)
+#
+#    This file is part of POS-Tech.
+#
+#    POS-Tech is free software : you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    POS-Tech is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
+
+Button.Cancel : Annuler
+button.catalogadd : Ajouter au catalogue
+button.catalogdel : Retirer du catalogue
+Button.Close : Quitter
+Button.CloseCash : Cl\u00F4turer
+Button.DeleteTicket : Supprimer
+button.edit : Editer
+button.search : Rechercher
+Button.ExecuteChart : Créer un graphique
+button.executefilter : Appliquer le filtre
+Button.ExecuteReport : Créer un rapport
+Button.Factory : Valeurs par défaut
+button.listtickets : Lister
+button.movetable : Déplacer
+Button.NewTicket : Nouveau
+Button.OK : OK
+button.opendrawer : Ouvrir tiroir
+button.peoplepassword : Mot de passe
+button.print : Imprimer
+button.receive : Reçu
+button.refund : Remboursement
+button.refundall : Rembourser tout
+button.refundline : Rembourser une ligne
+button.refundone : Rembourser un article
+button.reloadticket : Recharger
+button.reservations : Réservations
+button.reset : Remise à zero
+Button.Restore : Restaurer
+Button.Save : Sauvegarder
+button.tables : Tables
+caption.tickets : Tickets
+caption.upload : Télécharger la liste de produits
+Database.ScriptError : Execution impossible du script de création de la base de données.
+Database.ScriptWarning : Le script de creation de la base de données a rencontré une erreur.
+Display.Null : Affichage non disponible
+Display.Screen : Affichage à l'écran
+Display.Window : Afficheur
+exception.unavailabledataset : Ensemble de données indisponible
+exception.unavailablefield : Champ non défini\ : {0}
+exception.unavailablefields : Champs non disponibles
+filter.dbdriverlib : Bibliothèque de pilotes (*.jar, *.zip)
+form.productslist : Liste des produits
+Label.AllUsers : Tous
+Label.AttributeValue : Valeur
+label.autohidemenu : Replier le menu
+label.bybarcode : Par code barres
+label.bydates : Par dates
+label.byform : Par formulaire
+label.byreason : Par dénomination
+label.bywarehouse : Par entrep\u00F4t
+label.cardexpdate : Date d'expiration
+label.cardholder : Nom du porteur
+label.cardnumber : Numéro de la carte
+Label.Cash : Espèces
+Label.CashMachine : Caisse enregistreuse
+label.catid : N°
+label.image : Image
+label.catname : Catégorie
+Label.ChangeCash : Monnaie
+label.commerceid : N° Commerce
+label.commercepwd : Mot de passe
+Label.Database : Base de données
+label.date : Date
+label.datestitle : Dates
+Label.DbDriver : Classe pilote
+label.dbdriverlib : Librairie pilote
+Label.DbPassword : Mot de passe
+Label.DbURL : URL
+Label.DbUser : Utilisateur
+label.discount : Remise
+label.dutyid : N°
+label.dutyname : Nom de la taxe
+label.dutyrate : Taux
+label.editline : Editer la ligne
+Label.EndDate : Date de fin
+label.floorid : N°
+label.floorname : Salle
+Label.InputCash : Reçu
+label.item : Article
+Label.LoadError : Une erreur s'est produite lors de l'execution de cette fonction.
+label.locationaddress : Adresse
+label.locationid : N°
+label.locationname : Nom
+Label.MachineDisplay : Afficheur client
+label.machinedisplayconn : Mode
+label.machinedisplayport : Port
+Label.MachineName : Nom
+Label.MachinePrinter : Imprimante
+Label.MachinePrinter2 : Imprimante 2
+Label.MachinePrinter3 : Imprimante 3
+label.machineprinterport : Port
+Label.MachineScreen : Ecran
+label.machinescreendensity : Densité de l'écran
+Label.MachineScreenType : Type d'écran
+label.magcardreader : Lecteur de carte
+Label.MarginType : Type de marge
+label.maximum : Maximum
+label.minimum : Minimum
+Label.Name : Nom
+label.noticketstoclose : Pas de factures à fermer
+label.nullcategory : (Pas de catégorie)
+label.opencash : Ouvrir la caisse
+label.order : Ordre
+label.partamount : Part
+label.parts : Diviser en
+Label.Password : Mot de passe
+label.passwordnew : Nouveau mot de passe
+label.passwordold : Ancien mot de passe
+label.passwordrepeat : Verification mot de passe
+Label.Payment : Paiement
+label.paymentdate : Date
+label.paymentgateway : Passerelle de paiement
+label.paymentreason : Raison
+label.paymentstitle : Rapport de paiements
+label.paymenttestmode : Mode test
+label.paymenttotal : Total
+label.peopleimage : Image
+label.peoplename : Nom
+label.peoplevisible : Visible
+label.placefloor : Salle
+label.placename : Place
+label.placeposition : Position
+label.price : Prix
+label.pricetax : Prix + Taxes
+label.prodaux : Substitution
+label.prodbarcode : Code barre
+label.prodcategory : Catégorie
+label.prodcost : Co\u00FBt
+label.prodgeneral : Général
+label.prodincatalog : En vente
+label.prodname : Nom
+label.prodorder : Ordre
+label.prodpricebuy : Prix d'achat
+label.prodpricesell : Prix de vente
+label.prodpriceselltax : Prix de vente + taxes
+label.prodproperties : Propriétés
+label.prodref : Réference
+label.prodscale : Facturation au poids
+label.prodstock : Stock
+label.prodstockcost : Co\u00FBt annuel du stock
+label.prodstockmax : Niveau maximum
+label.prodstocksec : Niveau de réserve
+label.prodstockvol : Volume
+label.produnits : En stock
+label.prodvaluebuy : Valeur d'achat
+label.prodvaluesell : Valeur de revente
+label.prodvolume : Volume
+label.properties : Propriétés
+label.recorddeleted : (Enregistrement supprimé)
+label.recordeof : (Pas d'enregistrements)
+label.recordnew : (Nouveau produit)
+label.remainingcash : Restant
+label.resname : Ressource
+label.restaurantmove : Déplacement table {0}. Choisissez une autre table libre ou la table d'origine.
+label.role : R\u00F4le
+label.sales : Ventes
+label.salestitle : Rapport des ventes
+label.scale : Balance
+label.scanner : Scanner
+label.showtitlebar : Barre de titre
+label.showfooterbar : Barre du bas
+Label.StartDate : Date de début
+label.stockdate : Date
+label.stockproduct : Produit
+label.stockreason : Raison
+label.subtotalcash : Sous-total
+label.table : Table
+label.tax : Taxes
+label.taxcash : Taxes
+label.ticketid : Ticket
+Label.Tickets : Paiements
+Label.Ticketsbag : Tickets
+label.totalcash : Total
+label.units : Unités
+label.user : Utilisateur : 
+Label.Users : Utilisateurs activés sur cette machine
+label.value : Montant
+label.warehouse : Entrep\u00F4t
+Menu.Attributes : Caractéristiques
+Menu.AttributeValues : Détail des caractéristiques
+Menu.AttributeSets : Groupes de caractéristiques
+Menu.AttributeUse : Caractéristiques par produit
+Menu.Auxiliar : Formules
+Menu.Backoffice : Administration
+Menu.Catalog : Catalogue
+Menu.CatalogManagement : Gestion du catalogue
+Menu.CatalogManagement.Edit : Catalogue
+Menu.CatalogManagement.Reports : Rapports
+Menu.Categories : Catégories
+Menu.CategoriesManagement : Gestion des catégories
+Menu.ChangePassword : Changer le mot de passe
+Menu.ClosedProducts : Ventes par produits
+Menu.CloseTPV : Cl\u00F4turer la caisse
+Menu.Closing : Historique de caisse
+Menu.Configuration : Configuration
+Menu.ERPOrders : Synchronisation ventes
+Menu.ERPProducts : Synchro. produits & clients
+Menu.Exit : Quitter
+Menu.Floors : Salles
+Menu.Inventory : Entrep\u00F4ts
+Menu.Inventory2 : Inventaire actuel
+Menu.InventoryBroken : Stock minimum atteint
+Menu.InventoryListDetail : Inventaire détaillé
+Menu.InventoryDiff : Journal d'inventaire
+Menu.InventoryDiffDetail : Journal d'inventaire détaillé
+Menu.Locations : Entrep\u00F4ts
+Menu.Main : Menu principal
+Menu.Maintenance : Maintenance
+Menu.Maintenance.ERP : ERP Openbravo
+Menu.Maintenance.POS : Point de vente
+Menu.OpenTPV : Ouverture de caisse
+Menu.Payments : Mouvements caisse
+Menu.Printer : Imprimante
+Menu.Products : Produits
+Menu.Reports : Rapports
+Menu.ReportTaxes : Taxes
+Menu.Resources : Configuration avancée
+Menu.Roles : R\u00F4les
+Menu.SalesChart : Graphique des ventes
+Menu.SalesManagement : Ventes
+Menu.SalesManagement.Reports : Rapports
+Menu.StockDiary : Gestion des produits
+Menu.ProductsManagement : Gestion des produits
+Menu.StockManagement : Inventaire
+Menu.StockManagement.Edit : Inventaire
+Menu.StockManagement.Reports : Rapports
+Menu.StockMovement : Gestion du stock
+Menu.System : Système
+Menu.Tables : Tables
+Menu.Taxes : Taxes
+Menu.TaxesManagement : Gestion des Taxes
+Menu.TaxesManagement.Edit : Taxes
+Menu.ThirdParties : Fournisseurs
+Menu.ThirdPartiesManagement : Gestion des fournisseurs
+Menu.SuppliersManagement : Gestion des fournisseurs
+Menu.Ticket : Ventes
+Menu.TicketEdit : Edition des ventes
+Menu.TicketRefund : Remboursements
+Menu.Users : Utilisateurs
+Menu.UserSells : Par utilisateur
+message.BadPassword : Mot de passe erroné Reessayez...
+message.cashisclosed : La caisse est fermée.
+message.cannotchangepassword : Impossible de changer le mot de passe.
+message.cannotclosecash : Impossible de cl\u00F4turer la caisse.
+message.cannotdeleteconfig : Impossible de supprimer le fichier de configuration.
+message.cannotexecute : Impossible d'executer l'action.
+message.cannotfillchart : Impossible de créer le graphique.
+message.cannotfillreport : Impossible de créer le rapport.
+message.cannotloadreport : Impossible de charger la définition du rapport.
+message.cannotloadreportdata : Impossible de charger les données du rapport.
+message.cannotloadresourcedata : Impossible de charger les ressources pour le rapport.
+message.CannotMove : Impossible de passer à l'autre enregistrement.
+message.cannotprint : Impossible d'imprimer le reçu.
+message.cannotprintline : Impossible d'imprimer la ligne.
+message.cannotprintticket : Impossible d'imprimer la facture.
+message.cannotsaveconfig : Impossible de sauvegarder la configuration.
+message.changepassworddistinct : La vérification du mot de passe à échouée
+message.closecashok : La caisse est fermée.
+message.configfactory : Les valeurs par défaut seront restaurées et les valeurs actuelles seront perdues. Voulez-vous continuer ?
+message.configrestore : Les valeurs initiale seront restaurées et tous les changements seront perdus. Voulez-vous continuer ?
+message.createdatabase : <html>Base de donnees non détectée. Une base de données par défaut sera crée.<br>Voulez-vous continuer ?
+message.databaseconnectionerror : Connexion impossible à la base de données. Base de données non disponible.
+message.databasedrivererror : Connexion impossible à la base de données. Pilote de base de données introuvable.
+message.databasenotsupported : Base de donnees "{0}" non supportée.
+message.nocardreader : Lecteur de carte non défini.
+message.nopaymentgateway : Passerelle de paiement non définie.
+message.nosaveticket : Sauvegarde du ticket impossible.
+message.notactive : Une erreur s'est produite lors du chargement du panneau.
+message.notpermissions : Vous n'êtes pas autorisé a effectuer cette action.
+message.paymentcashneg : Procédez au remboursement et appuyez sur OK.
+message.paymenterror : Erreur pendant la transaction.
+message.paymenterrorunknown : Erreur de transaction inconnue.
+message.paymentexceptionremote : Erreur distante.
+message.paymentexceptionservice : Erreur de service.
+message.paymentfree : Gratuit
+message.paymentgatewayext : Procédez au paiement par carte et appuyez sur OK.
+message.paymentgatewayextrefund : Procédez au remboursement par carte et appuyez sur OK.
+message.paymentnotauthorised : Transaction non autorisée.
+message.paymentrefundsnotsupported : Remboursements non supporté.
+message.preparescanner : Préparez le ScanPal pour l'envoi de la liste des produits et appuyez sur OK.
+message.restartchanges : La configuration a été sauvegardé. Les modifications prendront effet après le redémarrage de l'application.
+message.selectlinefordiscount : Selectionner une ligne de produit et entrer le taux pour établir une remise.
+message.selectratefordiscount : Entrer le taux et appuyer sur le bouton de remise.
+message.scannerfail : L'envoi de la liste des produits a échoué
+message.scannerfail2 : Le téléchargement de la liste des produits a échoué
+message.scannerok : La liste des produis a été transmise avec succés.
+message.title : Messages de caisse
+message.updatedatabase : <html>Une version antérieure de la base de données a été détecté. La base de données va être mise à jour.<br>ASSUREZ-VOUS DE DISPOSER D'UNE SAUVEGARDE DES DONNEES<br>Voulez-vous continuer ?
+message.wannaclosecash : Etes-vous sur de vouloir cl\u00F4turer la caisse ?
+message.wannadelete : Etes-vous sur de vouloir supprimer le ticket en cours ?
+payment.title : Encaissement
+Printer.Null : Imprimante non disponible
+Printer.Screen : Imprimante écran
+Printer.Serial : Imprimante tickets
+resource.binary : Binaire
+resource.image : Image
+resource.text : Texte
+rest.label.chairs : Chaises
+rest.label.customer : Client
+rest.label.date : Date
+rest.label.notes : Notes
+stock.in.movement : (entrée) Mouvement
+stock.in.purchase : (entrée) Achat
+stock.in.refund : (entrée) Remboursement
+stock.out.break : (sortie) Retour Fournisseur
+stock.out.crossing : Transfert
+stock.out.movement : (sortie) Mouvement
+stock.out.refund : (sortie) Remboursement
+stock.out.sale : (sortie) Vente
+tab.cash : Espèces
+tab.cashrefund : Remboursements
+tab.cheque : Chèque
+tab.chequerefund : Chèque
+tab.free : Gratuit
+tab.magcard : Carte
+tab.paper : Coupons
+tab.ticket : Ticket
+title.changepassword : Changer le mot de passe
+title.editor : Message de l'éditeur
+transpayment.cash : Espèces
+transpayment.cashin : (entrée) Especes
+transpayment.cashout : (sortie) Especes
+transpayment.cashrefund : Remboursement
+transpayment.cheque : Chèque
+transpayment.chequerefund : Chèque remboursement
+transpayment.free : Gratuit
+transpayment.magcard : Carte
+transpayment.magcardrefund : Carte remboursement
+transpayment.paperin : (entrée) Coupons
+transpayment.paperout : (sortie) Coupons
+transpayment.ticket : Ticket
+Visor.Title : Openbravo ERP
+
+message.paymentgatewayswipe : Glissez la carte et appuyez sur OK.
+
+message.paymentgatewaytype : Entrez les informations de la carte et appuyez sur OK.
+
+label.placeid : Id
+
+message.noticket : Le ticket n'existe plus.
+
+Menu.ProductsWarehouse : Produits par entrep\u00F4t
+
+message.noproduct : Aucun produit ne correspond au code saisi
+
+label.type : Type
+
+message.tableempty : La table est vide.
+
+message.tablefull : La table est pleine.
+label.locale : Localisation
+
+label.looknfeel : Apparence
+
+button.scale : Balance
+label.integer : Entier
+
+label.double : Double
+
+label.currency : Monétaire
+
+label.percent : Pourcent
+label.time : Heures
+
+label.datetime : Date Heures
+scale.notdefined : Balance non définie
+scale.invalidvalue : Balance non définie
+message.noweight : Le pesage n'a pas été possible.
+label.scaleinput : Entrez un poids.
+message.cannotloadticket : Impossible de charger le reçu.
+message.notexiststicket : Le reçu n'existe pas.
+label.catimage : Image
+message.noupdatescript : <html>Une base de données d'une version antérieure a été détecté mais il est impossible de mettre à jour la base de données automatiquement.<br>Openbravo ERP va se terminer.
+label.visible : Visible
+label.name : Nom
+label.address : Adresse ligne 1
+label.notes : Notes
+Menu.Customers : Clients
+Menu.CustomersManagement : Gestion des clients
+form.customertitle : Liste des clients
+message.nocard : Carte utilisateur non trouvée. Réessayez...
+label.card : Carte
+message.cardnew : La valeur de la carte va changer. Voulez vous continuer?
+message.cardremove : La valeur de la carte va être retirée. Voulez vous continuer?
+message.nocustomer : Un client avec le code entré n'existe pas
+label.maxdebt : Crédit maximum
+label.curdebt : Crédit actuel
+label.curdate : Date du crédit
+message.wannasave : Voulez vous sauvegarder les modifications avant de sortir?
+Menu.Customers.Reports : Rapports
+Menu.CustomersReport : Clients
+label.bycustomer : Par clients
+label.customer : Client
+Menu.CustomersBReport : Tous les clients
+Menu.Maintenance.Reports : Rapports
+Menu.UsersReport : Cartes utilisateurs
+label.restaurantcustomer : Acceuil client {0}. Choisissez une table vide.
+tab.debt : Crédit
+label.debt : Crédit
+transpayment.debt : Crédit
+message.nocustomernodebt : Ce reçu n'est pas alloué.\nIl ne peut être soldé
+message.cannotfindcustomer : Données client introuvables.
+button.pay : Paiement
+Menu.CustomersPayment : Règlements clients
+transpayment.debtpaid : Crédit payé
+label.taxid : N° client
+label.attribute : Caractéristique
+label.attributes : Caractéristiques
+label.attributeset : Groupe de caractéristiques
+Menu.ProductSales : Ventes par produits
+Menu.ProductLabels : Etiquette produit
+caption.split : Fractionner le reçu
+label.searchkey : Mot-clé
+label.contact : Contact
+label.location : Lieux / Adresse
+label.firstname : Prénom
+label.lastname : Nom
+label.email : E-mail
+label.phone : Téléphone
+label.phone2 : Autre Téléphone
+label.fax : Fax
+label.address2 : Adresse ligne 2
+label.postal : Code postale
+label.city : Ville
+label.region : Département
+label.country : Pays
+label.sequence : Séquence
+message.customerdebtexceded : Le client a dépassé le crédit alloué.
+label.custtaxcategory : Catégorie taxe client
+label.taxcategory : Catégorie taxe
+label.taxparent : Taxe parent
+label.cascade : Cascade
+label.reportsprinter : Rapports imprimante
+Menu.CustomersDiary : Journal clients
+Menu.TaxCustCategories : Catégories de taxe client
+Menu.TaxCategories : Catégories de taxe
+button.clean : Réinitialiser
+label.taxes : Taxes
+label.taxescash : Taxes
+Menu.Username : Nom d'utilisateur
+Menu.ProfileMenu.SignOut : Déconnexion
+Menu.homepage: Accueil
+Menu.contact: Contact
+Menu.about: A propos
+
+
+# added by me
+Menu.InventorySurplus : Stock maximum atteint
+Menu.InventoryNeg : Stock négatif
+# end

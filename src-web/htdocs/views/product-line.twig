@@ -2,7 +2,10 @@
 <td>{{ product.reference }}</td>
 <td>{{ product.label }}</td>
 <td>
-	<a href="{{ path('product', { 'id': product.id } ) }}">Voir</a>
-	<a href="{{ path('product_edit', { 'id': product.id } ) }}">Modifer</a>
-	<a href="{{ path('product_delete', { 'id': product.id } ) }}">Supprimer</a>
+<div class="btn-group">
+<a class="btn" href="{{ path('product', { 'id': product.id } ) }}"><i class="icon-eye-open"></i> Voir</a>
+	<a class="btn" href="{{ path('product_edit', { 'id': product.id } ) }}"><i class="icon-pencil"></i> Modifer</a>
+	<a class="btn" href="{{ path('product_delete', { 'id': product.id } ) }}"><i class="icon-trash"></i> Supprimer</a>
+</div>
+
 </td>

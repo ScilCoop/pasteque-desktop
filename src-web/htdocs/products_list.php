@@ -22,10 +22,32 @@
 
 
 require_once(dirname(dirname(__FILE__)) . "/services/ProductsService.php");
+require_once(dirname(dirname(__FILE__)) . "/utils/Pagination.php");
+require_once(dirname(dirname(__FILE__)) . "/utils/searchbar.php");
 
-$products = ProductsService::getAll();
+$where=array();
+$request = $app['request'];
+//Critere de recherche
+$searchbar = new searchbar();
+if(!empty($searchbar->where))
+	$where[]=$searchbar->where;
 
-return $app['twig']->render('products_list.twig', array('products_list' => $products ));
+
+//Filter
+$filter_cat=$request->get('filter_category');
+if(!empty($filter_cat))
+	$where[]='category ='.$filter_cat;
+
+
+$where=implode(" AND ",$where);
+
+//Pagination
+$nb_products=ProductsService::getCount($where);
+$pagination = new Pagination ( $nb_products, NB_ROW_PRODUCT );
+ 
+$products = ProductsService::search($where,'','',$pagination->minid.','.NB_ROW_PRODUCT);
+
+return $app['twig']->render('products_list.twig', array('products_list' => $products,'pagination'=>$pagination,'searchbar'=>$searchbar));
 
 
 

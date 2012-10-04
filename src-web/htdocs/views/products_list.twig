@@ -6,8 +6,10 @@
 
 {% block content %}
 	<h2>Gestion des produits</h2>
-
-	<table>
+{% autoescape false %}
+{{ searchbar.render }}
+{% endautoescape %}
+	<table class="table table-hover">
 	<thead>
 	<tr>
 	<th>Code</th>
@@ -26,7 +28,11 @@
 	{% endfor %}
 	</tbody>
 	</table>
-	<p><a href="{{ path('product_delete', { 'id': 'new' } ) }}">Ajouter un nouveau produit</a></p>
+	{% set vars = {'pagination': pagination} %}
+	
+	{% include 'pagination.twig' with vars %}
+	
+	<div><a href="{{ path('product_edit', { 'id': 'new' } ) }}" class="btn btn-success">Ajouter un nouveau produit</a></div>
 
 
 {% endblock %}

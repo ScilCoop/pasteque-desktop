@@ -7,6 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Twig_' => $vendorDir . '/twig/twig/lib/',
+    'Symfony\\Component\\Config' => $vendorDir . '/symfony/src/',
+    'Symfony\\Component\\Yaml' => $vendorDir . '/symfony/src/',
     'Symfony\\Component\\Validator' => $vendorDir . '/symfony/validator/',
     'Symfony\\Component\\Translation' => $vendorDir . '/symfony/translation/',
     'Symfony\\Component\\Serializer' => $vendorDir . '/symfony/serializer/',

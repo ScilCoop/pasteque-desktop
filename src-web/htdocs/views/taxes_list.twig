@@ -1,0 +1,31 @@
+{% extends layout %}
+
+{% block title %}Gestion des produits{% endblock %}
+{% block description %}{{ 'Menu.TaxesManagement'|trans }}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+	<h2>{{ 'Menu.TaxesManagement'|trans }}</h2>
+
+	<table>
+	<thead>
+	<tr>
+	<th>Code</th>
+	<th>Référence</th>
+	<th>Libellé</th>
+	<th>action</th>
+	</tr>
+	</thead>
+	<tbody>
+	{% for taxes in tab_taxes %}
+		{% set vars = {'taxes': taxes} %}
+		<tr>
+		{% include 'taxes-line.twig' with vars %}
+
+		</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+	<p><a href="{{ path('taxe_delete', { 'id': 'new' } ) }}">Ajouter un nouvelle catégorie de Taxe</a></p>
+
+{% endblock %}

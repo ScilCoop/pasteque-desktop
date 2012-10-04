@@ -1,0 +1,18 @@
+{% if pagination.nbdepages > 0 %}
+<div class="pagination">
+<ul>
+<li {% if pagination.pageencours==1 %}class="disabled"{% endif %}><span>
+<a href="{{ path(app.request.get('_route'), {(pagination.name): pagination.pageencours+1} ) }}" >«</a></span></li>
+{% for i in 1..pagination.nbdepages %}
+	{% if i!=pagination.pageencours %}
+		<li><a href="{{ path(app.request.get('_route'), {(pagination.name): i} ) }}">{{i}}</a></li>
+	{% else %}
+		<li class="active"><a href="#" >{{ i }}</a></li>
+    {% endif %}
+{% endfor %}
+<li{% if pagination.pageencours==pagination.nbdepages %} class="disabled"{% endif %}>
+<span><a href="{{ path(app.request.get('_route'), {(pagination.name): pagination.pageencours+1} ) }}" >»</a></span></li>
+</ul>
+</div>
+
+{% endif %}

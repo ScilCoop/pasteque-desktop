@@ -5,21 +5,23 @@
 {% block keywords %}{% endblock %}
 
 {% block content %}
-<div class="arianne">
-	<a href="{{ path('products_list') }}">Gestion des produits</a> >
-	<a href="{{ path('product',{ 'id': product.id }) }}">{{ product.barcode }} - {{ product.label }}</a>
-
+<div><ul class="breadcrumb"><li>
+	<a href="{{ path('products_list') }}">Gestion des produits</a> <span class="divider">/</span></li>
+{% if product.id!='new'  %}	
+	<li><a href="{{ path('product',{ 'id': product.id }) }}">{{ product.barcode }} - {{ product.label }}</a></li>
+{% endif %}
+</ul>
 </div>
+{% if product.id!='new'  %}
 <h2>Modification : {{ product.label }}</h2>
-
-
+{% else  %}
+<h2>Ajout d'un nouveau produit</h2>
+{% endif %}
 {% if modify %}<p>Vos modifications ont bien été enregistré.</p>{% endif %}
 <form method="post" action="{{ path('product_edit',{id:product.id }) }}" > 
 
-
-{{form_widget(form) }}
+{{form_row(form) }}
     <input type="submit" value="Enregister" id="send" name="send">
-    
 </form>
 
 {% endblock %}

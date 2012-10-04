@@ -38,20 +38,20 @@
           <a class="brand" href="#">POS-Tech</a>
           <div class="btn-group pull-right">
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> Username
+              <i class="icon-user"></i> {{ 'Menu.Username'|trans }}
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="#">Profile</a></li>
+              <li><a href="#">{{ 'Menu.Profile'|trans }}</a></li>
               <li class="divider"></li>
-              <li><a href="#">Sign Out</a></li>
+              <li><a href="#">{{ 'Menu.SignOut'|trans }}</a></li>
             </ul>
           </div>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="{{ path('home') }}">Accueil</a></li>
-              <li><a href="{{ path('contact') }}">Contact</a></li>
-              <li><a href="{{ path('about') }}">A propos</a></li>
+              <li class="active"><a href="{{ path('home') }}">{{ 'Menu.homepage'|trans }}</a></li>
+              <li><a href="{{ path('contact') }}">{{ 'Menu.contact'|trans }}</a></li>
+              <li><a href="{{ path('about') }}">{{ 'Menu.about'|trans }}</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -63,10 +63,11 @@
         <div class="span3">
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
-              <li class="nav-header"><a href="{{ path('catalog') }}">Gestion du  cataloque</a></li>
-				<li><a href="{{ path('products_list') }}">Gestion des produits </a></li>
-				<li><a href="{{ path('categories') }}">Gestion des catégories </a></li>
-				<li><a href="{{ path('suppliers') }}">Gestion des fournisseurs </a></li>
+              <li class="nav-header"><a href="{{ path('catalog') }}">{{ 'Menu.CatalogManagement'|trans }}</a></li>
+				<li><a href="{{ path('products_list') }}">{{ 'Menu.ProductsManagement'|trans }}</a></li>
+				<li><a href="{{ path('categories_list') }}">{{ 'Menu.CategoriesManagement'|trans }}</a></li>
+				<li><a href="{{ path('taxes_list') }}">{{ 'Menu.TaxesManagement'|trans }}</a></li>
+				<li><a href="{{ path('suppliers_list') }}">{{ 'Menu.SuppliersManagement'|trans }}</a></li>
 			</ul>
           </div><!--/.well -->
         </div><!--/span-->

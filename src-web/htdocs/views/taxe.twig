@@ -1,0 +1,29 @@
+{% extends layout %}
+
+{% block title %}{{ 'Menu.TaxesManagement'|trans }}{% endblock %}
+{% block description %}{{ 'Menu.TaxesManagement'|trans }}{% endblock %}
+{% block keywords %}{% endblock %}
+
+{% block content %}
+	<h2></h2>
+
+	<table>
+	<thead>
+	<tr>
+	<th>Code</th>
+	<th>Référence</th>
+	<th>Libellé</th>
+	<th>action</th>
+	</tr>
+	</thead>
+	<tbody>
+		{% set vars = {'taxes': taxe} %}
+		<tr>
+		{% include 'taxes-line.twig' with vars %}
+
+		</tr>
+	</tbody>
+	</table>
+	<p><a href="{{ path('taxe_delete', { 'id': 'new' } ) }}">supprimer cette catégorie de Taxe</a></p>
+
+{% endblock %}
