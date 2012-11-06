@@ -342,7 +342,11 @@ public class StockManagement extends JPanel implements JPanelView {
         }
 
         // si se ha grabado se imprime, si no, no.
-        printTicket(rec);   
+        String sresource = m_dlSystem.getResourceAsXML("Printer.Inventory");
+	if (sresource.length() > 25) {
+	        printTicket(rec);
+	}
+
     }
     
     private void printTicket(InventoryRecord invrec) {
