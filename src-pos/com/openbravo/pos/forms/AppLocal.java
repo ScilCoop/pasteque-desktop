@@ -31,7 +31,7 @@ public class AppLocal {
     
     public static final String APP_NAME = "POS-Tech";
     public static final String APP_ID = "postech";
-    public static final String APP_VERSION = "1.1.2";
+    public static final String APP_VERSION = "1.1.3";
     public static final String DB_VERSION = "2";
   
     // private static List<ResourceBundle> m_messages;
