@@ -38,9 +38,6 @@
     <!-- read in property files -->
     <property file="build.properties" />
     <property name="src.pos" value="${basedir}/src-pos"/>
-    <property name="src.data" value="${basedir}/src-data"/>
-    <property name="src.beans" value="${basedir}/src-beans"/>
-    <property name="src.erp" value="${basedir}/src-erp"/>
     <property name="reports" value="${basedir}/reports"/>
     <property name="locales" value="${basedir}/locales"/>
     <property name="graphics.src" value="${basedir}/graphics-src"/>
@@ -81,48 +78,7 @@
     <!-- ================================================================= -->
     <!-- C O M P I L E                                                     -->
     <!-- ================================================================= -->
-    <target name="compilebeans" depends="init.classes">
-        <mkdir dir="${dest.classes}/beans" />
-        <javac srcdir="${src.beans}"
-               destdir="${dest.classes}/beans"
-               debug="${javac.debug}"
-               deprecation="${javac.deprecation}"
-               optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
-        </javac>
-        <copy todir="${dest.classes}/beans">
-            <fileset dir="${src.beans}">
-                <exclude name="**/*.java"/>
-                <exclude name="**/*.form"/>
-                <exclude name="**/.nbattrs"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="**/filesystem.attributes"/>
-            </fileset>
-        </copy>                
-    </target>
-    <target name="compiledata" depends="init.classes,compilebeans">
-        <mkdir dir="${dest.classes}/data" />
-        <javac srcdir="${src.data}"
-               destdir="${dest.classes}/data"
-               debug="${javac.debug}"
-               deprecation="${javac.deprecation}"
-               optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
-            <classpath>
-                <pathelement location="${dest.classes}/beans"/>
-            </classpath>
-		</javac>
-        <copy todir="${dest.classes}/data">
-            <fileset dir="${src.data}">
-                <exclude name="**/*.java"/>
-                <exclude name="**/*.form"/>
-                <exclude name="**/.nbattrs"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="**/filesystem.attributes"/>
-            </fileset>
-        </copy>                
-    </target>
-    <target name="compilepos" depends="init.classes,compilebeans,compiledata">
+    <target name="compile" depends="init.classes">
         <mkdir dir="${dest.classes}/pos" />
         <javac srcdir="${src.pos}"
                destdir="${dest.classes}/pos"
@@ -153,13 +109,11 @@
     <!-- J A R                           				   -->
     <!-- ================================================================= -->
 
-    <target name="jar" depends="init.jar,compilebeans,compiledata,compilepos" description="Generate the .jar file.">
+    <target name="jar" depends="init.jar,compile" description="Generate the .jar file.">
 
         <mkdir dir="${basedir}/build/zip" />
 
         <copy todir="${basedir}/build/zip">
-            <fileset dir="${dest.classes}/beans"/>
-            <fileset dir="${dest.classes}/data"/>
             <fileset dir="${dest.classes}/pos"/>
         </copy>  
         <mkdir dir="${dest.jar}" />
@@ -220,20 +174,6 @@
 
         <!-- Openbravo POS -->
 
-        <copy todir="${basedir}/build/zip/src-beans">
-            <fileset dir="${src.beans}">
-                <exclude name="**/.nbattrs"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="**/filesystem.attributes"/>
-            </fileset>
-        </copy>
-        <copy todir="${basedir}/build/zip/src-data">
-            <fileset dir="${src.data}">
-                <exclude name="**/.nbattrs"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="**/filesystem.attributes" />
-            </fileset>
-        </copy>
         <copy todir="${basedir}/build/zip/src-pos">
             <fileset dir="${src.pos}">
                 <exclude name="**/.nbattrs"/>
