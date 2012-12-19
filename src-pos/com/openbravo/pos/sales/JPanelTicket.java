@@ -148,12 +148,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
         dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
         dlCustomers = (DataLogicCustomers) m_App.getBean("com.openbravo.pos.customers.DataLogicCustomers");
-                    
 
-        if (!m_App.getDeviceScale().existsScale()) {
-            lineBtnsContainer.remove(m_jbtnScale);
-        }
-        
         m_ticketsbag = getJTicketsBag();
         m_jPanelBag.add(m_ticketsbag.getBagComponent(), BorderLayout.LINE_START);
         add(m_ticketsbag.getNullComponent(), "null");
@@ -1268,7 +1263,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         JPanel m_jPanContainer = new JPanel(); // The main container
         m_jButtonsExt = new JPanel();
-        m_jbtnScale = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/scale.png")), AppLocal.getIntString("Button.m_jbtnScale.toolTip"));
         m_jPanelBag = new JPanel();
         lineBtnsContainer = new JPanel();
         m_jUp = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")), AppLocal.getIntString("Button.m_jUpSales.toolTip"));
@@ -1473,21 +1467,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridy = y++;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
         lineBtnsContainer.add(jEditAttributes, cstr);
-        
-        // Scales button (hidden if disabled, see init)
-        m_jbtnScale.setFocusPainted(false);
-        m_jbtnScale.setFocusable(false);
-        m_jbtnScale.setRequestFocusEnabled(false);
-        m_jbtnScale.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jbtnScaleActionPerformed(evt);
-            }
-        });
-        cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
-        cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(m_jbtnScale, cstr);
         
         // Line discount button
         m_jbtnLineDiscount.setFocusPainted(false);
@@ -1724,12 +1703,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         this.add(m_jPanContainer, "ticket");
     }
 
-    private void m_jbtnScaleActionPerformed(java.awt.event.ActionEvent evt) {
-
-        stateTransition('\u00a7');
-        
-    }
-
     private void m_jEditLineActionPerformed(java.awt.event.ActionEvent evt) {
         
         int i = m_ticketlines.getSelectedIndex();
@@ -1924,7 +1897,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JLabel m_jTotalEuros;
     private javax.swing.JButton m_jUp;
     private javax.swing.JToggleButton m_jaddtax;
-    private javax.swing.JButton m_jbtnScale;
     private javax.swing.JButton m_jbtnLineDiscount;
     private javax.swing.JPanel m_jInputContainer;
 
