@@ -53,17 +53,6 @@
     <class name="com.openbravo.pos.inventory.TaxPanel"/>
     <class name="com.openbravo.pos.inventory.TaxCategoriesPanel"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
-    <class name="/com/openbravo/reports/products.bs"/>     
-    <class name="/com/openbravo/reports/productlabels.bs"/>     
-    <class name="/com/openbravo/reports/productscatalog.bs"/>
-    <class name="com.openbravo.pos.forms.MenuSalesManagement"/>
-    <class name="/com/openbravo/reports/usersales.bs"/>
-    <class name="/com/openbravo/reports/closedproducts.bs"/>
-    <class name="/com/openbravo/reports/closedpos_aggregated.bs"/>
-    <class name="/com/openbravo/reports/taxes.bs"/>
-    <class name="/com/openbravo/reports/chartsales.bs"/>
-    <class name="/com/openbravo/reports/productsales.bs"/>
-    <class name="/com/openbravo/reports/placessales.bs"/>
     <class name="com.openbravo.pos.forms.MenuMaintenance"/>
     <class name="com.openbravo.pos.admin.PeoplePanel"/>
     <class name="com.openbravo.pos.admin.RolesPanel"/>
