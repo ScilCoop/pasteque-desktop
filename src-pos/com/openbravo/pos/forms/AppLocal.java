@@ -40,7 +40,6 @@ public class AppLocal {
     static {
         m_resources = new LocaleResources();
         m_resources.addBundleName("pos_messages");
-        m_resources.addBundleName("erp_messages");
     }
     
     /** Creates a new instance of AppLocal */
