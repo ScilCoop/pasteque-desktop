@@ -44,7 +44,6 @@
     <property name="reports" value="${basedir}/reports"/>
     <property name="locales" value="${basedir}/locales"/>
     <property name="graphics.src" value="${basedir}/graphics-src"/>
-    <property name="jetty.lib" value="${basedir}/jetty/lib"/>
     <property name="lib" value="${basedir}/lib"/>
 
     <!-- the jar directory -->
