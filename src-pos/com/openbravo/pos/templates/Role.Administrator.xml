@@ -44,10 +44,6 @@
     <class name="com.openbravo.pos.forms.MenuCatalogManagement"/>
     <class name="com.openbravo.pos.inventory.ProductsPanel"/>
     <class name="com.openbravo.pos.inventory.CategoriesPanel"/>
-    <class name="com.openbravo.pos.inventory.AttributesPanel"/>
-    <class name="com.openbravo.pos.inventory.AttributeValuesPanel"/>
-    <class name="com.openbravo.pos.inventory.AttributeSetsPanel"/>
-    <class name="com.openbravo.pos.inventory.AttributeUsePanel"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
     <class name="com.openbravo.pos.forms.MenuMaintenance"/>
     <class name="Menu.BackOffice"/>
