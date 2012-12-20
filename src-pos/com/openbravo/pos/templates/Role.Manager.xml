@@ -50,6 +50,7 @@
     <class name="com.openbravo.pos.inventory.TaxPanel"/>
     <class name="com.openbravo.pos.inventory.TaxCategoriesPanel"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
+    <class name="Menu.BackOffice"/>
     <class name="Menu.ChangePassword"/>
     <class name="button.print"/>
     <class name="button.opendrawer"/>

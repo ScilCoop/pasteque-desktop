@@ -53,6 +53,7 @@
     <class name="com.openbravo.pos.inventory.TaxCategoriesPanel"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
     <class name="com.openbravo.pos.forms.MenuMaintenance"/>
+    <class name="Menu.BackOffice"/>
     <class name="com.openbravo.pos.admin.PeoplePanel"/>
     <class name="com.openbravo.pos.admin.RolesPanel"/>
     <class name="com.openbravo.pos.admin.ResourcesPanel"/>

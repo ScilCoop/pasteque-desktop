@@ -27,6 +27,8 @@ import com.openbravo.pos.panels.JPanelOpenMoney;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -200,6 +202,9 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         public void addExitAction() {            
             addAction(new ExitAction("/com/openbravo/images/gohome.png", "Menu.Exit"));
         }
+        public void addBackOfficeAction() {
+            addAction(new OpenBackOfficeAction("/com/openbravo/images/package_settings.png", "Menu.BackOffice"));
+        }
         
         private void addAction(Action act) {
             
@@ -252,6 +257,9 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         }        
         public void addExitAction() {
             menudef.addMenuItem(new ExitAction("/com/openbravo/images/gohome.png", "Menu.Exit"));
+        }
+        public void addBackOfficeAction() {
+            menudef.addMenuItem(new OpenBackOfficeAction("/com/openbravo/images/package_settings.png", "Menu.BackOffice"));
         }
         public MenuDefinition getMenuDefinition() {
             return menudef;
@@ -325,6 +333,31 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                     m_appuser.setPassword(sNewPassword);
                 } catch (BasicException e) {
                     JMessageDialog.showMessage(JPrincipalApp.this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotchangepassword")));             
+                }
+            }
+        }
+    }
+    
+    private class OpenBackOfficeAction extends AbstractAction {
+        public OpenBackOfficeAction(String icon, String keytext) {
+            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            putValue(Action.NAME, AppLocal.getIntString(keytext));
+            putValue(AppUserView.ACTION_TASKNAME, keytext);            
+        }
+        
+        public void actionPerformed(ActionEvent evt) {
+            if (Desktop.isDesktopSupported()) {
+                final Desktop dt = Desktop.getDesktop();
+                String backOfficeUrl = AppConfig.loadedInstance.getProperty("server.backoffice");
+                if (backOfficeUrl == null) {
+                    JMessageDialog.showMessage(JPrincipalApp.this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("Message.BackOfficeURLNotDefined")));
+                }
+                if (dt.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        dt.browse(new URI(backOfficeUrl));
+                    } catch (URISyntaxException e) {
+                    } catch (IOException e) {
+                    }
                 }
             }
         }

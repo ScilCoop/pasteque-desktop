@@ -48,6 +48,7 @@
         submenu.addPanel("/com/openbravo/images/clipart.png", "Menu.Resources", "com.openbravo.pos.admin.ResourcesPanel");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Floors", "com.openbravo.pos.mant.JPanelFloors");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Tables", "com.openbravo.pos.mant.JPanelPlaces");
+    group.addBackOfficeAction();
     group = menu.addGroup("Menu.System");
     group.addChangePasswordAction();
     group.addPanel("/com/openbravo/images/package_settings.png", "Menu.Configuration", "com.openbravo.pos.config.JPanelConfiguration");
