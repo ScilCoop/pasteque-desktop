@@ -27,9 +27,6 @@
     group.addPanel("/com/openbravo/images/mycomputer.png", "Menu.CloseTPV", "com.openbravo.pos.panels.JPanelCloseMoney");
 
     group = menu.addGroup("Menu.Backoffice");
-    submenu = group.addSubmenu("/com/openbravo/images/contents.png", "Menu.Maintenance", "com.openbravo.pos.forms.MenuMaintenance");
-        submenu.addTitle("Menu.Maintenance.POS");
-        submenu.addPanel("/com/openbravo/images/clipart.png", "Menu.Resources", "com.openbravo.pos.admin.ResourcesPanel");
     group.addBackOfficeAction();
     group = menu.addGroup("Menu.System");
     group.addChangePasswordAction();
