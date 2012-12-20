@@ -38,11 +38,7 @@
     <class name="refund.cash"/>
     <class name="refund.cheque"/>
     <class name="refund.paper"/>
-    <class name="refund.magcard"/>   
-    <class name="com.openbravo.pos.forms.MenuCatalogManagement"/>
-    <class name="com.openbravo.pos.inventory.ProductsPanel"/>
-    <class name="com.openbravo.pos.inventory.CategoriesPanel"/>
-    <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
+    <class name="refund.magcard"/>
     <class name="Menu.BackOffice"/>
     <class name="Menu.ChangePassword"/>
     <class name="button.print"/>
