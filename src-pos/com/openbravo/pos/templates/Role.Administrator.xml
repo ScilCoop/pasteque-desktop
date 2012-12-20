@@ -48,9 +48,6 @@
     <class name="com.openbravo.pos.inventory.AttributeValuesPanel"/>
     <class name="com.openbravo.pos.inventory.AttributeSetsPanel"/>
     <class name="com.openbravo.pos.inventory.AttributeUsePanel"/>
-    <class name="com.openbravo.pos.forms.MenuTaxesManagement"/>
-    <class name="com.openbravo.pos.inventory.TaxPanel"/>
-    <class name="com.openbravo.pos.inventory.TaxCategoriesPanel"/>
     <class name="com.openbravo.pos.inventory.AuxiliarPanel"/>
     <class name="com.openbravo.pos.forms.MenuMaintenance"/>
     <class name="Menu.BackOffice"/>

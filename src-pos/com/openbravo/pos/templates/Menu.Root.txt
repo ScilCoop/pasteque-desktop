@@ -36,11 +36,6 @@
         submenu.addPanel("/com/openbravo/images/colorize_abc.png", "Menu.AttributeValues", "com.openbravo.pos.inventory.AttributeValuesPanel");
         submenu.addPanel("/com/openbravo/images/colorize_3.png", "Menu.AttributeSets", "com.openbravo.pos.inventory.AttributeSetsPanel");
         submenu.addPanel("/com/openbravo/images/colorize_star.png", "Menu.AttributeUse", "com.openbravo.pos.inventory.AttributeUsePanel");
-    submenu = group.addSubmenu("/com/openbravo/images/contents.png", "Menu.TaxesManagement", "com.openbravo.pos.forms.MenuTaxesManagement");
-        submenu.addTitle("Menu.TaxesManagement.Edit");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Taxes", "com.openbravo.pos.inventory.TaxPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.TaxCategories", "com.openbravo.pos.inventory.TaxCategoriesPanel");
-        submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.TaxCustCategories", "com.openbravo.pos.inventory.TaxCustCategoriesPanel");
     submenu = group.addSubmenu("/com/openbravo/images/contents.png", "Menu.Maintenance", "com.openbravo.pos.forms.MenuMaintenance");
         submenu.addTitle("Menu.Maintenance.POS");        
         submenu.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.Users", "com.openbravo.pos.admin.PeoplePanel");
