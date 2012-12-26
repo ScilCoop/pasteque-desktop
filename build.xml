@@ -49,6 +49,8 @@
     <property name="dest.classes" value="${basedir}/build/classes"/>
     <!-- where the distribution files go -->
     <property name="dest.dist" value="${basedir}/build/dist"/>
+    <!-- working directory for bin dist file -->
+    <property name="dest.bin" value="${basedir}/build/bin"/>
 
     <!-- ================================================================= -->
     <!-- I N I T                                                           -->
@@ -69,6 +71,10 @@
         <delete dir="${dest.dist}" />
     </target>
 
+    <target name="init.bin">
+        <delete dir="${dest.bin}" />
+    </target>
+    
     <!-- ================================================================= -->
     <!-- C O M P I L E                                                     -->
     <!-- ================================================================= -->
@@ -100,7 +106,7 @@
     </target>
 
     <!-- ================================================================= -->
-    <!-- J A R                           				   -->
+    <!-- J A R                                                             -->
     <!-- ================================================================= -->
 
     <target name="jar" depends="init.jar,compile" description="Generate the .jar file.">
@@ -132,35 +138,34 @@
     <target name="dist" depends="dist.bin,dist.src" description="Generate the release files">
     </target>
   
-    <target name="dist.bin" depends="init.dist,jar" description="Generate the bin zip file.">
-        <mkdir dir="${basedir}/build/zip" />
-        <copy file="${basedir}/start.bat" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/configure.bat" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/start.sh" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/configure.sh" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/pos-tech" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/pos-tech.desktop" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/install.sh" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/pos-tech-logo-128.png" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/README" todir="${basedir}/build/zip"/>
-        <copy file="${basedir}/logging.properties" todir="${basedir}/build/zip"/>
-        <copy file="${dest.jar}/${name}.jar" todir="${basedir}/build/zip"/>
-        <copy todir="${basedir}/build/zip/licensing">
+    <target name="dist.bin" depends="init.bin,init.dist,jar" description="Generate the bin zip file.">
+        <mkdir dir="${dest.bin}" />
+        <copy file="${basedir}/start.bat" todir="${dest.bin}"/>
+        <copy file="${basedir}/configure.bat" todir="${dest.bin}"/>
+        <copy file="${basedir}/start.sh" todir="${dest.bin}"/>
+        <copy file="${basedir}/configure.sh" todir="${dest.bin}"/>
+        <copy file="${basedir}/pos-tech" todir="${dest.bin}"/>
+        <copy file="${basedir}/pos-tech.desktop" todir="${dest.bin}"/>
+        <copy file="${basedir}/install.sh" todir="${dest.bin}"/>
+        <copy file="${basedir}/pos-tech-logo-128.png" todir="${dest.bin}"/>
+        <copy file="${basedir}/README" todir="${dest.bin}"/>
+        <copy file="${basedir}/logging.properties" todir="${dest.bin}"/>
+        <copy file="${dest.jar}/${name}.jar" todir="${dest.bin}"/>
+        <copy todir="${dest.bin}/licensing">
             <fileset dir="${basedir}/licensing"/>
         </copy>        
-        <copy todir="${basedir}/build/zip/lib">
+        <copy todir="${dest.bin}/lib">
             <fileset dir="${basedir}/lib"/>
         </copy>
-        <copy todir="${basedir}/build/zip/locales">
+        <copy todir="${dest.bin}/locales">
             <fileset dir="${basedir}/locales"/>
         </copy>
-        <copy todir="${basedir}/build/zip/reports">
+        <copy todir="${dest.bin}/reports">
             <fileset dir="${basedir}/reports"/>
         </copy>
 
         <mkdir dir="${dest.dist}" />
-        <zip zipfile="${dest.dist}/${name}_${version}_bin.zip" basedir="${basedir}/build/zip" />
-        <delete dir="${basedir}/build/zip" />
+        <zip zipfile="${dest.dist}/${name}_${version}_bin.zip" basedir="${dest.bin}" />
     </target>
 
     <target name="dist.src" depends="init.dist" description="Generate the src zip file.">
