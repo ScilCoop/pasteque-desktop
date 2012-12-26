@@ -49,8 +49,6 @@
     <property name="dest.classes" value="${basedir}/build/classes"/>
     <!-- where the distribution files go -->
     <property name="dest.dist" value="${basedir}/build/dist"/>
-    <!-- where the installers go -->
-    <property name="dest.installer.pos" value="${basedir}/build/installerpos"/>
 
     <!-- ================================================================= -->
     <!-- I N I T                                                           -->
@@ -69,10 +67,6 @@
 
     <target name="init.dist">
         <delete dir="${dest.dist}" />
-    </target>
-
-    <target name="init.installer.pos">
-        <delete dir="${dest.installer.pos}" />
     </target>
 
     <!-- ================================================================= -->
