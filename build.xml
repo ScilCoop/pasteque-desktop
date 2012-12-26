@@ -63,10 +63,6 @@
         <delete dir="${dest.jar}" />
     </target>
 
-    <target name="init.war">
-        <delete dir="${dest.war}" />
-    </target>
-
     <target name="init.dist">
         <delete dir="${dest.dist}" />
     </target>
