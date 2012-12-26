@@ -24,26 +24,32 @@ package com.openbravo.pos.config;
 import com.openbravo.data.user.DirtyManager;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import com.openbravo.pos.forms.AppConfig;
-import com.openbravo.pos.forms.AppLocal;
-import com.openbravo.pos.util.ReportUtils;
-import com.openbravo.pos.util.StringParser;
 import java.util.Map;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
 import org.jvnet.substance.skin.SkinInfo;
 
+import com.openbravo.pos.forms.AppConfig;
+import com.openbravo.pos.forms.AppLocal;
+import com.openbravo.pos.util.ReportUtils;
+import com.openbravo.pos.util.StringParser;
+import com.openbravo.pos.widgets.WidgetsBuilder;
+
 /**
  *
  * @author adrianromero
  */
-public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConfig {
+public class JPanelConfigGeneral extends PanelConfig {
 
     private DirtyManager dirty = new DirtyManager();
 
@@ -572,705 +578,310 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-
-        jPanel13 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jtxtMachineHostname = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jcboLAF = new javax.swing.JComboBox();
-        jLabel6 = new javax.swing.JLabel();
-        jcboMachineScreenmode = new javax.swing.JComboBox();
-        jLabel16 = new javax.swing.JLabel();
-        jcboTicketsBag = new javax.swing.JComboBox();
-        jLabel15 = new javax.swing.JLabel();
-        jcboMachineDisplay = new javax.swing.JComboBox();
-        m_jDisplayParams = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        jlblConnDisplay = new javax.swing.JLabel();
-        jcboConnDisplay = new javax.swing.JComboBox();
-        jlblDisplayPort = new javax.swing.JLabel();
-        jcboSerialDisplay = new javax.swing.JComboBox();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel20 = new javax.swing.JLabel();
-        m_jtxtJPOSName = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        jcboMachinePrinter = new javax.swing.JComboBox();
-        m_jPrinterParams1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jlblConnPrinter = new javax.swing.JLabel();
-        jcboConnPrinter = new javax.swing.JComboBox();
-        jlblPrinterPort = new javax.swing.JLabel();
-        jcboSerialPrinter = new javax.swing.JComboBox();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel21 = new javax.swing.JLabel();
-        m_jtxtJPOSPrinter = new javax.swing.JTextField();
-        m_jtxtJPOSDrawer = new javax.swing.JTextField();
-        jLabel24 = new javax.swing.JLabel();
-        jLabel18 = new javax.swing.JLabel();
-        jcboMachinePrinter2 = new javax.swing.JComboBox();
-        jLabel19 = new javax.swing.JLabel();
-        m_jPrinterParams2 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
-        jlblConnPrinter2 = new javax.swing.JLabel();
-        jcboConnPrinter2 = new javax.swing.JComboBox();
-        jlblPrinterPort2 = new javax.swing.JLabel();
-        jcboSerialPrinter2 = new javax.swing.JComboBox();
-        jPanel11 = new javax.swing.JPanel();
-        m_jtxtJPOSPrinter2 = new javax.swing.JTextField();
-        m_jtxtJPOSDrawer2 = new javax.swing.JTextField();
-        jLabel27 = new javax.swing.JLabel();
-        jLabel22 = new javax.swing.JLabel();
-        jcboMachinePrinter3 = new javax.swing.JComboBox();
-        jLabel25 = new javax.swing.JLabel();
-        jcboMachineScale = new javax.swing.JComboBox();
-        jLabel26 = new javax.swing.JLabel();
-        jcboMachineScanner = new javax.swing.JComboBox();
-        jLabel1 = new javax.swing.JLabel();
-        cboPrinters = new javax.swing.JComboBox();
-        m_jPrinterParams3 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        jlblConnPrinter3 = new javax.swing.JLabel();
-        jcboConnPrinter3 = new javax.swing.JComboBox();
-        jlblPrinterPort3 = new javax.swing.JLabel();
-        jcboSerialPrinter3 = new javax.swing.JComboBox();
-        jPanel12 = new javax.swing.JPanel();
-        m_jtxtJPOSPrinter3 = new javax.swing.JTextField();
-        m_jtxtJPOSDrawer3 = new javax.swing.JTextField();
-        jLabel28 = new javax.swing.JLabel();
-        jLabel23 = new javax.swing.JLabel();
-        m_jScaleParams = new javax.swing.JPanel();
-        jPanel16 = new javax.swing.JPanel();
-        jPanel17 = new javax.swing.JPanel();
-        jlblPrinterPort4 = new javax.swing.JLabel();
-        jcboSerialScale = new javax.swing.JComboBox();
-        m_jScannerParams = new javax.swing.JPanel();
-        jPanel24 = new javax.swing.JPanel();
-        jPanel19 = new javax.swing.JPanel();
-        jlblPrinterPort5 = new javax.swing.JLabel();
-        jcboSerialScanner = new javax.swing.JComboBox();
+        this.addOptionsContainer("Label.CashMachine");
+        this.jtxtMachineHostname = this.addTextParam("Label.MachineName");
+        this.jcboLAF = this.addComboBoxParam("label.looknfeel");
+        this.jcboMachineScreenmode = this.addComboBoxParam("Label.MachineScreen");
+        this.m_jcboScreenType = this.addComboBoxParam("Label.MachineScreenType");
+        this.jtxtScreenDensity = this.addTextParam("label.machinescreendensity");
+        this.jcbShowTitlebar = this.addCheckBoxParam("label.showtitlebar");
+        this.jcbShowFooterbar = this.addCheckBoxParam("label.showfooterbar");
+        this.jcbAutoHideMenu = this.addCheckBoxParam("label.autohidemenu");
+        this.jcboTicketsBag = this.addComboBoxParam("Label.Ticketsbag");
+        this.jcboMarginType = this.addComboBoxParam("Label.MarginType");
+        this.jcboMachineDisplay = this.addComboBoxParam("Label.MachineDisplay");
+        this.m_jDisplayParams = this.addSubparamZone();
+        this.jcboMachinePrinter = this.addComboBoxParam("Label.MachinePrinter");
+        this.m_jPrinterParams1 = this.addSubparamZone();
+        this.jcboMachinePrinter2 = this.addComboBoxParam("Label.MachinePrinter2");
+        this.m_jPrinterParams2 = this.addSubparamZone();
+        this.jcboMachinePrinter3 = this.addComboBoxParam("Label.MachinePrinter3");
+        this.m_jPrinterParams3 = this.addSubparamZone();
+        this.jcboMachineScale = this.addComboBoxParam("label.scale");
+        this.m_jScaleParams = this.addSubparamZone();
+        this.jcboMachineScanner = this.addComboBoxParam("label.scanner");
+        this.m_jScannerParams = this.addSubparamZone();
+        this.cboPrinters = this.addComboBoxParam("label.reportsprinter");
         
-        jlblScreenType = new javax.swing.JLabel();
-        m_jcboScreenType = new javax.swing.JComboBox();
-        
-        jtxtScreenDensity = new javax.swing.JTextField();
-        javax.swing.JLabel jlblScreenDensity = new JLabel();
-        jlblScreenDensity.setText(AppLocal.getIntString("label.machinescreendensity"));
+        GridBagConstraints cstr;
 
-        javax.swing.JLabel jlblShowTitlebar = new javax.swing.JLabel();
-        javax.swing.JLabel jlblShowFooterbar = new javax.swing.JLabel();       
-        jlblShowTitlebar.setText(AppLocal.getIntString("label.showtitlebar"));
-        jlblShowFooterbar.setText(AppLocal.getIntString("label.showfooterbar"));
-        jcbShowTitlebar = new javax.swing.JCheckBox();
-        jcbShowFooterbar = new javax.swing.JCheckBox();
-        
-        javax.swing.JLabel jlblMarginType = new javax.swing.JLabel(AppLocal.getIntString("Label.MarginType"));
-        jcboMarginType = new javax.swing.JComboBox();
-        
-        javax.swing.JLabel jlblAutoHideMenu = new javax.swing.JLabel();
-        jlblAutoHideMenu.setText(AppLocal.getIntString("label.autohidemenu"));
-        jcbAutoHideMenu = new JCheckBox();
-        
-
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder(AppLocal.getIntString("Label.CashMachine"))); // NOI18N
-
-        jLabel5.setText(AppLocal.getIntString("Label.MachineName")); // NOI18N
-
-        jLabel2.setText(AppLocal.getIntString("label.looknfeel")); // NOI18N
-
-        jLabel6.setText(AppLocal.getIntString("Label.MachineScreen")); // NOI18N
-        
-        jlblScreenType.setText(AppLocal.getIntString("Label.MachineScreenType"));
-
-        jLabel16.setText(AppLocal.getIntString("Label.Ticketsbag")); // NOI18N
-
-        jLabel15.setText(AppLocal.getIntString("Label.MachineDisplay")); // NOI18N
-
+        // Customer display subparams
         jcboMachineDisplay.addActionListener(new java.awt.event.ActionListener() {
+
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachineDisplayActionPerformed(evt);
             }
         });
-
-        m_jDisplayParams.setLayout(new java.awt.CardLayout());
+        // Empty
+        jPanel2 = new JPanel();
         m_jDisplayParams.add(jPanel2, "empty");
-
-        jlblConnDisplay.setText(AppLocal.getIntString("label.machinedisplayconn")); // NOI18N
-
-        jlblDisplayPort.setText(AppLocal.getIntString("label.machinedisplayport")); // NOI18N
-
+        // comm (serial)
+        jPanel1 = new JPanel();
+        jPanel1.setLayout(new GridBagLayout());
+        JLabel jlblConnDisplay = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machinedisplayconn"));
+        jcboConnDisplay = new javax.swing.JComboBox();
+        JLabel jlblDisplayPort = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machinedisplayport"));
+        jcboSerialDisplay = new javax.swing.JComboBox();
         jcboSerialDisplay.setEditable(true);
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblConnDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboConnDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlblDisplayPort, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboConnDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblDisplayPort)
-                    .addComponent(jcboSerialDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblConnDisplay))
-                .addGap(59, 59, 59))
-        );
-
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel1.add(jlblConnDisplay, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel1.add(jcboConnDisplay, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel1.add(jlblDisplayPort, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel1.add(jcboSerialDisplay, cstr);
         m_jDisplayParams.add(jPanel1, "comm");
-
-        jLabel20.setText(AppLocal.getIntString("Label.Name")); // NOI18N
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSName, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(270, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(m_jtxtJPOSName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20))
-                .addGap(184, 184, 184))
-        );
-
+        // javapos
+        jPanel3 = new JPanel();
+        jPanel3.setLayout(new GridBagLayout());
+        JLabel javaposNameLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.Name"));
+        m_jtxtJPOSName = new javax.swing.JTextField();
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel3.add(javaposNameLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel3.add(m_jtxtJPOSName, cstr);
         m_jDisplayParams.add(jPanel3, "javapos");
 
-        jLabel7.setText(AppLocal.getIntString("Label.MachinePrinter")); // NOI18N
-
+        // Printer1 subparams
         jcboMachinePrinter.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachinePrinterActionPerformed(evt);
             }
         });
-
-        m_jPrinterParams1.setLayout(new java.awt.CardLayout());
+        // empty
+        jPanel5 = new JPanel();
         m_jPrinterParams1.add(jPanel5, "empty");
-
-        jlblConnPrinter.setText(AppLocal.getIntString("label.machinedisplayconn")); // NOI18N
-
-        jlblPrinterPort.setText(AppLocal.getIntString("label.machineprinterport")); // NOI18N
-
+        // comm (serial)
+        jPanel6 = new JPanel();
+        jPanel6.setLayout(new GridBagLayout());
+        jlblConnPrinter = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machinedisplayconn"));
+        jcboConnPrinter = new javax.swing.JComboBox();
+        jlblPrinterPort = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machineprinterport"));
+        jcboSerialPrinter = new javax.swing.JComboBox();
         jcboSerialPrinter.setEditable(true);
-
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblConnPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboConnPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlblPrinterPort, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboConnPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblPrinterPort)
-                    .addComponent(jcboSerialPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblConnPrinter))
-                .addGap(195, 195, 195))
-        );
-
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel6.add(jlblConnPrinter, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel6.add(jcboConnPrinter, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel6.add(jlblPrinterPort, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel6.add(jcboSerialPrinter, cstr);
         m_jPrinterParams1.add(jPanel6, "comm");
-
-        jLabel21.setText(AppLocal.getIntString("label.javapos.drawer")); // NOI18N
-
-        jLabel24.setText(AppLocal.getIntString("label.javapos.printer")); // NOI18N
-
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSDrawer, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(m_jtxtJPOSPrinter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel21)
-                    .addComponent(m_jtxtJPOSDrawer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel24))
-                .addGap(184, 184, 184))
-        );
-
+        // javapos
+        jPanel4 = new JPanel();
+        jPanel4.setLayout(new GridBagLayout());
+        JLabel printer1javaposNameLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.printer"));
+        m_jtxtJPOSPrinter = new javax.swing.JTextField();
+        JLabel printer1javaposDrawerLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.drawer"));
+        m_jtxtJPOSDrawer = new javax.swing.JTextField();
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel4.add(printer1javaposNameLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel4.add(m_jtxtJPOSPrinter, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel4.add(printer1javaposDrawerLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel4.add(m_jtxtJPOSDrawer, cstr);
         m_jPrinterParams1.add(jPanel4, "javapos");
 
-        jLabel18.setText(AppLocal.getIntString("Label.MachinePrinter2")); // NOI18N
-
+        // Printer2 subparams
         jcboMachinePrinter2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachinePrinter2ActionPerformed(evt);
             }
         });
-
-        jLabel19.setText(AppLocal.getIntString("Label.MachinePrinter3")); // NOI18N
-
-        m_jPrinterParams2.setLayout(new java.awt.CardLayout());
+        // empty
+        jPanel7 = new JPanel();
         m_jPrinterParams2.add(jPanel7, "empty");
-
-        jlblConnPrinter2.setText(AppLocal.getIntString("label.machinedisplayconn")); // NOI18N
-
-        jlblPrinterPort2.setText(AppLocal.getIntString("label.machineprinterport")); // NOI18N
-
+        // comm (serial)
+        jPanel8 = new JPanel();
+        jPanel8.setLayout(new GridBagLayout());
+        jlblConnPrinter2 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machinedisplayconn"));
+        jcboConnPrinter2 = new javax.swing.JComboBox();
+        jlblPrinterPort2 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machineprinterport"));
+        jcboSerialPrinter2 = new javax.swing.JComboBox();
         jcboSerialPrinter2.setEditable(true);
-
-        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
-        jPanel8.setLayout(jPanel8Layout);
-        jPanel8Layout.setHorizontalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblConnPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboConnPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlblPrinterPort2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel8Layout.setVerticalGroup(
-            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel8Layout.createSequentialGroup()
-                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboConnPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblPrinterPort2)
-                    .addComponent(jcboSerialPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblConnPrinter2))
-                .addGap(205, 205, 205))
-        );
-
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel8.add(jlblConnPrinter2, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel8.add(jcboConnPrinter2, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel8.add(jlblPrinterPort2, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel8.add(jcboSerialPrinter2, cstr);
         m_jPrinterParams2.add(jPanel8, "comm");
-
-        jLabel27.setText(AppLocal.getIntString("label.javapos.printer")); // NOI18N
-
-        jLabel22.setText(AppLocal.getIntString("label.javapos.drawer")); // NOI18N
-
-        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
-        jPanel11.setLayout(jPanel11Layout);
-        jPanel11Layout.setHorizontalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSDrawer2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel11Layout.setVerticalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(m_jtxtJPOSPrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel22)
-                    .addComponent(m_jtxtJPOSDrawer2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel27))
-                .addGap(184, 184, 184))
-        );
-
+        // javapos
+        jPanel11 = new JPanel();
+        jPanel11.setLayout(new GridBagLayout());
+        JLabel printer2javaposNameLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.printer"));
+        m_jtxtJPOSPrinter2 = new javax.swing.JTextField();
+        JLabel printer2javaposDrawerLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.drawer"));
+        m_jtxtJPOSDrawer2 = new javax.swing.JTextField();
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel11.add(printer2javaposNameLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel11.add(m_jtxtJPOSPrinter2, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel11.add(printer2javaposDrawerLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel11.add(m_jtxtJPOSDrawer2, cstr);
         m_jPrinterParams2.add(jPanel11, "javapos");
 
+        // Printer3 subparams
         jcboMachinePrinter3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachinePrinter3ActionPerformed(evt);
             }
         });
-
-        jLabel25.setText(AppLocal.getIntString("label.scale")); // NOI18N
-
+        // empty
+        jPanel9 = new JPanel();
+        m_jPrinterParams3.add(jPanel9, "empty");
+        // comm (serial)
+        jPanel10 = new JPanel();
+        jPanel10.setLayout(new GridBagLayout());
+        jlblConnPrinter3 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machinedisplayconn"));
+        jcboConnPrinter3 = new JComboBox();
+        jlblPrinterPort3 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machineprinterport"));
+        jcboSerialPrinter3 = new JComboBox();
+        jcboSerialPrinter3.setEditable(true);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel10.add(jlblConnPrinter3, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel10.add(jcboConnPrinter3, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel10.add(jlblPrinterPort3, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel10.add(jcboSerialPrinter3, cstr);
+        m_jPrinterParams3.add(jPanel10, "comm");
+        // javapos
+        jPanel12 = new JPanel();
+        jPanel12.setLayout(new GridBagLayout());
+        JLabel printer3javaposNameLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.printer"));
+        m_jtxtJPOSPrinter3 = new javax.swing.JTextField();
+        JLabel printer3javaposDrawerLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.javapos.drawer"));
+        m_jtxtJPOSDrawer3 = new javax.swing.JTextField();
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel12.add(printer3javaposNameLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel12.add(m_jtxtJPOSPrinter3, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        jPanel12.add(printer3javaposDrawerLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        jPanel12.add(m_jtxtJPOSDrawer3, cstr);
+        m_jPrinterParams3.add(jPanel12, "javapos");
+        
+        // Scale subparams
         jcboMachineScale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachineScaleActionPerformed(evt);
             }
         });
+        // empty
+        jPanel16 = new JPanel();
+        m_jScaleParams.add(jPanel16, "empty");
+        // comm
+        jPanel17 = new JPanel();
+        jPanel17.setLayout(new GridBagLayout());
+        jlblPrinterPort4 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machineprinterport"));
+        jcboSerialScale = new JComboBox();
+        jcboSerialScale.setEditable(true);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel17.add(jlblPrinterPort4, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel17.add(jcboSerialScale, cstr);
+        m_jScaleParams.add(jPanel17, "comm");
 
-        jLabel26.setText(AppLocal.getIntString("label.scanner")); // NOI18N
-
+        // Scanner subparams
         jcboMachineScanner.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcboMachineScannerActionPerformed(evt);
             }
         });
-
-        jLabel1.setText(AppLocal.getIntString("label.reportsprinter")); // NOI18N
-
-        m_jPrinterParams3.setLayout(new java.awt.CardLayout());
-        m_jPrinterParams3.add(jPanel9, "empty");
-
-        jlblConnPrinter3.setText(AppLocal.getIntString("label.machinedisplayconn")); // NOI18N
-
-        jlblPrinterPort3.setText(AppLocal.getIntString("label.machineprinterport")); // NOI18N
-
-        jcboSerialPrinter3.setEditable(true);
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblConnPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboConnPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jlblPrinterPort3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(56, Short.MAX_VALUE))
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboConnPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblPrinterPort3)
-                    .addComponent(jcboSerialPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblConnPrinter3))
-                .addGap(125, 125, 125))
-        );
-
-        m_jPrinterParams3.add(jPanel10, "comm");
-
-        jLabel28.setText(AppLocal.getIntString("label.javapos.printer")); // NOI18N
-
-        jLabel23.setText(AppLocal.getIntString("label.javapos.drawer")); // NOI18N
-
-        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
-        jPanel12.setLayout(jPanel12Layout);
-        jPanel12Layout.setHorizontalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(m_jtxtJPOSDrawer3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(36, Short.MAX_VALUE))
-        );
-        jPanel12Layout.setVerticalGroup(
-            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel12Layout.createSequentialGroup()
-                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(m_jtxtJPOSPrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel23)
-                    .addComponent(m_jtxtJPOSDrawer3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel28))
-                .addGap(224, 224, 224))
-        );
-
-        m_jPrinterParams3.add(jPanel12, "javapos");
-
-        m_jScaleParams.setLayout(new java.awt.CardLayout());
-        m_jScaleParams.add(jPanel16, "empty");
-
-        jlblPrinterPort4.setText(AppLocal.getIntString("label.machineprinterport")); // NOI18N
-
-        jcboSerialScale.setEditable(true);
-
-        javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
-        jPanel17.setLayout(jPanel17Layout);
-        jPanel17Layout.setHorizontalGroup(
-            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel17Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblPrinterPort4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialScale, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(270, Short.MAX_VALUE))
-        );
-        jPanel17Layout.setVerticalGroup(
-            jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel17Layout.createSequentialGroup()
-                .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboSerialScale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblPrinterPort4))
-                .addGap(135, 135, 135))
-        );
-
-        m_jScaleParams.add(jPanel17, "comm");
-
-        m_jScannerParams.setLayout(new java.awt.CardLayout());
+        // empty
+        jPanel24 = new JPanel();
         m_jScannerParams.add(jPanel24, "empty");
-
-        jlblPrinterPort5.setText(AppLocal.getIntString("label.machineprinterport")); // NOI18N
-
+        // comm (serial)
+        jPanel19 = new JPanel();
+        jPanel19.setLayout(new GridBagLayout());
+        jlblPrinterPort5 = WidgetsBuilder.createLabel(AppLocal.getIntString("label.machineprinterport"));
+        jcboSerialScanner = new JComboBox();
         jcboSerialScanner.setEditable(true);
-
-        javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
-        jPanel19.setLayout(jPanel19Layout);
-        jPanel19Layout.setHorizontalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel19Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jlblPrinterPort5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jcboSerialScanner, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(270, Short.MAX_VALUE))
-        );
-        jPanel19Layout.setVerticalGroup(
-            jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel19Layout.createSequentialGroup()
-                .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jcboSerialScanner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jlblPrinterPort5))
-                .addGap(235, 235, 235))
-        );
-
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        jPanel19.add(jlblPrinterPort5, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        jPanel19.add(jcboSerialScanner, cstr);
         m_jScannerParams.add(jPanel19, "comm");
-
-        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
-        jPanel13.setLayout(jPanel13Layout);
-        jPanel13Layout.setHorizontalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachineDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jDisplayParams, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachinePrinter, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jPrinterParams1, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachinePrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jPrinterParams2, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachinePrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jPrinterParams3, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachineScale, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jScaleParams, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jcboMachineScanner, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(cboPrinters, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jScannerParams, javax.swing.GroupLayout.DEFAULT_SIZE, 484, Short.MAX_VALUE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtxtMachineHostname, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboLAF, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMachineScreenmode, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Screen type
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Screen density
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtxtScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Title and footer bars
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcbShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Auto hide menu
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Tickets
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboTicketsBag, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    // Margin type
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addComponent(jlblMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jcboMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
-        );
-        jPanel13Layout.setVerticalGroup(
-            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel13Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jtxtMachineHostname, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(6, 6, 6)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(jcboLAF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jcboMachineScreenmode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Screen type
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblScreenType)
-                    .addComponent(m_jcboScreenType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Screen density
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblScreenDensity)
-                    .addComponent(jtxtScreenDensity, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Title and footer bars
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblShowTitlebar)
-                    .addComponent(jcbShowTitlebar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblShowFooterbar)
-                    .addComponent(jcbShowFooterbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Auto hide Menu
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblAutoHideMenu)
-                    .addComponent(jcbAutoHideMenu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Tickets
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel16)
-                    .addComponent(jcboTicketsBag, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                // Margin type
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jlblMarginType)
-                    .addComponent(jcboMarginType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel15)
-                        .addComponent(jcboMachineDisplay, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(m_jDisplayParams, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel7)
-                        .addComponent(jcboMachinePrinter, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(m_jPrinterParams1, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel18)
-                        .addComponent(jcboMachinePrinter2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(m_jPrinterParams2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel19)
-                        .addComponent(jcboMachinePrinter3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(m_jPrinterParams3, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel25)
-                        .addComponent(jcboMachineScale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(m_jScaleParams, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel26)
-                            .addComponent(jcboMachineScanner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(cboPrinters, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(m_jScannerParams, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(17, Short.MAX_VALUE))
-        );
-    }// </editor-fold>//GEN-END:initComponents
+    }
 
     private void jcboMachineScannerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcboMachineScannerActionPerformed
         CardLayout cl = (CardLayout) (m_jScannerParams.getLayout());
@@ -1401,11 +1012,9 @@ public class JPanelConfigGeneral extends javax.swing.JPanel implements PanelConf
     private javax.swing.JComboBox jcboSerialScale;
     private javax.swing.JComboBox jcboSerialScanner;
     private javax.swing.JComboBox jcboTicketsBag;
-    private javax.swing.JLabel jlblConnDisplay;
     private javax.swing.JLabel jlblConnPrinter;
     private javax.swing.JLabel jlblConnPrinter2;
     private javax.swing.JLabel jlblConnPrinter3;
-    private javax.swing.JLabel jlblDisplayPort;
     private javax.swing.JLabel jlblPrinterPort;
     private javax.swing.JLabel jlblPrinterPort2;
     private javax.swing.JLabel jlblPrinterPort3;
