@@ -28,7 +28,11 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 
 public class WidgetsBuilder {
     
@@ -40,6 +44,10 @@ public class WidgetsBuilder {
     
     public static JButton createButton(ImageIcon icon) {
     	return WidgetsBuilder.createButton(icon, SIZE_MEDIUM);
+    }
+    
+    public static JButton createButton(String text) {
+        return WidgetsBuilder.createButton(null, text, SIZE_MEDIUM);
     }
     
     public static JButton createButton(ImageIcon icon, int size) {
@@ -80,15 +88,15 @@ public class WidgetsBuilder {
                 
                 int width = (int) widget.getPreferredSize().getWidth();
                 int height = (int) widget.getPreferredSize().getHeight();
-                widget.setMinimumSize(new Dimension(minWidth, minHeight));
-                // Some layout ignore minimum size, adjust preferred size in case
                 if (width < minWidth) {
-                    widget.setPreferredSize(new Dimension(minWidth, height));
                     width = minWidth;
                 }
                 if (height < minHeight) {
-                    widget.setPreferredSize(new Dimension(width, minHeight));
+                    height = minHeight;
                 }
+                widget.setMinimumSize(new Dimension(width, height));
+                // Some layout ignore minimum size, adjust preferred size in case
+                widget.setPreferredSize(new Dimension(width, height));
     	    }
     	}
     }
@@ -174,6 +182,32 @@ public class WidgetsBuilder {
         label.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         label.setOpaque(true);
         label.setRequestFocusEnabled(false);
+    }
+    
+    public static JTextField createTextField() {
+        JTextField field = new JTextField();
+        field.setFont(getFont(SIZE_MEDIUM));
+        return field;
+    }
+    public static JPasswordField createPasswordField() {
+        JPasswordField field = new JPasswordField();
+        field.setFont(getFont(SIZE_MEDIUM));
+        return field;    
+    }
+    public static JComboBox createComboBox() {
+        JComboBox box = new JComboBox();
+        box.setFont(getFont(SIZE_MEDIUM));
+        return box;
+    }
+    public static JCheckBox createCheckBox() {
+        JCheckBox box = new JCheckBox();
+        AppConfig cfg = AppConfig.loadedInstance;
+        if (cfg != null) {
+            if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
+    	        adaptSize(box, SIZE_MEDIUM);
+            }
+        }
+        return box;
     }
     
     public static ImageIcon createIcon(ImageIcon icon) {
