@@ -25,6 +25,7 @@ import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -65,6 +66,14 @@ public abstract class PanelConfig extends javax.swing.JPanel {
         return this.dirty.isDirty();
     }
     
+    protected void cstrInsets(GridBagConstraints cstr) {
+        AppConfig cfg = AppConfig.loadedInstance;
+        int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
+        if (this.y != 0) {
+            cstr.insets = new Insets(btnspacing, 0, 0, 0); 
+        }
+    }
+    
     protected JPanel addOptionsContainer(String titleCode) {
         JPanel container = new JPanel();
         container.setBorder(BorderFactory.createTitledBorder(AppLocal.getIntString(titleCode)));
@@ -94,6 +103,7 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 0;
             cstr.weightx = 0.25;
             cstr.anchor = GridBagConstraints.LINE_START;
+            this.cstrInsets(cstr);
             this.currentContainer.add(label, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
@@ -101,6 +111,7 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridwidth = 3;
             cstr.weightx = 0.75;
             cstr.fill = GridBagConstraints.HORIZONTAL;
+            this.cstrInsets(cstr);
             this.currentContainer.add(field, cstr);
             this.y++;
         }
@@ -126,18 +137,21 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 0;
             cstr.weightx = 0.25;
             cstr.anchor = GridBagConstraints.LINE_START;
+            this.cstrInsets(cstr);
             this.currentContainer.add(label, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
             cstr.gridx = 1;
             cstr.gridwidth = 2;
             cstr.weightx = 0.5;
+            this.cstrInsets(cstr);
             cstr.fill = GridBagConstraints.HORIZONTAL;
             this.currentContainer.add(field, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
             cstr.gridx = 3;
             cstr.weightx = 0.25;
+            this.cstrInsets(cstr);
             cstr.anchor = GridBagConstraints.LINE_START;
             this.currentContainer.add(open, cstr);
             this.y++;
@@ -155,12 +169,14 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 0;
             cstr.weightx = 0.25;
             cstr.anchor = GridBagConstraints.LINE_START;
+            this.cstrInsets(cstr);
             this.currentContainer.add(label, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
             cstr.gridx = 1;
             cstr.gridwidth = 3;
             cstr.weightx = 0.75;
+            this.cstrInsets(cstr);
             cstr.fill = GridBagConstraints.HORIZONTAL;
             this.currentContainer.add(field, cstr);
             this.y++;
@@ -176,6 +192,7 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 1;
             cstr.gridwidth = 3;
             cstr.weightx = 0.75;
+            this.cstrInsets(cstr);
             this.currentContainer.add(zone, cstr);
             this.y++;
         }
@@ -192,11 +209,13 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 0;
             cstr.weightx = 0.25;
             cstr.anchor = GridBagConstraints.LINE_START;
+            this.cstrInsets(cstr);
             this.currentContainer.add(label, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
             cstr.gridx = 3;
             cstr.weightx = 0.75;
+            this.cstrInsets(cstr);
             cstr.anchor = GridBagConstraints.LINE_START;
             this.currentContainer.add(checkBox, cstr);
             this.y++;
@@ -213,11 +232,13 @@ public abstract class PanelConfig extends javax.swing.JPanel {
             cstr.gridx = 0;
             cstr.weightx = 0.25;
             cstr.anchor = GridBagConstraints.LINE_START;
+            this.cstrInsets(cstr);
             this.currentContainer.add(lbl, cstr);
             cstr = new GridBagConstraints();
             cstr.gridy = this.y;
             cstr.gridx = 3;
             cstr.weightx = 0.75;
+            this.cstrInsets(cstr);
             cstr.anchor = GridBagConstraints.LINE_START;
             this.currentContainer.add(checkBox, cstr);
             this.y++;
