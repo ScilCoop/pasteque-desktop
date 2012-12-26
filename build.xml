@@ -143,6 +143,7 @@
         <copy file="${basedir}/start.bat" todir="${dest.bin}"/>
         <copy file="${basedir}/configure.bat" todir="${dest.bin}"/>
         <copy file="${basedir}/start.sh" todir="${dest.bin}"/>
+        <chmod file="${dest.bin}/start.sh" perm="755"/>
         <copy file="${basedir}/configure.sh" todir="${dest.bin}"/>
         <copy file="${basedir}/pos-tech" todir="${dest.bin}"/>
         <copy file="${basedir}/pos-tech.desktop" todir="${dest.bin}"/>
