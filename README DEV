@@ -1,0 +1,24 @@
+== Build and test ==
+
+On linux : 
+
+  $ ant
+  $ ./build/bin/start.sh
+
+== Send patchs ==
+
+If you have been developing on pos-tech locally and (still) don't have write access, you can submit all your commits in one shot using:
+
+  $ rm -Rf patches
+  $ git format-patch -o patches origin
+  $ git send-email --to pos-tech-devel@lists.scil.coop patches
+
+If you want to create a cover letter for multiple patches use:
+
+  $ git format-patch -o patches origin -n --cover-letter
+  $ git send-email --annotate --cover-letter --to pos-tech-devel@lists.scil.coop patches
+
+If you have multiple patch consider using:
+
+  $ git send-email --compose --no-chain-reply-to --to pos-tech-devel@lists.scil.coop patches
+
