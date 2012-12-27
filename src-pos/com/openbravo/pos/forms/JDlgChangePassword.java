@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.openbravo.data.gui.JMessageDialog;
 import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.util.Hashcypher;
 
 /**
@@ -105,7 +106,7 @@ public class JDlgChangePassword extends javax.swing.JDialog {
         setResizable(false);
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jcmdOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")));
+        jcmdOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         jcmdOK.setText(AppLocal.getIntString("Button.OK"));
         jcmdOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -115,7 +116,7 @@ public class JDlgChangePassword extends javax.swing.JDialog {
 
         jPanel2.add(jcmdOK);
 
-        jcmdCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")));
+        jcmdCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         jcmdCancel.setText(AppLocal.getIntString("Button.Cancel"));
         jcmdCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

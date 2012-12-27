@@ -20,17 +20,17 @@
 //    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
     group = menu.addGroup("Menu.Main");
-    group.addPanel("/com/openbravo/images/mycomputer.png", "Menu.Ticket", "com.openbravo.pos.sales.JPanelTicketSales");
-    group.addPanel("/com/openbravo/images/mycomputer.png", "Menu.TicketEdit", "com.openbravo.pos.sales.JPanelTicketEdits");
-    group.addPanel("/com/openbravo/images/kdmconfig.png", "Menu.CustomersPayment", "com.openbravo.pos.customers.CustomersPayment");
-    group.addPanel("/com/openbravo/images/mycomputer.png", "Menu.Payments", "com.openbravo.pos.panels.JPanelPayments");
-    group.addPanel("/com/openbravo/images/mycomputer.png", "Menu.CloseTPV", "com.openbravo.pos.panels.JPanelCloseMoney");
+    group.addPanel("menu_generic.png", "Menu.Ticket", "com.openbravo.pos.sales.JPanelTicketSales");
+    group.addPanel("menu_generic.png", "Menu.TicketEdit", "com.openbravo.pos.sales.JPanelTicketEdits");
+    group.addPanel("menu_generic.png", "Menu.CustomersPayment", "com.openbravo.pos.customers.CustomersPayment");
+    group.addPanel("menu_generic.png", "Menu.Payments", "com.openbravo.pos.panels.JPanelPayments");
+    group.addPanel("menu_generic.png", "Menu.CloseTPV", "com.openbravo.pos.panels.JPanelCloseMoney");
 
     group = menu.addGroup("Menu.Backoffice");
     group.addBackOfficeAction();
     group = menu.addGroup("Menu.System");
     group.addChangePasswordAction();
-    group.addPanel("/com/openbravo/images/package_settings.png", "Menu.Configuration", "com.openbravo.pos.config.JPanelConfiguration");
-    group.addPanel("/com/openbravo/images/fileprint.png", "Menu.Printer", "com.openbravo.pos.panels.JPanelPrinter");
+    group.addPanel("menu_settings.png", "Menu.Configuration", "com.openbravo.pos.config.JPanelConfiguration");
+    group.addPanel("menu_printer.png", "Menu.Printer", "com.openbravo.pos.panels.JPanelPrinter");
     group.addExitAction();
 

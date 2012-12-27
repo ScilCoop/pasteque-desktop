@@ -19,6 +19,8 @@
 
 package com.openbravo.pos.sales;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.CardLayout;
 import javax.swing.JOptionPane;
 import com.openbravo.pos.forms.AppLocal;
@@ -64,7 +66,7 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
 
         jPanEdit.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jBtnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png"))); // NOI18N
+        m_jBtnDelete.setIcon(ImageLoader.readImageIcon("tkt_delete.png"));
         m_jBtnDelete.setText(AppLocal.getIntString("Button.DeleteTicket")); // NOI18N
         m_jBtnDelete.setFocusPainted(false);
         m_jBtnDelete.setFocusable(false);
@@ -77,7 +79,7 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
         });
         jPanEdit.add(m_jBtnDelete);
 
-        m_jBtnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileclose.png"))); // NOI18N
+        m_jBtnCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         m_jBtnCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         m_jBtnCancel.setFocusPainted(false);
         m_jBtnCancel.setFocusable(false);
@@ -94,7 +96,7 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
 
         jPanRefund.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jBtnCancel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileclose.png"))); // NOI18N
+        m_jBtnCancel1.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         m_jBtnCancel1.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         m_jBtnCancel1.setFocusPainted(false);
         m_jBtnCancel1.setFocusable(false);

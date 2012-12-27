@@ -22,6 +22,7 @@
 package com.openbravo.pos.customers;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.QBFCompareEnum;
 import com.openbravo.data.user.EditorCreator;
 import com.openbravo.data.user.ListProvider;
@@ -236,7 +237,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         JButton clearBtn = WidgetsBuilder.createButton(null,
                                                        AppLocal.getIntString("button.clean"),
                                                        WidgetsBuilder.SIZE_MEDIUM);
-        JButton searchBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png")),
+        JButton searchBtn = WidgetsBuilder.createButton(ImageLoader.readImageIcon("execute.png"),
                                                         AppLocal.getIntString("button.executefilter"),
                                                         WidgetsBuilder.SIZE_MEDIUM);
         JPanel jPanel4 = new JPanel();
@@ -244,10 +245,10 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         jListCustomers = new javax.swing.JList();
         JPanel jPanel8 = new JPanel();
         JPanel jPanel1 = new JPanel();
-        jcmdOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        jcmdOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                              AppLocal.getIntString("Button.OK"),
                                              WidgetsBuilder.SIZE_MEDIUM);
-        jcmdCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        jcmdCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                  AppLocal.getIntString("Button.Cancel"),
                                                  WidgetsBuilder.SIZE_MEDIUM);
 

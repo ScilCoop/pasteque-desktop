@@ -36,6 +36,7 @@ import javax.swing.*;
 import com.openbravo.beans.RoundedBorder;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.JMessageDialog;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
@@ -101,11 +102,11 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
 //        m_principalnotificator.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("TextField.shadow")), javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 5)));        
         
         if (jButton1.getComponentOrientation().isLeftToRight()) {
-            menu_open = new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/menu-right.png"));
-            menu_close = new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/menu-left.png"));
+            menu_open = ImageLoader.readImageIcon("menu-right.png");
+            menu_close = ImageLoader.readImageIcon("menu-left.png");
         } else {
-            menu_open = new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/menu-left.png"));
-            menu_close = new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/menu-right.png"));
+            menu_open = ImageLoader.readImageIcon("menu-left.png");
+            menu_close = ImageLoader.readImageIcon("menu-right.png");
         }
         assignMenuButtonIcon();        
                 
@@ -197,13 +198,13 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
             return submenu;
         }        
         public void addChangePasswordAction() {            
-            addAction(new ChangePasswordAction("/com/openbravo/images/yast_security.png", "Menu.ChangePassword"));
+            addAction(new ChangePasswordAction("menu_password.png", "Menu.ChangePassword"));
         }       
         public void addExitAction() {            
-            addAction(new ExitAction("/com/openbravo/images/gohome.png", "Menu.Exit"));
+            addAction(new ExitAction("menu_logout.png", "Menu.Exit"));
         }
         public void addBackOfficeAction() {
-            addAction(new OpenBackOfficeAction("/com/openbravo/images/package_settings.png", "Menu.BackOffice"));
+            addAction(new OpenBackOfficeAction("menu_settings.png", "Menu.BackOffice"));
         }
         
         private void addAction(Action act) {
@@ -253,13 +254,13 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
             return submenu;
         } 
         public void addChangePasswordAction() {            
-            menudef.addMenuItem(new ChangePasswordAction("/com/openbravo/images/yast_security.png", "Menu.ChangePassword"));
+            menudef.addMenuItem(new ChangePasswordAction("menu_password.png", "Menu.ChangePassword"));
         }        
         public void addExitAction() {
-            menudef.addMenuItem(new ExitAction("/com/openbravo/images/gohome.png", "Menu.Exit"));
+            menudef.addMenuItem(new ExitAction("menu_logout.png", "Menu.Exit"));
         }
         public void addBackOfficeAction() {
-            menudef.addMenuItem(new OpenBackOfficeAction("/com/openbravo/images/package_settings.png", "Menu.BackOffice"));
+            menudef.addMenuItem(new OpenBackOfficeAction("menu_settings.png", "Menu.BackOffice"));
         }
         public MenuDefinition getMenuDefinition() {
             return menudef;
@@ -305,7 +306,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     private class ExitAction extends AbstractAction {
         
         public ExitAction(String icon, String keytext) {
-            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            putValue(Action.SMALL_ICON, ImageLoader.readImageIcon(icon));
             putValue(Action.NAME, AppLocal.getIntString(keytext));
             putValue(AppUserView.ACTION_TASKNAME, keytext);
         }
@@ -318,7 +319,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     // La accion de cambio de password..
     private class ChangePasswordAction extends AbstractAction {
         public ChangePasswordAction(String icon, String keytext) {
-            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            putValue(Action.SMALL_ICON, ImageLoader.readImageIcon(icon));
             putValue(Action.NAME, AppLocal.getIntString(keytext));
             putValue(AppUserView.ACTION_TASKNAME, keytext);
 
@@ -340,7 +341,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
     
     private class OpenBackOfficeAction extends AbstractAction {
         public OpenBackOfficeAction(String icon, String keytext) {
-            putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+            putValue(Action.SMALL_ICON, ImageLoader.readImageIcon(icon));
             putValue(Action.NAME, AppLocal.getIntString(keytext));
             putValue(AppUserView.ACTION_TASKNAME, keytext);            
         }

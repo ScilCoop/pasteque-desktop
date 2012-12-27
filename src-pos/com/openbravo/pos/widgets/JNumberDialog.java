@@ -28,6 +28,7 @@ import java.awt.Window;
 import javax.swing.Icon;
 import javax.swing.SwingUtilities;
 
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppLocal;
 
 /**
@@ -97,10 +98,10 @@ public class JNumberDialog extends javax.swing.JDialog {
     private void initComponents(int type) {
 
         jPanel1 = new javax.swing.JPanel();
-        jcmdOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        jcmdOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                              AppLocal.getIntString("Button.OK"),
                                              WidgetsBuilder.SIZE_MEDIUM);
-        jcmdCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        jcmdCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                              AppLocal.getIntString("Button.Cancel"),
                                              WidgetsBuilder.SIZE_MEDIUM);;
         jPanel2 = new javax.swing.JPanel();

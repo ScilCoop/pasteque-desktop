@@ -24,6 +24,8 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
+import com.openbravo.data.loader.ImageLoader;
+
 /**
  *
  * @author adrianromero
@@ -35,7 +37,7 @@ public class MenuPanelAction extends AbstractAction {
 
     /** Creates a new instance of MenuPanelAction */
     public MenuPanelAction(AppView app, String icon, String keytext, String sMyView) {
-        putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+        putValue(Action.SMALL_ICON, ImageLoader.readImageIcon(icon));
         putValue(Action.NAME, AppLocal.getIntString(keytext));
         putValue(AppUserView.ACTION_TASKNAME, sMyView);
         m_App = app;

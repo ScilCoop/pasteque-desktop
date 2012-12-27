@@ -23,9 +23,9 @@ package com.openbravo.pos.util;
 
 import java.awt.image.*;
 import java.awt.*;
-import javax.imageio.ImageIO;
 import javax.swing.JTextArea;
 
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.widgets.WidgetsBuilder;
 
 public class ThumbNailBuilder {
@@ -48,7 +48,7 @@ public class ThumbNailBuilder {
         
         Image defimg;
         try {
-            init(width, height, ImageIO.read(getClass().getClassLoader().getResourceAsStream(img)));               
+            init(width, height, ImageLoader.readImage(img));               
         } catch (Exception fnfe) {
             init(width, height, null);
         }                 

@@ -23,6 +23,7 @@ import com.openbravo.beans.JCalendarDialog;
 import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.gui.ListQBFModelNumber;
 import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.QBFCompareEnum;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.EditorCreator;
@@ -330,7 +331,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
 
         jTxtEndDate.setPreferredSize(new java.awt.Dimension(200, 25));
 
-        btnDateStart.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
+        btnDateStart.setIcon(ImageLoader.readImageIcon("calendar.png"));
         btnDateStart.setPreferredSize(new java.awt.Dimension(50, 25));
         btnDateStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -338,7 +339,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
             }
         });
 
-        btnDateEnd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/date.png"))); // NOI18N
+        btnDateEnd.setIcon(ImageLoader.readImageIcon("calendar.png"));
         btnDateEnd.setPreferredSize(new java.awt.Dimension(50, 25));
         btnDateEnd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -348,7 +349,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
 
         jtxtCustomer.setPreferredSize(new java.awt.Dimension(200, 25));
 
-        btnCustomer.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png"))); // NOI18N
+        btnCustomer.setIcon(ImageLoader.readImageIcon("tkt_assign_customer.png"));
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -453,7 +454,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         });
         jPanel6.add(jButton1);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png"))); // NOI18N
+        jButton3.setIcon(ImageLoader.readImageIcon("execute.png"));
         jButton3.setText(AppLocal.getIntString("button.executefilter")); // NOI18N
         jButton3.setFocusPainted(false);
         jButton3.setFocusable(false);
@@ -492,7 +493,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
 
         jPanel8.setLayout(new java.awt.BorderLayout());
 
-        jcmdOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        jcmdOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         jcmdOK.setText(AppLocal.getIntString("Button.OK")); // NOI18N
         jcmdOK.setEnabled(false);
         jcmdOK.setFocusPainted(false);
@@ -506,7 +507,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         });
         jPanel1.add(jcmdOK);
 
-        jcmdCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
+        jcmdCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         jcmdCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         jcmdCancel.setFocusPainted(false);
         jcmdCancel.setFocusable(false);

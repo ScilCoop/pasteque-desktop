@@ -26,6 +26,7 @@ import java.util.*;
 import javax.swing.*;
 
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.pos.sales.*;
 import com.openbravo.pos.forms.*;
@@ -146,9 +147,9 @@ public class JTicketsBagShared extends JTicketsBag {
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
         jPanel1 = new javax.swing.JPanel();
-        m_jNewTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editnew.png")), AppLocal.getIntString("Button.m_jNewTicket.toolTip"));
-        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")), AppLocal.getIntString("Button.m_jDelTicket.toolTip"));
-        m_jListTickets = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/unsortedList.png")), AppLocal.getIntString("Button.m_jListTickets.toolTip"));
+        m_jNewTicket = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_new.png"), AppLocal.getIntString("Button.m_jNewTicket.toolTip"));
+        m_jDelTicket = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_delete.png"), AppLocal.getIntString("Button.m_jDelTicket.toolTip"));
+        m_jListTickets = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_list.png"), AppLocal.getIntString("Button.m_jListTickets.toolTip"));
 
         setLayout(new java.awt.BorderLayout());
 

@@ -26,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import com.openbravo.beans.JPasswordDialog;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppLocal;
 
 public class Hashcypher {
@@ -73,12 +74,12 @@ public class Hashcypher {
         String sPassword = JPasswordDialog.showEditPassword(parent,                 
                 AppLocal.getIntString("Label.Password"), 
                 AppLocal.getIntString("label.passwordnew"),
-                new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
+                ImageLoader.readImageIcon("password"));
         if (sPassword != null) {
             String sPassword2 = JPasswordDialog.showEditPassword(parent,                 
                     AppLocal.getIntString("Label.Password"), 
                     AppLocal.getIntString("label.passwordrepeat"),
-                    new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
+                    ImageLoader.readImageIcon("password.png"));
             if (sPassword2 != null) {
                 if (sPassword.equals(sPassword2)) {
                     return  Hashcypher.hashString(sPassword);
@@ -97,7 +98,7 @@ public class Hashcypher {
         String sPassword = JPasswordDialog.showEditPassword(parent,                 
                 AppLocal.getIntString("Label.Password"), 
                 AppLocal.getIntString("label.passwordold"),
-                new ImageIcon(Hashcypher.class.getResource("/com/openbravo/images/password.png")));
+                ImageLoader.readImageIcon("password.png"));
         if (sPassword != null) {
             if (Hashcypher.authenticate(sPassword, sOldPassword)) {
                 return changePassword(parent);               

@@ -30,6 +30,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.ImageUtils;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.pos.util.ThumbNailBuilder;
@@ -48,7 +49,7 @@ public class Floor implements SerializableRead {
     /** Creates a new instance of Floor */
     public Floor() {
         try {
-            defimg = ImageIO.read(getClass().getClassLoader().getResourceAsStream("com/openbravo/images/atlantikdesigner.png"));               
+            defimg = ImageLoader.readImage("floor_map.png");               
         } catch (Exception fnfe) {
         }            
     }

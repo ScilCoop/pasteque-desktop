@@ -21,6 +21,7 @@
 
 package com.openbravo.pos.sales;
 
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
@@ -108,19 +109,19 @@ public class ReceiptSplit extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel2 = new javax.swing.JPanel();
-        m_jButtonOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        m_jButtonOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                                   AppLocal.getIntString("Button.OK"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
-        m_jButtonCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        m_jButtonCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                   AppLocal.getIntString("Button.Cancel"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
         jPanel1 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        jBtnToRightAll = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/2rightarrow.png")));
-        jBtnToRightOne = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1rightarrow.png")));
-        jBtnToLeftOne = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1leftarrow.png")));
-        jBtnToLeftAll = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/2leftarrow.png")));
+        jBtnToRightAll = WidgetsBuilder.createButton(ImageLoader.readImageIcon("right_twice.png"));
+        jBtnToRightOne = WidgetsBuilder.createButton(ImageLoader.readImageIcon("right_once.png"));
+        jBtnToLeftOne = WidgetsBuilder.createButton(ImageLoader.readImageIcon("left_once.png"));
+        jBtnToLeftAll = WidgetsBuilder.createButton(ImageLoader.readImageIcon("left_twice.png"));
         jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

@@ -23,10 +23,9 @@ import com.openbravo.pos.config.JFrmConfig;
 import java.awt.BorderLayout;
 import java.rmi.RemoteException;
 import javax.swing.JFrame;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.instance.AppMessage;
 import com.openbravo.pos.instance.InstanceManager;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  *
@@ -66,10 +65,7 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
             // Show the application
             add(m_rootapp, BorderLayout.CENTER);            
  
-            try {
-                this.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
-            } catch (IOException e) {
-            }   
+            this.setIconImage(ImageLoader.readImage("favicon.png"));
             setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
             pack();
             setLocationRelativeTo(null);        

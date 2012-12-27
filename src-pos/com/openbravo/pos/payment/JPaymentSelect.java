@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
@@ -157,7 +158,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             }
             
             jpayinterface.getComponent().applyComponentOrientation(getComponentOrientation());
-            ImageIcon icon = WidgetsBuilder.createIcon(new ImageIcon(getClass().getResource(jpay.getIconKey())));
+            ImageIcon icon = WidgetsBuilder.createIcon(ImageLoader.readImageIcon(jpay.getIconKey()));
             m_jTabPayment.addTab(
                     AppLocal.getIntString(jpay.getLabelKey()),
                     icon,
@@ -179,7 +180,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.cash"; }
         public String getLabelKey() { return "tab.cash"; }
-        public String getIconKey() { return "/com/openbravo/images/cash.png"; }
+        public String getIconKey() { return "payment_cash.png"; }
     }
         
     public class JPaymentChequeCreator implements JPaymentCreator {
@@ -188,7 +189,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.cheque"; }
         public String getLabelKey() { return "tab.cheque"; }
-        public String getIconKey() { return "/com/openbravo/images/desktop.png"; }
+        public String getIconKey() { return "payment_cheque.png"; }
     }  
         
     public class JPaymentPaperCreator implements JPaymentCreator {
@@ -197,7 +198,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.paper"; }
         public String getLabelKey() { return "tab.paper"; }
-        public String getIconKey() { return "/com/openbravo/images/knotes.png"; }
+        public String getIconKey() { return "payment_paper.png"; }
     }
    
     public class JPaymentMagcardCreator implements JPaymentCreator {
@@ -206,7 +207,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.magcard"; }
         public String getLabelKey() { return "tab.magcard"; }
-        public String getIconKey() { return "/com/openbravo/images/vcard.png"; }
+        public String getIconKey() { return "payment_magcard.png"; }
     }
         
     public class JPaymentFreeCreator implements JPaymentCreator {
@@ -215,7 +216,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.free"; }
         public String getLabelKey() { return "tab.free"; }
-        public String getIconKey() { return "/com/openbravo/images/package_toys.png"; }
+        public String getIconKey() { return "payment_free.png"; }
     }
         
     public class JPaymentDebtCreator implements JPaymentCreator {
@@ -224,7 +225,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "payment.debt"; }
         public String getLabelKey() { return "tab.debt"; }
-        public String getIconKey() { return "/com/openbravo/images/kdmconfig32.png"; }
+        public String getIconKey() { return "payment_debt.png"; }
     }   
         
     public class JPaymentCashRefundCreator implements JPaymentCreator {
@@ -233,7 +234,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "refund.cash"; }
         public String getLabelKey() { return "tab.cashrefund"; }
-        public String getIconKey() { return "/com/openbravo/images/cash.png"; }
+        public String getIconKey() { return "refund_cash.png"; }
     }
         
     public class JPaymentChequeRefundCreator implements JPaymentCreator {
@@ -242,7 +243,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "refund.cheque"; }
         public String getLabelKey() { return "tab.chequerefund"; }
-        public String getIconKey() { return "/com/openbravo/images/desktop.png"; }
+        public String getIconKey() { return "refund_cheque.png"; }
     }
        
     public class JPaymentPaperRefundCreator implements JPaymentCreator {
@@ -251,7 +252,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "refund.paper"; }
         public String getLabelKey() { return "tab.paper"; }
-        public String getIconKey() { return "/com/openbravo/images/knotes.png"; }
+        public String getIconKey() { return "refund_paper.png"; }
     }    
        
     public class JPaymentMagcardRefundCreator implements JPaymentCreator {
@@ -260,7 +261,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         }
         public String getKey() { return "refund.magcard"; }
         public String getLabelKey() { return "tab.magcard"; }
-        public String getIconKey() { return "/com/openbravo/images/vcard.png"; }
+        public String getIconKey() { return "refund_magcard.png"; }
     }    
     
     protected void setHeaderVisible(boolean value) {
@@ -330,18 +331,18 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
 
         jPanel4 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        m_jButtonAdd = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
-        m_jButtonRemove = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
+        m_jButtonAdd = WidgetsBuilder.createButton(ImageLoader.readImageIcon("payment_plus.png"));
+        m_jButtonRemove = WidgetsBuilder.createButton(ImageLoader.readImageIcon("payment_minus.png"));
         jPanel3 = new javax.swing.JPanel();
         m_jTabPayment = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         m_jButtonPrint = new javax.swing.JToggleButton();
         jPanel1 = new javax.swing.JPanel();
-        m_jButtonOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        m_jButtonOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                                   AppLocal.getIntString("Button.OK"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
-        m_jButtonCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        m_jButtonCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                   AppLocal.getIntString("Button.Cancel"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
         
@@ -360,8 +361,8 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         JLabel jlblParts = WidgetsBuilder.createLabel(AppLocal.getIntString("label.parts"));
         jlblPartsNumber = WidgetsBuilder.createLabel(String.valueOf(parts));
         WidgetsBuilder.inputStyle(jlblPartsNumber);
-        jbtnPartsPlus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
-        jbtnPartsMinus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
+        jbtnPartsPlus = WidgetsBuilder.createButton(ImageLoader.readImageIcon("payment_plus.png"));
+        jbtnPartsMinus = WidgetsBuilder.createButton(ImageLoader.readImageIcon("payment_minus.png"));
         jbtnPartsPlus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 partsPlusActionPerformed(evt);
@@ -436,7 +437,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         jPanel5.add(partsContainer, java.awt.BorderLayout.LINE_START);
 
         // Print/Ok/Cancel line
-        m_jButtonPrint.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileprint.png"))); // NOI18N
+        m_jButtonPrint.setIcon(ImageLoader.readImageIcon("tkt_print.png"));
         WidgetsBuilder.adaptSize(m_jButtonPrint, WidgetsBuilder.SIZE_MEDIUM);
         m_jButtonPrint.setSelected(true);
         m_jButtonPrint.setFocusPainted(false);

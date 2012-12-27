@@ -23,6 +23,7 @@ package com.openbravo.pos.sales.simple;
 
 import com.openbravo.pos.forms.*; 
 import javax.swing.*;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.sales.*;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.widgets.WidgetsBuilder;
@@ -68,7 +69,7 @@ public class JTicketsBagSimple extends JTicketsBag {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
+        m_jDelTicket = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_delete.png"));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 

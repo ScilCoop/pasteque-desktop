@@ -19,7 +19,7 @@
 
 package com.openbravo.pos.sales.shared;
 
-
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.sales.SharedTicketInfo;
 import java.awt.Component;
@@ -151,7 +151,7 @@ public class JTicketsBagSharedList extends javax.swing.JDialog {
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
         jPanel3.add(jPanel4);
 
-        m_jButtonCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
+        m_jButtonCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         m_jButtonCancel.setText(AppLocal.getIntString("Button.Close")); // NOI18N
         m_jButtonCancel.setFocusPainted(false);
         m_jButtonCancel.setFocusable(false);

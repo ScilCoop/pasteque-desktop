@@ -19,6 +19,8 @@
 
 package com.openbravo.data.gui;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import javax.swing.*;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.data.user.DirtyListener;
@@ -32,7 +34,7 @@ public class JLabelDirty extends JLabel {
     public JLabelDirty(DirtyManager dm) {
         
         if (m_IconModif == null) {
-            m_IconModif = new ImageIcon(getClass().getResource("/com/openbravo/images/edit.png"));
+            m_IconModif = ImageLoader.readImageIcon("edit.png");
         }
         if (m_IconNull == null) {
             m_IconNull = new NullIcon(16, 16);

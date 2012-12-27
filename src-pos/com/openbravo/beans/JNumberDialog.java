@@ -19,6 +19,8 @@
 
 package com.openbravo.beans;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -125,7 +127,7 @@ public class JNumberDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jcmdOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        jcmdOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         jcmdOK.setText(m_resources.getString("button.ok")); // NOI18N
         jcmdOK.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdOK.addActionListener(new java.awt.event.ActionListener() {
@@ -135,7 +137,7 @@ public class JNumberDialog extends javax.swing.JDialog {
         });
         jPanel1.add(jcmdOK);
 
-        jcmdCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
+        jcmdCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         jcmdCancel.setText(m_resources.getString("button.cancel")); // NOI18N
         jcmdCancel.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdCancel.addActionListener(new java.awt.event.ActionListener() {

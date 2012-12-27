@@ -32,6 +32,7 @@ import java.awt.event.*;
 import java.awt.*;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.gui.JMessageDialog;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.pos.forms.AppConfig;
@@ -80,9 +81,9 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jListCategories.addListSelectionListener(this);                
         m_jscrollcat.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         
-        tnbcat = new ThumbNailBuilder(32, 32, "com/openbravo/images/folder_yellow.png");
-        tnbsubcat = new ThumbNailBuilder(width, height, "com/openbravo/images/folder_yellow.png");
-        tnbbutton = new ThumbNailBuilder(width, height, "com/openbravo/images/package.png");
+        tnbcat = new ThumbNailBuilder(32, 32, "category_default.png");
+        tnbsubcat = new ThumbNailBuilder(width, height, "category_default.png");
+        tnbbutton = new ThumbNailBuilder(width, height, "product_default.png");
     }
     
     public Component getComponent() {
@@ -384,8 +385,8 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jListCategories = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        m_jUp = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")), AppLocal.getIntString("Button.m_jUpCatalog.toolTip"));
-        m_jDown = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")), AppLocal.getIntString("Button.m_jDownCatalog.toolTip"));
+        m_jUp = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_up.png"), AppLocal.getIntString("Button.m_jUpCatalog.toolTip"));
+        m_jDown = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_down.png"), AppLocal.getIntString("Button.m_jDownCatalog.toolTip"));
         m_jSubCategories = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_lblIndicator = new javax.swing.JLabel();
@@ -422,6 +423,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel3.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
         if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
+            m_jUp.setIcon(ImageLoader.readImageIcon("up.png"));
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
             m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -433,6 +435,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
             });
             jPanel3.add(m_jUp);
 
+            m_jDown.setIcon(ImageLoader.readImageIcon("down.png"));
             m_jDown.setFocusPainted(false);
             m_jDown.setFocusable(false);
             m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -467,7 +470,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel5.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
-        m_btnBack1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/3uparrow2.png"))); // NOI18N
+        m_btnBack1.setIcon(ImageLoader.readImageIcon("up.png"));
         m_btnBack1.setFocusPainted(false);
         m_btnBack1.setFocusable(false);
         m_btnBack1.setMargin(new java.awt.Insets(8, 14, 8, 14));

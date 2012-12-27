@@ -22,6 +22,7 @@ package com.openbravo.data.gui;
 import java.util.*;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.ComparatorCreator;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.LocalRes;
 import com.openbravo.data.loader.Vectorer;
 import com.openbravo.data.user.BrowseListener;
@@ -54,7 +55,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         
         if (iButtons == BUTTONS_ALL) {
             jbtnFirst = new javax.swing.JButton();
-            jbtnFirst.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/2leftarrow.png")));
+            jbtnFirst.setIcon(ImageLoader.readImageIcon("left_twice.png"));
             jbtnFirst.setMargin(new java.awt.Insets(2, 8, 2, 8));            
             jbtnFirst.setFocusPainted(false);
             jbtnFirst.setFocusable(false);
@@ -69,7 +70,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
 
         if (iButtons == BUTTONS_ALL) {
             jbtnPrev = new javax.swing.JButton();
-            jbtnPrev.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1leftarrow.png")));
+            jbtnPrev.setIcon(ImageLoader.readImageIcon("left_once.png"));
             jbtnPrev.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnPrev.setFocusPainted(false);
             jbtnPrev.setFocusable(false);
@@ -83,7 +84,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         }
 
         jbtnRefresh = new javax.swing.JButton();
-        jbtnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow.png")));
+        jbtnRefresh.setIcon(ImageLoader.readImageIcon("down_once.png"));
         jbtnRefresh.setMargin(new java.awt.Insets(2, 8, 2, 8));
         jbtnRefresh.setFocusPainted(false);
         jbtnRefresh.setFocusable(false);
@@ -97,7 +98,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
 
         if (iButtons == BUTTONS_ALL) {
             jbtnNext = new javax.swing.JButton();
-            jbtnNext.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1rightarrow.png")));
+            jbtnNext.setIcon(ImageLoader.readImageIcon("right_once.png"));
             jbtnNext.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnNext.setFocusPainted(false);
             jbtnNext.setFocusable(false);
@@ -112,7 +113,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
 
         if (iButtons == BUTTONS_ALL) {
             jbtnLast = new javax.swing.JButton();
-            jbtnLast.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/2rightarrow.png")));
+            jbtnLast.setIcon(ImageLoader.readImageIcon("right_twice.png"));
             jbtnLast.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnLast.setFocusPainted(false);
             jbtnLast.setFocusable(false);
@@ -129,7 +130,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
 
         if (bd.canLoadData()) {
             jbtnReload = new javax.swing.JButton();
-            jbtnReload.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/reload.png")));
+            jbtnReload.setIcon(ImageLoader.readImageIcon("reload.png"));
             jbtnReload.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnReload.setFocusPainted(false);
             jbtnReload.setFocusable(false);
@@ -149,7 +150,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         } else {
             m_LastFindInfo = new FindInfo(vec);
             jbtnFind = new javax.swing.JButton();
-            jbtnFind.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search.png")));
+            jbtnFind.setIcon(ImageLoader.readImageIcon("search.png"));
             jbtnFind.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnFind.setFocusPainted(false);
             jbtnFind.setFocusable(false);
@@ -165,7 +166,7 @@ public class JNavigator extends javax.swing.JPanel implements BrowseListener, St
         m_cc = cc;
         if (m_cc != null) {
             jbtnSort = new javax.swing.JButton();
-            jbtnSort.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/sort_incr.png")));
+            jbtnSort.setIcon(ImageLoader.readImageIcon("sort.png"));
             jbtnSort.setMargin(new java.awt.Insets(2, 8, 2, 8));
             jbtnSort.setFocusPainted(false);
             jbtnSort.setFocusable(false);

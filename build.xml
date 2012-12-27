@@ -148,8 +148,11 @@
         <copy todir="${dest.bin}/lib">
             <fileset dir="${basedir}/lib"/>
         </copy>
-        <copy todir="${dest.bin}/locales">
+        <copy todir="${dest.bin}/res/locales">
             <fileset dir="${basedir}/locales"/>
+        </copy>
+        <copy todir="${dest.bin}/res/images">
+            <fileset dir="${basedir}/images"/>
         </copy>
     </target>
 

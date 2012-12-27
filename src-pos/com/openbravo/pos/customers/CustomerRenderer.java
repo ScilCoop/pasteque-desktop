@@ -21,6 +21,7 @@
 
 package com.openbravo.pos.customers;
 
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.widgets.WidgetsBuilder;
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,7 @@ public class CustomerRenderer extends DefaultListCellRenderer {
     /** Creates a new instance of ProductRenderer */
     public CustomerRenderer() {
 
-        icocustomer = new ImageIcon(getClass().getClassLoader().getResource("com/openbravo/images/kdmconfig.png"));
+        icocustomer = ImageLoader.readImageIcon("customer_default.png");
     }
 
     @Override
