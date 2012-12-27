@@ -1,21 +1,23 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.ticket;
 
@@ -26,10 +28,11 @@ import com.openbravo.data.gui.ListQBFModelNumber;
 import com.openbravo.data.loader.QBFCompareEnum;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.EditorCreator;
-import com.openbravo.editor.JEditorKeys;
-import com.openbravo.editor.JEditorString;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.widgets.JEditorCurrency;
+import com.openbravo.pos.widgets.JEditorKeys;
+import com.openbravo.pos.widgets.JEditorString;
 
 public class ProductFilterSales extends javax.swing.JPanel implements EditorCreator {
     
@@ -125,16 +128,16 @@ public class ProductFilterSales extends javax.swing.JPanel implements EditorCrea
     private void initComponents() {
 
         jLabel5 = new javax.swing.JLabel();
-        m_jtxtName = new com.openbravo.editor.JEditorString();
+        m_jtxtName = new JEditorString();
         jLabel2 = new javax.swing.JLabel();
         m_jCategory = new javax.swing.JComboBox();
         jLabel4 = new javax.swing.JLabel();
         m_jCboPriceBuy = new javax.swing.JComboBox();
-        m_jPriceBuy = new com.openbravo.editor.JEditorCurrency();
+        m_jPriceBuy = new JEditorCurrency();
         jLabel3 = new javax.swing.JLabel();
         m_jCboPriceSell = new javax.swing.JComboBox();
-        m_jPriceSell = new com.openbravo.editor.JEditorCurrency();
-        m_jtxtBarCode = new com.openbravo.editor.JEditorString();
+        m_jPriceSell = new JEditorCurrency();
+        m_jtxtBarCode = new JEditorString();
         jLabel1 = new javax.swing.JLabel();
 
         setPreferredSize(new java.awt.Dimension(370, 170));
@@ -185,10 +188,10 @@ public class ProductFilterSales extends javax.swing.JPanel implements EditorCrea
     private javax.swing.JComboBox m_jCategory;
     private javax.swing.JComboBox m_jCboPriceBuy;
     private javax.swing.JComboBox m_jCboPriceSell;
-    private com.openbravo.editor.JEditorCurrency m_jPriceBuy;
-    private com.openbravo.editor.JEditorCurrency m_jPriceSell;
-    private com.openbravo.editor.JEditorString m_jtxtBarCode;
-    private com.openbravo.editor.JEditorString m_jtxtName;
+    private JEditorCurrency m_jPriceBuy;
+    private JEditorCurrency m_jPriceSell;
+    private JEditorString m_jtxtBarCode;
+    private JEditorString m_jtxtName;
     // End of variables declaration//GEN-END:variables
     
 }

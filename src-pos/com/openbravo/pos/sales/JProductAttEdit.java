@@ -1,21 +1,23 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
-//    Copyright (C) 2008-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//    POS-Tech
+//    Based upon Openbravo POS
 //
-//    This file is part of Openbravo POS.
+//    Copyright (C) 2007-2009 Openbravo, S.L.
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    This file is part of POS-Tech.
+//
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.sales;
 
@@ -33,6 +35,7 @@ import com.openbravo.data.loader.SerializerWriteString;
 import com.openbravo.data.loader.Session;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.inventory.AttributeSetInfo;
+import com.openbravo.pos.widgets.JEditorKeys;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -270,7 +273,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
         m_jButtonCancel = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new JEditorKeys();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -393,7 +396,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JButton m_jButtonCancel;
     private javax.swing.JButton m_jButtonOK;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private JEditorKeys m_jKeys;
     // End of variables declaration//GEN-END:variables
 
 }
