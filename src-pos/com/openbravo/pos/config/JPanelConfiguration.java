@@ -28,6 +28,8 @@ import java.awt.GridBagLayout;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import com.openbravo.basic.BasicException;
 
 import com.openbravo.pos.forms.*;
@@ -40,7 +42,9 @@ import com.openbravo.pos.widgets.WidgetsBuilder;
  * @author adrianromero
  */
 public class JPanelConfiguration extends JPanel implements JPanelView {
-        
+
+    private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
+
     private List<PanelConfig> m_panelconfig;
 
     private AppConfig config;
@@ -75,12 +79,14 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
     }
         
     private void restoreProperties() {
-        
-        if (config.delete()) {
-            loadProperties();
-        } else {
+        try {
+            config.restore();
+        } catch (IOException e) {
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotdeleteconfig")));            
+            logger.log(Level.SEVERE, "Unable to save configuration file", e);
         }
+        loadProperties();
+
     }
     
     private void loadProperties() {
@@ -105,6 +111,7 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
             JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.restartchanges"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);
         } catch (IOException e) {
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotsaveconfig"), e));
+            logger.log(Level.SEVERE, "Unable to save configuration file", e);
         }
     }
 

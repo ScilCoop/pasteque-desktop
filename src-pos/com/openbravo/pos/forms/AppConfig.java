@@ -67,6 +67,9 @@ public class AppConfig implements AppProperties {
     private File getDefaultConfig() {
         return new File(new File(System.getProperty("user.home")), "." + AppLocal.APP_ID + ".properties");
     }
+    private File getDefaultRestoreConfig() {
+        return new File(new File(System.getProperty("user.home")), "." + AppLocal.APP_ID + ".properties.restore");
+    }
     
     public String getProperty(String sKey) {
         String prop = m_propsconfig.getProperty(sKey);
@@ -118,6 +121,30 @@ public class AppConfig implements AppProperties {
     public boolean delete() {
         loadDefault();
         return configfile.delete();
+    }
+    public void restore() throws IOException {
+        File restore = new File(this.configfile.getAbsolutePath() + ".restore");
+        File currentConfig = this.configfile;
+        if (restore.exists()) {
+            this.configfile = restore;
+            this.load();
+            this.configfile = currentConfig; // keep same file for save
+            logger.info("Restored configuration from: " + restore.getAbsolutePath());
+        } else {
+            // Try with default restore file
+            File defaultConfig = this.getDefaultRestoreConfig();
+            if (defaultConfig.exists()) {
+                this.configfile = defaultConfig;
+                this.load();
+                this.configfile = currentConfig;
+                logger.info("Restored configuration from: " + defaultConfig.getAbsolutePath());
+            } else {
+                // No custom restore settings, use default.
+                this.loadDefault();
+                logger.info("Restored default configuration");
+            }
+        }
+        this.save();
     }
     
     public void load() {
