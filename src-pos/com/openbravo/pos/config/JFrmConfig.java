@@ -65,10 +65,14 @@ public class JFrmConfig extends javax.swing.JFrame {
                 BeanFactory bf = (BeanFactory) bfclass.newInstance();
                 dls = (DataLogicSystem) bf.getBean();
                 dls.init(this.session);
+                String dbVersion = dls.findDbVersion();
+                if (!AppLocal.DB_VERSION.equals(dbVersion)) {
+                    dls = null;
+                }
             }
         } catch (Exception e) {
+            dls = null;
         }
-        
         config = new JPanelConfiguration(props, dls);
         
         getContentPane().add(config, BorderLayout.CENTER);
