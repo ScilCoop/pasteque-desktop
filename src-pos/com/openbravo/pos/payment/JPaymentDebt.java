@@ -188,7 +188,8 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         m_jName = new javax.swing.JTextField();
         m_jName.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_MEDIUM));
         m_jName.setPreferredSize(new Dimension(m_jName.getPreferredSize().width, m_jName.getPreferredSize().height * 3));
-        m_jName.setEditable(false);        
+        m_jName.setEditable(false);
+        m_jName.setFocusable(false);
         debtInfoContainer.add(m_jName);
         // Third line: notes
         JLabel notes = WidgetsBuilder.createLabel(AppLocal.getIntString("label.notes"));
@@ -196,6 +197,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         m_jNotes = new javax.swing.JTextArea();
         m_jNotes.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_SMALL));
         m_jNotes.setEditable(false);
+        m_jNotes.setFocusable(false);
         debtInfoContainer.add(m_jNotes);
         // Fourth line: max debt
         JLabel maxDebt = WidgetsBuilder.createLabel(AppLocal.getIntString("label.maxdebt"));
@@ -203,6 +205,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         txtMaxdebt = new javax.swing.JTextField();
         txtMaxdebt.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_MEDIUM));
         txtMaxdebt.setEditable(false);
+        txtMaxdebt.setFocusable(false);
         txtMaxdebt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         debtInfoContainer.add(txtMaxdebt);
         // Fifth line: current debt
@@ -211,6 +214,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         txtCurdebt = new javax.swing.JTextField();
         txtCurdebt.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_MEDIUM));
         txtCurdebt.setEditable(false);
+        txtCurdebt.setFocusable(false);
         txtCurdebt.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         debtInfoContainer.add(txtCurdebt);
         // Sixth line: debt date
@@ -219,6 +223,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         txtCurdate = new javax.swing.JTextField();
         txtCurdate.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_MEDIUM));
         txtCurdate.setEditable(false);
+        txtCurdate.setFocusable(false);
         txtCurdate.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         debtInfoContainer.add(txtCurdate);
         // Footer message

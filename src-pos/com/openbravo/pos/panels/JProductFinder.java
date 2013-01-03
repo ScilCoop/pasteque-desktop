@@ -1,21 +1,23 @@
-//    Openbravo POS is a point of sales application designed for touch screens.
+//    POS-Tech
+//    Based upon Openbravo POS
+//
 //    Copyright (C) 2007-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                       2012 SARL SCOP Scil (http://scil.coop)
 //
-//    This file is part of Openbravo POS.
+//    This file is part of POS-Tech.
 //
-//    Openbravo POS is free software: you can redistribute it and/or modify
+//    POS-Tech is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
 //    the Free Software Foundation, either version 3 of the License, or
 //    (at your option) any later version.
 //
-//    Openbravo POS is distributed in the hope that it will be useful,
+//    POS-Tech is distributed in the hope that it will be useful,
 //    but WITHOUT ANY WARRANTY; without even the implied warranty of
 //    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //    GNU General Public License for more details.
 //
 //    You should have received a copy of the GNU General Public License
-//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+//    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
 package com.openbravo.pos.panels;
 
@@ -29,6 +31,8 @@ import com.openbravo.basic.BasicException;
 import com.openbravo.data.user.ListProvider;
 import com.openbravo.data.user.ListProviderCreator;
 import com.openbravo.pos.forms.DataLogicSales;
+import com.openbravo.pos.widgets.JEditorKeys;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 
 /**
  *
@@ -140,17 +144,23 @@ public class JProductFinder extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel4 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new JEditorKeys();
         jPanel2 = new javax.swing.JPanel();
         m_jProductSelect = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
+        searchBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png")),
+                                               AppLocal.getIntString("button.executefilter"),
+                                               WidgetsBuilder.SIZE_MEDIUM);
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListProducts = new javax.swing.JList();
         jPanel1 = new javax.swing.JPanel();
-        jcmdOK = new javax.swing.JButton();
-        jcmdCancel = new javax.swing.JButton();
+        jcmdOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+                                             AppLocal.getIntString("Button.OK"),
+                                             WidgetsBuilder.SIZE_MEDIUM);
+        jcmdCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+                                                 AppLocal.getIntString("Button.Cancel"),
+                                                 WidgetsBuilder.SIZE_MEDIUM);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(AppLocal.getIntString("form.productslist")); // NOI18N
@@ -164,14 +174,12 @@ public class JProductFinder extends javax.swing.JDialog {
 
         m_jProductSelect.setLayout(new java.awt.BorderLayout());
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png"))); // NOI18N
-        jButton3.setText(AppLocal.getIntString("button.executefilter")); // NOI18N
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        searchBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                searchBtnActionPerformed(evt);
             }
         });
-        jPanel3.add(jButton3);
+        jPanel3.add(searchBtn);
 
         m_jProductSelect.add(jPanel3, java.awt.BorderLayout.SOUTH);
 
@@ -201,10 +209,6 @@ public class JProductFinder extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jcmdOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
-        jcmdOK.setText(AppLocal.getIntString("Button.OK")); // NOI18N
-        jcmdOK.setEnabled(false);
-        jcmdOK.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcmdOKActionPerformed(evt);
@@ -212,9 +216,6 @@ public class JProductFinder extends javax.swing.JDialog {
         });
         jPanel1.add(jcmdOK);
 
-        jcmdCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
-        jcmdCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
-        jcmdCancel.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jcmdCancelActionPerformed(evt);
@@ -227,7 +228,19 @@ public class JProductFinder extends javax.swing.JDialog {
         getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds((screenSize.width-665)/2, (screenSize.height-565)/2, 665, 565);
+        int minWidth = 665;
+        int minHeight = 565;
+        int width = WidgetsBuilder.dipToPx(400);
+        int height = WidgetsBuilder.dipToPx(320);
+        width = Math.max(minWidth, width);
+        height = Math.max(minHeight, height);
+        // If popup is big enough, make it fullscreen
+        if (width > 0.8 * screenSize.width || height > 0.8 * screenSize.height) {
+            width = screenSize.width;
+            height = screenSize.height;
+            this.setUndecorated(true);
+        }
+        setBounds((screenSize.width-width)/2, (screenSize.height-height)/2, width, height);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jListProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListProductsMouseClicked
@@ -258,7 +271,7 @@ public class JProductFinder extends javax.swing.JDialog {
         
     }//GEN-LAST:event_jListProductsValueChanged
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
 
         try {
             jListProducts.setModel(new MyListData(lpr.loadData()));
@@ -269,11 +282,11 @@ public class JProductFinder extends javax.swing.JDialog {
             e.printStackTrace();
         }
         
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_searchBtnActionPerformed
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton searchBtn;
     private javax.swing.JList jListProducts;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -283,7 +296,7 @@ public class JProductFinder extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton jcmdCancel;
     private javax.swing.JButton jcmdOK;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private JEditorKeys m_jKeys;
     private javax.swing.JPanel m_jProductSelect;
     // End of variables declaration//GEN-END:variables
     

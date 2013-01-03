@@ -59,8 +59,6 @@ public class StringUtils {
                     buffer.append("&gt;");
                 } else if (charToCompare == '\"') {
                     buffer.append("&quot;");
-                } else if (charToCompare == '\'') {
-                    buffer.append("&apos;");
                 } else {
                     buffer.append(charToCompare);
                 }

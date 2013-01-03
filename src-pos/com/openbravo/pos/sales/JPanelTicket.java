@@ -885,8 +885,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     double dPor = getPorValue();
                     TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
                     if (m_oTicket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
-                        newline.setMultiply(dPor);
-                        newline.setPrice(-Math.abs(newline.getPrice()));
+                        newline.setMultiply(-dPor);
                         paintTicketLine(i, newline);
                     }           
                 }
