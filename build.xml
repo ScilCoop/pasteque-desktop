@@ -157,6 +157,32 @@
         </copy>
     </target>
 
+    <target name="debug" description="Fast compile and build update. Build must have been called once before">
+        <javac srcdir="${src.pos}"
+               destdir="${dest.classes}/pos"
+               includes="**"
+               debug="${javac.debug}"
+               deprecation="${javac.deprecation}"
+               optimize="${javac.optimize}"
+               target="${javac.minVMVersion}">
+            <classpath>
+                <fileset dir="${basedir}/lib">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+        <jar jarfile="${dest.bin}/${name}.jar"
+             compress="true"
+             basedir="${dest.classes}/pos">
+            <manifest>
+                <attribute name="Implementation-Vendor" value="Scil"/>
+                <attribute name="Implementation-Title" value="POS-Tech"/>
+                <attribute name="Implementation-Version" value="${version}"/>
+                <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
+            </manifest>
+        </jar>
+    </target>
+
     <!-- ================================================================= -->
     <!-- D I S T R I B U T I O N  F I L E S                                -->
     <!-- ================================================================= -->
