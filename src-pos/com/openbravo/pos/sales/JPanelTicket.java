@@ -286,7 +286,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
 
     private void refreshTicketLabel() {
-        String name = m_oTicket.getName(m_oTicketExt);
+        // Better view of customer's name by changing the color of text and remove hour and ticket's id 
+        String name = null;
+        if (m_oTicket.getCustomer() != null) {
+            CustomerInfoExt customerName = m_oTicket.getCustomer();
+            name = customerName.getName();
+            Color green = new Color(64,150,23);
+            m_jTicketId.setBackground(green);
+            m_jTicketId.setForeground(java.awt.Color.WHITE);
+        } else {
+            name = m_oTicket.getName(m_oTicketExt);
+            m_jTicketId.setForeground(java.awt.Color.DARK_GRAY);
+            m_jTicketId.setBackground(java.awt.Color.WHITE);
+        }
         if (m_oTicket.hasCustomersCount()) {
             name += " (" + m_oTicket.getCustomersCount() + ")";
         }
