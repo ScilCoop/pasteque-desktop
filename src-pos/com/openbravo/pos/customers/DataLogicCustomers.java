@@ -88,9 +88,31 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                         c.setSearchkey(dr.getString(3));
                         c.setName(dr.getString(4));
                         return c;
-                    }                
+                    }
                 });
     }
+
+    /** Gets the TOP 10 customer's list by number of tickets
+     * with their id
+     */
+    public SentenceList getTop10CustomerList() {
+        return new StaticSentence(s
+            , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
+            " TICKETS.CUSTOMER, Count( TICKETS.CUSTOMER ) AS Top10 FROM TICKETS " +
+            " INNER JOIN CUSTOMERS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
+            " WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) " +
+            " GROUP BY TICKETS.CUSTOMER ORDER BY Top10 DESC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
+            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
+            , new SerializerRead() {
+                    public Object readValues(DataRead dr) throws BasicException {
+                        CustomerInfo c = new CustomerInfo(dr.getString(1));
+                        c.setTaxid(dr.getString(2));
+                        c.setSearchkey(dr.getString(3));
+                        c.setName(dr.getString(4));
+                        return c;
+                    }
+    });
+}
        
     public int updateCustomerExt(final CustomerInfoExt customer) throws BasicException {
      

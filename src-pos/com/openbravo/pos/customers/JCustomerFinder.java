@@ -49,6 +49,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
 
     private CustomerInfo selectedCustomer;
     private ListProvider lpr;
+    private ListProvider lprTop10;
    
     /** Creates new form JCustomerFinder */
     private JCustomerFinder(java.awt.Frame parent, boolean modal) {
@@ -95,6 +96,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         m_jtxtTaxID.activate();
 
         lpr = new ListProviderCreator(dlCustomers.getCustomerList(), this);
+        lprTop10 = new ListProviderCreator(dlCustomers.getTop10CustomerList(), this);
 
         jListCustomers.setCellRenderer(new CustomerRenderer());
 
@@ -113,7 +115,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
 
             m_jtxtTaxID.activate();    
             
-            cleanSearch();
+            automaticTop10ClientSearch();
         } else {
             
             m_jtxtTaxID.setText(customer.getTaxid());
@@ -141,6 +143,21 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         }        
     }
     
+    /** Automatic filtering of customers when choosing the form
+     * to choose a client appears. Displays the top10
+     * of the customer's list by number of tickets with their id
+     */
+    public void automaticTop10ClientSearch(){
+        try {
+            jListCustomers.setModel(new MyListData(lprTop10.loadData()));
+            if (jListCustomers.getModel().getSize() > 0) {
+                jListCustomers.setSelectedIndex(0);
+            }
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Object createValue() throws BasicException {
         
         Object[] afilter = new Object[6];
