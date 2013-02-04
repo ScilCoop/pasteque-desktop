@@ -1266,16 +1266,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         JPanel m_jPanContainer = new JPanel(); // The main container
         m_jButtonsExt = new JPanel();
-        m_jbtnScale = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/scale.png")));
+        m_jbtnScale = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/scale.png")), AppLocal.getIntString("Button.m_jbtnScale.toolTip"));
         m_jPanelBag = new JPanel();
         lineBtnsContainer = new JPanel();
-        m_jUp = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")));
-        m_jDown = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")));
-        m_jDelete = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png")));
-        m_jList = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/search22.png")));
-        m_jEditLine = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png")));
-        m_jbtnLineDiscount = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/discount.png")));
-        jEditAttributes = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png")));
+        m_jUp = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")), AppLocal.getIntString("Button.m_jUpSales.toolTip"));
+        m_jDown = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")), AppLocal.getIntString("Button.m_jDownSales.toolTip"));
+        m_jDelete = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png")), AppLocal.getIntString("Button.m_jDelete.toolTip"));
+        m_jList = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/search22.png")), AppLocal.getIntString("Button.m_jList.toolTip"));
+        m_jEditLine = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/color_line.png")), AppLocal.getIntString("Button.m_jEditLine.toolTip"));
+        m_jbtnLineDiscount = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/discount.png")), AppLocal.getIntString("Button.m_jbtnLineDiscount.toolTip"));
+        jEditAttributes = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/colorize.png")), AppLocal.getIntString("Button.jEditAttributes.toolTip"));
         m_jPanelCentral = new JPanel();
         m_jPanTotals = new JPanel();
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
@@ -1289,7 +1289,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jPanel9 = new JPanel();
         m_jPrice = WidgetsBuilder.createLabel();
         m_jPor = WidgetsBuilder.createLabel();
-        m_jEnter = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png")));
+        m_jEnter = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/barcode.png")),AppLocal.getIntString("Button.m_jEnter.toolTip"));
         m_jTax = new JComboBox();
         m_jaddtax = new JToggleButton();
         m_jKeyFactory = new JTextField();
@@ -1317,7 +1317,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jButtons.add(m_jTicketId);
 
         // Customers list button
-        btnCustomer = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")));
+        btnCustomer = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png")), AppLocal.getIntString("Button.btnCustomer.toolTip"));
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setRequestFocusEnabled(false);
@@ -1329,7 +1329,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jButtons.add(btnCustomer);
 
         // Split ticket button
-        btnSplit = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")));
+        btnSplit = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/com/openbravo/images/editcut.png")),AppLocal.getIntString("Button.btnSplit.toolTip"));
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
         btnSplit.setRequestFocusEnabled(false);

@@ -38,6 +38,7 @@ import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.sales.TaxesLogic;
 import com.openbravo.pos.ticket.TaxInfo;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 
 /**
  *
@@ -383,8 +384,8 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jListCategories = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        m_jUp = new javax.swing.JButton();
-        m_jDown = new javax.swing.JButton();
+        m_jUp = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png")), AppLocal.getIntString("Button.m_jUpCatalog.toolTip"));
+        m_jDown = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png")), AppLocal.getIntString("Button.m_jDownCatalog.toolTip"));
         m_jSubCategories = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_lblIndicator = new javax.swing.JLabel();
@@ -421,7 +422,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel3.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
         if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
-            m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
             m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -433,7 +433,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
             });
             jPanel3.add(m_jUp);
 
-            m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
             m_jDown.setFocusPainted(false);
             m_jDown.setFocusable(false);
             m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));

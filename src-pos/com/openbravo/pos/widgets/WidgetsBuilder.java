@@ -61,8 +61,21 @@ public class WidgetsBuilder {
     	JButton btn = new JButton();
     	btn.setText(text);
     	btn.setIcon(icon);
-    	WidgetsBuilder.adaptSize(btn, size);
+    	WidgetsBuilder.adaptSize(btn, SIZE_MEDIUM);
     	return btn;
+    }
+    
+    /**Creates a button with icon and tooltiptext
+     * @param icon  Button's icon
+     * @param tooltiptext  Button's tooltiptext
+     * @return  this modified button
+     */
+     public static JButton createButton(ImageIcon icon, String toolTipText) {
+        JButton btn = new JButton();
+        btn.setIcon(icon);
+        btn.setToolTipText(toolTipText);
+        WidgetsBuilder.adaptSize(btn, SIZE_MEDIUM);
+        return btn;
     }
     
     public static void adaptSize(Component widget, int size) {
