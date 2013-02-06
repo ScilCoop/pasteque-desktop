@@ -261,6 +261,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         // Scale
         jcboMachineScale.addItem("screen");
         jcboMachineScale.addItem("dialog1");
+        jcboMachineScale.addItem("8217protocol");
         jcboMachineScale.addItem("samsungesp");
         jcboMachineScale.addItem("Not defined");
 
@@ -402,7 +403,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         p = new StringParser(config.getProperty("machine.scale"));
         sparam = p.nextToken(':');
         jcboMachineScale.setSelectedItem(sparam);
-        if ("dialog1".equals(sparam) || "samsungesp".equals(sparam)) {
+        if ("dialog1".equals(sparam) || "8217protocol".equals(sparam) || "samsungesp".equals(sparam)) {
             jcboSerialScale.setSelectedItem(p.nextToken(','));
         }
 
@@ -482,7 +483,7 @@ public class JPanelConfigGeneral extends PanelConfig {
 
         // La bascula
         String sMachineScale = comboValue(jcboMachineScale.getSelectedItem());
-        if ("dialog1".equals(sMachineScale) || "samsungesp".equals(sMachineScale)) {
+        if ("dialog1".equals(sMachineScale) || "8217protocol".equals(sMachineScale) || "samsungesp".equals(sMachineScale)) {
             config.setProperty("machine.scale", sMachineScale + ":" + comboValue(jcboSerialScale.getSelectedItem()));
         } else {
             config.setProperty("machine.scale", sMachineScale);
@@ -896,7 +897,7 @@ public class JPanelConfigGeneral extends PanelConfig {
     private void jcboMachineScaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcboMachineScaleActionPerformed
         CardLayout cl = (CardLayout) (m_jScaleParams.getLayout());
 
-        if ("dialog1".equals(jcboMachineScale.getSelectedItem()) || "samsungesp".equals(jcboMachineScale.getSelectedItem())) {
+        if ("dialog1".equals(jcboMachineScale.getSelectedItem()) || "8217protocol".equals(jcboMachineScale.getSelectedItem()) || "samsungesp".equals(jcboMachineScale.getSelectedItem())) {
             cl.show(m_jScaleParams, "comm");
         } else {
             cl.show(m_jScaleParams, "empty");
