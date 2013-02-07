@@ -142,9 +142,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         initComponents ();
     }
-   
+
     public void init(AppView app) throws BeanFactoryException {
-        
         m_App = app;
         dlSystem = (DataLogicSystem) m_App.getBean("com.openbravo.pos.forms.DataLogicSystem");
         dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
@@ -602,7 +601,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     
     private void incProduct(double dPor, ProductInfoExt prod) {
         // precondicion: prod != null
-        addTicketLine(prod, dPor, prod.getPriceSell());       
+        addTicketLine(prod, dPor, prod.getPriceSell());
     }
        
     protected void buttonTransition(ProductInfoExt prod) {
@@ -616,9 +615,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             Toolkit.getDefaultToolkit().beep();
         }       
     }
-    
-    private void stateTransition(char cTrans) {
 
+    private void stateTransition(char cTrans) {
         if (cTrans == '\n') {
             // Barcode entered
             if (m_sBarcode.length() > 0) {            
@@ -665,7 +663,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // "delete" or "/" (for numpad) key
             if (cTrans == '\u007f' || cTrans == '/') { 
                 stateToZero();
-
             } else if ((cTrans == '0') 
                     && (m_iNumberStatus == NUMBER_INPUTZERO)) {
                 // 00 stays 0
@@ -1689,8 +1686,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeyFactory.setCaretColor(javax.swing.UIManager.getDefaults().getColor("Panel.background"));
         m_jKeyFactory.setPreferredSize(new java.awt.Dimension(1, 1));
         m_jKeyFactory.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                m_jKeyFactoryKeyTyped(evt);
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                m_jKeyFactoryKeyPressed(evt);
             }
         });
         m_jPanEntries.add(m_jKeyFactory);
@@ -1788,11 +1785,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     }
 
-    private void m_jKeyFactoryKeyTyped(java.awt.event.KeyEvent evt) {
-
-        m_jKeyFactory.setText(null);
-        stateTransition(evt.getKeyChar());
-
+    private void m_jKeyFactoryKeyPressed(java.awt.event.KeyEvent evt) {
+        // Adding shortcuts for product's selection in panel sales screen
+        if (evt.getKeyCode() == evt.VK_UP || evt.getKeyCode() == evt.VK_PAGE_UP) {
+                m_ticketlines.selectionUp();
+            } else if (evt.getKeyCode() == evt.VK_DOWN || evt.getKeyCode() == evt.VK_PAGE_DOWN) {
+                m_ticketlines.selectionDown();
+            } else {
+                m_jKeyFactory.setText(null);
+                stateTransition(evt.getKeyChar());
+        }
     }
 
     private void m_jDeleteActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1803,11 +1805,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } else {               
             removeTicketLine(i); // elimino la linea           
         }   
-        
+
     }
 
     private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {
-        
+
         m_ticketlines.selectionUp();
 
     }
@@ -1843,7 +1845,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
 
         refreshTicket();
-        
+
     }
 
     private void btnSplitActionPerformed(java.awt.event.ActionEvent evt) {
@@ -1885,7 +1887,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 msg.show(this);
             }
         }
-        
     }
 
     private javax.swing.JButton btnCustomer;
