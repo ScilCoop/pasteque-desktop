@@ -602,8 +602,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void incProduct(double dPor, ProductInfoExt prod) {
         // precondicion: prod != null
         addTicketLine(prod, dPor, prod.getPriceSell());
+        /** Pops automatically the product's attributes screen, if the
+         * product has one, when a product is added to the list */
+        if(prod.getAttributeSetID() != null) {
+            jEditAttributesActionPerformed();
+        }
     }
-       
+
     protected void buttonTransition(ProductInfoExt prod) {
     // precondicion: prod != null
         
@@ -1460,7 +1465,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes.setRequestFocusEnabled(false);
         jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jEditAttributesActionPerformed(evt);
+                jEditAttributesActionPerformed();
             }
         });
         cstr = new GridBagConstraints();
@@ -1865,7 +1870,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    private void jEditAttributesActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jEditAttributesActionPerformed() {
 
         int i = m_ticketlines.getSelectedIndex();
         if (i < 0) {
