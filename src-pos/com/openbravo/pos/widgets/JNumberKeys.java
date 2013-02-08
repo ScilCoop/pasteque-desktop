@@ -49,9 +49,10 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jKeyDot.addActionListener(new MyKeyNumberListener('.'));
         m_jMultiply.addActionListener(new MyKeyNumberListener('*'));
         m_jCE.addActionListener(new MyKeyNumberListener('\u007f'));
-        m_jPlus.addActionListener(new MyKeyNumberListener('+'));        
-        m_jMinus.addActionListener(new MyKeyNumberListener('-'));        
+        m_jPlus.addActionListener(new MyKeyNumberListener('+'));
+        m_jMinus.addActionListener(new MyKeyNumberListener('-'));
         m_jEquals.addActionListener(new MyKeyNumberListener('='));
+        m_jBack.addActionListener(new MyKeyNumberListener('\u0008'));
     }
 
     public void setNumbersOnly(boolean value) {
@@ -78,9 +79,10 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jKeyDot.setEnabled(b);
         m_jMultiply.setEnabled(b);
         m_jCE.setEnabled(b);
-        m_jPlus.setEnabled(b);       
+        m_jPlus.setEnabled(b);
         m_jMinus.setEnabled(minusenabled && b);
-        m_jEquals.setEnabled(equalsenabled && b);   
+        m_jEquals.setEnabled(equalsenabled && b);
+        m_jBack.setEnabled(b);
     }
     
     @Override
@@ -144,10 +146,11 @@ public class JNumberKeys extends javax.swing.JPanel {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-    	AppConfig cfg = AppConfig.loadedInstance;
+        AppConfig cfg = AppConfig.loadedInstance;
         java.awt.GridBagConstraints gridBagConstraints;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
 
+        m_jBack = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnback.png")), WidgetsBuilder.SIZE_BIG);
         m_jCE = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnce.png")), WidgetsBuilder.SIZE_BIG);
         m_jMultiply = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnmult.png")), WidgetsBuilder.SIZE_BIG);
         m_jMinus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")), WidgetsBuilder.SIZE_BIG);
@@ -175,11 +178,23 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(m_jCE, gridBagConstraints);
+
+        m_jBack.setFocusPainted(false);
+        m_jBack.setFocusable(false);
+        m_jBack.setMargin(new java.awt.Insets(8, 16, 8, 16));
+        m_jBack.setRequestFocusEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, btnspacing, 0, 0);
+        add(m_jBack, gridBagConstraints);
 
         m_jMultiply.setFocusPainted(false);
         m_jMultiply.setFocusable(false);
@@ -387,6 +402,7 @@ public class JNumberKeys extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton m_jBack;
     private javax.swing.JButton m_jCE;
     private javax.swing.JButton m_jEquals;
     private javax.swing.JButton m_jKey0;
