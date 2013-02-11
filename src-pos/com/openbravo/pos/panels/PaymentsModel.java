@@ -53,6 +53,7 @@ public class PaymentsModel {
     private Integer custCount;
     
     private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
+    private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
 
     private PaymentsModel() {
     }    
@@ -368,6 +369,28 @@ public class PaymentsModel {
         }        
     }
 
+    public AbstractTableModel getCategoriesModel() {
+        return new AbstractTableModel() {
+            public String getColumnName(int column) {
+                return AppLocal.getIntString(CATEGORYHEADERS[column]);
+            }
+            public int getRowCount() {
+                return catSales.size();
+            }
+            public int getColumnCount() {
+                return CATEGORYHEADERS.length;
+            }
+            public Object getValueAt(int row, int column) {
+                CategoryLine l = catSales.get(row);
+                switch (column) {
+                case 0: return l.getCategory();
+                case 1: return l.getValue();
+                default: return null;
+                }
+            }  
+        };
+    }
+
     public static class CategoryLine implements SerializableRead {
         private String category;
         private Double amount;
@@ -376,7 +399,9 @@ public class PaymentsModel {
             this.category = dr.getString(2);
             this.amount = dr.getDouble(1);
         }
-
+        public String getCategory() {
+            return this.category;
+        }
         public String printCategory() {
             return this.category;
         }

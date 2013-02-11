@@ -97,7 +97,15 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jScrollSales.getVerticalScrollBar().setPreferredSize(new Dimension(25,25));       
         m_jsalestable.getTableHeader().setReorderingAllowed(false);         
         m_jsalestable.setRowHeight(25);
-        m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        m_jsalestable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        this.categoriesTable.setDefaultRenderer(Object.class, new TableRendererBasic(
+                new Formats[] {Formats.STRING, Formats.CURRENCY, Formats.CURRENCY, Formats.CURRENCY}));
+        this.categoriesTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+        this.scrollTableCategories.getVerticalScrollBar().setPreferredSize(new Dimension(25,25));       
+        this.categoriesTable.getTableHeader().setReorderingAllowed(false);         
+        this.categoriesTable.setRowHeight(25);
+        this.categoriesTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     }
     
     public Object getBean() {
@@ -143,6 +151,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         
         m_jTicketTable.setModel(new DefaultTableModel());
         m_jsalestable.setModel(new DefaultTableModel());
+        this.categoriesTable.setModel(new DefaultTableModel());
             
         // LoadData
         m_PaymentsToClose = PaymentsModel.loadInstance(m_App);
@@ -181,6 +190,15 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
+
+        this.categoriesTable.setModel(m_PaymentsToClose.getCategoriesModel());
+        
+        jColumns = this.categoriesTable.getColumnModel();
+        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setResizable(false);
+        jColumns.getColumn(1).setPreferredWidth(100);
+        jColumns.getColumn(1).setResizable(false);
+        
     }   
 
     /** Print cash summary */
@@ -232,6 +250,8 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jSalesTotal = new javax.swing.JTextField();
         m_jScrollSales = new javax.swing.JScrollPane();
         m_jsalestable = new javax.swing.JTable();
+        this.scrollTableCategories = new javax.swing.JScrollPane();
+        this.categoriesTable = new javax.swing.JTable();
         m_jSalesTaxes = new javax.swing.JTextField();
         m_jSalesSubtotal = new javax.swing.JTextField();
         m_jSales = new javax.swing.JTextField();
@@ -377,6 +397,20 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr.gridheight = 5;
         cstr.insets = new Insets(5, 5, 5, 5);
         salesPanel.add(m_jScrollSales, cstr);
+
+        this.categoriesTable.setFocusable(false);
+        this.categoriesTable.setIntercellSpacing(new java.awt.Dimension(0, 1));
+        this.categoriesTable.setRequestFocusEnabled(false);
+        this.categoriesTable.setShowVerticalLines(false);
+        this.scrollTableCategories.setMinimumSize(new java.awt.Dimension(350, 140));
+        this.scrollTableCategories.setPreferredSize(new java.awt.Dimension(350, 140));
+        this.scrollTableCategories.setViewportView(this.categoriesTable);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 6;
+        cstr.gridheight = 5;
+        cstr.insets = new Insets(0, 5, 5, 5);
+        salesPanel.add(this.scrollTableCategories, cstr);
 
         JLabel salesLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.sales"));
         cstr = new GridBagConstraints();
@@ -562,7 +596,9 @@ private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-
     private javax.swing.JTextField m_jSalesTotal;
     private javax.swing.JScrollPane m_jScrollSales;
     private javax.swing.JScrollPane m_jScrollTableTicket;
+    private javax.swing.JScrollPane scrollTableCategories;
     private javax.swing.JTextField m_jSequence;
     private javax.swing.JTable m_jTicketTable;
     private javax.swing.JTable m_jsalestable;
+    private javax.swing.JTable categoriesTable;
 }
