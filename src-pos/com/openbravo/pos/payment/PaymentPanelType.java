@@ -129,11 +129,11 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
 
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel4 = new javax.swing.JPanel();
-        m_jCardNumber = new com.openbravo.editor.JEditorStringNumber();
-        m_jExpirationDate = new com.openbravo.editor.JEditorStringNumber();
-        m_jHolderName = new com.openbravo.editor.JEditorString();
+        m_jCardNumber = new com.openbravo.pos.widgets.JEditorStringNumber();
+        m_jExpirationDate = new com.openbravo.pos.widgets.JEditorStringNumber();
+        m_jHolderName = new com.openbravo.pos.widgets.JEditorString();
         jLabel8 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -222,10 +222,10 @@ public class PaymentPanelType extends javax.swing.JPanel implements PaymentPanel
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private com.openbravo.editor.JEditorStringNumber m_jCardNumber;
-    private com.openbravo.editor.JEditorStringNumber m_jExpirationDate;
-    private com.openbravo.editor.JEditorString m_jHolderName;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorStringNumber m_jCardNumber;
+    private com.openbravo.pos.widgets.JEditorStringNumber m_jExpirationDate;
+    private com.openbravo.pos.widgets.JEditorString m_jHolderName;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     // End of variables declaration//GEN-END:variables
     
 }

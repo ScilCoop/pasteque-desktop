@@ -335,12 +335,12 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        m_jtxtDescription = new com.openbravo.editor.JEditorString();
-        m_jtxtChairs = new com.openbravo.editor.JEditorIntegerPositive();
-        txtCustomer = new com.openbravo.editor.JEditorString();
+        m_jtxtDescription = new com.openbravo.pos.widgets.JEditorString();
+        m_jtxtChairs = new com.openbravo.pos.widgets.JEditorIntegerPositive();
+        txtCustomer = new com.openbravo.pos.widgets.JEditorString();
         jButton1 = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -496,16 +496,16 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanelDate;
     private javax.swing.JPanel jPanelTime;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JPanel m_jPanelList;
     private javax.swing.JPanel m_jPanelTime;
     private javax.swing.JPanel m_jToolbar;
     private javax.swing.JPanel m_jToolbarContainer;
     private javax.swing.JButton m_jbtnReceive;
     private javax.swing.JButton m_jbtnTables;
-    private com.openbravo.editor.JEditorIntegerPositive m_jtxtChairs;
-    private com.openbravo.editor.JEditorString m_jtxtDescription;
-    private com.openbravo.editor.JEditorString txtCustomer;
+    private com.openbravo.pos.widgets.JEditorIntegerPositive m_jtxtChairs;
+    private com.openbravo.pos.widgets.JEditorString m_jtxtDescription;
+    private com.openbravo.pos.widgets.JEditorString txtCustomer;
     // End of variables declaration//GEN-END:variables
     
 }

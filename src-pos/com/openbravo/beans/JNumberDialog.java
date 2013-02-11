@@ -110,9 +110,9 @@ public class JNumberDialog extends javax.swing.JDialog {
         jPanel2 = new javax.swing.JPanel();
         jPanelGrid = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel4 = new javax.swing.JPanel();
-        m_jnumber = new com.openbravo.editor.JEditorDoublePositive();
+        m_jnumber = new com.openbravo.pos.widgets.JEditorDoublePositive();
         m_jPanelTitle = new javax.swing.JPanel();
         m_lblMessage = new javax.swing.JLabel();
 
@@ -209,9 +209,9 @@ public class JNumberDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanelGrid;
     private javax.swing.JButton jcmdCancel;
     private javax.swing.JButton jcmdOK;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JPanel m_jPanelTitle;
-    private com.openbravo.editor.JEditorDoublePositive m_jnumber;
+    private com.openbravo.pos.widgets.JEditorDoublePositive m_jnumber;
     private javax.swing.JLabel m_lblMessage;
     // End of variables declaration//GEN-END:variables
     

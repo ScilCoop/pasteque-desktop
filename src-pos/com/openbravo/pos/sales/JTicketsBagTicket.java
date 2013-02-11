@@ -232,10 +232,10 @@ public class JTicketsBagTicket extends JTicketsBag {
         m_jPanelTicket = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel5 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
-        m_jTicketEditor = new com.openbravo.editor.JEditorIntegerPositive();
+        m_jTicketEditor = new com.openbravo.pos.widgets.JEditorIntegerPositive();
         jPanel1 = new javax.swing.JPanel();
         jrbSales = new javax.swing.JRadioButton();
         jrbRefunds = new javax.swing.JRadioButton();
@@ -460,12 +460,12 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
     private javax.swing.JRadioButton jrbSales;
     private javax.swing.JPanel m_jButtons;
     private javax.swing.JButton m_jEdit;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JPanel m_jOptions;
     private javax.swing.JPanel m_jPanelTicket;
     private javax.swing.JButton m_jPrint;
     private javax.swing.JButton m_jRefund;
-    private com.openbravo.editor.JEditorIntegerPositive m_jTicketEditor;
+    private com.openbravo.pos.widgets.JEditorIntegerPositive m_jTicketEditor;
     private javax.swing.JLabel m_jTicketId;
     // End of variables declaration//GEN-END:variables
     

@@ -32,6 +32,8 @@ import com.openbravo.data.loader.QBFCompareEnum;
 import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.EditorCreator;
 import com.openbravo.pos.forms.AppConfig;
+import com.openbravo.pos.widgets.JEditorKeys;
+import com.openbravo.pos.widgets.JEditorString;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.widgets.JEditorCurrency;

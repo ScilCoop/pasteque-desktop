@@ -238,9 +238,9 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         btnPay = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel5 = new javax.swing.JPanel();
-        editorcard = new com.openbravo.editor.JEditorString();
+        editorcard = new com.openbravo.pos.widgets.JEditorString();
         jButton1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -254,7 +254,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         jLabel6 = new javax.swing.JLabel();
         txtName = new javax.swing.JTextField();
         txtMaxdebt = new javax.swing.JTextField();
-        txtNotes = new com.openbravo.editor.JEditorString();
+        txtNotes = new com.openbravo.pos.widgets.JEditorString();
         txtTaxId = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
 
@@ -570,7 +570,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     private javax.swing.JButton btnCustomer;
     private javax.swing.JButton btnPay;
     private javax.swing.JButton btnSave;
-    private com.openbravo.editor.JEditorString editorcard;
+    private com.openbravo.pos.widgets.JEditorString editorcard;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel12;
@@ -586,13 +586,13 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JSeparator jSeparator1;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JTextField txtCard;
     private javax.swing.JTextField txtCurdate;
     private javax.swing.JTextField txtCurdebt;
     private javax.swing.JTextField txtMaxdebt;
     private javax.swing.JTextField txtName;
-    private com.openbravo.editor.JEditorString txtNotes;
+    private com.openbravo.pos.widgets.JEditorString txtNotes;
     private javax.swing.JTextField txtTaxId;
     // End of variables declaration//GEN-END:variables
 }

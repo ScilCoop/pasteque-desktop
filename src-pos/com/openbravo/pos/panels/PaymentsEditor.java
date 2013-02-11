@@ -204,9 +204,9 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         jLabel5 = new javax.swing.JLabel();
         m_jreason = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
-        jTotal = new com.openbravo.editor.JEditorCurrency();
+        jTotal = new com.openbravo.pos.widgets.JEditorCurrency();
         jPanel2 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -259,8 +259,8 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private com.openbravo.editor.JEditorCurrency jTotal;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorCurrency jTotal;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     private javax.swing.JComboBox m_jreason;
     // End of variables declaration//GEN-END:variables
     

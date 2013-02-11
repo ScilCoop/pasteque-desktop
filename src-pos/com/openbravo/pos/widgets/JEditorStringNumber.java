@@ -17,20 +17,24 @@
 //    You should have received a copy of the GNU General Public License
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 
-package com.openbravo.editor;
+package com.openbravo.pos.widgets;
 
-import com.openbravo.format.Formats;
-
-public class JEditorCurrencyPositive extends JEditorNumber {
+/**
+ *
+ * @author adrian
+ */
+public class JEditorStringNumber extends JEditorText {
     
-    /** Creates a new instance of JEditorCurrencyPositive */
-    public JEditorCurrencyPositive() {
+    /** Creates a new instance of JEditorStringNumber */
+    public JEditorStringNumber() {
+        super();
     }
     
-    protected Formats getFormat() {
-        return Formats.CURRENCY;
-    }
     protected int getMode() {
-        return EditorKeys.MODE_DOUBLE_POSITIVE;
-    }      
+        return EditorKeys.MODE_INTEGER_POSITIVE;
+    } 
+        
+    protected int getStartMode() {
+        return MODE_123;
+    }    
 }

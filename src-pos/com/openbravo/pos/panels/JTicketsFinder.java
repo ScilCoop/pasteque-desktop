@@ -278,10 +278,10 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         jLabel1 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
-        jtxtMoney = new com.openbravo.editor.JEditorCurrency();
+        jtxtMoney = new com.openbravo.pos.widgets.JEditorCurrency();
         jcboUser = new javax.swing.JComboBox();
         jcboMoney = new javax.swing.JComboBox();
-        jtxtTicketID = new com.openbravo.editor.JEditorIntegerPositive();
+        jtxtTicketID = new com.openbravo.pos.widgets.JEditorIntegerPositive();
         labelCustomer = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
@@ -303,7 +303,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         jcmdOK = new javax.swing.JButton();
         jcmdCancel = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        m_jKeys = new com.openbravo.editor.JEditorKeys();
+        m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(AppLocal.getIntString("form.tickettitle")); // NOI18N
@@ -636,9 +636,9 @@ private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-F
     private javax.swing.JButton jcmdCancel;
     private javax.swing.JButton jcmdOK;
     private javax.swing.JTextField jtxtCustomer;
-    private com.openbravo.editor.JEditorCurrency jtxtMoney;
-    private com.openbravo.editor.JEditorIntegerPositive jtxtTicketID;
+    private com.openbravo.pos.widgets.JEditorCurrency jtxtMoney;
+    private com.openbravo.pos.widgets.JEditorIntegerPositive jtxtTicketID;
     private javax.swing.JLabel labelCustomer;
-    private com.openbravo.editor.JEditorKeys m_jKeys;
+    private com.openbravo.pos.widgets.JEditorKeys m_jKeys;
     // End of variables declaration//GEN-END:variables
 }
