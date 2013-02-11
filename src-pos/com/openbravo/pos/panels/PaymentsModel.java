@@ -42,6 +42,7 @@ public class PaymentsModel {
     private Integer m_iPayments;
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
+    private List<CategoryLine> catSales;
     
     private final static String[] PAYMENTHEADERS = {"Label.Payment", "label.totalcash"};
     
@@ -68,6 +69,7 @@ public class PaymentsModel {
         p.m_dSalesBase = null;
         p.m_dSalesTaxes = null;
         p.m_lsales = new ArrayList<SalesLine>();
+        p.catSales = new ArrayList<CategoryLine>();
         
         return p;
     }
@@ -83,7 +85,7 @@ public class PaymentsModel {
         p.m_dDateEnd = null;
         
         
-        // Pagos
+        // Get number of payments and total amount
         Object[] valtickets = (Object []) new StaticSentence(app.getSession()
             , "SELECT COUNT(*), SUM(PAYMENTS.TOTAL) " +
               "FROM PAYMENTS, RECEIPTS " +
@@ -99,7 +101,7 @@ public class PaymentsModel {
             p.m_iPayments = (Integer) valtickets[0];
             p.m_dPaymentsTotal = (Double) valtickets[1];
         }  
-        
+        // Get total amount by payment type
         List l = new StaticSentence(app.getSession()            
             , "SELECT PAYMENTS.PAYMENT, SUM(PAYMENTS.TOTAL) " +
               "FROM PAYMENTS, RECEIPTS " +
@@ -113,7 +115,7 @@ public class PaymentsModel {
             p.m_lpayments = new ArrayList();
         } else {
             p.m_lpayments = l;
-        }        
+        }
         
         // Sales
         Object[] recsales = (Object []) new StaticSentence(app.getSession(),
@@ -134,9 +136,29 @@ public class PaymentsModel {
             p.m_iSales = (Integer) recsales[0];
             p.m_dSalesBase = (Double) recsales[1];
             p.custCount = (Integer) recsales[2];
-        }             
+        }
+
+        // Sales by categories
+        List catSales = new StaticSentence(app.getSession(),
+            "SELECT SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), " +
+            "CATEGORIES.NAME " +
+            "FROM RECEIPTS, TICKETS, TICKETLINES, PRODUCTS, CATEGORIES " +
+            "WHERE RECEIPTS.ID = TICKETLINES.TICKET " +
+            "AND RECEIPTS.ID = TICKETS.ID " +
+            "AND TICKETLINES.PRODUCT = PRODUCTS.ID " +
+            "AND PRODUCTS.CATEGORY = CATEGORIES.ID " +
+            "AND RECEIPTS.MONEY = ? " +
+            "GROUP BY CATEGORIES.NAME",
+            SerializerWriteString.INSTANCE,
+            new SerializerReadClass(PaymentsModel.CategoryLine.class))
+            .list(app.getActiveCashIndex());
+        if (catSales == null) {
+            p.catSales = new ArrayList();
+        } else {
+            p.catSales = catSales;
+        }           
         
-        // Taxes
+        // Total taxes amount
         Object[] rectaxes = (Object []) new StaticSentence(app.getSession(),
             "SELECT SUM(TAXLINES.AMOUNT) " +
             "FROM RECEIPTS, TAXLINES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.MONEY = ?"
@@ -148,7 +170,7 @@ public class PaymentsModel {
         } else {
             p.m_dSalesTaxes = (Double) rectaxes[0];
         } 
-                
+        // Total taxes by type
         List<SalesLine> asales = new StaticSentence(app.getSession(),
                 "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT) " +
                 "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
@@ -162,7 +184,7 @@ public class PaymentsModel {
         } else {
             p.m_lsales = asales;
         }
-         
+
         return p;
     }
 
@@ -250,6 +272,9 @@ public class PaymentsModel {
     }
     public List<SalesLine> getSaleLines() {
         return m_lsales;
+    }
+    public List<CategoryLine> getCategoryLines() {
+        return this.catSales;
     }
 
     public AbstractTableModel getPaymentsModel() {
@@ -342,4 +367,24 @@ public class PaymentsModel {
             return m_PaymentValue;
         }        
     }
-}    
+
+    public static class CategoryLine implements SerializableRead {
+        private String category;
+        private Double amount;
+
+        public void readValues(DataRead dr) throws BasicException {
+            this.category = dr.getString(2);
+            this.amount = dr.getDouble(1);
+        }
+
+        public String printCategory() {
+            return this.category;
+        }
+        public String printValue() {
+            return Formats.CURRENCY.formatValue(this.amount);
+        }
+        public Double getValue() {
+            return this.amount;
+        }
+    }
+}
