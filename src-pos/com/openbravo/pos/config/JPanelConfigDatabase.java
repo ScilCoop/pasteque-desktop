@@ -34,7 +34,7 @@ public class JPanelConfigDatabase extends PanelConfig {
     }
    
     public void loadProperties(AppConfig config) {
-        
+        jtxtServerURL.setText(config.getProperty("server.backoffice"));
         jtxtDbDriverLib.setText(config.getProperty("db.driverlib"));
         jtxtDbDriver.setText(config.getProperty("db.driver"));
         jtxtDbURL.setText(config.getProperty("db.URL"));
@@ -53,7 +53,7 @@ public class JPanelConfigDatabase extends PanelConfig {
     }
    
     public void saveProperties(AppConfig config) {
-        
+        config.setProperty("server.backoffice", jtxtServerURL.getText());
         config.setProperty("db.driverlib", jtxtDbDriverLib.getText());
         config.setProperty("db.driver", jtxtDbDriver.getText());
         config.setProperty("db.URL", jtxtDbURL.getText());
@@ -65,14 +65,16 @@ public class JPanelConfigDatabase extends PanelConfig {
     }
     
     private void initComponents() {
-        this.addOptionsContainer("Label.Database");
+        this.addOptionsContainer("Label.Server");
+        this.jtxtServerURL = this.addTextParam("Label.ServerURL");
         this.jtxtDbDriverLib = this.addFileParam("label.dbdriverlib");
         this.jtxtDbDriver = this.addTextParam("Label.DbDriver");
         this.jtxtDbURL = this.addTextParam("Label.DbURL");
         this.jtxtDbUser = this.addTextParam("Label.DbUser");
         this.jtxtDbPassword = this.addPasswordParam("Label.DbPassword");
     }
-    
+
+    private javax.swing.JTextField jtxtServerURL;
     private javax.swing.JTextField jtxtDbDriver;
     private javax.swing.JTextField jtxtDbDriverLib;
     private javax.swing.JPasswordField jtxtDbPassword;
