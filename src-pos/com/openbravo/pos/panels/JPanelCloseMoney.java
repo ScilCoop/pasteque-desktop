@@ -36,6 +36,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import java.util.Date;
@@ -243,14 +244,14 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jSequence = new javax.swing.JTextField();
         m_jMinDate = new javax.swing.JTextField();
         m_jMaxDate = new javax.swing.JTextField();
-        m_jScrollTableTicket = new javax.swing.JScrollPane();
+        m_jScrollTableTicket = new JScrollPane();
         m_jTicketTable = new javax.swing.JTable();
         m_jCount = new javax.swing.JTextField();
         m_jCash = new javax.swing.JTextField();
         m_jSalesTotal = new javax.swing.JTextField();
-        m_jScrollSales = new javax.swing.JScrollPane();
+        m_jScrollSales = new JScrollPane();
         m_jsalestable = new javax.swing.JTable();
-        this.scrollTableCategories = new javax.swing.JScrollPane();
+        this.scrollTableCategories = new JScrollPane();
         this.categoriesTable = new javax.swing.JTable();
         m_jSalesTaxes = new javax.swing.JTextField();
         m_jSalesSubtotal = new javax.swing.JTextField();
@@ -260,6 +261,11 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         GridBagConstraints cstr = null;
 
         this.setLayout(new GridBagLayout());
+        JPanel mainContainer = new JPanel();
+        mainContainer.setLayout(new GridBagLayout());
+        JScrollPane scroll = new JScrollPane();
+        scroll.getVerticalScrollBar().setPreferredSize(new Dimension(25,25));
+        scroll.setViewportView(mainContainer);
 
         // Dates frame
         JPanel datesPanel = new JPanel();
@@ -497,13 +503,19 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         // General layout
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
+        cstr.weightx = 1;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        mainContainer.add(datesPanel, cstr);
+        mainContainer.add(paymentsPanel, cstr);
+        mainContainer.add(salesPanel, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
         cstr.gridwidth = 3;
         cstr.weightx = 1;
         cstr.weighty = 1;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        add(datesPanel, cstr);
-        add(paymentsPanel, cstr);
-        add(salesPanel, cstr);
+        cstr.fill = GridBagConstraints.BOTH;
+        this.add(scroll, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 3;
@@ -512,12 +524,12 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 3;
-        cstr.insets = new Insets(0, 0, btnSpacing, btnSpacing);
+        cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
         add(m_jPrintCash, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 2;
         cstr.gridy = 3;
-        cstr.insets = new Insets(0, 0, btnSpacing, btnSpacing);
+        cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
         add(m_jCloseCash, cstr);
     }
 
