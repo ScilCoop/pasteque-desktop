@@ -49,10 +49,18 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
     
     private void initComponents() {
 
-        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
-        moveTicketBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/redo16.png")));
-        backBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png")));
-        JButton custCountBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/edit_group.png")));
+        m_jDelTicket = WidgetsBuilder.createButton(
+                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")),
+                AppLocal.getIntString("Button.DeleteTicket.Tooltip"));
+        moveTicketBtn = WidgetsBuilder.createButton(
+                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/redo16.png")),
+                AppLocal.getIntString("Button.MoveTable.Tooltip"));
+        backBtn = WidgetsBuilder.createButton(
+                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png")),
+                AppLocal.getIntString("Button.RestaurantMap.Tooltip"));
+        JButton custCountBtn = WidgetsBuilder.createButton(
+                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/edit_group.png")),
+                AppLocal.getIntString("Button.CustCount.Tooltip"));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 

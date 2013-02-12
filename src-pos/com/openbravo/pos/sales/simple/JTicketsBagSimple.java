@@ -68,7 +68,9 @@ public class JTicketsBagSimple extends JTicketsBag {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        m_jDelTicket = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
+        m_jDelTicket = WidgetsBuilder.createButton(
+                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")),
+                AppLocal.getIntString("Button.DeleteTicket.Tooltip"));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
