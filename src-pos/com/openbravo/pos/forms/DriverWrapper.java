@@ -24,6 +24,7 @@ import java.sql.Driver;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  *
@@ -53,5 +54,8 @@ public class DriverWrapper implements Driver {
     }
     public boolean jdbcCompliant() {
         return driver.jdbcCompliant();
+    }
+    public Logger getParentLogger() {
+        return Logger.getAnonymousLogger();
     }
 }
