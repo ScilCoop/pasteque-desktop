@@ -717,10 +717,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     || entered == '.' || entered == keyBack || entered == keyDel || entered == '/')
                     && m_InputState == I_QUANTITY) {
                 processQuantity(entered);
-            }
 
-            // + without input: increment selected line quantity
-            else if (entered == '+'
+                // + without input: increment selected line quantity
+            } else if (entered == '+'
                     && m_PriceActualState == N_NOTHING
                     && m_QuantityActualState == N_NOTHING) {
                 int i = m_ticketlines.getSelectedIndex();
@@ -739,10 +738,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         paintTicketLine(i, newline);
                     }
                 }
-            }
+
                 // - without input: decrement selected line quantity
                 // Remove line if quantity is set to 0
-                else if (entered == '-'
+            } else if (entered == '-'
                         && m_PriceActualState == N_NOTHING
                         && m_QuantityActualState == N_NOTHING
                         && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
@@ -770,101 +769,100 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                             }
                         }
                     }
-                }
+
                 // + with multiply input (without price): replace quantity
-                else if (entered == '+'
-                        && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)
-                        && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_QuantityActualState != N_DECIMALZERO
-                        && m_InputState == I_QUANTITY) {
-                    int i = m_ticketlines.getSelectedIndex();
-                    if (i < 0){
-                        Toolkit.getDefaultToolkit().beep();
+            } else if (entered == '+'
+                    && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)
+                    && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_QuantityActualState != N_DECIMALZERO
+                    && m_InputState == I_QUANTITY) {
+                int i = m_ticketlines.getSelectedIndex();
+                if (i < 0){
+                    Toolkit.getDefaultToolkit().beep();
+                } else {
+                    double dPor = getPorValue();
+                    TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
+                    if (m_oTicket.getTicketType() == TicketInfo.RECEIPT_REFUND) {
+                        newline.setMultiply(-dPor);
+                        newline.setPrice(Math.abs(newline.getPrice()));
+                        paintTicketLine(i, newline);
                     } else {
-                        double dPor = getPorValue();
-                        TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
-                        if (m_oTicket.getTicketType() == TicketInfo.RECEIPT_REFUND) {
-                            newline.setMultiply(-dPor);
-                            newline.setPrice(Math.abs(newline.getPrice()));
-                            paintTicketLine(i, newline);
-                        } else {
-                            newline.setMultiply(dPor);
-                            newline.setPrice(Math.abs(newline.getPrice()));
-                            paintTicketLine(i, newline);
-                        }
+                        newline.setMultiply(dPor);
+                        newline.setPrice(Math.abs(newline.getPrice()));
+                        paintTicketLine(i, newline);
                     }
                 }
                 // - with multiply input (without price): set negative quantity
-                else if (entered == '-'
-                        && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)
-                        && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_QuantityActualState != N_DECIMALZERO
-                        && m_InputState == I_QUANTITY
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
-                    int i = m_ticketlines.getSelectedIndex();
-                    if (i < 0){
-                        Toolkit.getDefaultToolkit().beep();
-                    } else {
-                        double dPor = getPorValue();
-                        TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
-                        if (m_oTicket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
-                            newline.setMultiply(-dPor);
-                            paintTicketLine(i, newline);
-                        }
+            } else if (entered == '-'
+                    && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)
+                    && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_QuantityActualState != N_DECIMALZERO
+                    && m_InputState == I_QUANTITY
+                    && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                int i = m_ticketlines.getSelectedIndex();
+                if (i < 0){
+                    Toolkit.getDefaultToolkit().beep();
+                } else {
+                    double dPor = getPorValue();
+                    TicketLineInfo newline = new TicketLineInfo(m_oTicket.getLine(i));
+                    if (m_oTicket.getTicketType() == TicketInfo.RECEIPT_NORMAL) {
+                        newline.setMultiply(-dPor);
+                        paintTicketLine(i, newline);
                     }
                 }
+
                 // + with price input (without multiply): create an empty line
                 // with entered price
-                else if (entered == '+'
-                        && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_QuantityActualState == N_NOTHING
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
-                    ProductInfoExt product = getInputProduct();
-                    addTicketLine(product, 1.0, product.getPriceSell());
-                }
+            } else if (entered == '+'
+                    && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_QuantityActualState == N_NOTHING
+                    && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                ProductInfoExt product = getInputProduct();
+                addTicketLine(product, 1.0, product.getPriceSell());
+
                 // - with price input (without multiply): create an empty line
                 // with negative entered price
-                else if (entered == '-'
-                        && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_QuantityActualState == N_NOTHING
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
-                    ProductInfoExt product = getInputProduct();
-                    addTicketLine(product, 1.0, -product.getPriceSell());
-                }
+            } else if (entered == '-'
+                    && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_QuantityActualState == N_NOTHING
+                    && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                ProductInfoExt product = getInputProduct();
+                addTicketLine(product, 1.0, -product.getPriceSell());
+
                 // + with price and multiply: create an empty line with entered price
                 // and quantity set to entered multiply
-                else if (entered == '+'
-                        && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
-                    ProductInfoExt product = getInputProduct();
-                    addTicketLine(product, getPorValue(), product.getPriceSell());
-                }
+            } else if (entered == '+'
+                    && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                ProductInfoExt product = getInputProduct();
+                addTicketLine(product, getPorValue(), product.getPriceSell());
+
                 // - with price and multiply: create an empty line with entered
                 // negative price and quantity set to entered multiply
-                else if (entered == '-'
-                        && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                        && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
-                    ProductInfoExt product = getInputProduct();
-                    addTicketLine(product, getPorValue(), -product.getPriceSell());
-                }
+            } else if (entered == '-'
+                    && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
+                    && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
+                ProductInfoExt product = getInputProduct();
+                addTicketLine(product, getPorValue(), -product.getPriceSell());
+
                 // Space bar or = : go to payments
-                else if (entered == ' ' || entered == '=') {
-                    if (m_oTicket.getLinesCount() > 0) {
-                        if (closeTicket(m_oTicket, m_oTicketExt)) {
-                            // Ends edition of current receipt
-                            m_ticketsbag.deleteTicket();
-                        } else {
-                            // repaint current ticket
-                            refreshTicket();
-                        }
+            } else if (entered == ' ' || entered == '=') {
+                if (m_oTicket.getLinesCount() > 0) {
+                    if (closeTicket(m_oTicket, m_oTicketExt)) {
+                        // Ends edition of current receipt
+                        m_ticketsbag.deleteTicket();
                     } else {
-                        Toolkit.getDefaultToolkit().beep();
+                        // repaint current ticket
+                        refreshTicket();
                     }
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
                 }
-                else if (entered == keySection
+
+                // Scale button pressed and a number typed as a price
+            } else if (entered == keySection
                     && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
                     && m_QuantityActualState == N_NOTHING) {
-                // Scale button pressed and a number typed as a price
                 if (m_App.getDeviceScale().existsScale() && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
                     try {
                         Double value = m_App.getDeviceScale().readWeight();
@@ -881,11 +879,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     // No existe la balanza;
                     Toolkit.getDefaultToolkit().beep();
                 }
-            }
-            else if (entered == keySection
+
+                // Scale button pressed and no number typed.
+            } else if (entered == keySection
                     && m_PriceActualState == N_NOTHING
                     && m_QuantityActualState == N_NOTHING) {
-                // Scale button pressed and no number typed.
                 int i = m_ticketlines.getSelectedIndex();
                 if (i < 0){
                     Toolkit.getDefaultToolkit().beep();
