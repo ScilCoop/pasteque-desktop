@@ -541,8 +541,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         try {
             ProductInfoExt oProduct = dlSales.getProductInfoByCode(sCode);
-            if (oProduct == null) {                  
-                Toolkit.getDefaultToolkit().beep();                   
+            if (oProduct == null) {
+                Toolkit.getDefaultToolkit().beep();
                 new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.noproduct")).show(this);           
                 eraseAutomator();
             } else {
@@ -551,7 +551,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         } catch (BasicException eData) {
             eraseAutomator();
-            new MessageInf(eData).show(this);           
+            new MessageInf(eData).show(this);
         }
     }
     
@@ -920,8 +920,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (entered == '0' && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)) {
             m_PriceActualState = N_ZERO;
             m_jPrice.setText("0");
-
-            //
         } else if ((entered == '1' || entered == '2' || entered == '3' || entered == '4' || entered == '5'
                 || entered == '6' || entered == '7' || entered == '8' || entered == '9')
                 && (m_PriceActualState == N_NOTHING || m_PriceActualState == N_ZERO)) {
@@ -959,9 +957,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
             // erase all numbers
         } else if (entered == keyDel || entered == '/') {
-            m_PriceActualState = N_NOTHING;
-            m_InputState = I_NOTHING;
-            m_jPrice.setText("");
+            eraseAutomator(); // sets the automate to its default state
 
             // erases numbers one by one
         } else if (entered == keyBack) {
@@ -975,12 +971,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 m_PriceActualState = N_NUMBER;
             } else if (m_PriceActualState == N_ZERO) {
                 m_PriceActualState = N_NOTHING;
+                eraseAutomator(); // sets the automate to its default state
             } else if (back == 0 && m_PriceActualState == N_NUMBER) {
                 m_PriceActualState = N_NOTHING;
+                eraseAutomator(); // sets the automate to its default state
             }
-            if (back >=0) {
+            if (back >0) {
                 price = price.substring(0, back);
                 m_jPrice.setText(price);
+            } else if (back <0) {
+                eraseAutomator(); // sets the automate to its default state
             }
         }
     }
@@ -1796,6 +1796,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeyFactory.setCaretColor(javax.swing.UIManager.getDefaults().getColor("Panel.background"));
         m_jKeyFactory.setPreferredSize(new java.awt.Dimension(1, 1));
         m_jKeyFactory.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                m_jKeyFactoryKeyTyped(evt);
+            }
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 m_jKeyFactoryKeyPressed(evt);
             }
@@ -1894,18 +1897,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     }
 
+    private void m_jKeyFactoryKeyTyped(java.awt.event.KeyEvent evt) {
+        m_jKeyFactory.setText(null);
+        automator(evt.getKeyChar());
+    }
+
     private void m_jKeyFactoryKeyPressed(java.awt.event.KeyEvent evt) {
         // Adding shortcuts for product's selection in panel sales screen
         if (evt.getKeyCode() == evt.VK_UP || evt.getKeyCode() == evt.VK_PAGE_UP) {
                 m_ticketlines.selectionUp();
             } else if (evt.getKeyCode() == evt.VK_DOWN || evt.getKeyCode() == evt.VK_PAGE_DOWN) {
                 m_ticketlines.selectionDown();
-            } else {
-                m_jKeyFactory.setText(null);
-                //stateTransition(evt.getKeyChar());
-                automator(evt.getKeyChar());
+            }
         }
-    }
 
     private void m_jDeleteActionPerformed(java.awt.event.ActionEvent evt) {
 
