@@ -49,7 +49,7 @@
             <text align ="left" length="32">Payments:</text>
             <text align ="right" length="10">${payments.printPayments()}</text>
         </line>
-        #if ($payments.getCustomersCount() > 0)
+        #if ($payments.hasCustomersCount())
         <line>
             <text align ="left" length="32">Places:</text>
             <text align ="right" length="10">${payments.printCustomersCount()}</text>

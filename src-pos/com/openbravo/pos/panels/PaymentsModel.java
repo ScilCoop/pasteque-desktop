@@ -192,6 +192,9 @@ public class PaymentsModel {
     public int getPayments() {
         return m_iPayments.intValue();
     }
+    public boolean hasCustomersCount() {
+        return custCount != null;
+    }
     public int getCustomersCount() {
         return custCount;
     }
