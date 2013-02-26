@@ -120,18 +120,26 @@ public class ThumbNailBuilder {
 //            MaskFilter filter = new MaskFilter(Color.WHITE);
 //            ImageProducer prod = new FilteredImageSource(img.getSource(), filter);
 //            img = Toolkit.getDefaultToolkit().createImage(prod);
-            
-        int targetw;
-        int targeth;
-
-        double scalex = (double) m_width / (double) img.getWidth(null);
-        double scaley = (double) m_height / (double) img.getHeight(null);
-        if (scalex < scaley) {
-            targetw = m_width;
-            targeth = (int) (img.getHeight(null) * scalex);
+        // The desired scaled size without deformation
+        int targetw, targeth;
+        double imgW = img.getWidth(null);
+        double imgH = img.getHeight(null);
+        // Set scale (imgSize * scale = desiredSize)
+        double scalex = (double) m_width / imgW;
+        double scaley = (double) m_height / imgH;
+        if (scalex < 1.0 || scaley < 1.0) {
+            // Bigger image, need to reduce
+            if (scalex < scaley) {
+                targetw = m_width;
+                targeth = (int) (imgH * scalex);
+            } else {
+                targetw = (int) (imgW * scaley);
+                targeth = (int) m_height;
+            }
         } else {
-            targetw = (int) (img.getWidth(null) * scaley);
-            targeth = (int) m_height;
+            // Image is smaller than desired
+            targetw = (int) imgW;
+            targeth = (int) imgH;
         }
 
         int midw = img.getWidth(null);
@@ -150,7 +158,7 @@ public class ThumbNailBuilder {
                     midw = targetw;
                 }
             } else {
-                midw = targetw;
+                //midw = targetw;
             }
             if (midh > targeth) {
                 midh /= 2;
@@ -158,7 +166,7 @@ public class ThumbNailBuilder {
                     midh = targeth;
                 }
             } else {
-                midh = targeth;
+                //midh = targeth;
             }
             if (midimg == null) {
                 midimg = new BufferedImage(midw, midh, BufferedImage.TYPE_INT_ARGB);
@@ -169,7 +177,7 @@ public class ThumbNailBuilder {
             prevw = midw;
             prevh = midh;
             previmg = midimg;
-        } while (midw != targetw || midh != targeth);
+        } while (midw > targetw || midh > targeth);
 
         g2d.dispose();
 
