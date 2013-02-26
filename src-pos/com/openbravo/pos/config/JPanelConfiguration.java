@@ -156,7 +156,7 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
 
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
-        int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
+        int btnSpacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
         
         jScrollPane1 = new javax.swing.JScrollPane();
         m_jConfigOptions = new javax.swing.JPanel();
@@ -200,10 +200,10 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
         buttonsPanel.setLayout(new GridBagLayout());
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
-        cstr.insets = new Insets(btnspacing, 0, 0, btnspacing);
+        cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
         buttonsPanel.add(jbtnSave, cstr);
         buttonsPanel.add(jbtnRestore, cstr);
-        cstr.insets = new Insets(btnspacing, 0, 0, 0);
+        cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
         buttonsPanel.add(jbtnCancel, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
