@@ -84,6 +84,23 @@
         <line>
             <text>------------------------------------------</text>
         </line>
+        <line></line>
+        <line>
+            <text bold="true">Categories report</text>
+        </line>
+        <line>
+            <text>------------------------------------------</text>
+        </line>
+        #foreach ($line in $payments.getCategoryLines())
+        <line>
+            <text align ="left" length="32">${line.printCategory()}</text>
+            <text align ="right" length="10">${line.printValue()}</text>
+        </line>
+        #end
+        <line>
+            <text>------------------------------------------</text>
+        </line>
+        <line></line>
         <line>
             <text align ="left" length="32">Receipts:</text>
             <text align ="right" length="10">${payments.printSales()}</text>
