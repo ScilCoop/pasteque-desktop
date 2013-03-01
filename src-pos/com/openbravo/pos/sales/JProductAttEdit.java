@@ -162,7 +162,9 @@ public class JProductAttEdit extends javax.swing.JDialog {
             List<AttributeInstInfo> attinstinfo = attsetinstid == null
                     ? attinstSent.list(attsetid)
                     : attinstSent2.list(attsetid, attsetinstid);
-
+            if (attinstinfo.size() == 0) {
+                throw new BasicException(AppLocal.getIntString("message.cannotfindattributes"));
+            }
             itemslist = new ArrayList<JProductAttEditI>();
 
             for (AttributeInstInfo aii : attinstinfo) {

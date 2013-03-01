@@ -80,7 +80,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
-
 /**
  *
  * @author adrianromero
@@ -141,6 +140,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private static final char keyDel = '\u007f';
     private static final char keySection = '\u00a7';
     private static final char keyEnter = '\n';
+
+    private static final int AUTO_PERFORMED = 0;
+    private static final int BUTTON_PERFORMED = 1;
 
 
     /** Creates new form JTicketView */
@@ -605,7 +607,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         /** Pops automatically the product's attributes screen, if the
          * product has one, when a product is added to the list */
         if(prod.getAttributeSetID() != null) {
-            jEditAttributesActionPerformed();
+            jEditAttributesActionPerformed(AUTO_PERFORMED);
         }
     }
 
@@ -1570,7 +1572,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes.setRequestFocusEnabled(false);
         jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jEditAttributesActionPerformed();
+                jEditAttributesActionPerformed(BUTTON_PERFORMED);
             }
         });
         cstr = new GridBagConstraints();
@@ -1979,7 +1981,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    private void jEditAttributesActionPerformed() {
+    private void jEditAttributesActionPerformed(int cameFrom) {
 
         int i = m_ticketlines.getSelectedIndex();
         if (i < 0) {
@@ -1996,9 +1998,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     line.setProductAttSetInstDesc(attedit.getAttributeSetInstDescription());
                     paintTicketLine(i, line);
                 }
-            } catch (BasicException ex) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindattributes"), ex);
-                msg.show(this);
+            }
+            catch (BasicException ex) {
+                if (cameFrom == BUTTON_PERFORMED) {
+                    MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindattributes"), ex);
+                    msg.show(this);
+                }
             }
         }
     }
