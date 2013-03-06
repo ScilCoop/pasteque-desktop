@@ -40,19 +40,19 @@
         <message>Items count: ${ticket.printArticlesCount()}</message>
         #foreach ($paymentline in $ticket.payment)      
          #if ($paymentline.name == "cash")
-            <total paid="${paymentline.getPaid()}">Cash</total>
+            <total paid="${paymentline.getPaid()}">Espèce</total>
          #end
          #if ($paymentline.name == "cashrefund")
             <total paid="${paymentline.getTotal()}">Refund</total>  
          #end
          #if ($paymentline.name == "magcard")
-            <total paid="${paymentline.getTotal()}">Mag card</total>  
+            <total paid="${paymentline.getTotal()}">Carte bleue</total>  
          #end  
          #if ($paymentline.name == "magcardrefund")
             <total paid="${paymentline.getTotal()}">Mag card refund</total>     
          #end
          #if ($paymentline.name == "cheque")
-            <total paid="${paymentline.getTotal()}">Cheque</total>    
+            <total paid="${paymentline.getTotal()}">Chèque</total>    
          #end
          #if ($paymentline.name == "chequerefund")
             <total paid="${paymentline.getTotal()}">Cheque refund</total>    

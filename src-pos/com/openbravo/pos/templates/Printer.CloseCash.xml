@@ -25,11 +25,11 @@
         <image>Printer.Ticket.Logo</image>
         <line></line>
         <line size="1">
-            <text align ="center" length="42" bold="true">Close cash report</text>            
+            <text align ="center" length="42" bold="true">Rapport de clôture</text>            
         </line>
         <line></line>
         <line>
-            <text bold="true">Payments report</text>
+            <text bold="true">Paiements</text>
         </line>
         <line>
             <text align ="right" length="42">Total</text>
@@ -47,16 +47,16 @@
             <text>------------------------------------------</text>
         </line> 
         <line>
-            <text align ="left" length="32">Payments:</text>
+            <text align ="left" length="32">Paiements : </text>
             <text align ="right" length="10">${payments.printPayments()}</text>
         </line>
         #if ($payments.hasCustomersCount())
         <line>
-            <text align ="left" length="32">Places:</text>
+            <text align ="left" length="32">Convives : </text>
             <text align ="right" length="10">${payments.printCustomersCount()}</text>
         </line>
         <line>
-            <text align ="left" length="32">Average:</text>
+            <text align ="left" length="32">Moyenne : </text>
             <text align ="right" length="10">${payments.printSalesPerCustomer()}</text>
         </line>
         #end
@@ -67,7 +67,7 @@
         </line>
         <line></line>
         <line>
-            <text bold="true">Taxes report</text>
+            <text bold="true">Taxes</text>
         </line>
         <line>
             <text align ="right" length="42">Total</text>
@@ -86,7 +86,7 @@
         </line>
         <line></line>
         <line>
-            <text bold="true">Categories report</text>
+            <text bold="true">Categories</text>
         </line>
         <line>
             <text>------------------------------------------</text>
@@ -102,12 +102,12 @@
         </line>
         <line></line>
         <line>
-            <text align ="left" length="32">Receipts:</text>
+            <text align ="left" length="32">Tickets : </text>
             <text align ="right" length="10">${payments.printSales()}</text>
         </line>
         <line></line>
         <line size="1">
-            <text align ="left" length="32" bold="true">Subtotal</text>
+            <text align ="left" length="32" bold="true">Sous-total</text>
             <text align ="right" length="10" bold="true">${payments.printSalesBase()}</text>
         </line>
         <line size="1">
@@ -117,19 +117,19 @@
         </line>
         <line></line>
         <line>
-            <text length="18">Machine:</text>
+            <text length="18">Poste : </text>
             <text>${payments.printHost()}</text>
         </line>    
         <line>
-            <text length="18">Sequence:</text>
+            <text length="18">Sequence : </text>
             <text length="24" align="right">${payments.printSequence()}</text>
         </line> 
         <line>
-            <text length="18">Start date:</text>
+            <text length="18">Ouverture : </text>
             <text length="24" align="right">${payments.printDateStart()}</text>
         </line>  
         <line>
-            <text length="18">End date:</text>
+            <text length="18">Clôture : </text>
             <text length="24" align="right">${payments.printDateEnd()}</text>
         </line>  
     </ticket>

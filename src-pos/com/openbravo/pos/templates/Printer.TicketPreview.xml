@@ -26,7 +26,7 @@
             <text align="right" length="10">${ticket.printTotal()}</text>
         </line>
         <line>
-           <text align="center" length="20">Thank you.</text>
+           <text align="center" length="20">Merci.</text>
         </line>
     </display>
     <ticket>
@@ -34,7 +34,7 @@
         <line></line>
         #if (${ticket.ticketType} == 0)
         <line>
-            <text align="left" length="15">Receipt:</text>
+            <text align="left" length="15">Ticket :</text>
             <text>${ticket.printId()}</text>
         </line>
         #end
@@ -45,12 +45,12 @@
         </line>
         #end
         <line>
-            <text align="left" length="15">Date:</text>
+            <text align="left" length="15">Date :</text>
             <text>${ticket.printDate()}</text>
         </line>  
          #if ($ticket.getCustomer())
         <line>
-            <text align="left" length="15">Customer:</text>
+            <text align="left" length="15">Client :</text>
             <text>${ticket.getCustomer().printName()}</text>
         </line>      
         <line>
@@ -60,16 +60,16 @@
         #end
         #if ($ticket.hasCustomersCount())
         <line>
-            <text align="left" length="15">Places:</text>
+            <text align="left" length="15">Convives :</text>
             <text>${ticket.printCustomersCount()}</text>
         </line>
         #end
         <line></line>    
         <line>
-            <text align ="left" length="17">Item</text>
-            <text align ="right" length="10">Price</text>
+            <text align ="left" length="17">Article</text>
+            <text align ="right" length="10">Prix</text>
             <text align ="right" length="5"></text>
-            <text align ="right" length="10">Value</text>
+            <text align ="right" length="10">Total</text>
         </line>      
         <line>
              <text>------------------------------------------</text>
@@ -100,7 +100,7 @@
         </line> 
         <line></line> 
         <line>
-            <text align ="left" length="16">Subtotal.</text>
+            <text align ="left" length="16">Sous-total.</text>
             <text align ="right" length="20">${ticket.printSubTotal()}</text>
         </line> 
         <line></line> 
@@ -112,7 +112,7 @@
          #if ($paymentline.name == "cash")
         <line></line>     
         <line>
-            <text bold="true">Cash</text>
+            <text bold="true">Espèce</text>
         </line>  
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -130,7 +130,7 @@
          #if ($paymentline.name == "magcard")
         <line></line>        
         <line>
-            <text bold="true">Mag card</text>
+            <text bold="true">Carte bleue</text>
         </line>   
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -148,7 +148,7 @@
          #if ($paymentline.name == "cheque")
         <line></line>     
         <line>
-            <text bold="true">Cheque</text>
+            <text bold="true">Chèque</text>
         </line>    
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -166,7 +166,7 @@
          #if ($paymentline.name == "paperin")
         <line></line>     
         <line>
-            <text bold="true">Note</text>
+            <text bold="true">Coupon</text>
         </line>    
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -184,7 +184,7 @@
          #if ($paymentline.name == "free")
         <line></line>     
         <line>
-            <text bold="true">Free</text>
+            <text bold="true">Offert</text>
         </line>    
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -193,7 +193,7 @@
          #if ($paymentline.name == "debt")
         <line></line>     
         <line>
-            <text bold="true">Debt</text>
+            <text bold="true">Dette</text>
         </line>    
         <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
@@ -202,12 +202,12 @@
          #end 
         <line></line>  
         <line>
-            <text align="left" length="15">Cashier:</text>
+            <text align="left" length="15">Opérateur :</text>
             <text>${ticket.printUser()}</text>
         </line> 
         <line></line>            
         <line>
-            <text align="center" length="42">Thank you for your visit.</text>
+            <text align="center" length="42">Merci de votre visite.</text>
         </line>    
     </ticket>
 </output>
