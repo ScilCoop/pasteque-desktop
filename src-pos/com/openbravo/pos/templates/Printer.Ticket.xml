@@ -73,7 +73,7 @@
         <line></line>    
         <line>
             <text align ="left" length="17">Article</text>
-            <text align ="right" length="10">Price</text>
+            <text align ="right" length="10">Prix</text>
             <text align ="right" length="5"></text>
             <text align ="right" length="10">Total</text>
         </line>      
