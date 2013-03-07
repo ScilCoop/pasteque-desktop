@@ -68,7 +68,7 @@ public class StartPOS {
         splash.setResizable(false);
         splash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         try {
-            splash.setPreferredSize(new java.awt.Dimension(600, 168));
+            splash.setPreferredSize(new java.awt.Dimension(432, 184));
             java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
             splash.setBounds((screenSize.width-600)/2, (screenSize.height-168)/2, 600, 168);
             ImageIcon splashImage = new ImageIcon(ImageIO.read(JFrame.class.getResourceAsStream("/com/openbravo/images/logo.png")));
