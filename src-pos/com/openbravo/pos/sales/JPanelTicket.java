@@ -614,10 +614,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected void buttonTransition(ProductInfoExt prod) {
     // precondicion: prod != null
 
-         if (m_PriceActualState == N_NOTHING && m_QuantityActualState == N_NOTHING) {
+         if (m_PriceActualState == N_NOTHING
+                 && m_QuantityActualState == N_NOTHING) {
+            // No input, just add product
             incProduct(prod);
-        } else if (m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
-                && m_QuantityActualState != N_NOTHING && m_QuantityActualState != N_ZERO && m_QuantityActualState != N_DECIMALZERO) {
+        } else if (m_PriceActualState != N_NOTHING
+                && m_PriceActualState != N_ZERO
+                && m_PriceActualState != N_DECIMALZERO) {
+            // Price input not empty
             incProduct(getInputValue(), prod);
         } else {
             Toolkit.getDefaultToolkit().beep();
