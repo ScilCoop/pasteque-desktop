@@ -54,7 +54,8 @@ class ProductsService {
     static function getAll($full = false) {
         $prds = array();
         $pdo = PDOBuilder::getPDO();
-        $stmt = $pdo->prepare("SELECT * FROM PRODUCTS ORDER BY NAME");
+        $stmt = $pdo->prepare("SELECT * FROM PRODUCTS, PRODUCTS_CAT "
+                . "WHERE PRODUCTS.ID = PRODUCTS_CAT.PRODUCT ORDER BY NAME");
         $stmt->execute();
         while ($db_prd = $stmt->fetch()) {
             if ($full) {
