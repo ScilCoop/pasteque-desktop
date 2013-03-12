@@ -95,7 +95,7 @@ implements JPanelView {
         this.add(cashClosed, cstr);
 
         if (this.principalApp.getUser().hasPermission("button.openmoney")) {
-            JButton openCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("/com/openbravo/images/password.png"), AppLocal.getIntString("label.opencash"), WidgetsBuilder.SIZE_BIG);
+            JButton openCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("open_cash.png"), AppLocal.getIntString("label.opencash"), WidgetsBuilder.SIZE_BIG);
             openCash.addActionListener(new java.awt.event.ActionListener() {
                 public void actionPerformed(java.awt.event.ActionEvent evt) {
                     openCash(evt);
