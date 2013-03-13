@@ -193,6 +193,9 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
         DEFAULT_VALUES.put("prices.roundto", "0");
+        DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/pasteque");
+        DEFAULT_VALUES.put("db.user", "pt_demo");
+        DEFAULT_VALUES.put("db.password", "demo");
     }
     
     /** Load "default file", which values are expanded or overriden by the
@@ -206,11 +209,9 @@ public class AppConfig implements AppProperties {
         String dirname = System.getProperty("dirname.path");
         dirname = dirname == null ? "./" : dirname;
         
-        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/derby.jar").getAbsolutePath());
-        m_propsconfig.setProperty("db.driver", "org.apache.derby.jdbc.EmbeddedDriver");
-        m_propsconfig.setProperty("db.URL", "jdbc:derby:" + new File(new File(System.getProperty("user.home")), AppLocal.APP_ID + "-database").getAbsolutePath() + ";create=true");
-        m_propsconfig.setProperty("db.user", "");
-        m_propsconfig.setProperty("db.password", "");
+        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/mysql-connector-java-5.1.16.jar").getAbsolutePath());
+        m_propsconfig.setProperty("db.driver", "com.mysql.jdbc.Driver");
+        m_propsconfig.setProperty("db.URL", "jdbc:mysql://pt.scil.coop:3306/pt_demo");
 
 //        m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/hsqldb.jar").getAbsolutePath());
 //        m_propsconfig.setProperty("db.driver", "org.hsqldb.jdbcDriver");
