@@ -66,7 +66,7 @@ public class JPanelButtons extends javax.swing.JPanel {
         initComponents();
         
         // Load categories default thumbnail
-        tnbmacro = new ThumbNailBuilder(16, 16, "com/openbravo/images/greenled.png");
+        tnbmacro = new ThumbNailBuilder(16, 16, "button_generic.png");
         
         this.panelticket = panelticket;
         

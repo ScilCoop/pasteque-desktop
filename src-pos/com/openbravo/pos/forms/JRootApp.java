@@ -41,6 +41,7 @@ import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.JMessageDialog;
 import com.openbravo.data.loader.BatchSentence;
 import com.openbravo.data.loader.BatchSentenceResource;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.Session;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.scale.DeviceScale;
@@ -639,7 +640,7 @@ public class JRootApp extends JPanel implements AppView {
             m_jLblTitle.setText("Window.Title");
             m_jPanelTitle.add(m_jLblTitle, java.awt.BorderLayout.CENTER);
 
-            poweredby.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/poweredby.png"))); // NOI18N
+            poweredby.setIcon(ImageLoader.readImageIcon("poweredby.png"));
             poweredby.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
             m_jPanelTitle.add(poweredby, java.awt.BorderLayout.LINE_END);
 
@@ -654,7 +655,7 @@ public class JRootApp extends JPanel implements AppView {
 
         // Logo
         postechLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        postechLogo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/logo.png"))); // NOI18N
+        postechLogo.setIcon(ImageLoader.readImageIcon("logo.png"));
         postechLogo.setAlignmentX(0.5F);
         postechLogo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         postechLogo.setMaximumSize(new java.awt.Dimension(800, 1024));
@@ -677,7 +678,7 @@ public class JRootApp extends JPanel implements AppView {
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel2.setLayout(new java.awt.BorderLayout());
         // Close button
-        m_jClose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/exit.png"))); // NOI18N
+        m_jClose.setIcon(ImageLoader.readImageIcon("exit.png"));
         m_jClose.setText(AppLocal.getIntString("Button.Close")); // NOI18N
         m_jClose.setFocusPainted(false);
         m_jClose.setFocusable(false);
@@ -728,7 +729,7 @@ public class JRootApp extends JPanel implements AppView {
             m_jPanelDown.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
             m_jPanelDown.setLayout(new java.awt.BorderLayout());
 
-            m_jHost.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/display.png"))); // NOI18N
+            m_jHost.setIcon(ImageLoader.readImageIcon("host.png"));
             m_jHost.setText("*Hostname");
             panelTask.add(m_jHost);
 

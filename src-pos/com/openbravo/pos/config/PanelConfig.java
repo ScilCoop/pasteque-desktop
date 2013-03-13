@@ -34,6 +34,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JPasswordField;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
@@ -128,7 +129,7 @@ public abstract class PanelConfig extends javax.swing.JPanel {
     protected JTextField addFileParam(String labelCode) {
         JTextField field = WidgetsBuilder.createTextField();
         field.getDocument().addDocumentListener(this.dirty);
-        JButton open = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileopen.png")));
+        JButton open = WidgetsBuilder.createButton(ImageLoader.readImageIcon("file_open.png"));
         open.addActionListener(new DirectoryEvent(field));
         JLabel label = WidgetsBuilder.createLabel(AppLocal.getIntString(labelCode));
         if (this.currentContainer != null) {

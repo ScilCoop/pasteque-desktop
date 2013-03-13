@@ -19,6 +19,8 @@
 
 package com.openbravo.beans;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -160,7 +162,7 @@ public class JCalendarDialog extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jcmdOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")));
+        jcmdOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         jcmdOK.setText(m_resources.getString("button.ok"));
         jcmdOK.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdOK.addActionListener(new java.awt.event.ActionListener() {
@@ -171,7 +173,7 @@ public class JCalendarDialog extends javax.swing.JDialog {
 
         jPanel1.add(jcmdOK);
 
-        jcmdCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")));
+        jcmdCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         jcmdCancel.setText(m_resources.getString("button.cancel"));
         jcmdCancel.setMargin(new java.awt.Insets(8, 16, 8, 16));
         jcmdCancel.addActionListener(new java.awt.event.ActionListener() {

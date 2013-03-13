@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.openbravo.basic.BasicException;
-
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.*;
 import com.openbravo.data.gui.MessageInf;
 import com.openbravo.data.gui.JMessageDialog;
@@ -161,11 +161,11 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
         jScrollPane1 = new javax.swing.JScrollPane();
         m_jConfigOptions = new javax.swing.JPanel();
         m_jConfigOptions.setLayout(new GridBagLayout());
-        jbtnCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        jbtnCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                  AppLocal.getIntString("Button.Restore"),
                                                  WidgetsBuilder.SIZE_MEDIUM);
         jbtnRestore = WidgetsBuilder.createButton(AppLocal.getIntString("Button.Factory"));
-        jbtnSave = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        jbtnSave = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                                AppLocal.getIntString("Button.Save"),
                                                WidgetsBuilder.SIZE_MEDIUM);
 

@@ -20,6 +20,7 @@
 
 package com.openbravo.pos.widgets;
 
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppConfig;
 
 import java.awt.image.*;
@@ -236,7 +237,7 @@ public class WidgetsBuilder {
     }
     
     public static ImageIcon createIcon(String name) {
-        ImageIcon icon = new ImageIcon(WidgetsBuilder.class.getResource(name));
+        ImageIcon icon = ImageLoader.readImageIcon(name);
         return createIcon(icon);
     }
     

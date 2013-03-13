@@ -19,6 +19,8 @@
 
 package com.openbravo.beans;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -244,11 +246,11 @@ public class JCalendarPanel extends javax.swing.JPanel {
 
         ActionListener dateclick = new DateClick();
         
-        m_jBtnYearDec = new JButtonDate(new ImageIcon(getClass().getResource("/com/openbravo/images/2uparrow.png")), dateclick);
-        m_jBtnMonthDec = new JButtonDate(new ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow.png")), dateclick);
+        m_jBtnYearDec = new JButtonDate(ImageLoader.readImageIcon("up_twice.png"), dateclick);
+        m_jBtnMonthDec = new JButtonDate(ImageLoader.readImageIcon("up_once.png"), dateclick);
         m_jBtnToday = new JButtonDate(m_resources.getString("Button.Today"), dateclick);
-        m_jBtnMonthInc = new JButtonDate(new ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow.png")), dateclick);
-        m_jBtnYearInc = new JButtonDate(new ImageIcon(getClass().getResource("/com/openbravo/images/2downarrow.png")), dateclick);
+        m_jBtnMonthInc = new JButtonDate(ImageLoader.readImageIcon("down_once.png"), dateclick);
+        m_jBtnYearInc = new JButtonDate(ImageLoader.readImageIcon("down_twice.png"), dateclick);
                
         m_jBtnToday.DateInf = new Date();
         m_jActions.add(m_jBtnYearDec);

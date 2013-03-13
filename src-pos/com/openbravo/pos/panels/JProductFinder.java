@@ -28,6 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.user.ListProvider;
 import com.openbravo.data.user.ListProviderCreator;
 import com.openbravo.pos.forms.DataLogicSales;
@@ -148,17 +149,17 @@ public class JProductFinder extends javax.swing.JDialog {
         jPanel2 = new javax.swing.JPanel();
         m_jProductSelect = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        searchBtn = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/launch.png")),
+        searchBtn = WidgetsBuilder.createButton(ImageLoader.readImageIcon("execute.png"),
                                                AppLocal.getIntString("button.executefilter"),
                                                WidgetsBuilder.SIZE_MEDIUM);
         jPanel5 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jListProducts = new javax.swing.JList();
         jPanel1 = new javax.swing.JPanel();
-        jcmdOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        jcmdOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                              AppLocal.getIntString("Button.OK"),
                                              WidgetsBuilder.SIZE_MEDIUM);
-        jcmdCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        jcmdCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                  AppLocal.getIntString("Button.Cancel"),
                                                  WidgetsBuilder.SIZE_MEDIUM);
 

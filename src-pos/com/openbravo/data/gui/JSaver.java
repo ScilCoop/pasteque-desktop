@@ -22,6 +22,7 @@ package com.openbravo.data.gui;
 import java.util.*;
 import javax.swing.*;
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.LocalRes;
 import com.openbravo.data.user.BrowsableEditableData;
 import com.openbravo.data.user.StateListener;
@@ -80,7 +81,7 @@ public class JSaver extends JPanel implements StateListener {
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        jbtnNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editnew.png")));
+        jbtnNew.setIcon(ImageLoader.readImageIcon("new.png"));
         jbtnNew.setFocusPainted(false);
         jbtnNew.setFocusable(false);
         jbtnNew.setMargin(new java.awt.Insets(2, 8, 2, 8));
@@ -93,7 +94,7 @@ public class JSaver extends JPanel implements StateListener {
 
         add(jbtnNew);
 
-        jbtnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")));
+        jbtnDelete.setIcon(ImageLoader.readImageIcon("delete.png"));
         jbtnDelete.setFocusPainted(false);
         jbtnDelete.setFocusable(false);
         jbtnDelete.setMargin(new java.awt.Insets(2, 8, 2, 8));
@@ -108,7 +109,7 @@ public class JSaver extends JPanel implements StateListener {
 
         add(jSeparator1);
 
-        jbtnSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/filesave.png")));
+        jbtnSave.setIcon(ImageLoader.readImageIcon("save.png"));
         jbtnSave.setFocusPainted(false);
         jbtnSave.setFocusable(false);
         jbtnSave.setMargin(new java.awt.Insets(2, 8, 2, 8));

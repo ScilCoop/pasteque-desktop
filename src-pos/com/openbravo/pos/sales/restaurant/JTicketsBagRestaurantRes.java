@@ -360,7 +360,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
 
         m_jToolbarContainer.setLayout(new java.awt.BorderLayout());
 
-        m_jbtnTables.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png"))); // NOI18N
+        m_jbtnTables.setIcon(ImageLoader.readImageIcon("floor_map.png"));
         m_jbtnTables.setText(AppLocal.getIntString("button.tables")); // NOI18N
         m_jbtnTables.setFocusPainted(false);
         m_jbtnTables.setFocusable(false);
@@ -372,7 +372,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         });
         jPanel4.add(m_jbtnTables);
 
-        m_jbtnReceive.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/mime.png"))); // NOI18N
+        m_jbtnReceive.setIcon(ImageLoader.readImageIcon("receipt.png"));
         m_jbtnReceive.setText(AppLocal.getIntString("button.receive")); // NOI18N
         m_jbtnReceive.setFocusPainted(false);
         m_jbtnReceive.setFocusable(false);
@@ -421,7 +421,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         jPanel1.add(txtCustomer);
         txtCustomer.setBounds(90, 150, 220, 20);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/kuser.png"))); // NOI18N
+        jButton1.setIcon(ImageLoader.readImageIcon("tkt_assign_customer.png"));
         jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
         jButton1.setRequestFocusEnabled(false);

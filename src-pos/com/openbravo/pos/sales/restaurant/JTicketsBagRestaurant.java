@@ -22,6 +22,7 @@
 package com.openbravo.pos.sales.restaurant;
 
 import javax.swing.*;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.widgets.JNumberDialog;
@@ -49,17 +50,13 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
     
     private void initComponents() {
 
-        m_jDelTicket = WidgetsBuilder.createButton(
-                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/editdelete.png")),
+        m_jDelTicket = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_delete.png"),
                 AppLocal.getIntString("Button.DeleteTicket.Tooltip"));
-        moveTicketBtn = WidgetsBuilder.createButton(
-                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/redo16.png")),
+        moveTicketBtn = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_move.png"),
                 AppLocal.getIntString("Button.MoveTable.Tooltip"));
-        backBtn = WidgetsBuilder.createButton(
-                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/atlantikdesignersmall.png")),
+        backBtn = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_room.png"),
                 AppLocal.getIntString("Button.RestaurantMap.Tooltip"));
-        JButton custCountBtn = WidgetsBuilder.createButton(
-                new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/edit_group.png")),
+        JButton custCountBtn = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_places.png"),
                 AppLocal.getIntString("Button.CustCount.Tooltip"));
 
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -122,7 +119,7 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
     }
 
     private void custCountBtnActionPerformed(java.awt.event.ActionEvent evt) {
-        Double dblcount = JNumberDialog.showEditNumber(this, JNumberDialog.INT_POSITIVE, AppLocal.getIntString("Label.CustCount"), AppLocal.getIntString("Label.CustCountInput"), new ImageIcon(getClass().getResource("/com/openbravo/images/edit_group.png")));
+        Double dblcount = JNumberDialog.showEditNumber(this, JNumberDialog.INT_POSITIVE, AppLocal.getIntString("Label.CustCount"), AppLocal.getIntString("Label.CustCountInput"), ImageLoader.readImageIcon("tkt_places.png"));
         if (dblcount != null) {
             int count = (int) dblcount.doubleValue();
             m_restaurant.setCustomersCount(count);

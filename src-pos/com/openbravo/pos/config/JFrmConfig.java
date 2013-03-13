@@ -30,6 +30,7 @@ import com.openbravo.pos.forms.DataLogicSystem;
 import java.awt.*;
 import java.awt.event.*;
 import com.openbravo.basic.BasicException;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.*;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -48,10 +49,7 @@ public class JFrmConfig extends javax.swing.JFrame {
         
         initComponents();
         
-        try {
-            this.setIconImage(ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
-        } catch (IOException e) {
-        }   
+        this.setIconImage(ImageLoader.readImage("favicon.png"));
         setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION + " - " + AppLocal.getIntString("Menu.Configuration"));
         
         addWindowListener(new MyFrameListener()); 

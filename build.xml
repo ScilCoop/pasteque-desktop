@@ -38,7 +38,6 @@
     <!-- read in property files -->
     <property file="build.properties" />
     <property name="src.pos" value="${basedir}/src-pos"/>
-    <property name="reports" value="${basedir}/reports"/>
     <property name="locales" value="${basedir}/locales"/>
     <property name="graphics.src" value="${basedir}/graphics-src"/>
     <property name="lib" value="${basedir}/lib"/>
@@ -149,11 +148,11 @@
         <copy todir="${dest.bin}/lib">
             <fileset dir="${basedir}/lib"/>
         </copy>
-        <copy todir="${dest.bin}/locales">
+        <copy todir="${dest.bin}/res/locales">
             <fileset dir="${basedir}/locales"/>
         </copy>
-        <copy todir="${dest.bin}/reports">
-            <fileset dir="${basedir}/reports"/>
+        <copy todir="${dest.bin}/res/images">
+            <fileset dir="${basedir}/images"/>
         </copy>
     </target>
 
@@ -213,9 +212,6 @@
         </copy>
         <copy todir="${basedir}/build/zip/locales">
             <fileset dir="${basedir}/locales"/>
-        </copy>
-        <copy todir="${basedir}/build/zip/reports">
-            <fileset dir="${basedir}/reports"/>
         </copy>
         <copy todir="${basedir}/build/zip/lib">
             <fileset dir="${basedir}/lib"/>

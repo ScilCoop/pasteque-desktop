@@ -32,6 +32,7 @@ import java.awt.Window;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
@@ -220,10 +221,10 @@ public class JProductLineEdit extends javax.swing.JDialog {
         subtotalLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.subtotalcash"));
         m_jSubtotal = WidgetsBuilder.createLabel(null);
         jPanel1 = new javax.swing.JPanel();
-        m_jButtonOK = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png")),
+        m_jButtonOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
                                                   AppLocal.getIntString("Button.OK"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
-        m_jButtonCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        m_jButtonCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                                                       AppLocal.getIntString("Button.Cancel"),
                                                       WidgetsBuilder.SIZE_MEDIUM);
         jPanel3 = new javax.swing.JPanel();

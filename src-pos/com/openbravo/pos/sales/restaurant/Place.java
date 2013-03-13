@@ -26,13 +26,14 @@ import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import com.openbravo.data.gui.NullIcon;
 import com.openbravo.data.loader.DataRead;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.basic.BasicException;
 
 public class Place implements SerializableRead, java.io.Serializable {
     
     private static final long serialVersionUID = 8652254694281L;
-    private static final Icon ICO_OCU = new ImageIcon(Place.class.getResource("/com/openbravo/images/edit_group.png"));
+    private static final Icon ICO_OCU = ImageLoader.readImageIcon("tkt_place_filled.png");
     private static final Icon ICO_FRE = new NullIcon(22, 22);
     
     private String m_sId;

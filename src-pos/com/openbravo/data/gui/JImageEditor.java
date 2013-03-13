@@ -19,6 +19,8 @@
 
 package com.openbravo.data.gui;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -293,7 +295,7 @@ public class JImageEditor extends javax.swing.JPanel {
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel2.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
-        m_jbtnopen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileopen.png"))); // NOI18N
+        m_jbtnopen.setIcon(ImageLoader.readImageIcon("file_open.png"));
         m_jbtnopen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtnopenActionPerformed(evt);
@@ -301,7 +303,7 @@ public class JImageEditor extends javax.swing.JPanel {
         });
         jPanel2.add(m_jbtnopen);
 
-        m_jbtnclose.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileclose.png"))); // NOI18N
+        m_jbtnclose.setIcon(ImageLoader.readImageIcon("delete.png"));
         m_jbtnclose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtncloseActionPerformed(evt);
@@ -309,7 +311,7 @@ public class JImageEditor extends javax.swing.JPanel {
         });
         jPanel2.add(m_jbtnclose);
 
-        m_jbtnzoomin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/viewmag+.png"))); // NOI18N
+        m_jbtnzoomin.setIcon(ImageLoader.readImageIcon("zoom_in.png"));
         m_jbtnzoomin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtnzoominActionPerformed(evt);
@@ -323,7 +325,7 @@ public class JImageEditor extends javax.swing.JPanel {
         m_jPercent.setOpaque(true);
         jPanel2.add(m_jPercent);
 
-        m_jbtnzoomout.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/viewmag-.png"))); // NOI18N
+        m_jbtnzoomout.setIcon(ImageLoader.readImageIcon("zoom_out.png"));
         m_jbtnzoomout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtnzoomoutActionPerformed(evt);

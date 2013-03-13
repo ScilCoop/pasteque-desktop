@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.EventListener;
 import javax.swing.event.EventListenerList;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppConfig;
 
 public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
@@ -194,19 +195,19 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
         java.awt.GridBagConstraints gridBagConstraints;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
 
-        m_jKey0 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn0.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey1 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn1.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey4 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn4a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey7 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn7a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jCE = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnce.png")), WidgetsBuilder.SIZE_BIG);
-        m_jMinus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey9 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn9a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey8 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn8a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey5 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn5a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey6 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn6a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey3 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn3a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey2 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn2a.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKeyDot = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btndot.png")), WidgetsBuilder.SIZE_BIG);
+        m_jKey0 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_0.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_1.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey4 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_4a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey7 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_7a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jCE = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_ce.png"), WidgetsBuilder.SIZE_BIG);
+        m_jMinus = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_minus.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey9 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_9a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey8 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_8a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey5 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_5a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey6 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_6a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey3 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_3a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey2 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_2a.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKeyDot = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_dot.png"), WidgetsBuilder.SIZE_BIG);
         m_txtKeys = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));

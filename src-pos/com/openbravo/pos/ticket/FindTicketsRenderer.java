@@ -19,6 +19,8 @@
 
 package com.openbravo.pos.ticket;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
@@ -38,8 +40,8 @@ public class FindTicketsRenderer extends DefaultListCellRenderer {
     
     /** Creates a new instance of ProductRenderer */
     public FindTicketsRenderer() {
-        this.icoTicketNormal = new ImageIcon(getClass().getClassLoader().getResource("com/openbravo/images/pay.png"));
-        this.icoTicketRefund = new ImageIcon(getClass().getClassLoader().getResource("com/openbravo/images/refund.png"));
+        this.icoTicketNormal = ImageLoader.readImageIcon("tkt_type_pay.png");
+        this.icoTicketRefund = ImageLoader.readImageIcon("tkt_type_refund.png");
     }
 
     @Override

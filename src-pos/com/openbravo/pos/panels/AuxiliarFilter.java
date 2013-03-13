@@ -21,6 +21,7 @@ package com.openbravo.pos.panels;
 
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.MessageInf;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.SerializerWrite;
 import com.openbravo.data.loader.SerializerWriteString;
 import com.openbravo.pos.forms.AppLocal;
@@ -177,7 +178,7 @@ public class AuxiliarFilter extends javax.swing.JPanel implements ReportEditorCr
             }
         });
 
-        Enter1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/apply.png"))); // NOI18N
+        Enter1.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         Enter1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Enter1ActionPerformed(evt);
@@ -192,7 +193,7 @@ public class AuxiliarFilter extends javax.swing.JPanel implements ReportEditorCr
             }
         });
 
-        Enter2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/apply.png"))); // NOI18N
+        Enter2.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         Enter2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 Enter2ActionPerformed(evt);
@@ -203,7 +204,7 @@ public class AuxiliarFilter extends javax.swing.JPanel implements ReportEditorCr
         m_jSearch.setFocusable(false);
         m_jSearch.setRequestFocusEnabled(false);
 
-        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/search.png"))); // NOI18N
+        search.setIcon(ImageLoader.readImageIcon("search.png"));
         search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 searchActionPerformed(evt);

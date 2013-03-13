@@ -19,6 +19,8 @@
 
 package com.openbravo.pos.forms;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -35,7 +37,7 @@ public class MenuExecAction extends AbstractAction {
     
     /** Creates a new instance of MenuExecAction */
     public MenuExecAction(AppView app, String icon, String keytext, String sMyView) {
-        putValue(Action.SMALL_ICON, new ImageIcon(JPrincipalApp.class.getResource(icon)));
+        putValue(Action.SMALL_ICON, ImageLoader.readImageIcon(icon));
         putValue(Action.NAME, AppLocal.getIntString(keytext));
         putValue(AppUserView.ACTION_TASKNAME, sMyView);
         m_App = app;

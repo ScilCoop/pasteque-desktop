@@ -19,6 +19,8 @@
 
 package com.openbravo.beans;
 
+import com.openbravo.data.loader.ImageLoader;
+
 import java.awt.ComponentOrientation;
 import java.util.*;
 
@@ -163,7 +165,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         setLayout(new java.awt.GridBagLayout());
 
         setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(5, 5, 5, 5)));
-        m_jCE.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnce.png")));
+        m_jCE.setIcon(ImageLoader.readImageIcon("kpad_ce.png"));
         m_jCE.setFocusPainted(false);
         m_jCE.setFocusable(false);
         m_jCE.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -177,7 +179,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         add(m_jCE, gridBagConstraints);
 
-        m_jMultiply.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnmult.png")));
+        m_jMultiply.setIcon(ImageLoader.readImageIcon("kpad_mult.png"));
         m_jMultiply.setFocusPainted(false);
         m_jMultiply.setFocusable(false);
         m_jMultiply.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -191,7 +193,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         add(m_jMultiply, gridBagConstraints);
 
-        m_jMinus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")));
+        m_jMinus.setIcon(ImageLoader.readImageIcon("kpad_minus.png"));
         m_jMinus.setFocusPainted(false);
         m_jMinus.setFocusable(false);
         m_jMinus.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -205,7 +207,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         add(m_jMinus, gridBagConstraints);
 
-        m_jPlus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")));
+        m_jPlus.setIcon(ImageLoader.readImageIcon("kpad_plus.png"));
         m_jPlus.setFocusPainted(false);
         m_jPlus.setFocusable(false);
         m_jPlus.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -220,7 +222,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jPlus, gridBagConstraints);
 
-        m_jKey9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn9.png")));
+        m_jKey9.setIcon(ImageLoader.readImageIcon("kpad_9.png"));
         m_jKey9.setFocusPainted(false);
         m_jKey9.setFocusable(false);
         m_jKey9.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -234,7 +236,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey9, gridBagConstraints);
 
-        m_jKey8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn8.png")));
+        m_jKey8.setIcon(ImageLoader.readImageIcon("kpad_8.png"));
         m_jKey8.setFocusPainted(false);
         m_jKey8.setFocusable(false);
         m_jKey8.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -248,7 +250,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey8, gridBagConstraints);
 
-        m_jKey7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn7.png")));
+        m_jKey7.setIcon(ImageLoader.readImageIcon("kpad_7.png"));
         m_jKey7.setFocusPainted(false);
         m_jKey7.setFocusable(false);
         m_jKey7.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -262,7 +264,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(m_jKey7, gridBagConstraints);
 
-        m_jKey4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn4.png")));
+        m_jKey4.setIcon(ImageLoader.readImageIcon("kpad_4.png"));
         m_jKey4.setFocusPainted(false);
         m_jKey4.setFocusable(false);
         m_jKey4.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -276,7 +278,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(m_jKey4, gridBagConstraints);
 
-        m_jKey5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn5.png")));
+        m_jKey5.setIcon(ImageLoader.readImageIcon("kpad_5.png"));
         m_jKey5.setFocusPainted(false);
         m_jKey5.setFocusable(false);
         m_jKey5.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -290,7 +292,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey5, gridBagConstraints);
 
-        m_jKey6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn6.png")));
+        m_jKey6.setIcon(ImageLoader.readImageIcon("kpad_6.png"));
         m_jKey6.setFocusPainted(false);
         m_jKey6.setFocusable(false);
         m_jKey6.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -304,7 +306,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey6, gridBagConstraints);
 
-        m_jKey3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn3.png")));
+        m_jKey3.setIcon(ImageLoader.readImageIcon("kpad_3.png"));
         m_jKey3.setFocusPainted(false);
         m_jKey3.setFocusable(false);
         m_jKey3.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -318,7 +320,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey3, gridBagConstraints);
 
-        m_jKey2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn2.png")));
+        m_jKey2.setIcon(ImageLoader.readImageIcon("kpad_2.png"));
         m_jKey2.setFocusPainted(false);
         m_jKey2.setFocusable(false);
         m_jKey2.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -332,7 +334,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKey2, gridBagConstraints);
 
-        m_jKey1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn1.png")));
+        m_jKey1.setIcon(ImageLoader.readImageIcon("kpad_1.png"));
         m_jKey1.setFocusPainted(false);
         m_jKey1.setFocusable(false);
         m_jKey1.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -346,7 +348,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(m_jKey1, gridBagConstraints);
 
-        m_jKey0.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn0.png")));
+        m_jKey0.setIcon(ImageLoader.readImageIcon("kpad_0.png"));
         m_jKey0.setFocusPainted(false);
         m_jKey0.setFocusable(false);
         m_jKey0.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -361,7 +363,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         add(m_jKey0, gridBagConstraints);
 
-        m_jKeyDot.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btndot.png")));
+        m_jKeyDot.setIcon(ImageLoader.readImageIcon("kpad_dot.png"));
         m_jKeyDot.setFocusPainted(false);
         m_jKeyDot.setFocusable(false);
         m_jKeyDot.setMargin(new java.awt.Insets(8, 16, 8, 16));
@@ -375,7 +377,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(m_jKeyDot, gridBagConstraints);
 
-        m_jEquals.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnequals.png")));
+        m_jEquals.setIcon(ImageLoader.readImageIcon("kpad_enter.png"));
         m_jEquals.setFocusPainted(false);
         m_jEquals.setFocusable(false);
         m_jEquals.setMargin(new java.awt.Insets(8, 16, 8, 16));

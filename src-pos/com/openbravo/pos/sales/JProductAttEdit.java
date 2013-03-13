@@ -24,6 +24,7 @@ package com.openbravo.pos.sales;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.DataRead;
 import com.openbravo.data.loader.Datas;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.PreparedSentence;
 import com.openbravo.data.loader.SentenceExec;
 import com.openbravo.data.loader.SentenceFind;
@@ -286,7 +287,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        m_jButtonOK.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_ok.png"))); // NOI18N
+        m_jButtonOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         m_jButtonOK.setText(AppLocal.getIntString("Button.OK")); // NOI18N
         m_jButtonOK.setFocusPainted(false);
         m_jButtonOK.setFocusable(false);
@@ -299,7 +300,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
         });
         jPanel1.add(m_jButtonOK);
 
-        m_jButtonCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png"))); // NOI18N
+        m_jButtonCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         m_jButtonCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         m_jButtonCancel.setFocusPainted(false);
         m_jButtonCancel.setFocusable(false);

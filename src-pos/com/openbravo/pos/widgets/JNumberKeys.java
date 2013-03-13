@@ -23,6 +23,7 @@ package com.openbravo.pos.widgets;
 
 import java.awt.ComponentOrientation;
 import java.util.*;
+import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.pos.forms.AppConfig;
 
 public class JNumberKeys extends javax.swing.JPanel {
@@ -150,23 +151,23 @@ public class JNumberKeys extends javax.swing.JPanel {
         java.awt.GridBagConstraints gridBagConstraints;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
 
-        m_jBack = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnback.png")), WidgetsBuilder.SIZE_BIG);
-        m_jCE = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnce.png")), WidgetsBuilder.SIZE_BIG);
-        m_jMultiply = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnmult.png")), WidgetsBuilder.SIZE_BIG);
-        m_jMinus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnminus.png")), WidgetsBuilder.SIZE_BIG);
-        m_jPlus = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnplus.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey9 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn9.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey8 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn8.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey7 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn7.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey4 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn4.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey5 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn5.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey6 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn6.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey3 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn3.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey2 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn2.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey1 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn1.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKey0 = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btn0.png")), WidgetsBuilder.SIZE_BIG);
-        m_jKeyDot = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btndot.png")), WidgetsBuilder.SIZE_BIG);
-        m_jEquals = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/btnequals.png")), WidgetsBuilder.SIZE_BIG);
+        m_jBack = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_back.png"), WidgetsBuilder.SIZE_BIG);
+        m_jCE = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_ce.png"), WidgetsBuilder.SIZE_BIG);
+        m_jMultiply = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_mult.png"), WidgetsBuilder.SIZE_BIG);
+        m_jMinus = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_minus.png"), WidgetsBuilder.SIZE_BIG);
+        m_jPlus = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_plus.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey9 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_9.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey8 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_8.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey7 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_7.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey4 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_4.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey5 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_5.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey6 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_6.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey3 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_3.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey2 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_2.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_1.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKey0 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_0.png"), WidgetsBuilder.SIZE_BIG);
+        m_jKeyDot = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_dot.png"), WidgetsBuilder.SIZE_BIG);
+        m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_enter.png"), WidgetsBuilder.SIZE_BIG);
 
         setLayout(new java.awt.GridBagLayout());
 
