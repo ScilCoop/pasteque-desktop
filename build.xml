@@ -35,6 +35,7 @@
     <property name="javac.optimize" value="on"/>
     <property name="javac.debug" value="on"/>
     <property name="javac.minVMVersion" value="1.6"/>
+    <property name="javac.encoding" value="utf8"/>
     <!-- read in property files -->
     <property file="build.properties" />
     <property name="src.pos" value="${basedir}/src-pos"/>
@@ -81,7 +82,8 @@
                debug="${javac.debug}"
                deprecation="${javac.deprecation}"
                optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
+               target="${javac.minVMVersion}"
+               encoding="${javac.encoding}">
             <classpath>
                   <fileset dir="${basedir}/lib">
                     <include name="**/*.jar"/>
@@ -163,7 +165,8 @@
                debug="${javac.debug}"
                deprecation="${javac.deprecation}"
                optimize="${javac.optimize}"
-               target="${javac.minVMVersion}">
+               target="${javac.minVMVersion}"
+               encoding="${javac.encoding}">
             <classpath>
                 <fileset dir="${basedir}/lib">
                     <include name="**/*.jar"/>
