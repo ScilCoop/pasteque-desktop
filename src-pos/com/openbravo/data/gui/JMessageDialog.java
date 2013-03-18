@@ -196,7 +196,12 @@ public class JMessageDialog extends javax.swing.JDialog {
         jcmdMore.setEnabled(false);
         jscrException.setVisible(true);
         setSize(getWidth(), 310);
-        validateTree();
+        /* Jdk7 now generate IllegalStateException if validateTree() is
+         * called without holding treeLock. It is to prevent thread's
+         * problems with validateTree() */
+        synchronized(getTreeLock()) {
+            validateTree();
+        }
         
     }//GEN-LAST:event_jcmdMoreActionPerformed
 
