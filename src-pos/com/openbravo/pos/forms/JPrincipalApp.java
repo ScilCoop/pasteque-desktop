@@ -357,7 +357,9 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
                     try {
                         dt.browse(new URI(backOfficeUrl));
                     } catch (URISyntaxException e) {
+                        JMessageDialog.showMessage(JPrincipalApp.this, new MessageInf(MessageInf.SGN_WARNING, e.getMessage()));
                     } catch (IOException e) {
+                        JMessageDialog.showMessage(JPrincipalApp.this, new MessageInf(MessageInf.SGN_WARNING, e.getMessage()));
                     }
                 }
             }
