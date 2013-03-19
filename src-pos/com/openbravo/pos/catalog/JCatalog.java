@@ -138,7 +138,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jUp.setEnabled(value);
         m_jDown.setEnabled(value);
         m_lblIndicator.setEnabled(value);
-        m_btnBack1.setEnabled(value);
+        m_jBack1.setEnabled(value);
         m_jProducts.setEnabled(value); 
         synchronized (m_jProducts.getTreeLock()) {
             int compCount = m_jProducts.getComponentCount();
@@ -392,7 +392,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_lblIndicator = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        m_btnBack1 = new javax.swing.JButton();
+        m_jBack1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_up.png"), AppLocal.getIntString("Button.m_jBack1.toolTip"));
         m_jProducts = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
@@ -423,7 +423,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel3.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
         if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
-            m_jUp.setIcon(ImageLoader.readImageIcon("up.png"));
+            m_jUp.setIcon(ImageLoader.readImageIcon("button_up.png"));
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
             m_jUp.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -435,7 +435,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
             });
             jPanel3.add(m_jUp);
 
-            m_jDown.setIcon(ImageLoader.readImageIcon("down.png"));
+            m_jDown.setIcon(ImageLoader.readImageIcon("button_down.png"));
             m_jDown.setFocusPainted(false);
             m_jDown.setFocusable(false);
             m_jDown.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -470,17 +470,16 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
         jPanel5.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
-        m_btnBack1.setIcon(ImageLoader.readImageIcon("up.png"));
-        m_btnBack1.setFocusPainted(false);
-        m_btnBack1.setFocusable(false);
-        m_btnBack1.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_btnBack1.setRequestFocusEnabled(false);
-        m_btnBack1.addActionListener(new java.awt.event.ActionListener() {
+        m_jBack1.setFocusPainted(false);
+        m_jBack1.setFocusable(false);
+        m_jBack1.setMargin(new java.awt.Insets(8, 14, 8, 14));
+        m_jBack1.setRequestFocusEnabled(false);
+        m_jBack1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_btnBack1ActionPerformed(evt);
             }
         });
-        jPanel5.add(m_btnBack1);
+        jPanel5.add(m_jBack1);
 
         jPanel1.add(jPanel5, java.awt.BorderLayout.NORTH);
 
@@ -558,7 +557,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JButton m_btnBack1;
+    private javax.swing.JButton m_jBack1;
     private javax.swing.JPanel m_jCategories;
     private javax.swing.JButton m_jDown;
     private javax.swing.JList m_jListCategories;

@@ -41,6 +41,7 @@ import com.openbravo.pos.scripting.ScriptEngine;
 import com.openbravo.pos.scripting.ScriptException;
 import com.openbravo.pos.scripting.ScriptFactory;
 import com.openbravo.pos.ticket.TicketInfo;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JComponent;
@@ -233,8 +234,10 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
         jPanel2 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
-        btnCustomer = new javax.swing.JButton();
-        btnSave = new javax.swing.JButton();
+        btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"),
+                AppLocal.getIntString("Button.m_jList.toolTip"));
+        btnSave = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"),
+                AppLocal.getIntString("Button.save.toolTip"));
         jSeparator1 = new javax.swing.JSeparator();
         btnPay = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
@@ -242,7 +245,8 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         m_jKeys = new com.openbravo.pos.widgets.JEditorKeys();
         jPanel5 = new javax.swing.JPanel();
         editorcard = new com.openbravo.pos.widgets.JEditorString();
-        jButton1 = new javax.swing.JButton();
+        jButton1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
+                AppLocal.getIntString("Button.validate.toolTip"));
         jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
@@ -263,7 +267,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        btnCustomer.setIcon(ImageLoader.readImageIcon("tkt_assign_customer.png"));
+        //btnCustomer.setIcon(ImageLoader.readImageIcon("tkt_assign_customer.png"));
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -275,7 +279,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         });
         jPanel6.add(btnCustomer);
 
-        btnSave.setIcon(ImageLoader.readImageIcon("save.png"));
+        //btnSave.setIcon(ImageLoader.readImageIcon("save.png"));
         btnSave.setFocusPainted(false);
         btnSave.setFocusable(false);
         btnSave.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -320,7 +324,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         jPanel5.setLayout(new java.awt.GridBagLayout());
         jPanel5.add(editorcard, new java.awt.GridBagConstraints());
 
-        jButton1.setIcon(ImageLoader.readImageIcon("button_ok.png"));
+        //jButton1.setIcon(ImageLoader.readImageIcon("button_ok.png"));
         jButton1.setFocusPainted(false);
         jButton1.setFocusable(false);
         jButton1.setMargin(new java.awt.Insets(8, 14, 8, 14));
