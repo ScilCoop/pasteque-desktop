@@ -1,0 +1,20 @@
+<synth>
+  <style id="default">
+    <opaque value="true"/>
+    <state>
+      <color type="BACKGROUND" value="#EDF7FF" />
+      <color type="FOREGROUND" value="#FFFFFF" />
+      <color type="TEXT_FOREGROUND" value="#000000" />
+    </state>
+    <font name="Lucida" size="12"/>
+  </style>
+  <bind style="default" type="region" key=".*"/>
+
+  <style id="textfield">
+    <state>
+      <color value="white" type="BACKGROUND"/>
+    </state>
+    <insets top="5" bottom="6" right="7" left="6"/>
+  </style>
+  <bind style="textfield" type="region" key="TextField"/>
+</synth>

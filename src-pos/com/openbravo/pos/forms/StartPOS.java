@@ -20,6 +20,8 @@
 package com.openbravo.pos.forms;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.Locale;
 import javax.swing.UIManager;
 import com.openbravo.data.loader.ImageLoader;
@@ -33,6 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.LookAndFeel;
+import javax.swing.plaf.synth.SynthLookAndFeel;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
 
@@ -110,15 +113,12 @@ public class StartPOS {
                 Formats.setDateTimePattern(config.getProperty("format.datetime"));               
                 
                 // Set the look and feel.
-                try {             
-                    
-                    Object laf = Class.forName(config.getProperty("swing.defaultlaf")).newInstance();
-                    
-                    if (laf instanceof LookAndFeel){
-                        UIManager.setLookAndFeel((LookAndFeel) laf);
-                    } else if (laf instanceof SubstanceSkin) {                      
-                        SubstanceLookAndFeel.setSkin((SubstanceSkin) laf);                   
-                    }
+                try {
+                    String base = System.getProperty("dirname.path");
+                    File f = new File(base + "/res/images/theme.xml");
+                    SynthLookAndFeel laf = new SynthLookAndFeel();
+                    laf.load(f.toURI().toURL());
+                    UIManager.setLookAndFeel(laf);
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Cannot set look and feel", e);
                 }
