@@ -129,7 +129,7 @@ new Double($F{PRICESELL}.doubleValue() * (1.0 + $P{TAXESLOGIC}.getTaxRate($F{TAX
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="8"/>
 				</textElement>
-				<text><![CDATA[opening ERP's future!]]></text>
+				<text><![CDATA[La solution de caisse toute simple]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="staticText-2" x="14" y="6" width="149" height="19"/>
@@ -142,7 +142,7 @@ new Double($F{PRICESELL}.doubleValue() * (1.0 + $P{TAXESLOGIC}.getTaxRate($F{TAX
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="14" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
-				<text><![CDATA[Openbravo POS]]></text>
+				<text><![CDATA[Pastèque]]></text>
 			</staticText>
 			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
 				<reportElement key="barcode-1" x="13" y="167" width="149" height="46"/>
