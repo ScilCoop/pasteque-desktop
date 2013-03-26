@@ -96,12 +96,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
      * with their id
      */
     public SentenceList getTop10CustomerList() {
+    System.out.println("Top 10");
         return new StaticSentence(s
             , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
-            " TICKETS.CUSTOMER, Count( TICKETS.CUSTOMER ) AS Top10 FROM TICKETS " +
-            " INNER JOIN CUSTOMERS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
+            " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
+            " LEFT JOIN TICKETS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
             " WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) " +
-            " GROUP BY TICKETS.CUSTOMER ORDER BY Top10 DESC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
+            " GROUP BY CUSTOMERS.ID ORDER BY Top10 DESC, NAME ASC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
             , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
             , new SerializerRead() {
                     public Object readValues(DataRead dr) throws BasicException {
