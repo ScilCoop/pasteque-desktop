@@ -27,9 +27,9 @@
     <!-- P R O P E R T I E S                                               -->
     <!-- ================================================================= -->
     <!-- program name -->
-    <property name="name" value="pos-tech"/>
+    <property name="name" value="pasteque"/>
     <!-- project version -->
-    <property name="version" value="1.2_beta3"/>
+    <property name="version" value="1.2.0"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
@@ -119,7 +119,7 @@
              basedir="${basedir}/build/zip">
             <manifest>
                 <attribute name="Implementation-Vendor" value="Scil"/>
-                <attribute name="Implementation-Title" value="POS-Tech"/>
+                <attribute name="Implementation-Title" value="Pasteque"/>
                 <attribute name="Implementation-Version" value="${version}"/>
                 <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
     	    </manifest>
@@ -133,7 +133,7 @@
 
     <target name="build" depends="init.bin,jar" description="Build the executable environment">
         <mkdir dir="${dest.bin}" />
-        <copy file="${basedir}/pos-tech-logo-128.png" todir="${dest.bin}"/>
+        <copy file="${basedir}/pasteque-logo-128.png" todir="${dest.bin}"/>
         <copy file="${basedir}/README" todir="${dest.bin}"/>
         <copy file="${basedir}/logging.properties" todir="${dest.bin}"/>
         <copy file="${dest.jar}/${name}.jar" todir="${dest.bin}"/>
@@ -176,7 +176,7 @@
              basedir="${dest.classes}/pos">
             <manifest>
                 <attribute name="Implementation-Vendor" value="Scil"/>
-                <attribute name="Implementation-Title" value="POS-Tech"/>
+                <attribute name="Implementation-Title" value="Pasteque"/>
                 <attribute name="Implementation-Version" value="${version}"/>
                 <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
             </manifest>
@@ -227,7 +227,7 @@
                 <exclude name="**/filesystem.attributes"/>
             </fileset>
         </copy>
-        <copy file="${basedir}/pos-tech-logo-128.png" todir="${basedir}/build/zip"/>
+        <copy file="${basedir}/pasteque-logo-128.png" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/README" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/logging.properties" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/build.xml" todir="${basedir}/build/zip" />

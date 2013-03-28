@@ -1,3 +1,4 @@
+
 [Desktop Entry]
 Name=POS-Tech
 Comment=POS-Tech, logiciel de caisse
@@ -7,3 +8,4 @@ Type=Application
 StartupNotify=false
 Categories=GNOME;Office
 Icon=pos-tech
+Name[fr]=pasteque

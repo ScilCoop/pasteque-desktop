@@ -1,9 +1,9 @@
 #!/bin/sh
-INSTALL_DIR="/opt/pos-tech"
+INSTALL_DIR="/opt/pasteque"
 DIR=$(pwd)
 
 mv $DIR $INSTALL_DIR
-cp $INSTALL_DIR/pos-tech /usr/bin/
-chmod 755 /usr/bin/pos-tech
-cp $INSTALL_DIR/pos-tech.desktop /usr/share/applications/
-ln -s $INSTALL_DIR/pos-tech-logo-128.png /usr/share/icons/pos-tech.png
+cp $INSTALL_DIR/pasteque /usr/bin/
+chmod 755 /usr/bin/pasteque
+cp $INSTALL_DIR/pasteque.desktop /usr/share/applications/
+ln -s $INSTALL_DIR/pasteque-logo-128.png /usr/share/icons/pasteque.png
