@@ -1,0 +1,11 @@
+This installer is made with the version 5 of IzPack (http://izpack.org/).
+
+
+HOW IT WORKS
+
+Download IzPack and unpack it where you want.
+Then you have to specified the IzPack's path in the build.xml file of Pasteque.
+
+Default config assumes that you have unpack it in your home's folder.
+Once unpacked and the path to its folder written, you juste have to call
+"ant installer" in the base directory of Pasteque.
