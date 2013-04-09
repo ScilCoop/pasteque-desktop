@@ -302,7 +302,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (m_oTicket.getCustomer() != null) {
             CustomerInfoExt customerName = m_oTicket.getCustomer();
             name = customerName.getName();
-            Color green = new Color(64,150,23);
+            Color green = new Color(33,67,92);
             m_jTicketId.setBackground(green);
             m_jTicketId.setForeground(java.awt.Color.WHITE);
         } else {
