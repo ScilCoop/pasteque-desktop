@@ -96,7 +96,6 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
      * with their id
      */
     public SentenceList getTop10CustomerList() {
-    System.out.println("Top 10");
         return new StaticSentence(s
             , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
             " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
