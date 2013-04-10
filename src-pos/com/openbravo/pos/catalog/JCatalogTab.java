@@ -63,7 +63,41 @@ public class JCatalogTab extends javax.swing.JPanel {
         btn.addActionListener(al);
         flowpanel.add(btn);        
     }
-    
+
+    public void addButton(Icon ico, String id, ActionListener al) {
+        JButton btn = checkButton(id);
+        if (btn == null) {
+            btn = new JButton();
+            btn.setIcon(ico);
+            btn.setName(id);
+            btn.setFocusPainted(false);
+            btn.setFocusable(false);
+            btn.setRequestFocusEnabled(false);
+            btn.setHorizontalTextPosition(SwingConstants.CENTER);
+            btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+            btn.setMargin(new Insets(2, 2, 2, 2));
+            btn.addActionListener(al);
+            flowpanel.add(btn);
+        }
+    }
+
+    public void delButton(String id) {
+        JButton btn = checkButton(id);
+        if (btn != null)
+            flowpanel.remove(btn);
+    }
+
+    private JButton checkButton(String id) {
+        int count = flowpanel.getComponentCount();
+        JButton btn = null;
+        
+        for (int i = 0; i < count; i++) {
+            if ( ((JButton)flowpanel.getComponent(i)).getName().equals(id) )
+                btn = (JButton)flowpanel.getComponent(i);
+        }
+        return btn;
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

@@ -42,6 +42,7 @@ import com.openbravo.pos.mant.FloorsInfo;
 import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.pos.payment.PaymentInfoTicket;
 import com.openbravo.pos.ticket.FindTicketsInfo;
+import com.openbravo.pos.ticket.SubgroupInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -59,6 +60,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     // protected Datas[] productcatDatas;
     protected Datas[] paymenttabledatas;
     protected Datas[] stockdatas;
+    protected Datas[] compositionDatas;
+    protected Datas[] subgroupDatas;
+    protected Datas[] subgroup_prodDatas;
     protected Datas[] tariffareaDatas;
     protected Datas[] tariffprodDatas;
 
@@ -72,6 +76,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
         tariffareaDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.INT};
         tariffprodDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.DOUBLE};
+        compositionDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
+        subgroupDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.IMAGE};
+        subgroup_prodDatas = new Datas[] {Datas.STRING, Datas.STRING};
 
         productsRow = new Row(
                 new Field("ID", Datas.STRING, Formats.STRING),
@@ -155,6 +162,14 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             CategoryInfo.getSerializerRead()).list(category);
     }
 
+    //Subgrupos de una composición
+    public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY NAME"
+            , SerializerWriteString.INSTANCE
+            , new SerializerReadClass(SubgroupInfo.class)).list(composition);
+    }
+
     //Productos de un grupo de tarifas
     public final List<ProductInfoExt> getTariffProds(String area) throws BasicException  {
         return new PreparedSentence(s
@@ -168,6 +183,28 @@ public class DataLogicSales extends BeanFactoryDataSingle {
               "WHERE TA.ID = ? ORDER BY P.NAME"
             , SerializerWriteString.INSTANCE
             , ProductInfoExt.getSerializerRead()).list(area);
+    }
+
+    //Producto de un subgrupo de una composicion
+    public final List<ProductInfoExt> getSubgroupCatalog(String subgroup) throws BasicException  {
+            return new PreparedSentence(s
+            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
+            + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE "
+            + "FROM SUBGROUPS S INNER JOIN SUBGROUPS_PROD SP ON S.ID = SP.SUBGROUP "
+            + "LEFT OUTER JOIN PRODUCTS P ON SP.PRODUCT = P.ID "
+            + "WHERE S.ID = ? "
+            + "ORDER BY P.NAME"
+            , SerializerWriteString.INSTANCE
+            , ProductInfoExt.getSerializerRead()).list(subgroup);
+    }
+
+    public final List<CategoryInfo> getCategoryComposition() throws BasicException {
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE ID = '0'"
+            , null
+            , CategoryInfo.getSerializerRead()).list();
     }
 
     /** Get products from a category ID */
@@ -207,7 +244,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
-                + "WHERE ?(QBF_FILTER) "
+                + "WHERE ?(QBF_FILTER) AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -226,6 +263,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
                 + "WHERE ISCOM = " + s.DB.FALSE() + " AND ?(QBF_FILTER) "
+                + "AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -243,7 +281,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS WHERE ISCOM = " + s.DB.TRUE()
-                + " AND ?(QBF_FILTER) "
+                + " AND ?(QBF_FILTER) AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -252,7 +290,21 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
             ProductInfoExt.getSerializerRead());
     }
-    
+
+    public final SentenceList getCompositionList() {
+        return new StaticSentence(s
+            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
+            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.TAXCAT, "
+            + "P.CATEGORY, P.ATTRIBUTESET_ID, P.IMAGE, "
+            + "P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
+            + "FROM PRODUCTS P, CATEGORIES C "
+            + "WHERE P.CATEGORY = C.ID AND C.ID LIKE '0' "
+            + "AND ?(QBF_FILTER) ORDER BY P.NAME"
+            , new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
+            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
+            , new SerializerReadClass(ProductInfoExt.class));
+    }
+
     //Tickets and Receipt list
     public SentenceList getTicketsList() {
          return new StaticSentence(s,
@@ -310,7 +362,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     public final SentenceList getCategoriesList() {
         return new StaticSentence(s
-            , "SELECT ID, NAME, IMAGE FROM CATEGORIES ORDER BY NAME"
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
+            + "WHERE ID != '0' ORDER BY NAME"
             , null
             , CategoryInfo.getSerializerRead());
     }
@@ -616,6 +669,19 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_PAYMENT").find();
     }
 
+    public final SentenceList getCompositionQBF() {
+        return new StaticSentence(s
+            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
+            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.CATEGORY, P.TAXCAT, "
+            + "P.IMAGE, NOT (C.PRODUCT IS NULL), C.CATORDER, P.ATTRIBUTES "
+            + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C ON P.ID = C.PRODUCT "
+            + "WHERE P.CATEGORY LIKE '0' AND ?(QBF_FILTER) "
+            + "ORDER BY P.NAME",
+            new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
+            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
+            , new SerializerReadBasic(compositionDatas));
+    }
+
     /** Get query of ordered products of a category */
     public final SentenceList getProductCatQBF() {
         return new StaticSentence(s,
@@ -717,6 +783,106 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
             }
         };
+    }
+
+    public final SentenceExec getCompositionInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, "
+                    + "ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, IMAGE, "
+                    + "ATTRIBUTES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    , new SerializerWriteBasicExt(compositionDatas, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13})).exec(params);
+                if (i > 0 && ((Boolean)values[11]).booleanValue()) {
+                    i = new PreparedSentence(s
+                        , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES "
+                        + "(?, ?)"
+                        , new SerializerWriteBasicExt(compositionDatas, new int[] {0, 12})).exec(params);
+                }
+                
+                if (i > 0)
+                    i = auxComposition(values, s);
+                
+                return i;
+            }
+        };
+    }
+
+    public final SentenceExec getCompositionUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "UPDATE PRODUCTS SET ID = ?, REFERENCE = ?, CODE = ?, "
+                    + "NAME = ?, ISCOM = ?, ISSCALE = ?, PRICESELL = ?, "
+                    + "CATEGORY = ?, TAXCAT = ?, IMAGE = ?, ATTRIBUTES = ? "
+                    + "WHERE ID = ?"
+                    , new SerializerWriteBasicExt(compositionDatas, new int[]{0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 13, 0})).exec(params);
+                if (i > 0) {
+                    if (((Boolean)values[11]).booleanValue()) {
+                        if (new PreparedSentence(s
+                                , "UPDATE PRODUCTS_CAT SET CATORDER = ? WHERE PRODUCT = ?"
+                                , new SerializerWriteBasicExt(compositionDatas, new int[] {12, 0})).exec(params) == 0) {
+                            new PreparedSentence(s
+                                , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                                , new SerializerWriteBasicExt(compositionDatas, new int[] {0, 12})).exec(params);
+                        }
+                    } else {
+                        new PreparedSentence(s
+                            , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);
+                    }
+                }
+                if (i > 0)
+                    i = auxComposition(values, s);
+                
+                return i;
+            }        
+        };
+    }
+
+    public final SentenceExec getCompositionDelete() {
+        return getProductCatDelete();
+    }
+
+    private int auxComposition(Object params, Session s) throws BasicException {
+        Object[] values = (Object[]) params;
+        int i = 1;
+
+        //Eliminamos los subgrupos que pudiese tener
+        new PreparedSentence(s
+            , "DELETE FROM SUBGROUPS WHERE COMPOSITION = ?"
+            , new SerializerWriteBasicExt(subgroupDatas, new int[] {0})).exec(params);                 
+
+        //Por cada subgrupo
+        int ssize = ((Integer)values[14]).intValue();
+        int cont = 15;
+        for (int e = 0; e < ssize && i > 0; e++) {
+            Object[] sparams = new Object[] {values[cont], values[0], values[cont +1], values[cont +2]};
+            
+            //Eliminamos los productos que el subgrupo pudiera tener
+            new PreparedSentence(s
+                , "DELETE FROM SUBGROUPS_PROD WHERE SUBGROUP = ?"
+                , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0})).exec(sparams);        
+            
+            i = new PreparedSentence(s
+                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE) VALUES (?, ?, ?, ?)"
+                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3})).exec(sparams);
+
+            int psize = ((Integer)values[cont+3]).intValue();
+            for (int o = 0; o < psize && i > 0; o++) {
+                Object[] pparams = new Object[] {values[cont], values[cont+o+4]};
+                
+                i = new PreparedSentence(s
+                    , "INSERT INTO SUBGROUPS_PROD (SUBGROUP, PRODUCT) VALUES (?, ?)"
+                    , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0, 1})).exec(pparams);
+            }
+            //Avanzamos el contador al siguiente subgrupo
+            cont += psize + 4;
+        }
+        
+        return i;
     }
 
     public final SentenceExec getTariffAreaInsert() {
