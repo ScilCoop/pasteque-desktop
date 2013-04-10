@@ -495,7 +495,7 @@ public class CompositionsEditor extends JPanel implements EditorRecord {
         jPanel1.add(m_jCategory);
         m_jCategory.setBounds(160, 140, 170, 20);
 
-        jLabel7.setText(AppLocal.getIntString("label.prodtax")); // NOI18N
+        jLabel7.setText(AppLocal.getIntString("label.taxcategory")); // NOI18N
         jPanel1.add(jLabel7);
         jLabel7.setBounds(10, 110, 150, 17);
         jPanel1.add(m_jTax);
