@@ -59,6 +59,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     // protected Datas[] productcatDatas;
     protected Datas[] paymenttabledatas;
     protected Datas[] stockdatas;
+    protected Datas[] tariffareaDatas;
+    protected Datas[] tariffprodDatas;
 
     protected Row productsRow;
 
@@ -68,6 +70,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE};
         stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
+        tariffareaDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.INT};
+        tariffprodDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.DOUBLE};
 
         productsRow = new Row(
                 new Field("ID", Datas.STRING, Formats.STRING),
@@ -151,6 +155,20 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             CategoryInfo.getSerializerRead()).list(category);
     }
 
+    //Productos de un grupo de tarifas
+    public final List<ProductInfoExt> getTariffProds(String area) throws BasicException  {
+        return new PreparedSentence(s
+            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
+            + "P.PRICEBUY, TAP.PRICESELL, P.TAXCAT, P.CATEGORY, "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE " +
+              "FROM PRODUCTS P " +
+              "		LEFT OUTER JOIN TARIFFAREAS_PROD TAP ON P.ID = TAP.PRODUCTID " +
+              "		LEFT OUTER JOIN TARIFFAREAS TA ON TA.ID = TAP.TARIFFID " +
+              "WHERE TA.ID = ? ORDER BY P.NAME"
+            , SerializerWriteString.INSTANCE
+            , ProductInfoExt.getSerializerRead()).list(area);
+    }
 
     /** Get products from a category ID */
     public List<ProductInfoExt> getProductCatalog(String category) throws BasicException  {
@@ -701,6 +719,69 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         };
     }
 
+    public final SentenceExec getTariffAreaInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "INSERT INTO TARIFFAREAS (ID, NAME, TARIFFORDER) VALUES (?, ?, ?)"
+                    , new SerializerWriteBasicExt(tariffareaDatas, new int[]{0, 1, 2})).exec(params);
+
+                if (i > 0) i = auxTariffArea(values, s);
+                return i;
+            }
+        };
+    }
+
+    public final SentenceExec getTariffAreaUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "UPDATE TARIFFAREAS SET NAME = ?, TARIFFORDER = ? WHERE ID = ?"
+                    , new SerializerWriteBasicExt(tariffareaDatas, new int[]{1, 2, 0})).exec(params);
+                
+                if (i > 0) i = auxTariffArea(values, s);
+                return i;
+            }        
+        };
+    }
+
+    private int auxTariffArea(Object params, Session s) throws BasicException {
+        Object[] values = (Object[]) params;
+        int i = 1;
+        
+        //Eliminamos los productos que pudiese tener el grupo de tarifas
+        new PreparedSentence(s
+            , "DELETE FROM TARIFFAREAS_PROD WHERE TARIFFID = ?"
+            , new SerializerWriteBasicExt(tariffprodDatas, new int[] {0})).exec(params);                 
+
+        //Por cada producto del grupo de tarifas...
+        int ssize = ((Integer)values[3]).intValue();
+        int cont = 4;
+        for (int e = 0; e < ssize && i > 0; e++) {
+            Object[] sparams = new Object[] {values[0], values[cont], values[cont +1]};
+            
+            i = new PreparedSentence(s
+                , "INSERT INTO TARIFFAREAS_PROD (TARIFFID, PRODUCTID, PRICESELL) VALUES (?, ?, ?)"
+                , new SerializerWriteBasicExt(tariffprodDatas, new int[] {0, 1, 2})).exec(sparams);
+
+            //Avanzamos el contador al siguiente producto
+            cont += 2;
+        }
+        return i;
+    }
+
+    public final SentenceExec getTariffAreaDelete() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                return new PreparedSentence(s
+                    , "DELETE FROM TARIFFAREAS WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+            } 
+        };
+    }
+
     public final SentenceExec getDebtUpdate() {
 
         return new PreparedSentence(s
@@ -878,6 +959,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new String[] {"ID", AppLocal.getIntString("Label.Name")}
             , new Datas[] {Datas.STRING, Datas.STRING}
             , new Formats[] {Formats.STRING, Formats.STRING}
+            , new int[] {0}
+        );
+    }
+
+    public final TableDefinition getTableTariffAreas() {
+        return new TableDefinition(s,
+            "TARIFFAREAS"
+            , new String[] {"ID", "NAME", "TARIFFORDER"}
+            , new String[] {"ID", AppLocal.getIntString("Label.Name"), AppLocal.getIntString("label.prodorder")}
+            , new Datas[] {Datas.STRING, Datas.STRING, Datas.INT}
+            , new Formats[] {Formats.STRING, Formats.STRING, Formats.INT}
             , new int[] {0}
         );
     }

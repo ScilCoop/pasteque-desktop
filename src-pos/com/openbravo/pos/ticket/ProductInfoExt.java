@@ -236,4 +236,16 @@ public class ProductInfoExt {
     public final String toString() {
         return m_sRef + " - " + m_sName;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ProductInfoExt)) {
+            return false;
+        }
+        if (this.m_ID == null) {
+            return ((ProductInfoExt)o).m_ID == null;
+        } else {
+            return this.m_ID.equals(((ProductInfoExt) o).m_ID);
+        }
+    }
 }
