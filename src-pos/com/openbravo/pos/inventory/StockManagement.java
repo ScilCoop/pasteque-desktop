@@ -21,6 +21,11 @@ package com.openbravo.pos.inventory;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import com.openbravo.basic.BasicException;
@@ -41,12 +46,14 @@ import com.openbravo.pos.scanpal2.DeviceScanner;
 import com.openbravo.pos.scanpal2.DeviceScannerException;
 import com.openbravo.pos.scanpal2.ProductDownloaded;
 import com.openbravo.pos.ticket.ProductInfoExt;
+import com.openbravo.pos.util.DirectoryEvent;
 
 /**
  *
  * @author adrianromero
  */
-public class StockManagement extends JPanel implements JPanelView {
+public class StockManagement extends JPanel
+        implements JPanelView, DirectoryEvent.Listener {
     
     private AppView m_App;
     private DataLogicSystem m_dlSystem;
@@ -165,6 +172,70 @@ public class StockManagement extends JPanel implements JPanelView {
             return true;
         }        
     }    
+
+    /** Import csv file */
+    public void fileChoosen(String absPath) {
+        File f = new File(absPath);
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(f));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
+        m_invlines.clear();
+        String line = null;
+        try {
+            line = r.readLine(); // Skip header
+            line = r.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        java.util.List<String> errors = new java.util.ArrayList<String>();
+        while (line != null) {
+            String[] fields = line.split(",");
+            if (fields.length >= 2) {
+                String ref = fields[0];
+                if (ref.startsWith("\"") && ref.endsWith("\"")) {
+                    ref = ref.substring(1, ref.length() - 1);
+                    ref = ref.replace("\\\"", "\"");
+                }
+                String strQty = fields[1];
+                double qty = Double.parseDouble(strQty);
+                ProductInfoExt prd = null;
+                try {
+                    prd = m_dlSales.getProductInfoByReference(ref);
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
+                if (prd != null) {
+                    this.addLine(prd, qty, prd.getPriceBuy());
+                } else {
+                    errors.add(ref);
+                }
+            }
+            try {
+                line = r.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                line = null;
+            }
+        }
+        try {
+            r.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (errors.size() > 0) {
+            String refs = "";
+            for (String err : errors) {
+                refs += err + "\n";
+            }
+            MessageInf msg = new MessageInf(MessageInf.SGN_CAUTION,
+                    AppLocal.getIntString("Message.CsvRefNotFound"), refs);
+            msg.show(this);
+        }
+    }
 
     private void addLine(ProductInfoExt oProduct, double dpor, double dprice) {
         m_invlines.addLine(new InventoryLine(oProduct, dpor, dprice));
@@ -418,6 +489,11 @@ public class StockManagement extends JPanel implements JPanelView {
         jEditAttributes = new javax.swing.JButton();
         catcontainer = new javax.swing.JPanel();
 
+        JLabel loadCsvLbl = new javax.swing.JLabel();
+        loadCsvLbl.setText(AppLocal.getIntString("Label.ImportCsv"));
+        JButton loadCsv = new javax.swing.JButton();
+        loadCsv.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/fileopen.png")));
+
         setLayout(new java.awt.BorderLayout());
 
         jPanel1.setLayout(new java.awt.BorderLayout());
@@ -534,6 +610,13 @@ public class StockManagement extends JPanel implements JPanelView {
         jPanel3.add(m_jLocation);
         m_jLocation.setBounds(160, 90, 200, 20);
 
+        jPanel3.add(loadCsvLbl);
+        loadCsvLbl.setBounds(10, 125, 150, 15);
+        jPanel3.add(loadCsv);
+        loadCsv.setBounds(160, 120, 40, 26);
+        loadCsv.addActionListener(new DirectoryEvent(this,
+                new String[]{"csv", "CSV"}, "Label.ImportCsv"));
+
         m_jDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/locationbar_erase.png"))); // NOI18N
         m_jDelete.setFocusPainted(false);
         m_jDelete.setFocusable(false);
@@ -545,7 +628,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDelete);
-        m_jDelete.setBounds(430, 230, 56, 44);
+        m_jDelete.setBounds(430, 260, 56, 44);
 
         m_jUp.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1uparrow22.png"))); // NOI18N
         m_jUp.setFocusPainted(false);
@@ -558,7 +641,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jUp);
-        m_jUp.setBounds(430, 130, 56, 44);
+        m_jUp.setBounds(430, 160, 56, 44);
 
         m_jDown.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/1downarrow22.png"))); // NOI18N
         m_jDown.setFocusPainted(false);
@@ -571,11 +654,11 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(m_jDown);
-        m_jDown.setBounds(430, 180, 56, 44);
+        m_jDown.setBounds(430, 210, 56, 44);
 
         jPanel5.setLayout(new java.awt.BorderLayout());
         jPanel3.add(jPanel5);
-        jPanel5.setBounds(10, 130, 410, 190);
+        jPanel5.setBounds(10, 160, 410, 190);
         jPanel3.add(m_jLocationDes);
         m_jLocationDes.setBounds(370, 90, 200, 20);
 
@@ -590,7 +673,7 @@ public class StockManagement extends JPanel implements JPanelView {
             }
         });
         jPanel3.add(jEditAttributes);
-        jEditAttributes.setBounds(430, 280, 58, 46);
+        jEditAttributes.setBounds(430, 310, 58, 46);
 
         add(jPanel3, java.awt.BorderLayout.CENTER);
 
