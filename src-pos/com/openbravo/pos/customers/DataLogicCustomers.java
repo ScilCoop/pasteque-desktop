@@ -124,7 +124,25 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                         setString(2, customer.getId());
                 }});        
     }
-    
+
+    public Integer getNextCustomerNumber() throws BasicException {
+        Object[] data = (Object[]) new PreparedSentence(s,
+            "SELECT MAX(TAXID) FROM CUSTOMERS",
+            null,
+            new SerializerReadBasic(new Datas[] {Datas.STRING})).find();
+        if (data.length > 0) {
+            String number = (String) data[0];
+            try {
+                int inum = Integer.parseInt(number);
+                return inum + 1;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public final SentenceList getReservationsList() {
         return new PreparedSentence(s
             , "SELECT R.ID, R.CREATED, R.DATENEW, C.CUSTOMER, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, COALESCE(CUSTOMERS.NAME, R.TITLE),  R.CHAIRS, R.ISDONE, R.DESCRIPTION " +

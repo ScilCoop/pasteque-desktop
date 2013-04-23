@@ -25,6 +25,7 @@ import com.openbravo.data.loader.SentenceList;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.data.user.EditorRecord;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.DataLogicSales;
@@ -41,7 +42,8 @@ import javax.swing.JOptionPane;
 public class CustomersView extends javax.swing.JPanel implements EditorRecord {
 
     private Object m_oId;
-    
+
+    private DataLogicCustomers dlCust;
     private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     
@@ -51,6 +53,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     public CustomersView(AppView app, DirtyManager dirty) {
         
         DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        this.dlCust = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomers");
         
         initComponents();
         
@@ -96,7 +99,19 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     
     public void writeValueEOF() {
         m_oId = null;
-        m_jTaxID.setText(null);
+        Integer nextNum = null;
+        try {
+            nextNum = this.dlCust.getNextCustomerNumber();
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+        if (nextNum != null) {
+            m_jTaxID.setText(nextNum.toString());
+            jcard.setText("c" + StringUtils.getCardNumber(m_jTaxID.getText()));
+        } else {
+            m_jTaxID.setText(null);
+            jcard.setText(null);
+        }
         m_jSearchkey.setText(null);
         m_jName.setText(null);
         m_CategoryModel.setSelectedKey(null);
@@ -105,7 +120,6 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         txtCurdebt.setText(null);
         txtCurdate.setText(null);
         m_jVisible.setSelected(false);
-        jcard.setText(null);
         
         txtFirstName.setText(null);
         txtLastName.setText(null);
@@ -152,7 +166,19 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     
     public void writeValueInsert() {
         m_oId = null;
-        m_jTaxID.setText(null);
+        Integer nextNum = null;
+        try {
+            nextNum = this.dlCust.getNextCustomerNumber();
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+        if (nextNum != null) {
+            m_jTaxID.setText(nextNum.toString());
+            jcard.setText("c" + StringUtils.getCardNumber(m_jTaxID.getText()));
+        } else {
+            m_jTaxID.setText(null);
+            jcard.setText(null);
+        }
         m_jSearchkey.setText(null);
         m_jName.setText(null);
         m_CategoryModel.setSelectedKey(null);
@@ -161,7 +187,6 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         txtCurdebt.setText(null);
         txtCurdate.setText(null);        
         m_jVisible.setSelected(true);
-        jcard.setText(null);
         
         txtFirstName.setText(null);
         txtLastName.setText(null);
@@ -740,7 +765,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.cardnew"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {            
-            jcard.setText("c" + StringUtils.getCardNumber());
+            jcard.setText("c" + StringUtils.getCardNumber(m_jTaxID.getText()));
             m_Dirty.setDirty(true);
         }
     }//GEN-LAST:event_jButton2ActionPerformed
