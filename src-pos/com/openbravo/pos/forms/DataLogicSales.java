@@ -407,7 +407,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, "
-                + "NOTES, MAXDEBT, VISIBLE, CURDATE, CURDEBT, "
+                + "NOTES, MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
                 + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
                 + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
                 + "FROM CUSTOMERS "
@@ -419,7 +419,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public CustomerInfoExt loadCustomerExt(String id) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, NOTES, "
-                + "MAXDEBT, VISIBLE, CURDATE, CURDEBT, "
+                + "MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
                 + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
                 + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
                 + "FROM CUSTOMERS "
@@ -1164,18 +1164,19 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             c.setVisible(dr.getBoolean(9).booleanValue());
             c.setCurdate(dr.getTimestamp(10));
             c.setCurdebt(dr.getDouble(11));
-            c.setFirstname(dr.getString(12));
-            c.setLastname(dr.getString(13));
-            c.setEmail(dr.getString(14));
-            c.setPhone(dr.getString(15));
-            c.setPhone2(dr.getString(16));
-            c.setFax(dr.getString(17));
-            c.setAddress(dr.getString(18));
-            c.setAddress2(dr.getString(19));
-            c.setPostal(dr.getString(20));
-            c.setCity(dr.getString(21));
-            c.setRegion(dr.getString(22));
-            c.setCountry(dr.getString(23));
+            c.setPrepaid(dr.getDouble(12));
+            c.setFirstname(dr.getString(13));
+            c.setLastname(dr.getString(14));
+            c.setEmail(dr.getString(15));
+            c.setPhone(dr.getString(16));
+            c.setPhone2(dr.getString(17));
+            c.setFax(dr.getString(18));
+            c.setAddress(dr.getString(19));
+            c.setAddress2(dr.getString(20));
+            c.setPostal(dr.getString(21));
+            c.setCity(dr.getString(22));
+            c.setRegion(dr.getString(23));
+            c.setCountry(dr.getString(24));
 
             return c;
         }

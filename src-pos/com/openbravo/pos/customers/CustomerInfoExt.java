@@ -36,6 +36,7 @@ public class CustomerInfoExt extends CustomerInfo {
     protected Double maxdebt;
     protected Date curdate;
     protected Double curdebt;
+    protected double prepaid;
     protected String firstname;
     protected String lastname;
     protected String email;
@@ -133,6 +134,21 @@ public class CustomerInfoExt extends CustomerInfo {
         } else { // < 0
             curdate = null;
         }
+    }
+
+    public double getPrepaid() {
+        return this.prepaid;
+    }
+
+    public void setPrepaid(double prepaid) {
+        this.prepaid = prepaid;
+    }
+
+    /** Update prepaid account. Use positive amount to fill the account
+     * and negative value to use it.
+     */
+    public void updatePrepaid(double amount) {
+        this.prepaid += amount;
     }
 
     public String getFirstname() {
