@@ -33,7 +33,9 @@ import com.openbravo.pos.util.StringUtils;
 import java.awt.Component;
 import java.util.List;
 import java.util.UUID;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -66,6 +68,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jName.getDocument().addDocumentListener(dirty);
         m_jCategory.addActionListener(dirty);
         m_jNotes.getDocument().addDocumentListener(dirty);
+        txtPrepaid.getDocument().addDocumentListener(dirty);
         txtMaxdebt.getDocument().addDocumentListener(dirty);
         m_jVisible.addActionListener(dirty);
         
@@ -116,6 +119,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setText(null);
         m_CategoryModel.setSelectedKey(null);
         m_jNotes.setText(null);
+        txtPrepaid.setText(null);
         txtMaxdebt.setText(null);
         txtCurdebt.setText(null);
         txtCurdate.setText(null);
@@ -140,6 +144,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(false);
         m_jCategory.setEnabled(false);
         m_jNotes.setEnabled(false);
+        txtPrepaid.setEnabled(false);
         txtMaxdebt.setEnabled(false);
         txtCurdebt.setEnabled(false);
         txtCurdate.setEnabled(false);
@@ -183,6 +188,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setText(null);
         m_CategoryModel.setSelectedKey(null);
         m_jNotes.setText(null);
+        txtPrepaid.setText(null);
         txtMaxdebt.setText(null);
         txtCurdebt.setText(null);
         txtCurdate.setText(null);        
@@ -207,6 +213,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         m_jName.setEnabled(true);
         m_jCategory.setEnabled(true);
         m_jNotes.setEnabled(true);
+        txtPrepaid.setEnabled(true);
         txtMaxdebt.setEnabled(true);
         txtCurdebt.setEnabled(true);
         txtCurdate.setEnabled(true);
@@ -232,6 +239,8 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     }
 
     public void writeValueDelete(Object value) {
+        // See DataLogicCustomers.tcustomers for meaning of each
+        // customer[] value (table schema)
         Object[] customer = (Object[]) value;
         m_oId = customer[0];
         m_jTaxID.setText((String) customer[1]);
@@ -243,27 +252,29 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         txtMaxdebt.setText(Formats.CURRENCY.formatValue(customer[7]));
         txtCurdate.setText(Formats.DATE.formatValue(customer[8]));        
         txtCurdebt.setText(Formats.CURRENCY.formatValue(customer[9]));    
-        
-        txtFirstName.setText(Formats.STRING.formatValue(customer[10]));
-        txtLastName.setText(Formats.STRING.formatValue(customer[11]));
-        txtEmail.setText(Formats.STRING.formatValue(customer[12]));
-        txtPhone.setText(Formats.STRING.formatValue(customer[13]));
-        txtPhone2.setText(Formats.STRING.formatValue(customer[14]));
-        txtFax.setText(Formats.STRING.formatValue(customer[15]));
+        txtPrepaid.setText(Formats.CURRENCY.formatValue(customer[10]));
+
+        txtFirstName.setText(Formats.STRING.formatValue(customer[11]));
+        txtLastName.setText(Formats.STRING.formatValue(customer[12]));
+        txtEmail.setText(Formats.STRING.formatValue(customer[13]));
+        txtPhone.setText(Formats.STRING.formatValue(customer[14]));
+        txtPhone2.setText(Formats.STRING.formatValue(customer[15]));
+        txtFax.setText(Formats.STRING.formatValue(customer[16]));
        
-        txtAddress.setText(Formats.STRING.formatValue(customer[16]));
-        txtAddress2.setText(Formats.STRING.formatValue(customer[17]));
-        txtPostal.setText(Formats.STRING.formatValue(customer[18]));
-        txtCity.setText(Formats.STRING.formatValue(customer[19]));
-        txtRegion.setText(Formats.STRING.formatValue(customer[20]));
-        txtCountry.setText(Formats.STRING.formatValue(customer[21]));      
+        txtAddress.setText(Formats.STRING.formatValue(customer[17]));
+        txtAddress2.setText(Formats.STRING.formatValue(customer[18]));
+        txtPostal.setText(Formats.STRING.formatValue(customer[19]));
+        txtCity.setText(Formats.STRING.formatValue(customer[20]));
+        txtRegion.setText(Formats.STRING.formatValue(customer[21]));
+        txtCountry.setText(Formats.STRING.formatValue(customer[22]));      
         
-        m_CategoryModel.setSelectedKey(customer[22]);
+        m_CategoryModel.setSelectedKey(customer[23]);
         
         m_jTaxID.setEnabled(false);
         m_jSearchkey.setEnabled(false);
         m_jName.setEnabled(false);
         m_jNotes.setEnabled(false);
+        txtPrepaid.setEnabled(false);
         txtMaxdebt.setEnabled(false);
         txtCurdebt.setEnabled(false);
         txtCurdate.setEnabled(false);
@@ -291,6 +302,8 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     }
 
     public void writeValueEdit(Object value) {
+        // See DataLogicCustomers.tcustomers for meaning of each
+        // customer[] value (table schema)
         Object[] customer = (Object[]) value;
         m_oId = customer[0];
         m_jTaxID.setText((String) customer[1]);
@@ -302,27 +315,29 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         txtMaxdebt.setText(Formats.CURRENCY.formatValue(customer[7]));
         txtCurdate.setText(Formats.DATE.formatValue(customer[8]));        
         txtCurdebt.setText(Formats.CURRENCY.formatValue(customer[9]));    
-        
-        txtFirstName.setText(Formats.STRING.formatValue(customer[10]));
-        txtLastName.setText(Formats.STRING.formatValue(customer[11]));
-        txtEmail.setText(Formats.STRING.formatValue(customer[12]));
-        txtPhone.setText(Formats.STRING.formatValue(customer[13]));
-        txtPhone2.setText(Formats.STRING.formatValue(customer[14]));
-        txtFax.setText(Formats.STRING.formatValue(customer[15]));
+        txtPrepaid.setText(Formats.CURRENCY.formatValue(customer[10]));
+
+        txtFirstName.setText(Formats.STRING.formatValue(customer[11]));
+        txtLastName.setText(Formats.STRING.formatValue(customer[12]));
+        txtEmail.setText(Formats.STRING.formatValue(customer[13]));
+        txtPhone.setText(Formats.STRING.formatValue(customer[14]));
+        txtPhone2.setText(Formats.STRING.formatValue(customer[15]));
+        txtFax.setText(Formats.STRING.formatValue(customer[16]));
        
-        txtAddress.setText(Formats.STRING.formatValue(customer[16]));
-        txtAddress2.setText(Formats.STRING.formatValue(customer[17]));
-        txtPostal.setText(Formats.STRING.formatValue(customer[18]));
-        txtCity.setText(Formats.STRING.formatValue(customer[19]));
-        txtRegion.setText(Formats.STRING.formatValue(customer[20]));
-        txtCountry.setText(Formats.STRING.formatValue(customer[21]));   
+        txtAddress.setText(Formats.STRING.formatValue(customer[17]));
+        txtAddress2.setText(Formats.STRING.formatValue(customer[18]));
+        txtPostal.setText(Formats.STRING.formatValue(customer[19]));
+        txtCity.setText(Formats.STRING.formatValue(customer[20]));
+        txtRegion.setText(Formats.STRING.formatValue(customer[21]));
+        txtCountry.setText(Formats.STRING.formatValue(customer[22]));   
         
-        m_CategoryModel.setSelectedKey(customer[22]);
+        m_CategoryModel.setSelectedKey(customer[23]);
         
         m_jTaxID.setEnabled(true);
         m_jSearchkey.setEnabled(true);
         m_jName.setEnabled(true);
         m_jNotes.setEnabled(true);
+        txtPrepaid.setEnabled(true);
         txtMaxdebt.setEnabled(true);
         txtCurdebt.setEnabled(true);
         txtCurdate.setEnabled(true);
@@ -350,7 +365,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     }
     
     public Object createValue() throws BasicException {
-        Object[] customer = new Object[23];
+        Object[] customer = new Object[24];
         customer[0] = m_oId == null ? UUID.randomUUID().toString() : m_oId;
         customer[1] = m_jTaxID.getText();
         customer[2] = m_jSearchkey.getText();
@@ -361,22 +376,23 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         customer[7] = Formats.CURRENCY.parseValue(txtMaxdebt.getText(), new Double(0.0));
         customer[8] = Formats.TIMESTAMP.parseValue(txtCurdate.getText()); // not saved
         customer[9] = Formats.CURRENCY.parseValue(txtCurdebt.getText()); // not saved
-        
-        customer[10] = Formats.STRING.parseValue(txtFirstName.getText());
-        customer[11] = Formats.STRING.parseValue(txtLastName.getText());
-        customer[12] = Formats.STRING.parseValue(txtEmail.getText());
-        customer[13] = Formats.STRING.parseValue(txtPhone.getText());
-        customer[14] = Formats.STRING.parseValue(txtPhone2.getText());
-        customer[15] = Formats.STRING.parseValue(txtFax.getText());
+        customer[10] = Formats.CURRENCY.parseValue(txtPrepaid.getText());
+
+        customer[11] = Formats.STRING.parseValue(txtFirstName.getText());
+        customer[12] = Formats.STRING.parseValue(txtLastName.getText());
+        customer[13] = Formats.STRING.parseValue(txtEmail.getText());
+        customer[14] = Formats.STRING.parseValue(txtPhone.getText());
+        customer[15] = Formats.STRING.parseValue(txtPhone2.getText());
+        customer[16] = Formats.STRING.parseValue(txtFax.getText());
        
-        customer[16] = Formats.STRING.parseValue(txtAddress.getText());
-        customer[17] = Formats.STRING.parseValue(txtAddress2.getText());
-        customer[18] = Formats.STRING.parseValue(txtPostal.getText());
-        customer[19] = Formats.STRING.parseValue(txtCity.getText());
-        customer[20] = Formats.STRING.parseValue(txtRegion.getText());
-        customer[21] = Formats.STRING.parseValue(txtCountry.getText()); 
+        customer[17] = Formats.STRING.parseValue(txtAddress.getText());
+        customer[18] = Formats.STRING.parseValue(txtAddress2.getText());
+        customer[19] = Formats.STRING.parseValue(txtPostal.getText());
+        customer[20] = Formats.STRING.parseValue(txtCity.getText());
+        customer[21] = Formats.STRING.parseValue(txtRegion.getText());
+        customer[22] = Formats.STRING.parseValue(txtCountry.getText()); 
         
-        customer[22] = m_CategoryModel.getSelectedKey();
+        customer[23] = m_CategoryModel.getSelectedKey();
         
         return customer;
     }   
@@ -470,6 +486,11 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
                 jButton3ActionPerformed(evt);
             }
         });
+
+        JLabel prepaidLbl = new JLabel();
+        prepaidLbl.setText(AppLocal.getIntString("Label.Prepaid"));
+        txtPrepaid = new JTextField();
+        txtPrepaid.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
 
         jLabel1.setText(AppLocal.getIntString("label.maxdebt")); // NOI18N
 
@@ -701,6 +722,10 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jButton3)))
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(prepaidLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPrepaid, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtMaxdebt, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -747,6 +772,10 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
                     .addComponent(m_jVisible, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(prepaidLbl)
+                    .addComponent(txtPrepaid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(txtMaxdebt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -776,9 +805,8 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
             m_Dirty.setDirty(true);
         }
     }//GEN-LAST:event_jButton3ActionPerformed
-    
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
+
+
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
@@ -820,6 +848,7 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     private javax.swing.JTextField txtCountry;
     private javax.swing.JTextField txtCurdate;
     private javax.swing.JTextField txtCurdebt;
+    private javax.swing.JTextField txtPrepaid;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFax;
     private javax.swing.JTextField txtFirstName;
@@ -829,6 +858,5 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
     private javax.swing.JTextField txtPhone2;
     private javax.swing.JTextField txtPostal;
     private javax.swing.JTextField txtRegion;
-    // End of variables declaration//GEN-END:variables
     
 }
