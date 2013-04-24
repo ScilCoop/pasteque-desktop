@@ -37,6 +37,7 @@
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.CustomersBReport", "/com/openbravo/reports/customersb.bs");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.CustomersDiary", "/com/openbravo/reports/customersdiary.bs");
         submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.SalesByCustomer", "/com/openbravo/reports/salesbycustomer.bs");
+        submenu.addPanel("/com/openbravo/images/appointment.png", "Menu.CustomersPrepaid", "/com/openbravo/reports/customersprepaid.bs");
     submenu = group.addSubmenu("/com/openbravo/images/contents.png", "Menu.CatalogManagement", "com.openbravo.pos.forms.MenuCatalogManagement");
         submenu.addTitle("Menu.CatalogManagement.Edit");
         submenu.addPanel("/com/openbravo/images/bookmark.png", "Menu.Products", "com.openbravo.pos.inventory.ProductsPanel");
