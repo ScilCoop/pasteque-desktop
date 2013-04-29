@@ -76,6 +76,7 @@
     <class name="/com/openbravo/reports/inventorydiff.bs"/>
     <class name="/com/openbravo/reports/inventorydiffdetail.bs"/>
     <class name="com.openbravo.pos.forms.MenuSalesManagement"/>
+    <class name="/com/openbravo/reports/consolidatedsales.bs"/>
     <class name="/com/openbravo/reports/usersales.bs"/>
     <class name="/com/openbravo/reports/closedproducts.bs"/>
     <class name="/com/openbravo/reports/taxes.bs"/>
