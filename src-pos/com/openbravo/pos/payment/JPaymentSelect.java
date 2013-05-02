@@ -31,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
@@ -85,7 +86,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     public void init(AppView app) {
         this.app = app;
         dlSystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystem");
-        printselected = true;
+        printselected = !AppConfig.loadedInstance.getProperty("ui.printticketbydefault").equals("0");
     }
     
     public void setPrintSelected(boolean value) {

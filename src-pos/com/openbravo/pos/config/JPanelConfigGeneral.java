@@ -113,6 +113,8 @@ public class JPanelConfigGeneral extends PanelConfig {
         printer3printerparams.addDirtyManager(dirty);
         m_jPrinterParams3.add(printer3printerparams.getComponent(), "printer");
 
+        jcbAutoPrint.addActionListener(dirty);
+
         jcboMachineScale.addActionListener(dirty);
         jcboSerialScale.addActionListener(dirty);
 
@@ -385,6 +387,8 @@ public class JPanelConfigGeneral extends PanelConfig {
             jcboSerialPrinter3.setSelectedItem(p.nextToken(','));
         }
 
+        jcbAutoPrint.setSelected(!config.getProperty("ui.printticketbydefault").equals("0"));
+
         p = new StringParser(config.getProperty("machine.display"));
         sparam = unifySerialInterface(p.nextToken(':'));
         if ("serial".equals(sparam) || "file".equals(sparam)) {
@@ -471,6 +475,8 @@ public class JPanelConfigGeneral extends PanelConfig {
         } else {
             config.setProperty("machine.printer.3", sMachinePrinter3);
         }
+
+        config.setProperty("ui.printticketbydefault", checkboxValue(jcbAutoPrint));
 
         String sMachineDisplay = comboValue(jcboMachineDisplay.getSelectedItem());
         if ("epson".equals(sMachineDisplay) || "ld200".equals(sMachineDisplay) || "surepos".equals(sMachineDisplay)) {
@@ -598,6 +604,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         this.m_jPrinterParams2 = this.addSubparamZone();
         this.jcboMachinePrinter3 = this.addComboBoxParam("Label.MachinePrinter3");
         this.m_jPrinterParams3 = this.addSubparamZone();
+        this.jcbAutoPrint = this.addCheckBoxParam("Label.PrintDefault");
         this.jcboMachineScale = this.addComboBoxParam("label.scale");
         this.m_jScaleParams = this.addSubparamZone();
         this.jcboMachineScanner = this.addComboBoxParam("label.scanner");
@@ -1044,4 +1051,5 @@ public class JPanelConfigGeneral extends PanelConfig {
     private javax.swing.JTextField jtxtScreenDensity;
     private javax.swing.JCheckBox jcbAutoHideMenu;
     private javax.swing.JComboBox jcboMarginType;
+    private javax.swing.JCheckBox jcbAutoPrint;
 }
