@@ -61,6 +61,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     protected Datas[] paymenttabledatas;
     protected Datas[] stockdatas;
     protected Datas[] compositionDatas;
+    protected Datas[] compositionPrdDatas;
     protected Datas[] subgroupDatas;
     protected Datas[] subgroup_prodDatas;
     protected Datas[] tariffareaDatas;
@@ -74,11 +75,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE};
         stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
-        tariffareaDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.INT};
-        tariffprodDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.DOUBLE};
-        compositionDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
-        subgroupDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.IMAGE};
-        subgroup_prodDatas = new Datas[] {Datas.STRING, Datas.STRING};
+        tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
+        tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
+        compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
+        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE};
+        subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
 
         productsRow = new Row(
                 new Field("ID", Datas.STRING, Formats.STRING),
@@ -186,7 +187,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     //Producto de un subgrupo de una composicion
-    public final List<ProductInfoExt> getSubgroupCatalog(String subgroup) throws BasicException  {
+    public final List<ProductInfoExt> getSubgroupCatalog(Integer subgroup) throws BasicException  {
             return new PreparedSentence(s
             , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
             + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
@@ -197,7 +198,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "WHERE S.ID = ? "
             + "ORDER BY P.NAME"
             , SerializerWriteString.INSTANCE
-            , ProductInfoExt.getSerializerRead()).list(subgroup);
+            , ProductInfoExt.getSerializerRead()).list(subgroup.toString());
     }
 
     public final List<CategoryInfo> getCategoryComposition() throws BasicException {
@@ -834,7 +835,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final SentenceExec getCompositionUpdate() {
         return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {
-                Object[] values = (Object[]) params;            
+                Object[] values = (Object[]) params;
                 int i = new PreparedSentence(s
                     , "UPDATE PRODUCTS SET ID = ?, REFERENCE = ?, CODE = ?, "
                     + "NAME = ?, ISCOM = ?, ISSCALE = ?, PRICESELL = ?, "
@@ -858,31 +859,38 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
                 if (i > 0)
                     i = auxComposition(values, s);
-                
                 return i;
             }        
         };
     }
 
     public final SentenceExec getCompositionDelete() {
-        return getProductCatDelete();
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+            ((Object[])params)[0] = ((Object[])params)[0].toString(); // Product id as integer: WTF?!
+                new PreparedSentence(s
+                    , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+                return new PreparedSentence(s
+                    , "DELETE FROM PRODUCTS WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+            }
+        };
     }
 
     private int auxComposition(Object params, Session s) throws BasicException {
         Object[] values = (Object[]) params;
         int i = 1;
-
         //Eliminamos los subgrupos que pudiese tener
         new PreparedSentence(s
-            , "DELETE FROM SUBGROUPS WHERE COMPOSITION = ?"
-            , new SerializerWriteBasicExt(subgroupDatas, new int[] {0})).exec(params);                 
+            , "DELETE FROM SUBGROUPS WHERE ID = ?"
+            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);                 
 
         //Por cada subgrupo
         int ssize = ((Integer)values[14]).intValue();
         int cont = 15;
         for (int e = 0; e < ssize && i > 0; e++) {
-            Object[] sparams = new Object[] {values[cont], values[0], values[cont +1], values[cont +2]};
-            
+            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2]};
             //Eliminamos los productos que el subgrupo pudiera tener
             new PreparedSentence(s
                 , "DELETE FROM SUBGROUPS_PROD WHERE SUBGROUP = ?"
@@ -1157,7 +1165,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new String[] {"ID", "NAME", "TARIFFORDER"}
             , new String[] {"ID", AppLocal.getIntString("Label.Name"), AppLocal.getIntString("label.prodorder")}
             , new Datas[] {Datas.STRING, Datas.STRING, Datas.INT}
-            , new Formats[] {Formats.STRING, Formats.STRING, Formats.INT}
+            , new Formats[] {Formats.INT, Formats.STRING, Formats.INT}
             , new int[] {0}
         );
     }

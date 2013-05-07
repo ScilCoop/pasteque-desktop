@@ -57,8 +57,8 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private String m_composition;
     
     private JCatalogTab m_jCurrTab; 
-    private Map<String, JCatalogTab> m_tabset = new HashMap<String, JCatalogTab>();
-    private Map<String, Set<ProductInfoExt>> m_productsset = new HashMap<String, Set<ProductInfoExt>>();
+    private Map<Integer, JCatalogTab> m_tabset = new HashMap<Integer, JCatalogTab>();
+    private Map<Integer, Set<ProductInfoExt>> m_productsset = new HashMap<Integer, Set<ProductInfoExt>>();
     private Set<SubgroupInfo> m_subgroupsset = new HashSet<SubgroupInfo>();
         
     private ThumbNailBuilder tnbbutton;
@@ -188,7 +188,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
         // Load subgroup panels
         for (SubgroupInfo s: subgroups) {
             m_jCurrTab = new JCatalogTab();      
-            m_jProducts.add(m_jCurrTab, s.getID());
+            m_jProducts.add(m_jCurrTab, s.getID().toString());
             selectSubgroupPanel(s);
             //m_subgroupsset.add(s);
 
@@ -269,7 +269,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
         // Load subgroup panel if not exists
         if (!m_subgroupsset.contains(s)) {
             m_jCurrTab = new JCatalogTab();      
-            m_jProducts.add(m_jCurrTab, s.getID());
+            m_jProducts.add(m_jCurrTab, s.getID().toString());
             m_subgroupsset.add(s);
             m_tabset.put(s.getID(), m_jCurrTab);
         } else
@@ -279,7 +279,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
 
         // Show subgroups panel
         CardLayout cl = (CardLayout)(m_jProducts.getLayout());
-        cl.show(m_jProducts, s.getID());
+        cl.show(m_jProducts, s.getID().toString());
     }
     
     
@@ -803,7 +803,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private void m_jbtnSaveSubgroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnSaveSubgroupActionPerformed
         SubgroupInfo s = new SubgroupInfo();
         String name = m_jName.getText().trim();
-        String id = m_selSubgr == null ? UUID.randomUUID().toString() : m_selSubgr.getID();
+        Integer id = m_selSubgr == null ? (int) (System.currentTimeMillis() / 100) : m_selSubgr.getID();
         
         if (!(name.length()==0)) {
             s.setID(id);
@@ -840,7 +840,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
         if (m_selProd != null && m_selSubgr != null) {
             //Actualizamos el hash de subgrupos-productos
             //String sid = ((SubgroupInfo) m_jListSubgroups.getSelectedValue()).getID();
-            String sid = m_selSubgr.getID();
+            Integer sid = m_selSubgr.getID();
             Set<ProductInfoExt> p = m_productsset.get(sid);
             if (p == null) {
                 p = new HashSet();
@@ -865,7 +865,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private void m_jbtnDelProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnDelProductActionPerformed
         if (m_selProd != null) {
             //Actualizamos el hash de subgrupos-productos
-            String sid = ((SubgroupInfo) m_jListSubgroups.getSelectedValue()).getID();
+            Integer sid = ((SubgroupInfo) m_jListSubgroups.getSelectedValue()).getID();
             Set<ProductInfoExt> p = m_productsset.get(sid);
             if (p != null) p.remove (m_selProd);
             

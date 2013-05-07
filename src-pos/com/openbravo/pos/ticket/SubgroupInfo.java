@@ -35,7 +35,7 @@ import com.openbravo.data.loader.ImageUtils;
  */
 public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed {
 
-    private String m_sID;
+    private Integer m_sID;
     private String m_sName;
     private BufferedImage m_Image;
     
@@ -63,7 +63,7 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
      * @see DataRead
      */
     public void readValues(DataRead dr) throws BasicException {
-        m_sID = dr.getString(1);
+        m_sID = dr.getInt(1);
         m_sName = dr.getString(2);
         m_Image = ImageUtils.readImage(dr.getBytes(3));
     }
@@ -75,16 +75,16 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
      * @see DataWrite
      */
     public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, m_sID);
+        dp.setInt(1, m_sID);
         dp.setString(2, m_sName);
         dp.setBytes(3, ImageUtils.writeImage(m_Image));        
     }
     
-    public void setID(String sID) {
+    public void setID(Integer sID) {
         m_sID = sID;
     }
     
-    public String getID() {
+    public Integer getID() {
         return m_sID;
     }
 

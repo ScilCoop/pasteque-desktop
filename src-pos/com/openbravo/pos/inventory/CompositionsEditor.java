@@ -23,7 +23,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.*;
-import java.util.UUID;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -184,7 +183,7 @@ public class CompositionsEditor extends JPanel implements EditorRecord {
         Object[] subgr = (Object[]) m_subeditor.getValues();
         
         Object[] myprod = new Object[14 + subgr.length];
-        myprod[0] =  m_id == null ? UUID.randomUUID().toString() : m_id;
+        myprod[0] =  m_id == null ? (int) (System.currentTimeMillis() / 100) : m_id;
         myprod[1] = m_jRef.getText();
         myprod[2] = m_jCode.getText();
         myprod[3] = m_jName.getText();
