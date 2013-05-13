@@ -256,20 +256,11 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     
     private void fillCategoriesBox () {   
         //Leemos y añadimos al JComboBox las categorias
-        SentenceList sentcat = m_dlSales.getCategoriesList();
+        SentenceList sentcat = m_dlSales.getAllCategoriesList();
         CategoryInfo catinfo;
         
         try {
             m_catlist = sentcat.list();
-
-            //Eliminamos de la lista de categorias la categoria Composiciones
-            for (int i=0; i < m_catlist.size(); i++) {
-                catinfo = (CategoryInfo)m_catlist.get(i);
-                if (catinfo.getID().equals("0")) {
-                    m_catlist.remove(i);
-                    break;
-                } 
-            }
         } catch (BasicException e) {
             m_catlist = null;
         }

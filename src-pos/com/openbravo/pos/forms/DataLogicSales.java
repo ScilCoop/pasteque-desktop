@@ -390,6 +390,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , null
             , CategoryInfo.getSerializerRead());
     }
+    public final SentenceList getAllCategoriesList() {
+        return new StaticSentence(s
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
+            + "ORDER BY NAME"
+            , null
+            , CategoryInfo.getSerializerRead());
+    }
     public final SentenceList getTaxCustCategoriesList() {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM TAXCUSTCATEGORIES ORDER BY NAME"
