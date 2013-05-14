@@ -850,22 +850,28 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     + "WHERE ID = ?"
                     , new SerializerWriteBasicExt(compositionDatas, new int[]{0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 13, 0})).exec(params);
                 if (i > 0) {
+                    Object[] paramsStr = new Object[] {
+                            values[0].toString(), values[12] };
+                    Datas[] datas = new Datas[] {Datas.STRING, Datas.INT};
                     if (((Boolean)values[11]).booleanValue()) {
                         if (new PreparedSentence(s
                                 , "UPDATE PRODUCTS_CAT SET CATORDER = ? WHERE PRODUCT = ?"
-                                , new SerializerWriteBasicExt(compositionDatas, new int[] {12, 0})).exec(params) == 0) {
+                                , new SerializerWriteBasicExt(datas,
+                                        new int[] {1, 0})).exec(paramsStr) == 0) {
                             new PreparedSentence(s
                                 , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
-                                , new SerializerWriteBasicExt(compositionDatas, new int[] {0, 12})).exec(params);
+                                , new SerializerWriteBasicExt(datas,
+                                        new int[] {0, 1})).exec(paramsStr);
                         }
                     } else {
                         new PreparedSentence(s
                             , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
-                            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);
+                            , new SerializerWriteBasicExt(datas, new int[] {0})).exec(paramsStr);
                     }
                 }
-                if (i > 0)
-                    i = auxComposition(values, s);
+                if (i > 0) {
+                    i = auxComposition(params, s);
+                }
                 return i;
             }        
         };
@@ -890,9 +896,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         int i = 1;
         //Eliminamos los subgrupos que pudiese tener
         new PreparedSentence(s
-            , "DELETE FROM SUBGROUPS WHERE ID = ?"
-            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);                 
-
+            , "DELETE FROM SUBGROUPS WHERE COMPOSITION = ?"
+            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);
         //Por cada subgrupo
         int ssize = ((Integer)values[14]).intValue();
         int cont = 15;
