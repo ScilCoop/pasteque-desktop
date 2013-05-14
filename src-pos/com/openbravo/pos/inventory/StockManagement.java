@@ -201,17 +201,19 @@ public class StockManagement extends JPanel
                     ref = ref.replace("\\\"", "\"");
                 }
                 String strQty = fields[1];
-                double qty = Double.parseDouble(strQty);
-                ProductInfoExt prd = null;
-                try {
-                    prd = m_dlSales.getProductInfoByReference(ref);
-                } catch (BasicException e) {
-                    e.printStackTrace();
-                }
-                if (prd != null) {
-                    this.addLine(prd, qty, prd.getPriceBuy());
-                } else {
-                    errors.add(ref);
+                if (!strQty.equals("")) {
+                    double qty = Double.parseDouble(strQty);
+                    ProductInfoExt prd = null;
+                    try {
+                        prd = m_dlSales.getProductInfoByReference(ref);
+                    } catch (BasicException e) {
+                        e.printStackTrace();
+                    }
+                    if (prd != null) {
+                        this.addLine(prd, qty, prd.getPriceBuy());
+                    } else {
+                        errors.add(ref);
+                    }
                 }
             }
             try {
