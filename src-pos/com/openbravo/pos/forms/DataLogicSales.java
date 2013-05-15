@@ -944,11 +944,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final SentenceExec getTariffAreaUpdate() {
         return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {
-                Object[] values = (Object[]) params;            
+                Object[] values = (Object[]) params;  
                 int i = new PreparedSentence(s
                     , "UPDATE TARIFFAREAS SET NAME = ?, TARIFFORDER = ? WHERE ID = ?"
                     , new SerializerWriteBasicExt(tariffareaDatas, new int[]{1, 2, 0})).exec(params);
-                
                 if (i > 0) i = auxTariffArea(values, s);
                 return i;
             }        

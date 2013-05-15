@@ -179,7 +179,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         Object[] tariff = new Object[m_prodlist.size()*2 + 4];
         int i = 4;
 
-        tariff[0] = m_oId == null ? (int) (System.currentTimeMillis() / 100) : m_oId;
+        tariff[0] = m_oId == null ? (int) (System.currentTimeMillis() / 100) : new Integer((String)m_oId);
         tariff[1] = m_jName.getText();
         
         if (Formats.INT.parseValue(m_jOrder.getText()) != null)
@@ -192,6 +192,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
             tariff[i+1] = p.getPriceSell();
             i+= 2;
         }
+
         return tariff;
     }    
 
