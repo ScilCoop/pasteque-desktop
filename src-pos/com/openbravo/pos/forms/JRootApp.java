@@ -709,7 +709,7 @@ public class JRootApp extends JPanel implements AppView {
         m_jPanelLogin.add(m_jLogonName, c);
         // Version
         String version = String.format(AppLocal.getIntString("Label.Version"),
-                                       AppLocal.APP_VERSION);
+                AppLocal.getIntString("Version.Code"), AppLocal.APP_VERSION);
         JLabel versionLabel = WidgetsBuilder.createSmallLabel(version);
         c = new GridBagConstraints();
         c.gridx = 0;
