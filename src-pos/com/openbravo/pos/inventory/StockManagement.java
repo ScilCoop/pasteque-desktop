@@ -23,9 +23,13 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.*;
 import javax.swing.*;
 import com.openbravo.basic.BasicException;
@@ -173,12 +177,38 @@ public class StockManagement extends JPanel
         }        
     }    
 
+    public Charset detectCsvCharset(File f) {
+        Map<String, Charset> charsets = Charset.availableCharsets();
+        for (String charset : charsets.keySet()) {
+            try {
+                InputStream is = new FileInputStream(f);
+                InputStreamReader ir = new InputStreamReader(is, charset);
+                BufferedReader r = new BufferedReader(ir);
+                String line = r.readLine();
+                if (line.startsWith("Pastèque")) {
+                    r.close();
+                    return charsets.get(charset);
+                } else {
+                    r.close();
+                }
+            } catch (IOException e) { e.printStackTrace(); }
+        }
+        return null;
+    }
+
     /** Import csv file */
     public void fileChoosen(String absPath) {
         File f = new File(absPath);
+        Charset charset = this.detectCsvCharset(f);
+        if (charset == null) {
+            return;
+        }
         BufferedReader r = null;
+        String separator = ",";
         try {
-            r = new BufferedReader(new FileReader(f));
+            InputStream is = new FileInputStream(f);
+            InputStreamReader ir = new InputStreamReader(is, charset);
+            r = new BufferedReader(ir);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return;
@@ -186,14 +216,18 @@ public class StockManagement extends JPanel
         m_invlines.clear();
         String line = null;
         try {
-            line = r.readLine(); // Skip header
+            line = r.readLine();
+            // Use special header to detect things
+            separator = line.substring(line.length() - 1, line.length());
+            // Skip user header
+            line = r.readLine();
             line = r.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
         java.util.List<String> errors = new java.util.ArrayList<String>();
         while (line != null) {
-            String[] fields = line.split(",");
+            String[] fields = line.split(separator);
             if (fields.length >= 2) {
                 String ref = fields[0];
                 if (ref.startsWith("\"") && ref.endsWith("\"")) {
