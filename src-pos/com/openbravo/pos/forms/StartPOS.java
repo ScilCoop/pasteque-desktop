@@ -19,20 +19,25 @@
 
 package com.openbravo.pos.forms;
 
-import java.awt.image.BufferedImage;
-import java.util.Locale;
-import javax.swing.UIManager;
 import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.instance.InstanceQuery;
+
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UIManager;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceSkin;
 
@@ -43,15 +48,13 @@ import org.jvnet.substance.api.SubstanceSkin;
 public class StartPOS {
 
     private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.StartPOS");
-    
+
     /** Creates a new instance of StartPOS */
     private StartPOS() {
     }
-    
-    
+
     public static boolean registerApp() {
-                       
-        // vemos si existe alguna instancia        
+        // vemos si existe alguna instancia
         InstanceQuery i = null;
         try {
             i = new InstanceQuery();
@@ -59,9 +62,9 @@ public class StartPOS {
             return false;
         } catch (Exception e) {
             return true;
-        }  
+        }
     }
-    
+
     public static void main (final String args[]) {
         // Show splash
         final JFrame splash = new JFrame();
@@ -69,8 +72,12 @@ public class StartPOS {
         splash.setResizable(false);
         splash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         splash.setPreferredSize(new java.awt.Dimension(600, 168));
-        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        splash.setBounds((screenSize.width-600)/2, (screenSize.height-168)/2, 600, 168);
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int splashWidth = 600;
+        int splashHeight = 168;
+        int splashX = (screenSize.width - splashWidth) / 2;
+        int splashY = (screenSize.height - splashHeight) / 2;
+        splash.setBounds(splashX, splashY, splashWidth, splashHeight);
         ImageIcon splashImage = ImageLoader.readImageIcon("logo.png");
         JLabel splashLabel = new JLabel(splashImage);
         splash.add(splashLabel, BorderLayout.CENTER);
@@ -79,27 +86,22 @@ public class StartPOS {
         splash.pack();
         splash.setVisible(true);
         splash.setIconImage(ImageLoader.readImage("favicon.png"));
-        
+
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                
                 if (!registerApp()) {
                     System.exit(1);
                 }
-                
-                
-                
                 AppConfig config = new AppConfig(args);
                 config.load();
-                
                 // set Locale.
                 String slang = config.getProperty("user.language");
                 String scountry = config.getProperty("user.country");
                 String svariant = config.getProperty("user.variant");
-                if (slang != null && !slang.equals("") && scountry != null && svariant != null) {                                        
+                if (slang != null && !slang.equals("") && scountry != null
+                        && svariant != null) {
                     Locale.setDefault(new Locale(slang, scountry, svariant));
                 }
-                
                 // Set the format patterns
                 Formats.setIntegerPattern(config.getProperty("format.integer"));
                 Formats.setDoublePattern(config.getProperty("format.double"));
@@ -107,32 +109,29 @@ public class StartPOS {
                 Formats.setPercentPattern(config.getProperty("format.percent"));
                 Formats.setDatePattern(config.getProperty("format.date"));
                 Formats.setTimePattern(config.getProperty("format.time"));
-                Formats.setDateTimePattern(config.getProperty("format.datetime"));               
-                
+                Formats.setDateTimePattern(config.getProperty("format.datetime"));
                 // Set the look and feel.
-                try {             
-                    
+                try {
                     Object laf = Class.forName(config.getProperty("swing.defaultlaf")).newInstance();
-                    
                     if (laf instanceof LookAndFeel){
                         UIManager.setLookAndFeel((LookAndFeel) laf);
-                    } else if (laf instanceof SubstanceSkin) {                      
-                        SubstanceLookAndFeel.setSkin((SubstanceSkin) laf);                   
+                    } else if (laf instanceof SubstanceSkin) {
+                        SubstanceLookAndFeel.setSkin((SubstanceSkin) laf);
                     }
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Cannot set look and feel", e);
                 }
-                
+
                 String screenmode = config.getProperty("machine.screenmode");
                 if ("fullscreen".equals(screenmode)) {
                     JRootKiosk rootkiosk = new JRootKiosk();
                     rootkiosk.initFrame(config);
                 } else {
-                    JRootFrame rootframe = new JRootFrame(); 
+                    JRootFrame rootframe = new JRootFrame();
                     rootframe.initFrame(config);
                 }
                 splash.dispose();
             }
-        });    
-    }    
+        });
+    }
 }

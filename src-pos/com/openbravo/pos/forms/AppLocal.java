@@ -28,29 +28,29 @@ import com.openbravo.beans.LocaleResources;
  * @author adrianromero
  */
 public class AppLocal {
-    
+
     public static final String APP_NAME = "POS-Tech";
     public static final String APP_ID = "postech";
     public static final String APP_VERSION = "1.2_beta3";
     public static final String DB_VERSION = "3";
-  
+
     // private static List<ResourceBundle> m_messages;
-    private static LocaleResources m_resources;
-    
+    private static LocaleResources resources;
+
     static {
-        m_resources = new LocaleResources();
-        m_resources.addBundleName("pos_messages");
+        AppLocal.resources = new LocaleResources();
+        AppLocal.resources.addBundleName("pos_messages");
     }
-    
+
     /** Creates a new instance of AppLocal */
     private AppLocal() {
     }
-    
+
     public static String getIntString(String sKey) {
-        return m_resources.getString(sKey);
+        return AppLocal.resources.getString(sKey);
     }
-    
+
     public static String getIntString(String sKey, Object ... sValues) {
-        return m_resources.getString(sKey, sValues);
+        return AppLocal.resources.getString(sKey, sValues);
     }
 }

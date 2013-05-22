@@ -20,17 +20,18 @@
 package com.openbravo.pos.forms;
 
 import com.openbravo.data.loader.LocalRes;
+import com.openbravo.pos.ticket.UserInfo;
+import com.openbravo.pos.util.Hashcypher;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import com.openbravo.pos.ticket.UserInfo;
-import com.openbravo.pos.util.Hashcypher;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -46,20 +47,20 @@ public class AppUser {
 
     private static SAXParser m_sp = null;
     private static HashMap<String, String> m_oldclasses; // This is for backwards compatibility purposes
-    
+
     private String m_sId;
     private String m_sName;
     private String m_sCard;
     private String m_sPassword;
     private String m_sRole;
     private Icon m_Icon;
-    
+
     private Set<String> m_apermissions;
-    
-    static {        
+
+    static {
         initOldClasses();
     }
-    
+
     /** Creates a new instance of AppUser */
     public AppUser(String id, String name, String password, String card, String role, Icon icon) {
         m_sId = id;
@@ -70,52 +71,53 @@ public class AppUser {
         m_Icon = icon;
         m_apermissions = null;
     }
-    
+
     public Icon getIcon() {
         return m_Icon;
     }
-    
+
     public String getId() {
         return m_sId;
-    }    
-    
+    }
+
     public String getName() {
         return m_sName;
     }
-    
+
     public void setPassword(String sValue) {
         m_sPassword = sValue;
     }
-    
+
     public String getPassword() {
         return m_sPassword;
     }
-    
+
     public String getRole() {
         return m_sRole;
     }
-    
+
     public String getCard() {
         return m_sCard;
     }
-    
+
     public boolean authenticate() {
-        return m_sPassword == null || m_sPassword.equals("") || m_sPassword.startsWith("empty:");
+        return m_sPassword == null || m_sPassword.equals("")
+                || m_sPassword.startsWith("empty:");
     }
     public boolean authenticate(String sPwd) {
         return Hashcypher.authenticate(sPwd, m_sPassword);
     }
-    
+
     public void fillPermissions(DataLogicSystem dlSystem) {
-        
+
         // inicializamos los permisos
         m_apermissions = new HashSet<String>();
         // Y lo que todos tienen permisos
         m_apermissions.add("com.openbravo.pos.forms.JPanelMenu");
-        m_apermissions.add("Menu.Exit");        
-        
+        m_apermissions.add("Menu.Exit");
+
         String sRolePermisions = dlSystem.findRolePermissions(m_sRole);
-       
+
         if (sRolePermisions != null) {
             try {
                 if (m_sp == null) {
@@ -134,27 +136,28 @@ public class AppUser {
         }
 
     }
-    
-    public boolean hasPermission(String classname) {
 
-        return (m_apermissions == null) ? false : m_apermissions.contains(classname);        
-    }   
-    
+    public boolean hasPermission(String classname) {
+        if (m_apermissions == null) {
+            return false;
+        } else {
+            return m_apermissions.contains(classname);
+        }
+    }
+
     public UserInfo getUserInfo() {
         return new UserInfo(m_sId, m_sName);
     }
-    
+
     private static String mapNewClass(String classname) {
         String newclass = m_oldclasses.get(classname);
-        return newclass == null 
-                ? classname 
-                : newclass;
+        return newclass == null ? classname : newclass;
     }
-    
+
     private static void initOldClasses() {
         m_oldclasses = new HashMap<String, String>();
-        
-        // update permissions from 0.0.24 to 2.20    
+
+        // update permissions from 0.0.24 to 2.20
         m_oldclasses.put("net.adrianromero.tpv.panelsales.JPanelTicketSales", "com.openbravo.pos.sales.JPanelTicketSales");
         m_oldclasses.put("net.adrianromero.tpv.panelsales.JPanelTicketEdits", "com.openbravo.pos.sales.JPanelTicketEdits");
         m_oldclasses.put("net.adrianromero.tpv.panels.JPanelPayments", "com.openbravo.pos.panels.JPanelPayments");
@@ -193,11 +196,11 @@ public class AppUser {
         m_oldclasses.put("Menu.ChangePassword", "Menu.ChangePassword");
         m_oldclasses.put("net.adrianromero.tpv.panels.JPanelPrinter", "com.openbravo.pos.panels.JPanelPrinter");
         m_oldclasses.put("net.adrianromero.tpv.config.JPanelConfiguration", "com.openbravo.pos.config.JPanelConfiguration");
-        
+
 //        m_oldclasses.put("button.print", "");
 //        m_oldclasses.put("button.opendrawer", "");
-        
-        // update permissions from 2.00 to 2.20       
+
+        // update permissions from 2.00 to 2.20
         m_oldclasses.put("com.openbravo.pos.reports.JReportClosedPos", "/com/openbravo/reports/closedpos.bs");
         m_oldclasses.put("com.openbravo.pos.reports.JReportClosedProducts", "/com/openbravo/reports/closedproducts.bs");
         m_oldclasses.put("com.openbravo.pos.reports.JChartSales", "/com/openbravo/reports/chartsales.bs");
@@ -207,28 +210,27 @@ public class AppUser {
         m_oldclasses.put("com.openbravo.pos.reports.JReportInventoryDiff", "/com/openbravo/reports/inventorydiff.bs");
         m_oldclasses.put("com.openbravo.pos.reports.JReportTaxes", "/com/openbravo/reports/taxes.bs");
         m_oldclasses.put("com.openbravo.pos.reports.JReportUserSales", "/com/openbravo/reports/usersales.bs");
-        
+
         // update permissions from 2.10 to 2.20
         m_oldclasses.put("com.openbravo.pos.panels.JPanelTax", "com.openbravo.pos.inventory.TaxPanel");
-        
+
     }
-    
-    private class ConfigurationHandler extends DefaultHandler {       
+
+    private class ConfigurationHandler extends DefaultHandler {
         @Override
         public void startDocument() throws SAXException {}
         @Override
-        public void endDocument() throws SAXException {}    
+        public void endDocument() throws SAXException {}
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
             if ("class".equals(qName)){
                 m_apermissions.add(mapNewClass(attributes.getValue("name")));
             }
-        }      
+        }
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {}
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {}
-    }     
-    
-    
+    }
+
 }

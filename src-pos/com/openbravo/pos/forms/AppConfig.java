@@ -39,38 +39,40 @@ import java.util.logging.Logger;
 public class AppConfig implements AppProperties {
 
     private static Logger logger = Logger.getLogger("com.openbravo.pos.forms.AppConfig");
-    
+
     public static AppConfig loadedInstance;
-    
+
     private Properties m_propsconfig;
     private File configfile;
-      
+
     public AppConfig(String[] args) {
         if (args.length == 0) {
-            init(getDefaultConfig());
+            this.init(this.getDefaultConfig());
         } else {
-            init(new File(args[0]));
+            this.init(new File(args[0]));
         }
     }
-    
+
     public AppConfig(File configfile) {
-        init(configfile);
+        this.init(configfile);
     }
-    
+
     private void init(File configfile) {
         this.configfile = configfile;
         m_propsconfig = new Properties();
 
         logger.info("Reading configuration file: " + configfile.getAbsolutePath());
     }
-    
+
     private File getDefaultConfig() {
-        return new File(new File(System.getProperty("user.home")), "." + AppLocal.APP_ID + ".properties");
+        return new File(new File(System.getProperty("user.home")),
+                "." + AppLocal.APP_ID + ".properties");
     }
     private File getDefaultRestoreConfig() {
-        return new File(new File(System.getProperty("user.home")), "." + AppLocal.APP_ID + ".properties.restore");
+        return new File(new File(System.getProperty("user.home")),
+                "." + AppLocal.APP_ID + ".properties.restore");
     }
-    
+
     public String getProperty(String sKey) {
         String prop = m_propsconfig.getProperty(sKey);
         if (prop == null) {
@@ -78,7 +80,7 @@ public class AppConfig implements AppProperties {
         }
         return prop;
     }
-    
+
     /** Shortcut to getProperty("users.activated") with parsing.
      * @returns The list of activated user ids or null if all.
      */
@@ -93,15 +95,15 @@ public class AppConfig implements AppProperties {
         }
         return ids;
     }
-    
+
     public String getHost() {
-        return getProperty("machine.hostname");
-    } 
-    
-    public File getConfigFile() {
-        return configfile;
+        return this.getProperty("machine.hostname");
     }
-    
+
+    public File getConfigFile() {
+        return this.configfile;
+    }
+
     public void setProperty(String sKey, String sValue) {
         if (sValue == null) {
             m_propsconfig.remove(sKey);
@@ -109,7 +111,7 @@ public class AppConfig implements AppProperties {
             m_propsconfig.setProperty(sKey, sValue);
         }
     }
-    
+
     private String getLocalHostName() {
         try {
             return java.net.InetAddress.getLocalHost().getHostName();
@@ -117,10 +119,10 @@ public class AppConfig implements AppProperties {
             return "localhost";
         }
     }
-   
+
     public boolean delete() {
-        loadDefault();
-        return configfile.delete();
+        this.loadDefault();
+        return this.configfile.delete();
     }
     public void restore() throws IOException {
         File restore = new File(this.configfile.getAbsolutePath() + ".restore");
@@ -146,11 +148,9 @@ public class AppConfig implements AppProperties {
         }
         this.save();
     }
-    
+
     public void load() {
-
         loadDefault();
-
         try {
             InputStream in = new FileInputStream(configfile);
             if (in != null) {
@@ -158,20 +158,20 @@ public class AppConfig implements AppProperties {
                 in.close();
             }
         } catch (IOException e){
-            loadDefault();
+            this.loadDefault();
         }
         AppConfig.loadedInstance = this;
     }
-    
+
     public void save() throws IOException {
-        
         OutputStream out = new FileOutputStream(configfile);
         if (out != null) {
-            m_propsconfig.store(out, AppLocal.APP_NAME + ". Configuration file.");
+            m_propsconfig.store(out, AppLocal.APP_NAME
+                    + ". Configuration file.");
             out.close();
         }
     }
-    
+
     /** The defaults values. These values are taken when the property is not
      * found in file. These values are not saved in properties files if they
      * are not set.
@@ -197,18 +197,16 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("db.user", "pt_demo");
         DEFAULT_VALUES.put("db.password", "demo");
     }
-    
+
     /** Load "default file", which values are expanded or overriden by the
      * actually property file.
      * The properties that then saved along other in the properties file.
      */
     private void loadDefault() {
-        
         m_propsconfig = new Properties();
-        
         String dirname = System.getProperty("dirname.path");
         dirname = dirname == null ? "./" : dirname;
-        
+
         m_propsconfig.setProperty("db.driverlib", new File(new File(dirname), "lib/mysql-connector-java-5.1.16.jar").getAbsolutePath());
         m_propsconfig.setProperty("db.driver", "com.mysql.jdbc.Driver");
         m_propsconfig.setProperty("db.URL", "jdbc:mysql://pt.scil.coop:3306/pt_demo");
@@ -218,28 +216,28 @@ public class AppConfig implements AppProperties {
 //        m_propsconfig.setProperty("db.URL", "jdbc:hsqldb:file:" + new File(new File(System.getProperty("user.home")), AppLocal.APP_ID + "-db").getAbsolutePath() + ";shutdown=true");
 //        m_propsconfig.setProperty("db.user", "sa");
 //        m_propsconfig.setProperty("db.password", "");
-        
+
 //        m_propsconfig.setProperty("db.driver", "com.mysql.jdbc.Driver");
 //        m_propsconfig.setProperty("db.URL", "jdbc:mysql://localhost:3306/database");
-//        m_propsconfig.setProperty("db.user", "user");         
+//        m_propsconfig.setProperty("db.user", "user");
 //        m_propsconfig.setProperty("db.password", "password");
-        
+
 //        m_propsconfig.setProperty("db.driver", "org.postgresql.Driver");
 //        m_propsconfig.setProperty("db.URL", "jdbc:postgresql://localhost:5432/database");
-//        m_propsconfig.setProperty("db.user", "user");         
-//        m_propsconfig.setProperty("db.password", "password");        
+//        m_propsconfig.setProperty("db.user", "user");
+//        m_propsconfig.setProperty("db.password", "password");
 
         m_propsconfig.setProperty("machine.hostname", getLocalHostName());
-        
+
         Locale l = Locale.getDefault();
         m_propsconfig.setProperty("user.language", l.getLanguage());
         m_propsconfig.setProperty("user.country", l.getCountry());
         m_propsconfig.setProperty("user.variant", l.getVariant());
-        
+
         m_propsconfig.setProperty("users.activated", "all");
-        
+
         m_propsconfig.setProperty("swing.defaultlaf", System.getProperty("swing.defaultlaf", "javax.swing.plaf.metal.MetalLookAndFeel"));
-        
+
         m_propsconfig.setProperty("machine.printer", "screen");
         m_propsconfig.setProperty("machine.printer.2", "Not defined");
         m_propsconfig.setProperty("machine.printer.3", "Not defined");
@@ -249,13 +247,13 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("machine.screentype", "standard");
         m_propsconfig.setProperty("machine.ticketsbag", "standard");
         m_propsconfig.setProperty("machine.scanner", "Not defined");
-        
+
         m_propsconfig.setProperty("payment.gateway", "external");
         m_propsconfig.setProperty("payment.magcardreader", "Not defined");
         m_propsconfig.setProperty("payment.testmode", "false");
         m_propsconfig.setProperty("payment.commerceid", "");
         m_propsconfig.setProperty("payment.commercepassword", "password");
-        
+
         m_propsconfig.setProperty("machine.printername", "(Default)");
 
         // Receipt printer paper set to 72mmx200mm
@@ -273,12 +271,12 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("paper.standard.mediasizename", "A4");
 
         m_propsconfig.setProperty("machine.uniqueinstance", "false");
-        
+
         // UI stuff
         m_propsconfig.setProperty("machine.screendensity", "72"); // In pixel per inch
         m_propsconfig.setProperty("ui.autohidemenu", "0");
         m_propsconfig.setProperty("ui.showtitlebar", "1");
         m_propsconfig.setProperty("ui.showfooterbar", "1");
-        
+
     }
 }
