@@ -29,12 +29,18 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import javax.swing.JFrame;
+import com.openbravo.data.gui.ComboBoxValModel;
+import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.ticket.TicketLineInfo;
 import com.openbravo.pos.widgets.JEditorCurrency;
 import com.openbravo.pos.widgets.JEditorDouble;
@@ -46,12 +52,14 @@ import com.openbravo.pos.widgets.WidgetsBuilder;
  *
  * @author adrianromero
  */
-public class JProductLineEdit extends javax.swing.JDialog {
+public class JProductLineEdit extends javax.swing.JDialog implements ActionListener {
     
     private TicketLineInfo returnLine;
     private TicketLineInfo m_oLine;
     private boolean m_bunitsok;
     private boolean m_bpriceok;
+    private List<CurrencyInfo> currencies;
+    private CurrencyInfo selectedCurrency;
             
     /** Creates new form JProductLineEdit */
     private JProductLineEdit(java.awt.Frame parent, boolean modal) {
@@ -63,8 +71,16 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }
     
     private TicketLineInfo init(AppView app, TicketLineInfo oLine) throws BasicException {
+        DataLogicSales dl = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        this.currencies = dl.getCurrenciesList().list();
+        ComboBoxValModel currenciesModel = new ComboBoxValModel(this.currencies);
+
         // Inicializo los componentes
         initComponents();
+        currencyCbx.setModel(currenciesModel);
+        currencyCbx.setSelectedItem(this.currencies.get(0));
+        this.selectedCurrency = this.currencies.get(0);
+        currencyCbx.addActionListener(this);
 
         if (oLine.getTaxInfo() == null) {
             throw new BasicException(AppLocal.getIntString("message.cannotcalculatetaxes"));
@@ -108,7 +124,25 @@ public class JProductLineEdit extends javax.swing.JDialog {
       
         return returnLine;
     }
-    
+
+    private void switchCurrency(CurrencyInfo currency) {
+        double originRate = 1;
+        if (!this.selectedCurrency.isMain()) {
+            originRate = this.selectedCurrency.getRate();
+        }
+        this.selectedCurrency = currency;
+        m_jPriceTax.setAltCurrency(this.selectedCurrency);
+        m_jPrice.setAltCurrency(this.selectedCurrency);
+        double factor = 1;
+        if (!this.selectedCurrency.isMain()) {
+            factor = this.selectedCurrency.getRate() / originRate;
+        }
+        // Switch to new rate
+        m_jPrice.setDoubleValue(m_oLine.getPrice() * factor);
+        m_jPriceTax.setDoubleValue(m_oLine.getPriceTax() * factor);
+        this.printTotals();
+    }
+
     private void printTotals() {
         
         if (m_bunitsok && m_bpriceok) {
@@ -121,7 +155,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
             m_jButtonOK.setEnabled(false);
         }
     }
-    
+
     private class RecalculateUnits implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             Double value = m_jUnits.getDoubleValue();
@@ -135,7 +169,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
             printTotals();
         }
     }
-    
+
     private class RecalculatePrice implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
 
@@ -143,15 +177,20 @@ public class JProductLineEdit extends javax.swing.JDialog {
             if (value == null || value == 0.0) {
                 m_bpriceok = false;
             } else {
-                m_oLine.setPrice(value);
-                m_jPriceTax.setDoubleValue(m_oLine.getPriceTax());
+                if (selectedCurrency.isMain()) {
+                    m_oLine.setPrice(value);
+                    m_jPriceTax.setDoubleValue(m_oLine.getPriceTax());
+                } else { 
+                    m_oLine.setPrice(value / selectedCurrency.getRate());
+                    m_jPriceTax.setDoubleValue(m_oLine.getPriceTax() * selectedCurrency.getRate());
+                }
                 m_bpriceok = true;
             }
 
             printTotals();
         }
     }    
-    
+
     private class RecalculatePriceTax implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
 
@@ -160,8 +199,13 @@ public class JProductLineEdit extends javax.swing.JDialog {
                 // m_jPriceTax.setValue(m_oLine.getPriceTax());
                 m_bpriceok = false;
             } else {
-                m_oLine.setPriceTax(value);
-                m_jPrice.setDoubleValue(m_oLine.getPrice());
+                if (selectedCurrency.isMain()) {
+                    m_oLine.setPriceTax(value);
+                    m_jPrice.setDoubleValue(m_oLine.getPrice());
+                } else {
+                    m_oLine.setPriceTax(value / selectedCurrency.getRate());
+                    m_jPrice.setDoubleValue(m_oLine.getPrice() * selectedCurrency.getRate());
+                }
                 m_bpriceok = true;
             }
 
@@ -198,6 +242,11 @@ public class JProductLineEdit extends javax.swing.JDialog {
         return myMsg.init(app, oLine);
     }        
 
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        CurrencyInfo c = this.currencies.get(currencyCbx.getSelectedIndex());
+        this.switchCurrency(c);
+    }
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
@@ -205,10 +254,12 @@ public class JProductLineEdit extends javax.swing.JDialog {
 
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        currencyLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.Currency"));
         priceLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.price"));
         unitsLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.units"));
         pricetaxLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.pricetax"));
         itemLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("label.item"));
+        currencyCbx = WidgetsBuilder.createComboBox();
         m_jName = new JEditorString();
         m_jUnits = new JEditorDouble();
         m_jPrice = new JEditorCurrency();
@@ -237,15 +288,33 @@ public class JProductLineEdit extends javax.swing.JDialog {
 
         jPanel2.setLayout(new GridBagLayout());
 
-        GridBagConstraints cstr = new GridBagConstraints();
+        GridBagConstraints cstr = null;
+
+        if (this.currencies.size() > 1) {
+            cstr = new GridBagConstraints();
+            cstr.gridx = 0;
+            cstr.gridy = 0;
+            cstr.anchor = GridBagConstraints.LINE_START;
+            cstr.insets = new Insets(marginInset, marginInset, 0, marginInset);
+            jPanel2.add(currencyLbl, cstr);
+            cstr = new GridBagConstraints();
+            cstr.gridx = 1;
+            cstr.gridy = 0;
+            cstr.insets = new Insets(marginInset, 0, btnspacing, marginInset);
+            cstr.fill = GridBagConstraints.HORIZONTAL;
+            cstr.weightx = 0.6;
+            jPanel2.add(currencyCbx, cstr);
+        }
+
+        cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.anchor = GridBagConstraints.LINE_START;
-        cstr.insets = new Insets(marginInset, marginInset, btnspacing, marginInset);
+        cstr.insets = new Insets(btnspacing, marginInset, btnspacing, marginInset);
         jPanel2.add(itemLbl, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.insets = new Insets(marginInset, 0, btnspacing, marginInset);
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
@@ -253,13 +322,13 @@ public class JProductLineEdit extends javax.swing.JDialog {
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         cstr.insets = new Insets(0, marginInset, btnspacing, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(unitsLbl, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         cstr.insets = new Insets(0, 0, btnspacing, marginInset);
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
@@ -267,49 +336,49 @@ public class JProductLineEdit extends javax.swing.JDialog {
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 2;
+        cstr.gridy = 3;
         cstr.insets = new Insets(0, marginInset, btnspacing, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(priceLbl, cstr);
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 3;
+        cstr.gridy = 4;
         cstr.insets = new Insets(0, marginInset, btnspacing, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(pricetaxLbl, cstr);
         
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 4;
+        cstr.gridy = 5;
         cstr.insets = new Insets(0, marginInset, btnspacing, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(taxLbl, cstr);
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 5;
+        cstr.gridy = 6;
         cstr.insets = new Insets(0, marginInset, btnspacing, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(subtotalLbl, cstr);
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 6;
+        cstr.gridy = 7;
         cstr.insets = new Insets(0, marginInset, marginInset, marginInset);
         cstr.anchor = GridBagConstraints.LINE_START;
         jPanel2.add(totalLbl, cstr);
 
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 2;
+        cstr.gridy = 3;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
         cstr.insets = new Insets(0, 0, btnspacing, marginInset);
         jPanel2.add(m_jPrice, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 3;
+        cstr.gridy = 4;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
         cstr.insets = new Insets(0, 0, btnspacing, marginInset);
@@ -323,7 +392,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
         m_jTaxrate.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 4;
+        cstr.gridy = 5;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
         cstr.insets = new Insets(0, 0, btnspacing, marginInset);
@@ -337,7 +406,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
         m_jTotal.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 6;
+        cstr.gridy = 7;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
         cstr.insets = new Insets(0, 0, marginInset, marginInset);
@@ -351,7 +420,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
         m_jSubtotal.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 5;
+        cstr.gridy = 6;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         cstr.weightx = 0.6;
         cstr.insets = new Insets(0, 0, btnspacing, marginInset);
@@ -419,6 +488,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     }//GEN-LAST:event_m_jButtonOKActionPerformed
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel currencyLbl;
     private javax.swing.JLabel priceLbl;
     private javax.swing.JLabel unitsLbl;
     private javax.swing.JLabel pricetaxLbl;
@@ -433,6 +503,7 @@ public class JProductLineEdit extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JButton m_jButtonCancel;
     private javax.swing.JButton m_jButtonOK;
+    private javax.swing.JComboBox currencyCbx;
     private JEditorKeys m_jKeys;
     private JEditorString m_jName;
     private JEditorCurrency m_jPrice;

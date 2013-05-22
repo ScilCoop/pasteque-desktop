@@ -213,6 +213,9 @@ public abstract class Formats {
     public static void setDefaultCurrency(CurrencyInfo currency) {
         ((FormatsCURRENCY) CURRENCY).setInnerDefaultCurrency(currency);
     }
+    public static void setAltCurrency(CurrencyInfo currency) {
+        ((FormatsCURRENCY) CURRENCY).currency = currency;
+    }
     private static final class FormatsCURRENCY extends Formats {
         private CurrencyInfo currency;
         private CurrencyInfo defaultCurrency;
