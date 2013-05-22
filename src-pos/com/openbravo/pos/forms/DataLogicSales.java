@@ -439,9 +439,25 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final SentenceList getCurrenciesList() {
         return new StaticSentence(s,
-            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN FROM CURRENCIES "
-                    + "ORDER BY MAIN DESC, NAME",
-            null, new SerializerReadClass(CurrencyInfo.class));
+            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
+            + "MAIN FROM CURRENCIES ORDER BY MAIN DESC, NAME",
+            null, new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
+                Object[] params = new Object[8];
+                for (int i = 0; i < 8; i++) {
+                    params[i] = dr.getObject(i + 1);
+                }
+                return new CurrencyInfo(params);
+            }});
+    }
+
+    public CurrencyInfo getMainCurrency() throws BasicException {
+        List<CurrencyInfo> currencies = this.getCurrenciesList().list();
+        for (CurrencyInfo curr : currencies) {
+            if (curr.isMain()) {
+                return curr;
+            }
+        }
+        return null;
     }
 
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {
@@ -1111,6 +1127,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     new PreparedSentence(s,
                         "UPDATE CURRENCIES SET MAIN = 0",
                         new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
                 }
                 return new PreparedSentence(s,
                     "INSERT INTO CURRENCIES (NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN) "
@@ -1127,6 +1144,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     new PreparedSentence(s,
                         "UPDATE CURRENCIES SET MAIN = 0",
                         new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
                 }
                 return new PreparedSentence(s,
                     "UPDATE CURRENCIES SET NAME = ?, SYMBOL = ?, DECIMALSEP = ?, THOUSANDSSEP = ?, FORMAT = ?, RATE = ?, MAIN = ? "

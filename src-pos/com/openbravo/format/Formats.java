@@ -23,6 +23,7 @@ import java.text.*;
 import java.util.Date;
 import java.util.Locale;
 import com.openbravo.basic.BasicException;
+import com.openbravo.pos.admin.CurrencyInfo;
 
 public abstract class Formats {
     
@@ -208,10 +209,50 @@ public abstract class Formats {
         public int getAlignment() {
             return javax.swing.SwingConstants.RIGHT;
         }
-    }  
-    private static final class FormatsCURRENCY extends Formats {       
+    }
+    public static void setDefaultCurrency(CurrencyInfo currency) {
+        ((FormatsCURRENCY) CURRENCY).setInnerDefaultCurrency(currency);
+    }
+    private static final class FormatsCURRENCY extends Formats {
+        private CurrencyInfo currency;
+        private CurrencyInfo defaultCurrency;
+        public void setInnerDefaultCurrency(CurrencyInfo currency) {
+            this.defaultCurrency = currency;
+        }
+        /** Change currency for the next call */
+        public void setCurrency(CurrencyInfo currency) {
+            this.currency = currency;
+        }
         protected String formatValueInt(Object value) {
-            return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
+            if (this.currency == null && this.defaultCurrency == null) {
+                return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
+            } else {
+                CurrencyInfo currency = this.defaultCurrency;
+                if (this.currency != null) {
+                    currency = this.currency;
+                    this.currency = null;
+                }
+                String currFormat = currency.getFormat();
+                String format = currFormat.replace("$", "¤");
+                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                if (currency.getDecimal() != null) {
+                    symbols.setDecimalSeparator(currency.getDecimal().charAt(0));
+                    symbols.setMonetaryDecimalSeparator(currency.getDecimal().charAt(0));
+                } else {
+                    symbols.setDecimalSeparator('.');
+                    symbols.setMonetaryDecimalSeparator('.');
+                }
+                if (currency.getThousands() != null) {
+                    symbols.setGroupingSeparator(currency.getThousands().charAt(0));
+                } else {
+                    symbols.setGroupingSeparator(' ');
+                }
+                if (currency.getSymbol() != null) {
+                    symbols.setCurrencySymbol(currency.getSymbol());
+                }
+                DecimalFormat formatter = new DecimalFormat(format, symbols);
+                return formatter.format(value);
+            }
         }   
         protected Object parseValueInt(String value) throws ParseException {
             try {
@@ -222,7 +263,33 @@ public abstract class Formats {
                 return new Double(m_currencyformat.parse(value).doubleValue());
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
-                return new Double(m_doubleformat.parse(value).doubleValue());
+                if (this.defaultCurrency == null) {
+                    return new Double(m_doubleformat.parse(value).doubleValue());
+                } else {
+                    CurrencyInfo currency = this.defaultCurrency;
+                    if (this.currency != null) {
+                        currency = this.currency;
+                        this.currency = null;
+                    }
+                    String currFormat = currency.getFormat();
+                    String format = currFormat.replace("$", "¤");
+                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+                    if (currency.getDecimal() != null) {
+                        symbols.setDecimalSeparator(currency.getDecimal().charAt(0));
+                    } else {
+                        symbols.setDecimalSeparator('.');
+                    }
+                    if (currency.getThousands() != null) {
+                        symbols.setGroupingSeparator(currency.getThousands().charAt(0));
+                    } else {
+                        symbols.setGroupingSeparator(' ');
+                    }
+                    if (currency.getSymbol() != null) {
+                        symbols.setCurrencySymbol(currency.getSymbol());
+                    }
+                    DecimalFormat formatter = new DecimalFormat(format, symbols);
+                    return new Double(formatter.parse(value).doubleValue());
+                }
             }
         }
         public int getAlignment() {

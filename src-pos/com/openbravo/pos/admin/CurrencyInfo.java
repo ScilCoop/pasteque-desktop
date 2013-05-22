@@ -39,6 +39,16 @@ public class CurrencyInfo implements SerializableRead, IKeyed {
     /** Creates a new instance of FloorsInfo */
     public CurrencyInfo() {
     }
+    public CurrencyInfo(Object[] data) {
+        this.id = (Integer) data[0];
+        this.name = (String) data[1];
+        this.symbol = (String) data[2];
+        this.decimal = (String) data[3];
+        this.thousands = (String) data[4];
+        this.format = (String) data[5];
+        this.rate = (Double) data[6];
+        this.main = (Boolean) data[7];
+    }
 
     public Object getKey() {
         return this.id;
