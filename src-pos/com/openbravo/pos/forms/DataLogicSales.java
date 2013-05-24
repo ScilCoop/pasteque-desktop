@@ -603,16 +603,30 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
 
                 SentenceExec paymentinsert = new PreparedSentence(s
-                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?)"
+                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, CURRENCY, TOTALCURRENCY, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE);
                 for (final PaymentInfo p : ticket.getPayments()) {
+                    final CurrencyInfo currency;
+                    if (p.getCurrency() != null) {
+                        currency = p.getCurrency();
+                    } else {
+                        currency = getMainCurrency();
+                    }
+                    final double total;
+                    if (!currency.isMain()) {
+                        total = p.getTotal() / currency.getRate();
+                    } else {
+                        total = p.getTotal();
+                    }
                     paymentinsert.exec(new DataParams() { public void writeValues() throws BasicException {
                         setString(1, UUID.randomUUID().toString());
                         setString(2, ticket.getId());
                         setString(3, p.getName());
-                        setDouble(4, p.getTotal());
-                        setString(5, ticket.getTransactionID());
-                        setBytes(6, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
+                        setDouble(4, total);
+                        setInt(5, currency.getID());
+                        setDouble(6, p.getTotal());
+                        setString(7, ticket.getTransactionID());
+                        setBytes(8, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
                     }});
 
                     if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
