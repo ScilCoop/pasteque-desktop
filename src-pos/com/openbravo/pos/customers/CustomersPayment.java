@@ -512,7 +512,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
                 total += p.getTotal();
             }
 
-            payments.add(new PaymentInfoTicket(-total, "debtpaid"));
+            payments.add(new PaymentInfoTicket(-total, null, "debtpaid"));
 
             ticket.setPayments(payments);
 

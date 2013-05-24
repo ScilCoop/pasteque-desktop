@@ -19,6 +19,8 @@
 
 package com.openbravo.pos.payment;
 
+import com.openbravo.pos.admin.CurrencyInfo;
+
 public class PaymentInfoMagcard extends PaymentInfo {
      
     protected double m_dTotal;
@@ -37,14 +39,17 @@ public class PaymentInfoMagcard extends PaymentInfo {
     protected String m_sReturnMessage;
     
     /** Creates a new instance of PaymentInfoMagcard */
-    public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
+    public PaymentInfoMagcard(String sHolderName, String sCardNumber,
+            String sExpirationDate, String track1, String track2, String track3,
+            String sTransactionID, double dTotal, CurrencyInfo currency) {
         m_sHolderName = sHolderName;
         m_sCardNumber = sCardNumber;
         m_sExpirationDate = sExpirationDate;
         this.track1 = track1;
         this.track2 = track2;
         this.track3 = track3;
-        
+        this.currency = currency;
+   
         m_sTransactionID = sTransactionID;
         m_dTotal = dTotal;
         
@@ -54,12 +59,17 @@ public class PaymentInfoMagcard extends PaymentInfo {
     }
     
     /** Creates a new instance of PaymentInfoMagcard */
-    public PaymentInfoMagcard(String sHolderName, String sCardNumber, String sExpirationDate, String sTransactionID, double dTotal) {
-        this(sHolderName, sCardNumber, sExpirationDate, null, null, null, sTransactionID, dTotal);
+    public PaymentInfoMagcard(String sHolderName, String sCardNumber,
+            String sExpirationDate, String sTransactionID, double dTotal,
+            CurrencyInfo currency) {
+        this(sHolderName, sCardNumber, sExpirationDate, null, null, null,
+                sTransactionID, dTotal, currency);
     }
     
     public PaymentInfo copyPayment(){
-        PaymentInfoMagcard p = new PaymentInfoMagcard(m_sHolderName, m_sCardNumber, m_sExpirationDate, track1, track2, track3, m_sTransactionID, m_dTotal);
+        PaymentInfoMagcard p = new PaymentInfoMagcard(m_sHolderName,
+                m_sCardNumber, m_sExpirationDate, track1, track2, track3,
+                m_sTransactionID, m_dTotal, this.currency);
         p.m_sAuthorization = m_sAuthorization;
         p.m_sErrorMessage = m_sErrorMessage;
         return p;

@@ -20,15 +20,23 @@
 package com.openbravo.pos.payment;
 
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 
 public abstract class PaymentInfo {
+
+    protected CurrencyInfo currency;
     
     public abstract String getName();
+    /** Get total of paiement in payment currency. */
     public abstract double getTotal();
+    public CurrencyInfo getCurrency() {
+        return this.currency;
+    }
     public abstract PaymentInfo copyPayment();
     public abstract String getTransactionID();
     
     public String printTotal() {
+        Formats.setAltCurrency(this.currency);
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
     }
 }
