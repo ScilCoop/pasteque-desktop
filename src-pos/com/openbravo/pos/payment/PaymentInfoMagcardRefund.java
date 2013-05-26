@@ -23,12 +23,12 @@ public class PaymentInfoMagcardRefund extends PaymentInfoMagcard {
     
     /** Creates a new instance of PaymentInfoMagcardRefund */
     public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
-       super(sHolderName, sCardNumber, sExpirationDate, track1, track2, track3, sTransactionID, dTotal);
+        super(sHolderName, sCardNumber, sExpirationDate, track1, track2, track3, sTransactionID, dTotal, null);
     }
     
     /** Creates a new instance of PaymentInfoMagcard */
     public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String sTransactionID, double dTotal) {
-        super(sHolderName, sCardNumber, sExpirationDate, sTransactionID, dTotal);
+        super(sHolderName, sCardNumber, sExpirationDate, sTransactionID, dTotal, null);
     }
     
     @Override
