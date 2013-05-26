@@ -364,6 +364,7 @@ public class PaymentsModel {
             return m_PaymentType;
         }
         public String printValue() {
+            Formats.setAltCurrency(this.currency);
             return Formats.CURRENCY.formatValue(m_PaymentValue);
         }
         public Double getValue() {
