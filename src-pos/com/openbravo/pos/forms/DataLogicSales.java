@@ -32,6 +32,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.model.Field;
 import com.openbravo.data.model.Row;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.inventory.AttributeSetInfo;
 import com.openbravo.pos.inventory.TaxCustCategoryInfo;
@@ -66,6 +67,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     protected Datas[] subgroup_prodDatas;
     protected Datas[] tariffareaDatas;
     protected Datas[] tariffprodDatas;
+    protected Datas[] currencyData;
 
     protected Row productsRow;
 
@@ -80,6 +82,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
         subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE};
         subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
+        currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
 
         productsRow = new Row(
                 new Field("ID", Datas.STRING, Formats.STRING),
@@ -434,6 +437,29 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new SerializerReadClass(FloorsInfo.class));
     }
 
+    public final SentenceList getCurrenciesList() {
+        return new StaticSentence(s,
+            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
+            + "MAIN FROM CURRENCIES ORDER BY MAIN DESC, NAME",
+            null, new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
+                Object[] params = new Object[8];
+                for (int i = 0; i < 8; i++) {
+                    params[i] = dr.getObject(i + 1);
+                }
+                return new CurrencyInfo(params);
+            }});
+    }
+
+    public CurrencyInfo getMainCurrency() throws BasicException {
+        List<CurrencyInfo> currencies = this.getCurrenciesList().list();
+        for (CurrencyInfo curr : currencies) {
+            if (curr.isMain()) {
+                return curr;
+            }
+        }
+        return null;
+    }
+
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, "
@@ -577,16 +603,30 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 }
 
                 SentenceExec paymentinsert = new PreparedSentence(s
-                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?)"
+                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, CURRENCY, TOTALCURRENCY, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE);
                 for (final PaymentInfo p : ticket.getPayments()) {
+                    final CurrencyInfo currency;
+                    if (p.getCurrency() != null) {
+                        currency = p.getCurrency();
+                    } else {
+                        currency = getMainCurrency();
+                    }
+                    final double total;
+                    if (!currency.isMain()) {
+                        total = p.getTotal() / currency.getRate();
+                    } else {
+                        total = p.getTotal();
+                    }
                     paymentinsert.exec(new DataParams() { public void writeValues() throws BasicException {
                         setString(1, UUID.randomUUID().toString());
                         setString(2, ticket.getId());
                         setString(3, p.getName());
-                        setDouble(4, p.getTotal());
-                        setString(5, ticket.getTransactionID());
-                        setBytes(6, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
+                        setDouble(4, total);
+                        setInt(5, currency.getID());
+                        setDouble(6, p.getTotal());
+                        setString(7, ticket.getTransactionID());
+                        setBytes(8, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
                     }});
 
                     if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
@@ -1094,6 +1134,53 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         };
     }
 
+    public final SentenceExec getCurrencyInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    new PreparedSentence(s,
+                        "UPDATE CURRENCIES SET MAIN = 0",
+                        new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
+                }
+                return new PreparedSentence(s,
+                    "INSERT INTO CURRENCIES (NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    new SerializerWriteBasicExt(currencyData, new int[] {1, 2, 3, 4, 5, 6, 7})).exec(params);
+            }
+        };
+    }
+
+    public final SentenceExec getCurrencyUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    new PreparedSentence(s,
+                        "UPDATE CURRENCIES SET MAIN = 0",
+                        new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
+                }
+                return new PreparedSentence(s,
+                    "UPDATE CURRENCIES SET NAME = ?, SYMBOL = ?, DECIMALSEP = ?, THOUSANDSSEP = ?, FORMAT = ?, RATE = ?, MAIN = ? "
+                            + "WHERE ID = ?",
+                    new SerializerWriteBasicExt(currencyData, new int[] {1, 2, 3, 4, 5, 6, 7, 0})).exec(params);
+            }
+        };
+    }
+
+    public final SentenceExec getCurrencyDelete() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    throw new BasicException("Cannot delete main currency");
+                }
+                return new PreparedSentence(s,
+                    "DELETE FROM CURRENCIES WHERE ID = ?",
+                    new SerializerWriteBasicExt(currencyData, new int[] {0})).exec(params);
+            }
+        };
+    }
+
     public final double findProductStock(String warehouse, String id, String attsetinstid) throws BasicException {
 
         PreparedSentence p = attsetinstid == null
@@ -1190,6 +1277,20 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new Formats[] {Formats.STRING, Formats.STRING, Formats.STRING}
             , new int[] {0}
         );
+    }
+
+    public final TableDefinition getTableCurrencies() {
+        return new TableDefinition(s,
+                "CURRENCIES",
+                new String[] {"ID", "NAME", "SYMBOL", "DECIMALSEP", "THOUSANDSSEP", "FORMAT", "RATE", "MAIN"},
+                new String[] {"ID", AppLocal.getIntString("Label.Name"), 
+                        "Symbol", "Decimal", "Thousands", "Format", "Rate", "Main"},
+                new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING,
+                        Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN},
+                new Formats[] { Formats.INT, Formats.STRING, Formats.STRING,
+                        Formats.STRING, Formats.STRING,
+                        Formats.STRING, Formats.DOUBLE, Formats.BOOLEAN},
+                new int[] {0});
     }
 
     protected static class CustomerExtRead implements SerializerRead {

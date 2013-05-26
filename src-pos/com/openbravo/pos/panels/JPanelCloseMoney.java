@@ -225,7 +225,16 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
 
     private class FormatsPayment extends Formats {
         protected String formatValueInt(Object value) {
-            return AppLocal.getIntString("transpayment." + (String) value);
+            Object[] values = (Object[]) value;
+            String paymentType = (String) values[0];
+            String currencyName = (String) values[1];
+            Boolean main = (Boolean) values[2];
+            String ret = AppLocal.getIntString("transpayment." + (String) paymentType);
+            if (main) {
+                return ret;
+            } else {
+                return ret + " (" + currencyName + ")";
+            }
         }   
         protected Object parseValueInt(String value) throws ParseException {
             return value;

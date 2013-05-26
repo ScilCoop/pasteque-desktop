@@ -97,7 +97,7 @@ public class PaymentPanelMagCard extends javax.swing.JPanel implements PaymentPa
                     track2,
                     track3,
                     m_sTransactionID,
-                    m_dTotal);
+                    m_dTotal, null);
         } else {
             return new PaymentInfoMagcardRefund(
                     m_jHolderName.getText(),

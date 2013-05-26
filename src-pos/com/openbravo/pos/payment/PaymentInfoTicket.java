@@ -23,57 +23,66 @@ import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.DataRead;
 import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 
 public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  {
     
     private static final long serialVersionUID = 8865238639097L;
-    private double m_dTicket;
+    private double amount;
+    private CurrencyInfo currency;
     private String m_sName;
     private String m_transactionID;
     
-    /** Creates a new instance of PaymentInfoCash */
-    public PaymentInfoTicket(double dTicket, String sName) {
+    /** Creates a new instance of PaymentInfoCash.
+     * If currency is null it is the main one.
+     */
+    public PaymentInfoTicket(double amount, CurrencyInfo currency, String sName) {
         m_sName = sName;
-        m_dTicket = dTicket;
+        this.amount = amount;
+        this.currency = currency;
     }
     
-    public PaymentInfoTicket(double dTicket, String sName, String transactionID) {
+    public PaymentInfoTicket(double amount, CurrencyInfo currency, 
+            String sName, String transactionID) {
         m_sName = sName;
-        m_dTicket = dTicket;
+        this.amount = amount;
+        this.currency = currency;
         m_transactionID = transactionID;
     }
     
     public PaymentInfoTicket() {
         m_sName = null;
-        m_dTicket = 0.0;
+        amount = 0.0;
         m_transactionID = null;
      }
     
     public void readValues(DataRead dr) throws BasicException {
         m_sName = dr.getString(1);
-        m_dTicket = dr.getDouble(2).doubleValue();
+        amount = dr.getDouble(2).doubleValue();
         m_transactionID = dr.getString(3);
     }
     
     public PaymentInfo copyPayment(){
-        return new PaymentInfoTicket(m_dTicket, m_sName);
+        return new PaymentInfoTicket(this.amount, this.currency, m_sName);
     }
     public String getName() {
         return m_sName;
     }   
     public double getTotal() {
-        return m_dTicket;
+        return this.amount;
     }
     public String getTransactionID(){
         return m_transactionID;
     }
     public String printPaid() {
-        return Formats.CURRENCY.formatValue(new Double(m_dTicket));
+        Formats.setAltCurrency(this.currency);
+        return Formats.CURRENCY.formatValue(new Double(amount));
     }
     
     // Especificas
     public String printPaperTotal() {
         // En una devolucion hay que cambiar el signo al total
-        return Formats.CURRENCY.formatValue(new Double(-m_dTicket));
+        Formats.setAltCurrency(this.currency);
+        return Formats.CURRENCY.formatValue(new Double(-amount));
     }          
 }

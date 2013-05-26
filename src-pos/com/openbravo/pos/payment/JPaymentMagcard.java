@@ -27,6 +27,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
@@ -50,6 +51,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
     private double m_dPaid;
     private double m_dTotal;
     private double partAmount;
+    private CurrencyInfo currency;
     
     /** Creates new form JPaymentCash */
     public JPaymentMagcard(AppView app, JPaymentNotifier notifier) {
@@ -73,8 +75,10 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
 
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         this.transaction = transID;
+        this.currency = currency;
         
         if (m_paymentgateway == null) {
             jlblMessage.setText(AppLocal.getIntString("message.nopaymentgateway"));
@@ -94,7 +98,8 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
         
     }
     public PaymentInfo executePayment() {
-        PaymentInfoMagcard payinfo = new PaymentInfoMagcard("", "", "", this.transaction, m_dPaid);
+        PaymentInfoMagcard payinfo = new PaymentInfoMagcard("", "", "",
+                this.transaction, m_dPaid, this.currency);
         return payinfo;
         /*        
         jlblMessage.setText(null);
@@ -122,6 +127,7 @@ public class JPaymentMagcard extends javax.swing.JPanel implements JPaymentInter
             m_dPaid = value;
         } 
 
+        Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);

@@ -33,13 +33,18 @@ public class PaymentInfoList {
         m_apayment = new LinkedList<PaymentInfo>();
     }
         
+    /** Get payment total in main currency */
     public double getTotal() {
         
         double dTotal = 0.0;
         Iterator i = m_apayment.iterator();
         while (i.hasNext()) {
             PaymentInfo p = (PaymentInfo) i.next();
-            dTotal += p.getTotal();
+            double paid = p.getTotal();
+            if (!p.getCurrency().isMain()) {
+                paid /= p.getCurrency().getRate();
+            }
+            dTotal += paid;
         }
         
         return dTotal;

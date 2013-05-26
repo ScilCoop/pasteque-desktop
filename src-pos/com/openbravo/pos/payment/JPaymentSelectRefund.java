@@ -67,6 +67,6 @@ public class JPaymentSelectRefund extends JPaymentSelect {
     }    
     
     protected PaymentInfo getDefaultPayment(double total) {
-        return new PaymentInfoTicket(total, "cashrefund");
+        return new PaymentInfoTicket(total, null, "cashrefund");
     } 
 }

@@ -31,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.util.RoundUtils;
@@ -50,6 +51,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
     private double m_dPaid;
     private double partAmount;
     private double m_dTotal;
+    private CurrencyInfo currency;
 
     /** Creates new form JPaymentDebt */
     public JPaymentDebt(JPaymentNotifier notifier) {
@@ -63,11 +65,13 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         
         this.customerext = customerext;
         m_dTotal = dTotal;
         this.partAmount = partAmount;
+        this.currency = currency;
         
         m_jTendered.reset();
         
@@ -104,7 +108,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         
     }
     public PaymentInfo executePayment() {
-        return new PaymentInfoTicket(m_dPaid, "debt");      
+        return new PaymentInfoTicket(m_dPaid, this.currency, "debt");
     }
     public Component getComponent() {
         return this;
@@ -123,7 +127,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
             } else {
                 m_dPaid = value;
             } 
-
+            Formats.setAltCurrency(this.currency);
             m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
             
             

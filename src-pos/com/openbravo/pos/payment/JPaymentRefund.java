@@ -19,6 +19,7 @@
 
 package com.openbravo.pos.payment;
 
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import java.awt.Component;
 import com.openbravo.pos.forms.AppLocal;
@@ -39,14 +40,15 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
         initComponents();
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         m_dTotal = dTotal;
         
         m_notifier.setStatus(true, true);
     }
     
     public PaymentInfo executePayment() {
-        return new PaymentInfoTicket(m_dTotal, m_sName);
+        return new PaymentInfoTicket(m_dTotal, null, m_sName);
     }
     public Component getComponent() {
         return this;

@@ -26,19 +26,25 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import com.openbravo.basic.BasicException;
+import com.openbravo.pos.admin.CurrencyInfo;
+import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
+import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.awt.ComponentOrientation;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +54,7 @@ import java.util.Map;
  * @author adrianromero
  */
 public abstract class JPaymentSelect extends javax.swing.JDialog 
-                            implements JPaymentNotifier {
+    implements JPaymentNotifier, ActionListener {
     
     private PaymentInfoList m_aPaymentInfo;
     private boolean printselected;
@@ -56,6 +62,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private boolean accepted;
     
     private AppView app;
+    private ComponentOrientation orientation;
     private double m_dTotal;
     private int parts;
     private double nextPartAmount; // Rounded part amount to get exactly total
@@ -64,29 +71,43 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     
     private Map<String, JPaymentInterface> payments = new HashMap<String, JPaymentInterface>();
     private String m_sTransactionID;
-    
+
+    private List<CurrencyInfo> currencies;
+    private CurrencyInfo selectedCurrency;    
     
     /** Creates new form JPaymentSelect */
     protected JPaymentSelect(java.awt.Frame parent, boolean modal, ComponentOrientation o) {
         super(parent, modal);
-        initComponents();    
-        
-        this.applyComponentOrientation(o);
-        
-        getRootPane().setDefaultButton(m_jButtonOK); 
+        this.orientation = o;
     }
     /** Creates new form JPaymentSelect */
     protected JPaymentSelect(java.awt.Dialog parent, boolean modal, ComponentOrientation o) {
         super(parent, modal);
-        initComponents();       
-        
-        this.applyComponentOrientation(o);        
+        this.orientation = o;
     }    
     
     public void init(AppView app) {
         this.app = app;
         dlSystem = (DataLogicSystem) app.getBean("com.openbravo.pos.forms.DataLogicSystem");
         printselected = !AppConfig.loadedInstance.getProperty("ui.printticketbydefault").equals("0");
+        // Init currencies
+        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        try {
+            this.currencies = dlSales.getCurrenciesList().list();
+        } catch (BasicException e) {
+            this.currencies = new ArrayList<CurrencyInfo>();
+            e.printStackTrace();
+        }
+        // Init components
+        initComponents();    
+        this.applyComponentOrientation(this.orientation);
+        getRootPane().setDefaultButton(m_jButtonOK); 
+        // Init currencies combo box
+        ComboBoxValModel currenciesModel = new ComboBoxValModel(this.currencies);
+        this.currencyCbx.setModel(currenciesModel);
+        this.currencyCbx.setSelectedItem(this.currencies.get(0));
+        this.selectedCurrency = this.currencies.get(0);
+        currencyCbx.addActionListener(this);
     }
     
     public void setPrintSelected(boolean value) {
@@ -112,7 +133,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         this.customerext = customerext;        
 
         m_jButtonPrint.setSelected(printselected);
-        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
+        this.printTotal();
         
         addTabs();
 
@@ -267,14 +288,39 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     protected void setHeaderVisible(boolean value) {
         jPanel6.setVisible(value);
     }
-    
+
+    private void switchCurrency(CurrencyInfo currency) {
+        this.selectedCurrency = currency;
+        this.printTotal();
+        this.printState();
+    }
+
+    private void printTotal() {
+        double totalCurrency = m_dTotal;
+        if (!this.selectedCurrency.isMain()) {
+            totalCurrency *= this.selectedCurrency.getRate();
+        }
+        m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(totalCurrency)));
+    }
+
     private void printState() {
-        
-        m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal - m_aPaymentInfo.getTotal())));
+        double remainingMain = m_dTotal - m_aPaymentInfo.getTotal();
+        double remainingCurrency = remainingMain;
+        if (!this.selectedCurrency.isMain()) {
+            remainingCurrency *= this.selectedCurrency.getRate();
+        }
+        Formats.setAltCurrency(this.selectedCurrency);
+        m_jRemaininglEuros.setText(Formats.CURRENCY.formatValue(new Double(remainingCurrency)));
         m_jButtonRemove.setEnabled(!m_aPaymentInfo.isEmpty());
         m_jTabPayment.setSelectedIndex(0); // selecciono el primero
-        double remaining = m_dTotal - m_aPaymentInfo.getTotal();
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
+        // Refresh current payment panel
+        double partCurrency = this.nextPartAmount;
+        if (!this.selectedCurrency.isMain()) {
+            partCurrency *= this.selectedCurrency.getRate();
+        }
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(
+                customerext, remainingCurrency, partCurrency,
+                this.selectedCurrency, m_sTransactionID);
     }
     
     private void refreshParts() {
@@ -298,8 +344,15 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         this.jlblPartAmountLabel.setVisible(this.parts != 1);
         this.jlblPartAmount.setText(Formats.CURRENCY.formatValue(new Double(partAmount)));
         // Reactivate current tab to refresh part
-        double remaining = m_dTotal - m_aPaymentInfo.getTotal();
-        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
+        double remainingCurrency = m_dTotal - m_aPaymentInfo.getTotal();
+        double partCurrency = this.nextPartAmount;
+        if (!this.selectedCurrency.isMain()) {
+            remainingCurrency *= this.selectedCurrency.getRate();
+            partCurrency *= this.selectedCurrency.getRate();
+        }
+        ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(
+                customerext, remainingCurrency, partCurrency,
+                this.selectedCurrency, m_sTransactionID);
     }
     
     protected static Window getWindow(Component parent) {
@@ -319,6 +372,11 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     
     public void setTransactionID(String tID){
         this.m_sTransactionID = tID;
+    }
+
+    public void actionPerformed(java.awt.event.ActionEvent evt) {
+        CurrencyInfo c = this.currencies.get(currencyCbx.getSelectedIndex());
+        this.switchCurrency(c);
     }
     
     /** This method is called from within the constructor to
@@ -345,6 +403,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         m_jButtonCancel = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
                                                   AppLocal.getIntString("Button.Cancel"),
                                                   WidgetsBuilder.SIZE_MEDIUM);
+        currencyCbx = WidgetsBuilder.createComboBox();
         
         // Total/remaining/part amount init
         m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.totalcash"));
@@ -390,6 +449,11 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         
         jPanel4.add(jlblPartAmountLabel);
         jPanel4.add(jlblPartAmount);
+
+        // Currency select
+        if (this.currencies.size() > 1) {
+            jPanel4.add(currencyCbx);
+        }
 
         // Add/remove payment
         m_jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -509,8 +573,15 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private void m_jTabPaymentStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_m_jTabPaymentStateChanged
 
         if (m_jTabPayment.getSelectedComponent() != null) {
-            double remaining = m_dTotal - m_aPaymentInfo.getTotal();
-            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(customerext, remaining, this.nextPartAmount, m_sTransactionID);
+            double remainingCurrency = m_dTotal - m_aPaymentInfo.getTotal();
+            double partCurrency = this.nextPartAmount;
+            if (!this.selectedCurrency.isMain()) {
+                remainingCurrency *= this.selectedCurrency.getRate();
+                partCurrency *= this.selectedCurrency.getRate();
+            }
+            ((JPaymentInterface) m_jTabPayment.getSelectedComponent()).activate(
+                    customerext, remainingCurrency, partCurrency,
+                    this.selectedCurrency, m_sTransactionID);
         }
         
     }//GEN-LAST:event_m_jTabPaymentStateChanged
@@ -560,6 +631,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     private javax.swing.JLabel m_jRemaininglEuros;
     private javax.swing.JTabbedPane m_jTabPayment;
     private javax.swing.JLabel m_jTotalEuros;
+    private javax.swing.JComboBox currencyCbx;
     
     private JLabel jlblPartsNumber;
     private JButton jbtnPartsPlus;
