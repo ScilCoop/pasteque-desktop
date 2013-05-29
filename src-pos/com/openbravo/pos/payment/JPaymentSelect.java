@@ -300,6 +300,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         if (!this.selectedCurrency.isMain()) {
             totalCurrency *= this.selectedCurrency.getRate();
         }
+        Formats.setAltCurrency(this.selectedCurrency);
         m_jTotalEuros.setText(Formats.CURRENCY.formatValue(new Double(totalCurrency)));
     }
 
