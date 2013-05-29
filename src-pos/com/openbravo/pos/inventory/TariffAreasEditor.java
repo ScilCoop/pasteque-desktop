@@ -63,7 +63,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     private ComboBoxValModel m_CategoryModel;
     private ComboBoxValModel m_ProductModel;
     private List m_catlist;
-    private List<ProductInfoExt> m_prodlist;
+    private List<ProductInfoExt> taProducts;
     
     private boolean m_bPriceSellLock = false;
     private boolean m_bMarginLock = false;
@@ -71,7 +71,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     private boolean m_bMarginWriteLock = false;
     private boolean m_bPriceSellTaxWriteLock = false;
     
-    private ProductInfoExt m_selProd = null;
+    private ProductInfoExt selectedProduct = null;
     private Object m_oId;
     private Double m_dPriceSell;
     
@@ -79,7 +79,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     public TariffAreasEditor(DataLogicSales dlSales, DirtyManager dirty) {
         m_dlSales = dlSales;
         m_dirty = dirty;
-        ttariffareas = dlSales.getTableTariffAreas();
+        this.ttariffareas = dlSales.getTableTariffAreas();
         senttax = dlSales.getTaxList();
         List<TaxInfo> taxlist = null;
         try {
@@ -111,12 +111,12 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     }
     
     public TableDefinition getTableDefinition() {
-        return ttariffareas;
+        return this.ttariffareas;
     }
     
     public void activate(BrowsableEditableData bd) throws BasicException {
         // la lista superior
-        ListCellRenderer cr = new ListCellRendererBasic(ttariffareas.getRenderStringBasic(new int[]{1}));
+        ListCellRenderer cr = new ListCellRendererBasic(this.ttariffareas.getRenderStringBasic(new int[]{1}));
         if (cr != null) {
             JListNavigator nl = new JListNavigator(bd);
             nl.setCellRenderer(cr);
@@ -129,7 +129,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         m_jOrder.setText("0");
         m_jName.setText(null);
         m_jOrder.setText(null);
-        m_prodlist = null;
+        this.taProducts = null;
         fillProductsList();
         
         enableComponents(false);
@@ -140,7 +140,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         m_jOrder.setText("0");
         m_jName.setText(null);
         m_jOrder.setText(null);
-        m_prodlist = null;
+        this.taProducts = null;
         fillProductsList();
         // Ponemos el precio real del producto y no el del que hubiese seleccionado
         //en el anterior grupo de tarifas
@@ -166,17 +166,13 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         m_jName.setText(Formats.STRING.formatValue(tariff[1]));
         m_jOrder.setText(Formats.INT.formatValue((Integer)tariff[2]) );
         fillProductsList();
-        // Ponemos el precio real del producto y no el del que hubiese seleccionado
-        //en el anterior grupo de tarifas
-        selectProductBox((ProductInfoExt)m_jProduct.getSelectedItem());
-        
         enableComponents (true);
         m_dirty.setDirty(false);
     }
 
     public Object createValue() throws BasicException {
         // 3 area data, products count then 2 for each product
-        Object[] tariff = new Object[m_prodlist.size()*2 + 4];
+        Object[] tariff = new Object[this.taProducts.size()*2 + 4];
         int i = 4;
 
         tariff[0] = m_oId == null ? (int) (System.currentTimeMillis() / 100) : new Integer((String)m_oId);
@@ -185,9 +181,9 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         if (Formats.INT.parseValue(m_jOrder.getText()) != null)
             tariff[2] = Formats.INT.parseValue(m_jOrder.getText());
         else tariff[2] = Formats.INT.parseValue("0");
-        tariff[3] = m_prodlist.size();
+        tariff[3] = this.taProducts.size();
         
-        for (ProductInfoExt p : m_prodlist) {
+        for (ProductInfoExt p : this.taProducts) {
             tariff[i] = p.getID();
             tariff[i+1] = p.getPriceSell();
             i+= 2;
@@ -215,12 +211,13 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     }
 
     private void fireSelectedProduct(ProductInfoExt prod) {
+        // Select the category of the product in combobox
         for (int i = 0; i < m_jCategory.getItemCount(); i++) {
             if ( ((CategoryInfo)m_jCategory.getItemAt(i)).getID().equals(prod.getCategoryID()) ) {
                 m_jCategory.setSelectedIndex(i);
             }
         }
-        
+        // Select the product in combobox
         for (int i = 0; i < m_jProduct.getItemCount(); i++) {
             if ( ((ProductInfoExt)m_jProduct.getItemAt(i)).getID().equals(prod.getID()) ) {
                 m_jProduct.setSelectedIndex(i);
@@ -228,29 +225,30 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         }
         
         //Establecemos el producto seleccionado
-        m_selProd = prod;
+        this.selectedProduct = prod;
     }
     
     
     private void fillProductsList () {
         String tid = (m_oId != null) ? m_oId.toString() : "";
         
-        //Leemos y añadimos al JList los productos del grupo de tarificación
+        // Reset modified product list from current tariff area
         m_jProductsList.removeAll();
         try {
-            m_prodlist = m_dlSales.getTariffProds(tid);
+            this.taProducts = m_dlSales.getTariffProds(tid);
         } catch (BasicException e) {
-            if (m_prodlist == null) {
-                m_prodlist = new ArrayList<ProductInfoExt>();
+            if (this.taProducts == null) {
+                this.taProducts = new ArrayList<ProductInfoExt>();
             }
-            m_prodlist.clear();
+            this.taProducts.clear();
         }
-        
-        m_ProductModel.refresh(m_prodlist);
+        // Set product list and select the first if any
+        m_ProductModel.refresh(this.taProducts);
         m_jProductsList.setModel(m_ProductModel);
-        if (m_prodlist.size() > 0) {
+        if (this.taProducts.size() > 0) {
             m_jProductsList.setSelectedIndex(0);
-            selectProductBox(m_prodlist.get(0));
+            selectProductBox(this.taProducts.get(0));
+            m_jProductsListValueChanged(new javax.swing.event.ListSelectionEvent(this, 0, 0, false));
         }
         m_jProductsList.updateUI();
     }
@@ -282,7 +280,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
             // Obtenemos la lista de productos de la BBDD
             products = m_dlSales.getProductCatalog(catid);
             if (products.size() > 0)
-                m_selProd = products.get(0);
+                this.selectedProduct = products.get(0);
             // Añadimos la lista de productos al ComboBox
             m_jProduct.setModel(new ComboBoxValModel(products));
         } catch (BasicException e) {
@@ -295,9 +293,9 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     }
     
     protected void selectProductBox(ProductInfoExt p) {
-        m_selProd = p;
+        this.selectedProduct = p;
         try {
-            m_jPriceSell.setText( Formats.CURRENCY.formatValue(m_selProd.getPriceSell()) );
+            m_jPriceSell.setText(Formats.CURRENCY.formatValue(this.selectedProduct.getPriceSell()) );
         } catch (NullPointerException e) {
             m_jPriceSell.setText("");
         }
@@ -359,9 +357,9 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     
     
     private void writeReport() {
-        if (m_selProd != null) {
-            Double dPriceBuy = m_selProd.getPriceBuy();
-            TaxInfo tax = m_taxesLogic.getTaxInfo(m_selProd.getTaxCategoryID(),
+        if (this.selectedProduct != null) {
+            Double dPriceBuy = this.selectedProduct.getPriceBuy();
+            TaxInfo tax = m_taxesLogic.getTaxInfo(this.selectedProduct.getTaxCategoryID(),
                     new Date(), null);
             double dTaxRate = (tax == null) ? 0.0 : tax.getRate();  
             writeReport(dPriceBuy, dTaxRate);
@@ -393,7 +391,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         
         Double dPriceSellTax = readCurrency(m_jPriceSellTax.getText());
         
-        TaxInfo tax = m_taxesLogic.getTaxInfo(m_selProd.getTaxCategoryID(),  new Date(), null);
+        TaxInfo tax = m_taxesLogic.getTaxInfo(this.selectedProduct.getTaxCategoryID(),  new Date(), null);
         double dTaxRate = (tax == null) ? 0.0 : tax.getRate();  
         if (dPriceSellTax == null) {
             m_dPriceSell = null;
@@ -411,7 +409,7 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
     }
     
     private void writeMargin() {
-        Double dPriceBuy = m_selProd.getPriceBuy();
+        Double dPriceBuy = this.selectedProduct.getPriceBuy();
         Double dMargin = readPercent(m_jmargin.getText());  
         if (dMargin == null || dPriceBuy == null) {
             m_dPriceSell = dPriceBuy;
@@ -667,16 +665,16 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
 
     private void m_jbtnAddProductActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            if (m_selProd != null) {
+            if (this.selectedProduct != null) {
                  Double price = (Double) Formats.CURRENCY.parseValue(m_jPriceSell.getText());
 
-                if (m_prodlist.contains(m_selProd)) {
-                    m_selProd.setPriceSell(price);
-                    ProductInfoExt p = m_prodlist.get(m_prodlist.indexOf(m_selProd) );
+                if (this.taProducts.contains(this.selectedProduct)) {
+                    this.selectedProduct.setPriceSell(price);
+                    ProductInfoExt p = this.taProducts.get(this.taProducts.indexOf(this.selectedProduct) );
                     p.setPriceSell(price);
                 }else {
-                     m_selProd.setPriceSell(price);
-                     m_prodlist.add(m_selProd);
+                     this.selectedProduct.setPriceSell(price);
+                     this.taProducts.add(this.selectedProduct);
                 }
 
                 m_dirty.setDirty(true);
@@ -689,13 +687,13 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
 
     
     private void m_jbtnDelProductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnDelProductActionPerformed
-        if (m_selProd != null && m_prodlist.contains(m_selProd) ) {
-            m_prodlist.remove(m_selProd.getID());
-            m_ProductModel.del(m_selProd);
+        if (this.selectedProduct != null && this.taProducts.contains(this.selectedProduct) ) {
+            this.taProducts.remove(this.selectedProduct.getID());
+            m_ProductModel.del(this.selectedProduct);
             m_jProductsList.updateUI();
             m_dirty.setDirty(true);
             
-            if (m_prodlist.size() > 0)
+            if (this.taProducts.size() > 0)
                 m_jProductsListValueChanged( new javax.swing.event.ListSelectionEvent(this, 0, 0, false) );
         }
     }//GEN-LAST:event_m_jbtnDelProductActionPerformed
