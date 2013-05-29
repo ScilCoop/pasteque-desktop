@@ -174,8 +174,15 @@ public class TariffAreasEditor extends JPanel implements EditorRecord {
         // 3 area data, products count then 2 for each product
         Object[] tariff = new Object[this.taProducts.size()*2 + 4];
         int i = 4;
-
-        tariff[0] = m_oId == null ? (int) (System.currentTimeMillis() / 100) : new Integer((String)m_oId);
+        if (m_oId == null) {
+            tariff[0] = (int) (System.currentTimeMillis() / 100);
+        } else {
+            if (m_oId.getClass() == Integer.class) {
+                tariff[0] = m_oId;
+            } else {
+                tariff[0] = new Integer((String) m_oId);
+            }
+        }
         tariff[1] = m_jName.getText();
         
         if (Formats.INT.parseValue(m_jOrder.getText()) != null)
