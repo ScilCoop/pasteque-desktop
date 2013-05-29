@@ -226,73 +226,55 @@ public abstract class Formats {
         public void setCurrency(CurrencyInfo currency) {
             this.currency = currency;
         }
+        private DecimalFormat getFormat() {
+            CurrencyInfo currency = this.defaultCurrency;
+            if (this.currency != null) {
+                currency = this.currency;
+                this.currency = null;
+            }
+            String currFormat = currency.getFormat();
+            String format = currFormat.replace("$", "¤");
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+            if (currency.getDecimal() != null) {
+                symbols.setDecimalSeparator(currency.getDecimal().charAt(0));
+                symbols.setMonetaryDecimalSeparator(currency.getDecimal().charAt(0));
+            } else {
+                symbols.setDecimalSeparator('.');
+                symbols.setMonetaryDecimalSeparator('.');
+            }
+            if (currency.getThousands() != null) {
+                symbols.setGroupingSeparator(currency.getThousands().charAt(0));
+            } else {
+                symbols.setGroupingSeparator(' ');
+            }
+            if (currency.getSymbol() != null) {
+                symbols.setCurrencySymbol(currency.getSymbol());
+            }
+            DecimalFormat formatter = new DecimalFormat(format, symbols);
+            return formatter;
+        }
         protected String formatValueInt(Object value) {
             if (this.currency == null && this.defaultCurrency == null) {
                 return m_currencyformat.format(DoubleUtils.fixDecimals((Number) value)); // quickfix for 3838
             } else {
-                CurrencyInfo currency = this.defaultCurrency;
-                if (this.currency != null) {
-                    currency = this.currency;
-                    this.currency = null;
-                }
-                String currFormat = currency.getFormat();
-                String format = currFormat.replace("$", "¤");
-                DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                if (currency.getDecimal() != null) {
-                    symbols.setDecimalSeparator(currency.getDecimal().charAt(0));
-                    symbols.setMonetaryDecimalSeparator(currency.getDecimal().charAt(0));
-                } else {
-                    symbols.setDecimalSeparator('.');
-                    symbols.setMonetaryDecimalSeparator('.');
-                }
-                if (currency.getThousands() != null) {
-                    symbols.setGroupingSeparator(currency.getThousands().charAt(0));
-                } else {
-                    symbols.setGroupingSeparator(' ');
-                }
-                if (currency.getSymbol() != null) {
-                    symbols.setCurrencySymbol(currency.getSymbol());
-                }
-                DecimalFormat formatter = new DecimalFormat(format, symbols);
+                DecimalFormat formatter = this.getFormat();
                 return formatter.format(value);
             }
         }   
         protected Object parseValueInt(String value) throws ParseException {
+            DecimalFormat formatter = this.getFormat();
             try {
-                // Quickuglyfix for locale fr_FR: '.' may be used as ',' with numpad
-                if (Locale.getDefault().equals(Locale.FRANCE)) {
+                DecimalFormatSymbols symbols = formatter.getDecimalFormatSymbols();
+                // Quickuglyfix for locale fr_FR:
+                // '.' may be used as ',' with numpad
+                if (Locale.getDefault().equals(Locale.FRANCE)
+                        && symbols.getDecimalSeparator() == ',') {
                     value = value.replace(".", ",");
                 }
-                return new Double(m_currencyformat.parse(value).doubleValue());
+                return new Double(formatter.parse(value).doubleValue());
             } catch (ParseException e) {
                 // Segunda oportunidad como numero normalito
-                if (this.defaultCurrency == null) {
-                    return new Double(m_doubleformat.parse(value).doubleValue());
-                } else {
-                    CurrencyInfo currency = this.defaultCurrency;
-                    if (this.currency != null) {
-                        currency = this.currency;
-                        this.currency = null;
-                    }
-                    String currFormat = currency.getFormat();
-                    String format = currFormat.replace("$", "¤");
-                    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-                    if (currency.getDecimal() != null) {
-                        symbols.setDecimalSeparator(currency.getDecimal().charAt(0));
-                    } else {
-                        symbols.setDecimalSeparator('.');
-                    }
-                    if (currency.getThousands() != null) {
-                        symbols.setGroupingSeparator(currency.getThousands().charAt(0));
-                    } else {
-                        symbols.setGroupingSeparator(' ');
-                    }
-                    if (currency.getSymbol() != null) {
-                        symbols.setCurrencySymbol(currency.getSymbol());
-                    }
-                    DecimalFormat formatter = new DecimalFormat(format, symbols);
-                    return new Double(formatter.parse(value).doubleValue());
-                }
+                return new Double(m_doubleformat.parse(value).doubleValue());
             }
         }
         public int getAlignment() {
