@@ -1039,7 +1039,24 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final SentenceExec getStockDiaryInsert() {
         return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {
-                int updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
+                int updateresult = 0;
+                if (((Object[]) params)[2].equals(new Integer(0))) {
+                    // Reset stock before insert
+                    updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
+                    ? new PreparedSentence(s,
+                        "UPDATE STOCKCURRENT SET UNITS = (0) "
+                        + "WHERE LOCATION = ? AND PRODUCT = ? "
+                        + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
+                        new SerializerWriteBasicExt(stockdiaryDatas,
+                            new int[] {3, 4})).exec(params)
+                    : new PreparedSentence(s,
+                        "UPDATE STOCKCURRENT SET UNITS = (0) "
+                        + "WHERE LOCATION = ? AND PRODUCT = ? "
+                        + "AND ATTRIBUTESETINSTANCE_ID = ?",
+                        new SerializerWriteBasicExt(stockdiaryDatas,
+                            new int[] {3, 4, 5})).exec(params);
+                }
+                updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
                     ? new PreparedSentence(s,
                         "UPDATE STOCKCURRENT SET UNITS = (UNITS + ?) "
                         + "WHERE LOCATION = ? AND PRODUCT = ? "
@@ -1052,7 +1069,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         + "AND ATTRIBUTESETINSTANCE_ID = ?",
                         new SerializerWriteBasicExt(stockdiaryDatas,
                             new int[] {6, 3, 4, 5})).exec(params);
-
                 if (updateresult == 0) {
                     new PreparedSentence(s
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, "

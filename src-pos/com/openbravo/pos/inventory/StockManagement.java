@@ -106,6 +106,7 @@ public class StockManagement extends JPanel
         m_ReasonModel.add(MovementReason.OUT_BREAK);
         m_ReasonModel.add(MovementReason.OUT_MOVEMENT);        
         m_ReasonModel.add(MovementReason.OUT_CROSSING);        
+        m_ReasonModel.add(MovementReason.RESET);
         
         m_jreason.setModel(m_ReasonModel);
         
