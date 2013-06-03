@@ -62,6 +62,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private List<TicketTaxInfo> taxes;
     private String m_sResponse;
     private Integer customersCount;
+    private Integer tariffAreaId;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -286,6 +287,14 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
     public boolean hasCustomersCount() {
         return this.customersCount != null;
+    }
+
+    public Integer getTariffArea() {
+        return this.tariffAreaId;
+    }
+
+    public void setTariffArea(Integer value) {
+        this.tariffAreaId = value;
     }
 
     public TicketLineInfo getLine(int index) {

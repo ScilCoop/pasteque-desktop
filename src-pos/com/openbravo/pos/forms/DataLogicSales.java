@@ -44,6 +44,7 @@ import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.pos.payment.PaymentInfoTicket;
 import com.openbravo.pos.ticket.FindTicketsInfo;
 import com.openbravo.pos.ticket.SubgroupInfo;
+import com.openbravo.pos.ticket.TariffInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -965,6 +966,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
         
         return i;
+    }
+
+    public final SentenceList getTariffAreaList() {
+        return new StaticSentence(s
+            , "SELECT ID, NAME, TARIFFORDER FROM TARIFFAREAS ORDER BY TARIFFORDER"
+            , null
+            , new SerializerReadClass(TariffInfo.class));
     }
 
     public final SentenceExec getTariffAreaInsert() {
