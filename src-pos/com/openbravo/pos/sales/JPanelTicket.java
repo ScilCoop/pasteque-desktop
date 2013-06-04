@@ -261,10 +261,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         // Initialize tariff area combobox
         m_TariffList = m_senttariff.list();
-        if (m_TariffList.size() > 0) {
-            m_TariffModel = new ComboBoxValModel(m_TariffList);
-            m_jTariff.setModel(m_TariffModel);
-            updateTariffCombo();
+        TariffInfo defaultArea = new TariffInfo("-1",
+                AppLocal.getIntString("Label.DefaultTariffArea"));
+        m_TariffList.add(0, defaultArea);
+        m_TariffModel = new ComboBoxValModel(m_TariffList);
+        m_jTariff.setModel(m_TariffModel);
+        if (m_TariffList.size() > 1) {
+            this.updateTariffCombo();
             m_jTariffPanel.setVisible(true);
         } else {
             m_jTariffPanel.setVisible(false);
@@ -303,7 +306,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         executeEvent(m_oTicket, m_oTicketExt, "ticket.show");
         
-        refreshTicket();               
+        refreshTicket();
+        this.updateTariffCombo();
     }
     
     public TicketInfo getActiveTicket() {
@@ -394,13 +398,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public void updateTariffCombo() {
         updateTariffCombo(m_oTicket);
     }
+    /** Update tariff area combo box to select the area of the ticket. */
     public void updateTariffCombo(TicketInfo ticket) {
-        if (ticket != null && m_jTariff != null) {
+        m_jTariff.setSelectedIndex(0);
+        if (ticket != null) {
+            // Select the current tariff area
             for (int i= 0; i < m_jTariff.getItemCount(); i++) {
                 try {
                     TariffInfo tariff = (TariffInfo) m_jTariff.getItemAt(i);
                     if (tariff != null) {
-                       if (tariff.getID().equals(ticket.getTariffArea())) {
+                       if (new Integer(tariff.getID()).equals(ticket.getTariffArea())) {
                             m_jTariff.setSelectedIndex(i);
                         }
                     }
@@ -408,14 +415,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     e.printStackTrace();
                 }
             }
+        }
+    }
 
-            if (m_jTariff.getSelectedIndex() < 0
-                    && m_jTariff.getItemCount() > 0) {
-                if (ticket.getTicketId() == 0) { // Si el ticket no se ha vendido todavía, le ponemos por defecto el primer grupo de tarifas.
-                    m_jTariff.setSelectedIndex(0);
-                }
+    private void switchTariffArea(TariffInfo area) {
+        if (m_oTicket != null) {
+            if (area.getID().equals("-1")) {
+                m_oTicket.setTariffArea(null);
+            } else {
+                m_oTicket.setTariffArea(new Integer(area.getID()));
             }
         }
+        this.updateTariffCombo();
     }
 
     private void printPartialTotals(){
@@ -462,7 +473,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
     
     protected void addTicketLine(TicketLineInfo oLine) {   
-        
+        // Update price from tariff area if needed
+        if (m_oTicket.getTariffArea() != null) {
+            // TODO: don't update price of composition product (which price is 0)
+            List<ProductInfoExt> prods = null;
+            // Get prices list
+            try {
+                prods = dlSales.getTariffProds(String.valueOf(m_oTicket.getTariffArea()));
+            } catch (BasicException ex) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.errorchangetariff"), ex);
+                msg.show(JPanelTicket.this);
+            }
+            if (prods != null) {
+                for (ProductInfoExt p : prods) {
+                    if (p.getID().equals(oLine.getProductID())) {
+                        oLine.setPrice(p.getPriceSell());
+                    }
+                }
+            }
+        }
         if (executeEventAndRefresh("ticket.addline", new ScriptArg("line", oLine)) == null) {
         
             if (oLine.isProductCom()) {
@@ -1747,6 +1776,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         m_jPanTotals.add(m_jLblTotalEuros3, gridBagConstraints);
 
+        // Tariff area
+        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jTariffActionPerformed(evt);
+            }
+        });
         m_jTariffPanel.setLayout(new java.awt.GridBagLayout());
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
@@ -1951,6 +1986,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.selectlinefordiscount"));
             msg.show(this);
             java.awt.Toolkit.getDefaultToolkit().beep();
+        }
+    }
+
+    private void m_jTariffActionPerformed(java.awt.event.ActionEvent evt) {
+        try{
+            TariffInfo tariff = (TariffInfo) m_jTariff.getSelectedItem();
+            if(tariff!=null) {
+                this.switchTariffArea(tariff);
+            }
+        } catch(java.lang.ClassCastException e){
+            
         }
     }
 
