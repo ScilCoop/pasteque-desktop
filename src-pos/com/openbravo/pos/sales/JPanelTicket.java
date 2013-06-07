@@ -40,6 +40,8 @@ import com.openbravo.pos.payment.JPaymentSelect;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.ListKeyed;
 import com.openbravo.data.loader.SentenceList;
+import com.openbravo.pos.catalog.CatalogSelector;
+import com.openbravo.pos.catalog.JCatalogSubgroups;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.customers.JCustomerFinder;
@@ -67,6 +69,8 @@ import com.openbravo.pos.widgets.JNumberEvent;
 import com.openbravo.pos.widgets.JNumberEventListener;
 import com.openbravo.pos.widgets.JNumberKeys;
 import com.openbravo.pos.widgets.WidgetsBuilder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
@@ -75,6 +79,8 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.print.PrintService;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -95,6 +101,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     protected TicketInfo m_oTicket; 
     protected Object m_oTicketExt; 
+
+    /** True when picking components */
+    private boolean m_bIsSubproduct;
+    /** Quantity of current composition (when picking a composition) */
+    protected double m_dMultiply;
+    /** The catalog currently displayed (for compositions) */
+    protected Component m_catalog;
+    protected CatalogSelector m_cat;
+    /** Current composition state (PRODUCT_* values) */
+    protected int m_iProduct;
 
     private StringBuffer m_sBarcode;
 
@@ -141,6 +157,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private static final int N_NUMBER = 3;
     private static final int N_DECIMALNUMBER = 4;
     private static final int N_DECIMAL = 5;
+
+    protected static final int PRODUCT_SINGLE = 0;
+    protected static final int PRODUCT_COMPOSITION = 1;
+    protected static final int PRODUCT_SUBGROUP = 2;
 
     private static final char keyBack = '\u0008';
     private static final char keyDel = '\u007f';
@@ -189,8 +209,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jbtnconfig = new JPanelButtons("Ticket.Buttons", this);
         m_jButtonsExt.add(m_jbtnconfig);           
        
-        // El panel de los productos o de las lineas...        
+        // El panel de los productos o de las lineas...
+        m_catalog = getSouthComponent();
         catcontainer.add(getSouthComponent(), BorderLayout.CENTER);
+        m_iProduct = PRODUCT_SINGLE;
         
         // El modelo de impuestos
         senttax = dlSales.getTaxList();
@@ -215,7 +237,21 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public Object getBean() {
         return this;
     }
-    
+
+    protected Component getSouthAuxComponent() {
+        m_cat = new JCatalogSubgroups(dlSales,
+                "true".equals(m_jbtnconfig.getProperty("pricevisible")),
+                "true".equals(m_jbtnconfig.getProperty("taxesincluded")),
+                Integer.parseInt(m_jbtnconfig.getProperty("img-width", "64")),
+                Integer.parseInt(m_jbtnconfig.getProperty("img-height", "54")));
+        m_cat.getComponent().setPreferredSize(new Dimension(
+                0,
+                Integer.parseInt(m_jbtnconfig.getProperty("cat-height", "245"))));
+        m_cat.addActionListener(new CatalogListener());
+        ((JCatalogSubgroups)m_cat).setGuideMode(true);
+        return m_cat.getComponent();
+    }
+
     public JComponent getComponent() {
         return this;
     }
@@ -462,6 +498,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         TaxInfo tax = taxeslogic.getTaxInfo(oProduct.getTaxCategoryID(),  m_oTicket.getDate(), m_oTicket.getCustomer());
         TicketLineInfo line = new TicketLineInfo(oProduct, dMul, dPrice, tax, (java.util.Properties) (oProduct.getProperties().clone()));
+        line.setSubproduct(m_bIsSubproduct);
         addTicketLine(line);
         if (oProduct.isDiscountEnabled()) {
             double rate = oProduct.getDiscountRate();
@@ -686,11 +723,61 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    protected void buttonTransition(ProductInfoExt prod) {
-    // precondicion: prod != null
+    /** Switch catalog according to composition state */
+    public void changeCatalog() {
+        catcontainer.removeAll();
+        setSubgroupMode(m_iProduct == PRODUCT_SUBGROUP);
+        if (m_iProduct == PRODUCT_SUBGROUP) {
+            // Set composition catalog
+            m_catalog = getSouthAuxComponent();
+        } else {
+            // Set default catalog
+            m_catalog = getSouthComponent();
+        }
+        catcontainer.add(m_catalog, BorderLayout.CENTER);
+        catcontainer.updateUI();
+    }
 
-         if (m_PriceActualState == N_NOTHING
-                 && m_QuantityActualState == N_NOTHING) {
+    /** Activate or deactivate input component for subgroups (or not) */
+    private void setSubgroupMode(boolean value) {
+        this.lineBtnsContainer.setEnabled(!value);
+        enableComponents(this.lineBtnsContainer, !value);
+    }
+
+    private void enableComponents(Container cont, boolean value) {
+        for (Component c: cont.getComponents()) {
+            try {
+                c.setEnabled(value);
+                enableComponents((Container) c, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+
+    protected void buttonTransition(ProductInfoExt prod) {
+        // precondicion: prod != null
+        m_bIsSubproduct = false;
+
+        // Check if picking composition content
+        if (m_iProduct == PRODUCT_SUBGROUP && prod != null) {
+            // Set component product price to 0
+            prod.setCom(true);
+            prod.setPriceSell(0.0);
+            m_bIsSubproduct = true;
+            // Set quantity to the same amount as composition product
+            if (m_dMultiply != 1.0) {
+                m_jPrice.setText(String.valueOf(m_dMultiply));
+            }
+        } else if (m_iProduct == PRODUCT_COMPOSITION) {
+            // Picked a composition product, start composing
+            // Set multiply for components
+            m_dMultiply = (getInputValue()==0)? 1.0: getInputValue();
+            m_iProduct = PRODUCT_SUBGROUP;
+        }
+
+        if (m_PriceActualState == N_NOTHING
+                && m_QuantityActualState == N_NOTHING) {
             // No input, just add product
             incProduct(prod);
         } else if (m_PriceActualState != N_NOTHING
@@ -1451,6 +1538,85 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
             return script.eval(code);
         }            
+    }
+
+    protected class CatalogListener implements ActionListener {
+        private void reloadCatalog () {
+            changeCatalog();
+            try {
+                m_cat.loadCatalog();
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        public void actionPerformed(ActionEvent e) {
+            if ( (e.getSource()).getClass().equals(ProductInfoExt.class) ) {
+                // Clicked on a product
+                ProductInfoExt prod = ((ProductInfoExt) e.getSource());
+                // Special command to end composition
+                if (e.getActionCommand().equals("-1")) {
+                    m_iProduct = PRODUCT_SINGLE;
+                    reloadCatalog();
+                } else {
+                    if (prod.getCategoryID().equals("0")) {
+                        // Clicked on a composition
+                        m_iProduct = PRODUCT_COMPOSITION;
+                        buttonTransition(prod);
+                        reloadCatalog();
+                        m_cat.showCatalogPanel(prod.getID());
+                    } else {
+                        // Clicked on a regular product
+                        buttonTransition(prod);
+                    }
+                }
+            } else {
+                // Si se ha seleccionado cualquier otra cosa...
+                // Si es una orden de cancelar la venta de una composición
+                if ( e.getActionCommand().equals("cancelSubgroupSale")){
+                    int i=m_oTicket.getLinesCount();
+                    TicketLineInfo line = m_oTicket.getLine(--i);
+                    //Quito todas las líneas que son subproductos
+                    // (puesto que está recién añadido, pertenecen
+                    // al menú que estamos cancelando)
+                    while ((i>0) && (line.isSubproduct())) {
+                        m_oTicket.removeLine(i);
+                        m_ticketlines.removeTicketLine(i);
+                        line= m_oTicket.getLine(--i);
+                    }
+                    // Quito la línea siguiente, perteneciente al menú en sí
+                    if(i >= 0){
+                        m_oTicket.removeLine(i);
+                        m_ticketlines.removeTicketLine(i);
+                    }
+                    // Actualizo el interfaz
+                    m_iProduct = PRODUCT_SINGLE;
+                    reloadCatalog();
+                }
+            }
+        }
+        
+    }
+    
+    protected class CatalogSelectionListener implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) {      
+            
+            if (!e.getValueIsAdjusting()) {
+                int i = m_ticketlines.getSelectedIndex();
+                
+                // Buscamos el primer producto no Auxiliar.
+                while (i >= 0 && m_oTicket.getLine(i).isProductCom()) {
+                    i--;
+                }
+                        
+                // Mostramos el panel de catalogo adecuado...
+                if (i >= 0) {
+                    m_cat.showCatalogPanel(m_oTicket.getLine(i).getProductID());
+                } else {
+                    m_cat.showCatalogPanel(null);
+                }
+            }
+        }  
     }
 
     private void initComponents() {

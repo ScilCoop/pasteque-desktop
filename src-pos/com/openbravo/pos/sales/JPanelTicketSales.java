@@ -32,8 +32,6 @@ import java.awt.Dimension;
 
 public class JPanelTicketSales extends JPanelTicket {
 
-    private CatalogSelector m_cat;
-   
     /** Creates a new instance of JPanelTicketSales */
     public JPanelTicketSales() {        
     }
@@ -79,32 +77,4 @@ public class JPanelTicketSales extends JPanelTicket {
         m_cat.loadCatalog();
     }      
     
-    private class CatalogListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            buttonTransition((ProductInfoExt) e.getSource());
-        }  
-    }
-    
-    private class CatalogSelectionListener implements ListSelectionListener {
-        public void valueChanged(ListSelectionEvent e) {      
-            
-            if (!e.getValueIsAdjusting()) {
-                int i = m_ticketlines.getSelectedIndex();
-                
-                if (i >= 0) {
-                    // Look for the first non auxiliar product.
-                    while (i >= 0 && m_oTicket.getLine(i).isProductCom()) {
-                        i--;
-                    }
-
-                    // Show the accurate catalog panel...
-                    if (i >= 0) {
-                        m_cat.showCatalogPanel(m_oTicket.getLine(i).getProductID());
-                    } else {
-                        m_cat.showCatalogPanel(null);
-                    }
-                }
-            }
-        }  
-    }
 }
