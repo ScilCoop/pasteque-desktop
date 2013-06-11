@@ -742,6 +742,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void setSubgroupMode(boolean value) {
         this.lineBtnsContainer.setEnabled(!value);
         enableComponents(this.lineBtnsContainer, !value);
+        enableComponents(m_jOptions, !value);
+        enableComponents(m_jPanEntries, !value);
     }
 
     private void enableComponents(Container cont, boolean value) {
@@ -1666,9 +1668,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         GridBagConstraints cstr = null;
 
         // Tickets buttons part
-        JPanel m_jOptions = new JPanel();
+        m_jOptions = new JPanel();
         m_jOptions.setLayout(new GridBagLayout());
-        JPanel m_jButtons = new JPanel();
+        m_jButtons = new JPanel();
         
         m_jTicketId = WidgetsBuilder.createLabel();
         m_jTicketId.setBackground(java.awt.Color.white);
@@ -2293,6 +2295,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel lineBtnsContainer;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPanel m_jOptions;
+    private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
     private javax.swing.JButton m_jDelete;
     private javax.swing.JButton m_jDown;
