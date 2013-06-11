@@ -245,9 +245,9 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         if (pricevisible) {
             if (taxesincluded) {
                 TaxInfo tax = taxeslogic.getTaxInfo(product.getTaxCategoryID(), new Date());
-                return "<html><center>" + product.getName() + "<br>" + product.printPriceSellTax(tax);
+                return product.getName() + " (" + product.printPriceSellTax(tax) + ")";
             } else {
-                return "<html><center>" + product.getName() + "<br>" + product.printPriceSell();
+                return product.getName() + " (" + product.printPriceSell() + ")";
             }
         } else {
             return product.getName();
