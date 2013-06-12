@@ -284,7 +284,7 @@ public class PaymentsModel {
                 PaymentsLine l = m_lpayments.get(row);
                 switch (column) {
                 case 0: return new Object[] {l.getType(), l.getCurrency().getName(), l.getCurrency().isMain()};
-                case 1: return l.getValue();
+                case 1: return l;
                 default: return null;
                 }
             }  
