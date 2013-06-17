@@ -494,6 +494,27 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             != null;
     }
 
+    private boolean isRefill(String productId) throws BasicException {
+        return new PreparedSentence(s,
+                "SELECT ID FROM PRODUCTS WHERE ID= ? AND CATEGORY = \"-1\"",
+                SerializerWriteString.INSTANCE,
+                SerializerReadString.INSTANCE).find(productId)
+                != null;
+    }
+    private void addPrepaid(final String customerId, final double amount)
+        throws BasicException {
+        PreparedSentence ps = new PreparedSentence(s,
+                "UPDATE CUSTOMERS SET PREPAID = (PREPAID + ?) "
+                + "WHERE ID = ?",
+                SerializerWriteParams.INSTANCE);
+        ps.exec(new DataParams() {
+                public void writeValues() throws BasicException {
+                    setDouble(1, amount);
+                    setString(2, customerId);
+                }
+            });
+    }
+
     public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
         TicketInfo ticket = (TicketInfo) new PreparedSentence(s,
                 "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, "
@@ -600,6 +621,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                             new Double(-l.getMultiply()),
                             new Double(l.getPrice())
                         });
+                        // Update prepaid
+                        if (isRefill(l.getProductID())) {
+                            addPrepaid(ticket.getCustomerId(),
+                                    l.getPrice());
+                        }
                     }
                 }
 
@@ -641,6 +667,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                             setTimestamp(2, ticket.getCustomer().getCurdate());
                             setString(3, ticket.getCustomer().getId());
                         }});
+                    } else if ("prepaid".equals(p.getName())) {
+                        // Decrease prepaid amount
+                        addPrepaid(ticket.getCustomer().getId(), -p.getTotal());
                     }
                 }
 

@@ -248,6 +248,15 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         public String getLabelKey() { return "tab.debt"; }
         public String getIconKey() { return "/com/openbravo/images/kdmconfig32.png"; }
     }   
+
+    public class JPaymentPrepaidCreator implements JPaymentCreator {
+        public JPaymentInterface createJPayment() {
+            return new JPaymentPrepaid(JPaymentSelect.this);
+        }
+        public String getKey() { return "payment.prepaid"; }
+        public String getLabelKey() { return "tab.prepaid"; }
+        public String getIconKey() { return "/com/openbravo/images/kdmconfig32.png"; }
+    }
         
     public class JPaymentCashRefundCreator implements JPaymentCreator {
         public JPaymentInterface createJPayment() {

@@ -38,6 +38,7 @@
     <class name="payment.magcard"/>
     <class name="payment.free"/>
     <class name="payment.debt"/>
+    <class name="payment.prepaid"/>
     <class name="refund.cash"/>
     <class name="refund.cheque"/>
     <class name="refund.paper"/>
