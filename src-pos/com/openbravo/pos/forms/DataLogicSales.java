@@ -442,13 +442,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s,
             "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
             + "MAIN FROM CURRENCIES ORDER BY MAIN DESC, NAME",
-            null, new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                Object[] params = new Object[8];
-                for (int i = 0; i < 8; i++) {
-                    params[i] = dr.getObject(i + 1);
-                }
-                return new CurrencyInfo(params);
-            }});
+            null, CurrencyInfo.getSerializerRead());
     }
 
     public CurrencyInfo getMainCurrency() throws BasicException {
@@ -496,9 +490,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     private boolean isRefill(String productId) throws BasicException {
         return new PreparedSentence(s,
-                "SELECT ID FROM PRODUCTS WHERE ID= ? AND CATEGORY = \"-1\"",
-                SerializerWriteString.INSTANCE,
-                SerializerReadString.INSTANCE).find(productId)
+                "SELECT ID FROM PRODUCTS WHERE ID= ? AND CATEGORY = ?",
+                new SerializerWriteBasic(Datas.STRING, Datas.STRING),
+                SerializerReadString.INSTANCE).find(productId, "-1")
                 != null;
     }
     private void addPrepaid(final String customerId, final double amount)
@@ -773,7 +767,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return new StaticSentence(s
             , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
             + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.CATEGORY, P.TAXCAT, "
-            + "P.IMAGE, NOT (C.PRODUCT IS NULL), C.CATORDER, P.ATTRIBUTES "
+            + "P.IMAGE, "
+            + "CASE WHEN C.PRODUCT IS NULL THEN " + s.DB.FALSE()
+            + " ELSE " + s.DB.TRUE() + " END, "
+            + "C.CATORDER, P.ATTRIBUTES "
             + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C ON P.ID = C.PRODUCT "
             + "WHERE P.CATEGORY LIKE '0' AND ?(QBF_FILTER) "
             + "ORDER BY P.NAME",
@@ -1197,9 +1194,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
                 }
                 return new PreparedSentence(s,
-                    "INSERT INTO CURRENCIES (NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN) "
-                            + "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                    new SerializerWriteBasicExt(currencyData, new int[] {1, 2, 3, 4, 5, 6, 7})).exec(params);
+                    "INSERT INTO CURRENCIES (ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    new SerializerWriteBasicExt(currencyData, new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
             }
         };
     }

@@ -22,9 +22,9 @@ package com.openbravo.pos.admin;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.DataRead;
 import com.openbravo.data.loader.IKeyed;
-import com.openbravo.data.loader.SerializableRead;
+import com.openbravo.data.loader.SerializerRead;
 
-public class CurrencyInfo implements SerializableRead, IKeyed {
+public class CurrencyInfo implements IKeyed {
     
     private static final long serialVersionUID = 4680364653429L;
     private Integer id;
@@ -54,15 +54,21 @@ public class CurrencyInfo implements SerializableRead, IKeyed {
         return this.id;
     }
 
-    public void readValues(DataRead dr) throws BasicException {
-        this.id = dr.getInt(0);
-        this.name = dr.getString(1);
-        this.symbol = dr.getString(2);
-        this.decimal = dr.getString(3);
-        this.thousands = dr.getString(4);
-        this.format = dr.getString(5);
-        this.rate = dr.getDouble(6);
-        this.main = dr.getBoolean(7);
+    public static SerializerRead getSerializerRead() {
+        return new SerializerRead() {
+            public Object readValues(DataRead dr) throws BasicException {
+                CurrencyInfo curr = new CurrencyInfo();
+                curr.id = dr.getInt(1);
+                curr.name = dr.getString(2);
+                curr.symbol = dr.getString(3);
+                curr.decimal = dr.getString(4);
+                curr.thousands = dr.getString(5);
+                curr.format = dr.getString(6);
+                curr.rate = dr.getDouble(7);
+                curr.main = dr.getBoolean(8);
+                return curr;
+            }
+        };
     } 
 
     public void setID(Integer id) {
