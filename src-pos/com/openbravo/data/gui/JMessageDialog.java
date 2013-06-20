@@ -75,6 +75,7 @@ public class JMessageDialog extends javax.swing.JDialog {
             
             if (inf.getCause() instanceof Throwable) {
                 Throwable t = (Throwable) inf.getCause();
+                t.printStackTrace();
                 while (t != null) {
                     sb.append(t.getClass().getName());
                     sb.append(": \n");
@@ -85,6 +86,7 @@ public class JMessageDialog extends javax.swing.JDialog {
             } else if (inf.getCause() instanceof Throwable[]) {
                 Throwable[] m_aExceptions = (Throwable[]) inf.getCause();
                 for (int i = 0; i < m_aExceptions.length; i++) {
+                    m_aExceptions[i].printStackTrace();
                     sb.append(m_aExceptions[i].getClass().getName());
                     sb.append(": \n");
                     sb.append(m_aExceptions[i].getMessage());
