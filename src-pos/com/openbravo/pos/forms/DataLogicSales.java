@@ -75,7 +75,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {
         stockdiaryDatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE};
-        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE};
+        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.INT};
         stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
         tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
@@ -1163,10 +1163,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     new SerializerWriteBasicExt(paymenttabledatas,
                         new int[] {0, 1, 2})).exec(params);
                 return new PreparedSentence(s,
-                    "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL) "
-                    + "VALUES (?, ?, ?, ?)",
+                    "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, CURRENCY, TOTALCURRENCY) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)",
                     new SerializerWriteBasicExt(paymenttabledatas,
-                        new int[] {3, 0, 4, 5})).exec(params);
+                            new int[] {3, 0, 4, 5, 6, 5})).exec(params);
             }
         };
     }

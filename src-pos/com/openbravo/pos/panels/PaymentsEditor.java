@@ -26,8 +26,10 @@ import com.openbravo.data.gui.ComboBoxValModel;
 import com.openbravo.data.loader.IKeyed;
 import com.openbravo.data.user.DirtyManager;
 import com.openbravo.data.user.EditorRecord;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
+import com.openbravo.pos.forms.DataLogicSales;
 import java.util.Date;
 
 /**
@@ -41,6 +43,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     private String m_sId;
     private String m_sPaymentId;
     private Date datenew;
+    private DataLogicSales dlSales;
    
     private AppView m_App;
     
@@ -48,6 +51,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     public PaymentsEditor(AppView oApp, DirtyManager dirty) {
         
         m_App = oApp;
+        dlSales = (DataLogicSales) m_App.getBean("com.openbravo.pos.forms.DataLogicSales");
         
         initComponents();
        
@@ -106,7 +110,7 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
     }
     
     public Object createValue() throws BasicException {
-        Object[] payment = new Object[6];
+        Object[] payment = new Object[7];
         payment[0] = m_sId == null ? UUID.randomUUID().toString() : m_sId;
         payment[1] = m_App.getActiveCashIndex();
         payment[2] = datenew == null ? new Date() : datenew;
@@ -115,6 +119,8 @@ public class PaymentsEditor extends javax.swing.JPanel implements EditorRecord {
         PaymentReason reason = (PaymentReason) m_ReasonModel.getSelectedItem();
         Double dtotal = jTotal.getDoubleValue();
         payment[5] = reason == null ? dtotal : reason.addSignum(dtotal);
+        CurrencyInfo currency = dlSales.getMainCurrency();
+        payment[6] = currency.getID();
         return payment;
     }
     
