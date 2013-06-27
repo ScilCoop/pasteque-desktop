@@ -63,7 +63,7 @@ public class PaymentPanelBasic extends javax.swing.JPanel implements PaymentPane
                     null,
                     null,
                     m_sTransactionID,
-                    m_dTotal);
+                    m_dTotal, null);
         } else {
             return new PaymentInfoMagcardRefund( 
                     "",

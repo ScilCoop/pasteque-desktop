@@ -41,6 +41,8 @@ import com.openbravo.basic.BasicException;
 import com.openbravo.data.gui.ListKeyed;
 import com.openbravo.data.loader.ImageLoader;
 import com.openbravo.data.loader.SentenceList;
+import com.openbravo.pos.catalog.CatalogSelector;
+import com.openbravo.pos.catalog.JCatalogSubgroups;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.customers.DataLogicCustomers;
 import com.openbravo.pos.customers.JCustomerFinder;
@@ -56,6 +58,7 @@ import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.payment.JPaymentSelectReceipt;
 import com.openbravo.pos.payment.JPaymentSelectRefund;
 import com.openbravo.pos.ticket.ProductInfoExt;
+import com.openbravo.pos.ticket.TariffInfo;
 import com.openbravo.pos.ticket.TaxInfo;
 import com.openbravo.pos.ticket.TicketInfo;
 import com.openbravo.pos.ticket.TicketLineInfo;
@@ -67,13 +70,18 @@ import com.openbravo.pos.widgets.JNumberEvent;
 import com.openbravo.pos.widgets.JNumberEventListener;
 import com.openbravo.pos.widgets.JNumberKeys;
 import com.openbravo.pos.widgets.WidgetsBuilder;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import javax.print.PrintService;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -95,6 +103,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected TicketInfo m_oTicket; 
     protected Object m_oTicketExt; 
 
+    /** True when picking components */
+    private boolean m_bIsSubproduct;
+    /** Quantity of current composition (when picking a composition) */
+    protected double m_dMultiply;
+    /** The catalog currently displayed (for compositions) */
+    protected Component m_catalog;
+    protected CatalogSelector m_cat;
+    /** Current composition state (PRODUCT_* values) */
+    protected int m_iProduct;
+
     private StringBuffer m_sBarcode;
 
     private JTicketsBag m_ticketsbag;
@@ -108,6 +126,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private ComboBoxValModel taxcategoriesmodel;
     
     private TaxesLogic taxeslogic;
+
+    private SentenceList m_senttariff;
+    private List m_TariffList;
+    private ComboBoxValModel m_TariffModel;
 
 //    private ScriptObject scriptobjinst;
     protected JPanelButtons m_jbtnconfig;
@@ -136,6 +158,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private static final int N_NUMBER = 3;
     private static final int N_DECIMALNUMBER = 4;
     private static final int N_DECIMAL = 5;
+
+    protected static final int PRODUCT_SINGLE = 0;
+    protected static final int PRODUCT_COMPOSITION = 1;
+    protected static final int PRODUCT_SUBGROUP = 2;
 
     private static final char keyBack = '\u0008';
     private static final char keyDel = '\u007f';
@@ -166,7 +192,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         GridBagConstraints cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
         cstr.weighty = 1.0;
@@ -179,14 +205,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jbtnconfig = new JPanelButtons("Ticket.Buttons", this);
         m_jButtonsExt.add(m_jbtnconfig);           
        
-        // El panel de los productos o de las lineas...        
+        // El panel de los productos o de las lineas...
+        m_catalog = getSouthComponent();
         catcontainer.add(getSouthComponent(), BorderLayout.CENTER);
+        m_iProduct = PRODUCT_SINGLE;
         
         // El modelo de impuestos
         senttax = dlSales.getTaxList();
         senttaxcategories = dlSales.getTaxCategoriesList();
         
-        taxcategoriesmodel = new ComboBoxValModel();
+        // Tariff areas
+        m_senttariff = dlSales.getTariffAreaList();
+        m_TariffModel = new ComboBoxValModel();
 
         // ponemos a cero el estado
         eraseAutomator();
@@ -203,7 +233,21 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public Object getBean() {
         return this;
     }
-    
+
+    protected Component getSouthAuxComponent() {
+        m_cat = new JCatalogSubgroups(dlSales,
+                "true".equals(m_jbtnconfig.getProperty("pricevisible")),
+                "true".equals(m_jbtnconfig.getProperty("taxesincluded")),
+                Integer.parseInt(m_jbtnconfig.getProperty("img-width", "64")),
+                Integer.parseInt(m_jbtnconfig.getProperty("img-height", "54")));
+        m_cat.getComponent().setPreferredSize(new Dimension(
+                0,
+                Integer.parseInt(m_jbtnconfig.getProperty("cat-height", "245"))));
+        m_cat.addActionListener(new CatalogListener());
+        ((JCatalogSubgroups)m_cat).setGuideMode(true);
+        return m_cat.getComponent();
+    }
+
     public JComponent getComponent() {
         return this;
     }
@@ -246,7 +290,21 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jTax.setVisible(false);
             m_jaddtax.setVisible(false);
         }
-        
+
+        // Initialize tariff area combobox
+        m_TariffList = m_senttariff.list();
+        TariffInfo defaultArea = new TariffInfo("-1",
+                AppLocal.getIntString("Label.DefaultTariffArea"));
+        m_TariffList.add(0, defaultArea);
+        m_TariffModel = new ComboBoxValModel(m_TariffList);
+        m_jTariff.setModel(m_TariffModel);
+        if (m_TariffList.size() > 1) {
+            this.updateTariffCombo();
+            m_jTariffPanel.setVisible(true);
+        } else {
+            m_jTariffPanel.setVisible(false);
+        }
+
         // Authorization for buttons
         btnSplit.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Total"));
         m_jDelete.setEnabled(m_App.getAppUserView().getUser().hasPermission("sales.EditLines"));
@@ -280,7 +338,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         executeEvent(m_oTicket, m_oTicketExt, "ticket.show");
         
-        refreshTicket();               
+        refreshTicket();
+        this.updateTariffCombo();
     }
     
     public TicketInfo getActiveTicket() {
@@ -298,7 +357,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (m_oTicket.getCustomer() != null) {
             CustomerInfoExt customerName = m_oTicket.getCustomer();
             name = customerName.getName();
-            Color green = new Color(64,150,23);
+            Color green = new Color(33,67,92);
             m_jTicketId.setBackground(green);
             m_jTicketId.setForeground(java.awt.Color.WHITE);
         } else {
@@ -367,7 +426,41 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             });
         }
     }
-       
+
+    public void updateTariffCombo() {
+        updateTariffCombo(m_oTicket);
+    }
+    /** Update tariff area combo box to select the area of the ticket. */
+    public void updateTariffCombo(TicketInfo ticket) {
+        m_jTariff.setSelectedIndex(0);
+        if (ticket != null) {
+            // Select the current tariff area
+            for (int i= 0; i < m_jTariff.getItemCount(); i++) {
+                try {
+                    TariffInfo tariff = (TariffInfo) m_jTariff.getItemAt(i);
+                    if (tariff != null) {
+                       if (new Integer(tariff.getID()).equals(ticket.getTariffArea())) {
+                            m_jTariff.setSelectedIndex(i);
+                        }
+                    }
+                } catch (ClassCastException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void switchTariffArea(TariffInfo area) {
+        if (m_oTicket != null) {
+            if (area.getID().equals("-1")) {
+                m_oTicket.setTariffArea(null);
+            } else {
+                m_oTicket.setTariffArea(new Integer(area.getID()));
+            }
+        }
+        this.updateTariffCombo();
+    }
+
     private void printPartialTotals(){
         if (m_oTicket == null) {
             m_jSubtotalEuros.setText(null);
@@ -401,6 +494,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         TaxInfo tax = taxeslogic.getTaxInfo(oProduct.getTaxCategoryID(),  m_oTicket.getDate(), m_oTicket.getCustomer());
         TicketLineInfo line = new TicketLineInfo(oProduct, dMul, dPrice, tax, (java.util.Properties) (oProduct.getProperties().clone()));
+        line.setSubproduct(m_bIsSubproduct);
         addTicketLine(line);
         if (oProduct.isDiscountEnabled()) {
             double rate = oProduct.getDiscountRate();
@@ -412,7 +506,25 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
     
     protected void addTicketLine(TicketLineInfo oLine) {   
-        
+        // Update price from tariff area if needed
+        if (m_oTicket.getTariffArea() != null) {
+            // TODO: don't update price of composition product (which price is 0)
+            List<ProductInfoExt> prods = null;
+            // Get prices list
+            try {
+                prods = dlSales.getTariffProds(String.valueOf(m_oTicket.getTariffArea()));
+            } catch (BasicException ex) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.errorchangetariff"), ex);
+                msg.show(JPanelTicket.this);
+            }
+            if (prods != null) {
+                for (ProductInfoExt p : prods) {
+                    if (p.getID().equals(oLine.getProductID())) {
+                        oLine.setPrice(p.getPriceSell());
+                    }
+                }
+            }
+        }
         if (executeEventAndRefresh("ticket.addline", new ScriptArg("line", oLine)) == null) {
         
             if (oLine.isProductCom()) {
@@ -607,11 +719,63 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    protected void buttonTransition(ProductInfoExt prod) {
-    // precondicion: prod != null
+    /** Switch catalog according to composition state */
+    public void changeCatalog() {
+        catcontainer.removeAll();
+        setSubgroupMode(m_iProduct == PRODUCT_SUBGROUP);
+        if (m_iProduct == PRODUCT_SUBGROUP) {
+            // Set composition catalog
+            m_catalog = getSouthAuxComponent();
+        } else {
+            // Set default catalog
+            m_catalog = getSouthComponent();
+        }
+        catcontainer.add(m_catalog, BorderLayout.CENTER);
+        catcontainer.updateUI();
+    }
 
-         if (m_PriceActualState == N_NOTHING
-                 && m_QuantityActualState == N_NOTHING) {
+    /** Activate or deactivate input component for subgroups (or not) */
+    private void setSubgroupMode(boolean value) {
+        this.lineBtnsContainer.setEnabled(!value);
+        enableComponents(this.lineBtnsContainer, !value);
+        enableComponents(m_jOptions, !value);
+        enableComponents(m_jPanEntries, !value);
+    }
+
+    private void enableComponents(Container cont, boolean value) {
+        for (Component c: cont.getComponents()) {
+            try {
+                c.setEnabled(value);
+                enableComponents((Container) c, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    } 
+
+    protected void buttonTransition(ProductInfoExt prod) {
+        // precondicion: prod != null
+        m_bIsSubproduct = false;
+
+        // Check if picking composition content
+        if (m_iProduct == PRODUCT_SUBGROUP && prod != null) {
+            // Set component product price to 0
+            prod.setCom(true);
+            prod.setPriceSell(0.0);
+            m_bIsSubproduct = true;
+            // Set quantity to the same amount as composition product
+            if (m_dMultiply != 1.0) {
+                m_jPrice.setText(String.valueOf(m_dMultiply));
+            }
+        } else if (m_iProduct == PRODUCT_COMPOSITION) {
+            // Picked a composition product, start composing
+            // Set multiply for components
+            m_dMultiply = (getInputValue()==0)? 1.0: getInputValue();
+            m_iProduct = PRODUCT_SUBGROUP;
+        }
+
+        if (m_PriceActualState == N_NOTHING
+                && m_QuantityActualState == N_NOTHING) {
             // No input, just add product
             incProduct(prod);
         } else if (m_PriceActualState != N_NOTHING
@@ -1085,7 +1249,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     JPaymentSelect paymentdialog = ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL
                             ? paymentdialogreceipt
                             : paymentdialogrefund;
-                    paymentdialog.setPrintSelected("true".equals(m_jbtnconfig.getProperty("printselected", "true")));
+                    String printSelectedConfigBtn = m_jbtnconfig.getProperty("printselected");
+                    boolean printSelected;
+                    if (printSelectedConfigBtn != null) {
+                        printSelected = printSelectedConfigBtn.equals("true");
+                    } else {
+                        printSelected = AppConfig.loadedInstance.getProperty("ui.printticketbydefault").equals("1");
+                    }
+                    paymentdialog.setPrintSelected(printSelected);
 
                     paymentdialog.setTransactionID(ticket.getTransactionID());
 
@@ -1367,6 +1538,85 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }            
     }
 
+    protected class CatalogListener implements ActionListener {
+        private void reloadCatalog () {
+            changeCatalog();
+            try {
+                m_cat.loadCatalog();
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        }
+        
+        public void actionPerformed(ActionEvent e) {
+            if ( (e.getSource()).getClass().equals(ProductInfoExt.class) ) {
+                // Clicked on a product
+                ProductInfoExt prod = ((ProductInfoExt) e.getSource());
+                // Special command to end composition
+                if (e.getActionCommand().equals("-1")) {
+                    m_iProduct = PRODUCT_SINGLE;
+                    reloadCatalog();
+                } else {
+                    if (prod.getCategoryID().equals("0")) {
+                        // Clicked on a composition
+                        m_iProduct = PRODUCT_COMPOSITION;
+                        buttonTransition(prod);
+                        reloadCatalog();
+                        m_cat.showCatalogPanel(prod.getID());
+                    } else {
+                        // Clicked on a regular product
+                        buttonTransition(prod);
+                    }
+                }
+            } else {
+                // Si se ha seleccionado cualquier otra cosa...
+                // Si es una orden de cancelar la venta de una composición
+                if ( e.getActionCommand().equals("cancelSubgroupSale")){
+                    int i=m_oTicket.getLinesCount();
+                    TicketLineInfo line = m_oTicket.getLine(--i);
+                    //Quito todas las líneas que son subproductos
+                    // (puesto que está recién añadido, pertenecen
+                    // al menú que estamos cancelando)
+                    while ((i>0) && (line.isSubproduct())) {
+                        m_oTicket.removeLine(i);
+                        m_ticketlines.removeTicketLine(i);
+                        line= m_oTicket.getLine(--i);
+                    }
+                    // Quito la línea siguiente, perteneciente al menú en sí
+                    if(i >= 0){
+                        m_oTicket.removeLine(i);
+                        m_ticketlines.removeTicketLine(i);
+                    }
+                    // Actualizo el interfaz
+                    m_iProduct = PRODUCT_SINGLE;
+                    reloadCatalog();
+                }
+            }
+        }
+        
+    }
+    
+    protected class CatalogSelectionListener implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) {      
+            
+            if (!e.getValueIsAdjusting()) {
+                int i = m_ticketlines.getSelectedIndex();
+                
+                // Buscamos el primer producto no Auxiliar.
+                while (i >= 0 && m_oTicket.getLine(i).isProductCom()) {
+                    i--;
+                }
+                        
+                // Mostramos el panel de catalogo adecuado...
+                if (i >= 0) {
+                    m_cat.showCatalogPanel(m_oTicket.getLine(i).getProductID());
+                } else {
+                    m_cat.showCatalogPanel(null);
+                }
+            }
+        }  
+    }
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
@@ -1384,7 +1634,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jEditLine = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_line_edit.png"), AppLocal.getIntString("Button.m_jEditLine.toolTip"));
         m_jbtnLineDiscount = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_line_discount.png"), AppLocal.getIntString("Button.m_jbtnLineDiscount.toolTip"));
         jEditAttributes = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_line_attr.png"), AppLocal.getIntString("Button.jEditAttributes.toolTip"));
-        m_jPanelCentral = new JPanel();
         m_jPanTotals = new JPanel();
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
         m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.totalcash"));
@@ -1403,6 +1652,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeyFactory = new JTextField();
         catcontainer = new JPanel();
         m_jInputContainer = new JPanel();
+        m_jTariffPanel = new JPanel();
+        m_jTariff = WidgetsBuilder.createComboBox();
+        JLabel tariffLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TariffArea"));
 
         this.setBackground(new Color(255, 204, 153));
         this.setLayout(new CardLayout());
@@ -1411,9 +1663,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         GridBagConstraints cstr = null;
 
         // Tickets buttons part
-        JPanel m_jOptions = new JPanel();
+        m_jOptions = new JPanel();
         m_jOptions.setLayout(new GridBagLayout());
-        JPanel m_jButtons = new JPanel();
+        m_jButtons = new JPanel();
         
         m_jTicketId = WidgetsBuilder.createLabel();
         m_jTicketId.setBackground(java.awt.Color.white);
@@ -1458,6 +1710,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridx = 1;
         cstr.gridy = 0;
         m_jOptions.add(m_jPanelBag, cstr);
+
         
         // Extra buttons
         //m_jButtonsExt.setLayout(new javax.swing.BoxLayout(m_jButtonsExt, BoxLayout.LINE_AXIS));
@@ -1598,11 +1851,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 0;
-        cstr.gridheight = 2;
+        cstr.gridheight = 3;
         cstr.anchor = GridBagConstraints.NORTH;
         m_jInputContainer.add(lineBtnsContainer, cstr);
-
-        m_jPanelCentral.setLayout(new java.awt.BorderLayout());
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
 
@@ -1673,19 +1924,34 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         m_jPanTotals.add(m_jLblTotalEuros3, gridBagConstraints);
 
+        // Tariff area
+        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jTariffActionPerformed(evt);
+            }
+        });
+        m_jTariffPanel.setLayout(new java.awt.GridBagLayout());
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 1;
-        cstr.anchor = GridBagConstraints.EAST;
-        m_jInputContainer.add(m_jPanTotals, cstr);
+        cstr.gridy = 0;
+        cstr.insets = new Insets(0, 5, 0, 5);
+        m_jTariffPanel.add(tariffLbl, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        m_jTariffPanel.add(m_jTariff, cstr);
 
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 0;
-        cstr.weighty = 1.0;
-        cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        m_jInputContainer.add(m_jPanelCentral, cstr);
+        cstr.anchor = GridBagConstraints.WEST;
+        m_jInputContainer.add(m_jTariffPanel, cstr);
+
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 2;
+        cstr.anchor = GridBagConstraints.EAST;
+        m_jInputContainer.add(m_jPanTotals, cstr);
 
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
 
@@ -1871,6 +2137,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
+    private void m_jTariffActionPerformed(java.awt.event.ActionEvent evt) {
+        try{
+            TariffInfo tariff = (TariffInfo) m_jTariff.getSelectedItem();
+            if(tariff!=null) {
+                this.switchTariffArea(tariff);
+            }
+        } catch(java.lang.ClassCastException e){
+            
+        }
+    }
+
     private void m_jEnterActionPerformed(java.awt.event.ActionEvent evt) {
 
         automator('\n');
@@ -1998,6 +2275,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel lineBtnsContainer;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JPanel m_jOptions;
+    private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
     private javax.swing.JButton m_jDelete;
     private javax.swing.JButton m_jDown;
@@ -2012,7 +2291,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JPanel m_jPanEntries;
     private javax.swing.JPanel m_jPanTotals;
     private javax.swing.JPanel m_jPanelBag;
-    private javax.swing.JPanel m_jPanelCentral;
     private javax.swing.JLabel m_jPor;
     private javax.swing.JLabel m_jPrice;
     private javax.swing.JLabel m_jSubtotalEuros;
@@ -2024,5 +2302,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JToggleButton m_jaddtax;
     private javax.swing.JButton m_jbtnLineDiscount;
     private javax.swing.JPanel m_jInputContainer;
-
+    private javax.swing.JComboBox m_jTariff;
+    private javax.swing.JPanel m_jTariffPanel;
 }

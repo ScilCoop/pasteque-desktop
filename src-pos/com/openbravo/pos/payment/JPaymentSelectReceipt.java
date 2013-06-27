@@ -59,6 +59,7 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
         addTabPayment(new JPaymentSelect.JPaymentMagcardCreator());                
         addTabPayment(new JPaymentSelect.JPaymentFreeCreator());                
         addTabPayment(new JPaymentSelect.JPaymentDebtCreator());                
+        addTabPayment(new JPaymentSelect.JPaymentPrepaidCreator());
         setHeaderVisible(true);
     }
     
@@ -69,6 +70,6 @@ public class JPaymentSelectReceipt extends JPaymentSelect {
     }
     
     protected PaymentInfo getDefaultPayment(double total) {
-        return new PaymentInfoCash(total, total);
+        return new PaymentInfoCash(total, total, null);
     }
 }

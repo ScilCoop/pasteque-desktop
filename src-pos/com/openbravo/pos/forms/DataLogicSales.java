@@ -34,6 +34,7 @@ import com.openbravo.format.Formats;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.model.Field;
 import com.openbravo.data.model.Row;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.inventory.AttributeSetInfo;
 import com.openbravo.pos.inventory.TaxCustCategoryInfo;
@@ -44,6 +45,8 @@ import com.openbravo.pos.mant.FloorsInfo;
 import com.openbravo.pos.payment.PaymentInfo;
 import com.openbravo.pos.payment.PaymentInfoTicket;
 import com.openbravo.pos.ticket.FindTicketsInfo;
+import com.openbravo.pos.ticket.SubgroupInfo;
+import com.openbravo.pos.ticket.TariffInfo;
 import com.openbravo.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -61,15 +64,28 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     // protected Datas[] productcatDatas;
     protected Datas[] paymenttabledatas;
     protected Datas[] stockdatas;
+    protected Datas[] compositionDatas;
+    protected Datas[] compositionPrdDatas;
+    protected Datas[] subgroupDatas;
+    protected Datas[] subgroup_prodDatas;
+    protected Datas[] tariffareaDatas;
+    protected Datas[] tariffprodDatas;
+    protected Datas[] currencyData;
 
     protected Row productsRow;
 
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {
         stockdiaryDatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE};
-        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING};
+        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING, Datas.INT};
         stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
+        tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
+        tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
+        compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
+        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE};
+        subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
+        currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
 
         productsRow = new Row(
                 new Field("ID", Datas.STRING, Formats.STRING),
@@ -127,8 +143,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final ProductInfoExt getProductInfoByReference(String sReference) throws BasicException {
         return (ProductInfoExt) new PreparedSentence(s,
             "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES "
-            + "DISCOUNTENBALED, DISCOUNTRATE "
+            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
+            + "DISCOUNTENABLED, DISCOUNTRATE "
             + "FROM PRODUCTS WHERE REFERENCE = ?",
             SerializerWriteString.INSTANCE,
             ProductInfoExt.getSerializerRead()).find(sReference);
@@ -153,6 +169,50 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             CategoryInfo.getSerializerRead()).list(category);
     }
 
+    //Subgrupos de una composición
+    public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY NAME"
+            , SerializerWriteString.INSTANCE
+            , new SerializerReadClass(SubgroupInfo.class)).list(composition);
+    }
+
+    //Productos de un grupo de tarifas
+    public final List<ProductInfoExt> getTariffProds(String area) throws BasicException  {
+        return new PreparedSentence(s
+            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
+            + "P.PRICEBUY, TAP.PRICESELL, P.TAXCAT, P.CATEGORY, "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE " +
+              "FROM PRODUCTS P " +
+              "		LEFT OUTER JOIN TARIFFAREAS_PROD TAP ON P.ID = TAP.PRODUCTID " +
+              "		LEFT OUTER JOIN TARIFFAREAS TA ON TA.ID = TAP.TARIFFID " +
+              "WHERE TA.ID = ? ORDER BY P.NAME"
+            , SerializerWriteString.INSTANCE
+            , ProductInfoExt.getSerializerRead()).list(area);
+    }
+
+    //Producto de un subgrupo de una composicion
+    public final List<ProductInfoExt> getSubgroupCatalog(Integer subgroup) throws BasicException  {
+            return new PreparedSentence(s
+            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
+            + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
+            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
+            + "P.DISCOUNTRATE "
+            + "FROM SUBGROUPS S INNER JOIN SUBGROUPS_PROD SP ON S.ID = SP.SUBGROUP "
+            + "LEFT OUTER JOIN PRODUCTS P ON SP.PRODUCT = P.ID "
+            + "WHERE S.ID = ? "
+            + "ORDER BY P.NAME"
+            , SerializerWriteString.INSTANCE
+            , ProductInfoExt.getSerializerRead()).list(subgroup.toString());
+    }
+
+    public final List<CategoryInfo> getCategoryComposition() throws BasicException {
+        return new PreparedSentence(s
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE ID = '0'"
+            , null
+            , CategoryInfo.getSerializerRead()).list();
+    }
 
     /** Get products from a category ID */
     public List<ProductInfoExt> getProductCatalog(String category) throws BasicException  {
@@ -191,7 +251,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
-                + "WHERE ?(QBF_FILTER) "
+                + "WHERE ?(QBF_FILTER) AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -210,6 +270,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS "
                 + "WHERE ISCOM = " + s.DB.FALSE() + " AND ?(QBF_FILTER) "
+                + "AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -227,7 +288,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
                 + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
                 + "FROM PRODUCTS WHERE ISCOM = " + s.DB.TRUE()
-                + " AND ?(QBF_FILTER) "
+                + " AND ?(QBF_FILTER) AND CATEGORY != '0' "
                 + "ORDER BY REFERENCE",
                 new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
                     "CODE"}),
@@ -236,7 +297,21 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
             ProductInfoExt.getSerializerRead());
     }
-    
+
+    public final SentenceList getCompositionList() {
+        return new StaticSentence(s
+            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
+            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.TAXCAT, "
+            + "P.CATEGORY, P.ATTRIBUTESET_ID, P.IMAGE, "
+            + "P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
+            + "FROM PRODUCTS P, CATEGORIES C "
+            + "WHERE P.CATEGORY = C.ID AND C.ID LIKE '0' "
+            + "AND ?(QBF_FILTER) ORDER BY P.NAME"
+            , new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
+            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
+            , new SerializerReadClass(ProductInfoExt.class));
+    }
+
     //Tickets and Receipt list
     public SentenceList getTicketsList() {
          return new StaticSentence(s,
@@ -250,6 +325,28 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "WHERE ?(QBF_FILTER) "
                 + "GROUP BY T.ID, T.TICKETID, T.TICKETTYPE, R.DATENEW, "
                 + "P.NAME, C.NAME ORDER BY R.DATENEW DESC, T.TICKETID",
+                new String[] {"T.TICKETID", "T.TICKETTYPE", "PM.TOTAL",
+                    "R.DATENEW", "R.DATENEW", "P.NAME", "C.NAME"}),
+            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.INT,
+                Datas.OBJECT, Datas.INT, Datas.OBJECT, Datas.DOUBLE,
+                Datas.OBJECT, Datas.TIMESTAMP, Datas.OBJECT, Datas.TIMESTAMP,
+                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
+            new SerializerReadClass(FindTicketsInfo.class));
+    }
+
+    public SentenceList getLast10Tickets() {
+         return new StaticSentence(s,
+            new QBFBuilder(
+                "SELECT T.TICKETID, T.TICKETTYPE, R.DATENEW, P.NAME, C.NAME, "
+                + "SUM(PM.TOTAL) "
+                + "FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID "
+                + "LEFT OUTER JOIN PAYMENTS PM ON R.ID = PM.RECEIPT "
+                + "LEFT OUTER JOIN CUSTOMERS C ON C.ID = T.CUSTOMER "
+                + "LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID "
+                + "WHERE ?(QBF_FILTER) "
+                + "GROUP BY T.ID, T.TICKETID, T.TICKETTYPE, R.DATENEW, "
+                + "P.NAME, C.NAME ORDER BY R.DATENEW DESC, T.TICKETID "
+                + "LIMIT 10",
                 new String[] {"T.TICKETID", "T.TICKETTYPE", "PM.TOTAL",
                     "R.DATENEW", "R.DATENEW", "P.NAME", "C.NAME"}),
             new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.INT,
@@ -294,7 +391,15 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     public final SentenceList getCategoriesList() {
         return new StaticSentence(s
-            , "SELECT ID, NAME, IMAGE FROM CATEGORIES ORDER BY NAME"
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
+            + "WHERE ID != '0' ORDER BY NAME"
+            , null
+            , CategoryInfo.getSerializerRead());
+    }
+    public final SentenceList getAllCategoriesList() {
+        return new StaticSentence(s
+            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
+            + "ORDER BY NAME"
             , null
             , CategoryInfo.getSerializerRead());
     }
@@ -335,10 +440,27 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new SerializerReadClass(FloorsInfo.class));
     }
 
+    public final SentenceList getCurrenciesList() {
+        return new StaticSentence(s,
+            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
+            + "MAIN FROM CURRENCIES ORDER BY MAIN DESC, NAME",
+            null, CurrencyInfo.getSerializerRead());
+    }
+
+    public CurrencyInfo getMainCurrency() throws BasicException {
+        List<CurrencyInfo> currencies = this.getCurrenciesList().list();
+        for (CurrencyInfo curr : currencies) {
+            if (curr.isMain()) {
+                return curr;
+            }
+        }
+        return null;
+    }
+
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, "
-                + "NOTES, MAXDEBT, VISIBLE, CURDATE, CURDEBT, "
+                + "NOTES, MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
                 + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
                 + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
                 + "FROM CUSTOMERS "
@@ -350,7 +472,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public CustomerInfoExt loadCustomerExt(String id) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, NOTES, "
-                + "MAXDEBT, VISIBLE, CURDATE, CURDEBT, "
+                + "MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
                 + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
                 + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
                 + "FROM CUSTOMERS "
@@ -366,6 +488,27 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 SerializerWriteString.INSTANCE,
                 SerializerReadString.INSTANCE).find(id)
             != null;
+    }
+
+    private boolean isRefill(String productId) throws BasicException {
+        return new PreparedSentence(s,
+                "SELECT ID FROM PRODUCTS WHERE ID= ? AND CATEGORY = ?",
+                new SerializerWriteBasic(Datas.STRING, Datas.STRING),
+                SerializerReadString.INSTANCE).find(productId, "-1")
+                != null;
+    }
+    private void addPrepaid(final String customerId, final double amount)
+        throws BasicException {
+        PreparedSentence ps = new PreparedSentence(s,
+                "UPDATE CUSTOMERS SET PREPAID = (PREPAID + ?) "
+                + "WHERE ID = ?",
+                SerializerWriteParams.INSTANCE);
+        ps.exec(new DataParams() {
+                public void writeValues() throws BasicException {
+                    setDouble(1, amount);
+                    setString(2, customerId);
+                }
+            });
     }
 
     public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
@@ -474,20 +617,39 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                             new Double(-l.getMultiply()),
                             new Double(l.getPrice())
                         });
+                        // Update prepaid
+                        if (isRefill(l.getProductID())) {
+                            addPrepaid(ticket.getCustomerId(),
+                                    l.getPrice());
+                        }
                     }
                 }
 
                 SentenceExec paymentinsert = new PreparedSentence(s
-                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?)"
+                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, CURRENCY, TOTALCURRENCY, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
                     , SerializerWriteParams.INSTANCE);
                 for (final PaymentInfo p : ticket.getPayments()) {
+                    final CurrencyInfo currency;
+                    if (p.getCurrency() != null) {
+                        currency = p.getCurrency();
+                    } else {
+                        currency = getMainCurrency();
+                    }
+                    final double total;
+                    if (!currency.isMain()) {
+                        total = p.getTotal() / currency.getRate();
+                    } else {
+                        total = p.getTotal();
+                    }
                     paymentinsert.exec(new DataParams() { public void writeValues() throws BasicException {
                         setString(1, UUID.randomUUID().toString());
                         setString(2, ticket.getId());
                         setString(3, p.getName());
-                        setDouble(4, p.getTotal());
-                        setString(5, ticket.getTransactionID());
-                        setBytes(6, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
+                        setDouble(4, total);
+                        setInt(5, currency.getID());
+                        setDouble(6, p.getTotal());
+                        setString(7, ticket.getTransactionID());
+                        setBytes(8, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
                     }});
 
                     if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
@@ -501,6 +663,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                             setTimestamp(2, ticket.getCustomer().getCurdate());
                             setString(3, ticket.getCustomer().getId());
                         }});
+                    } else if ("prepaid".equals(p.getName())) {
+                        // Decrease prepaid amount
+                        addPrepaid(ticket.getCustomer().getId(), -p.getTotal());
                     }
                 }
 
@@ -598,6 +763,22 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final Integer getNextTicketPaymentIndex() throws BasicException {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_PAYMENT").find();
+    }
+
+    public final SentenceList getCompositionQBF() {
+        return new StaticSentence(s
+            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
+            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.CATEGORY, P.TAXCAT, "
+            + "P.IMAGE, "
+            + "CASE WHEN C.PRODUCT IS NULL THEN " + s.DB.FALSE()
+            + " ELSE " + s.DB.TRUE() + " END, "
+            + "C.CATORDER, P.ATTRIBUTES "
+            + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C ON P.ID = C.PRODUCT "
+            + "WHERE P.CATEGORY LIKE '0' AND ?(QBF_FILTER) "
+            + "ORDER BY P.NAME",
+            new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
+            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
+            , new SerializerReadBasic(compositionDatas));
     }
 
     /** Get query of ordered products of a category */
@@ -703,6 +884,187 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         };
     }
 
+    public final SentenceExec getCompositionInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "INSERT INTO PRODUCTS (ID, REFERENCE, CODE, NAME, ISCOM, "
+                    + "ISSCALE, PRICEBUY, PRICESELL, CATEGORY, TAXCAT, IMAGE, "
+                    + "ATTRIBUTES) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                    , new SerializerWriteBasicExt(compositionDatas, new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13})).exec(params);
+                if (i > 0 && ((Boolean)values[11]).booleanValue()) {
+                    i = new PreparedSentence(s
+                        , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES "
+                        + "(?, ?)"
+                        , new SerializerWriteBasicExt(compositionDatas, new int[] {0, 12})).exec(params);
+                }
+                
+                if (i > 0)
+                    i = auxComposition(values, s);
+                
+                return i;
+            }
+        };
+    }
+
+    public final SentenceExec getCompositionUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;
+                int i = new PreparedSentence(s
+                    , "UPDATE PRODUCTS SET ID = ?, REFERENCE = ?, CODE = ?, "
+                    + "NAME = ?, ISCOM = ?, ISSCALE = ?, PRICESELL = ?, "
+                    + "CATEGORY = ?, TAXCAT = ?, IMAGE = ?, ATTRIBUTES = ? "
+                    + "WHERE ID = ?"
+                    , new SerializerWriteBasicExt(compositionDatas, new int[]{0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 13, 0})).exec(params);
+                if (i > 0) {
+                    Object[] paramsStr = new Object[] {
+                            values[0].toString(), values[12] };
+                    Datas[] datas = new Datas[] {Datas.STRING, Datas.INT};
+                    if (((Boolean)values[11]).booleanValue()) {
+                        if (new PreparedSentence(s
+                                , "UPDATE PRODUCTS_CAT SET CATORDER = ? WHERE PRODUCT = ?"
+                                , new SerializerWriteBasicExt(datas,
+                                        new int[] {1, 0})).exec(paramsStr) == 0) {
+                            new PreparedSentence(s
+                                , "INSERT INTO PRODUCTS_CAT (PRODUCT, CATORDER) VALUES (?, ?)"
+                                , new SerializerWriteBasicExt(datas,
+                                        new int[] {0, 1})).exec(paramsStr);
+                        }
+                    } else {
+                        new PreparedSentence(s
+                            , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                            , new SerializerWriteBasicExt(datas, new int[] {0})).exec(paramsStr);
+                    }
+                }
+                if (i > 0) {
+                    i = auxComposition(params, s);
+                }
+                return i;
+            }        
+        };
+    }
+
+    public final SentenceExec getCompositionDelete() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+            ((Object[])params)[0] = ((Object[])params)[0].toString(); // Product id as integer: WTF?!
+                new PreparedSentence(s
+                    , "DELETE FROM PRODUCTS_CAT WHERE PRODUCT = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+                return new PreparedSentence(s
+                    , "DELETE FROM PRODUCTS WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+            }
+        };
+    }
+
+    private int auxComposition(Object params, Session s) throws BasicException {
+        Object[] values = (Object[]) params;
+        int i = 1;
+        //Eliminamos los subgrupos que pudiese tener
+        new PreparedSentence(s
+            , "DELETE FROM SUBGROUPS WHERE COMPOSITION = ?"
+            , new SerializerWriteBasicExt(compositionDatas, new int[] {0})).exec(params);
+        //Por cada subgrupo
+        int ssize = ((Integer)values[14]).intValue();
+        int cont = 15;
+        for (int e = 0; e < ssize && i > 0; e++) {
+            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2]};
+            //Eliminamos los productos que el subgrupo pudiera tener
+            new PreparedSentence(s
+                , "DELETE FROM SUBGROUPS_PROD WHERE SUBGROUP = ?"
+                , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0})).exec(sparams);        
+            
+            i = new PreparedSentence(s
+                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE) VALUES (?, ?, ?, ?)"
+                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3})).exec(sparams);
+
+            int psize = ((Integer)values[cont+3]).intValue();
+            for (int o = 0; o < psize && i > 0; o++) {
+                Object[] pparams = new Object[] {values[cont], values[cont+o+4]};
+                
+                i = new PreparedSentence(s
+                    , "INSERT INTO SUBGROUPS_PROD (SUBGROUP, PRODUCT) VALUES (?, ?)"
+                    , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0, 1})).exec(pparams);
+            }
+            //Avanzamos el contador al siguiente subgrupo
+            cont += psize + 4;
+        }
+        
+        return i;
+    }
+
+    public final SentenceList getTariffAreaList() {
+        return new StaticSentence(s
+            , "SELECT ID, NAME, TARIFFORDER FROM TARIFFAREAS ORDER BY TARIFFORDER"
+            , null
+            , new SerializerReadClass(TariffInfo.class));
+    }
+
+    public final SentenceExec getTariffAreaInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;            
+                int i = new PreparedSentence(s
+                    , "INSERT INTO TARIFFAREAS (ID, NAME, TARIFFORDER) VALUES (?, ?, ?)"
+                    , new SerializerWriteBasicExt(tariffareaDatas, new int[]{0, 1, 2})).exec(params);
+
+                if (i > 0) i = auxTariffArea(values, s);
+                return i;
+            }
+        };
+    }
+
+    public final SentenceExec getTariffAreaUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                Object[] values = (Object[]) params;  
+                int i = new PreparedSentence(s
+                    , "UPDATE TARIFFAREAS SET NAME = ?, TARIFFORDER = ? WHERE ID = ?"
+                    , new SerializerWriteBasicExt(tariffareaDatas, new int[]{1, 2, 0})).exec(params);
+                if (i > 0) i = auxTariffArea(values, s);
+                return i;
+            }        
+        };
+    }
+
+    private int auxTariffArea(Object params, Session s) throws BasicException {
+        Object[] values = (Object[]) params;
+        int i = 1;
+        
+        //Eliminamos los productos que pudiese tener el grupo de tarifas
+        new PreparedSentence(s
+            , "DELETE FROM TARIFFAREAS_PROD WHERE TARIFFID = ?"
+            , new SerializerWriteBasicExt(tariffprodDatas, new int[] {0})).exec(params);                 
+
+        //Por cada producto del grupo de tarifas...
+        int ssize = ((Integer)values[3]).intValue();
+        int cont = 4;
+        for (int e = 0; e < ssize && i > 0; e++) {
+            Object[] sparams = new Object[] {values[0], values[cont], values[cont +1]};
+            
+            i = new PreparedSentence(s
+                , "INSERT INTO TARIFFAREAS_PROD (TARIFFID, PRODUCTID, PRICESELL) VALUES (?, ?, ?)"
+                , new SerializerWriteBasicExt(tariffprodDatas, new int[] {0, 1, 2})).exec(sparams);
+
+            //Avanzamos el contador al siguiente producto
+            cont += 2;
+        }
+        return i;
+    }
+
+    public final SentenceExec getTariffAreaDelete() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                return new PreparedSentence(s
+                    , "DELETE FROM TARIFFAREAS WHERE ID = ?"
+                    , new SerializerWriteBasicExt(productsRow.getDatas(), new int[] {0})).exec(params);
+            } 
+        };
+    }
+
     public final SentenceExec getDebtUpdate() {
 
         return new PreparedSentence(s
@@ -713,7 +1075,24 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final SentenceExec getStockDiaryInsert() {
         return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {
-                int updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
+                int updateresult = 0;
+                if (((Object[]) params)[2].equals(new Integer(0))) {
+                    // Reset stock before insert
+                    updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
+                    ? new PreparedSentence(s,
+                        "UPDATE STOCKCURRENT SET UNITS = (0) "
+                        + "WHERE LOCATION = ? AND PRODUCT = ? "
+                        + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
+                        new SerializerWriteBasicExt(stockdiaryDatas,
+                            new int[] {3, 4})).exec(params)
+                    : new PreparedSentence(s,
+                        "UPDATE STOCKCURRENT SET UNITS = (0) "
+                        + "WHERE LOCATION = ? AND PRODUCT = ? "
+                        + "AND ATTRIBUTESETINSTANCE_ID = ?",
+                        new SerializerWriteBasicExt(stockdiaryDatas,
+                            new int[] {3, 4, 5})).exec(params);
+                }
+                updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
                     ? new PreparedSentence(s,
                         "UPDATE STOCKCURRENT SET UNITS = (UNITS + ?) "
                         + "WHERE LOCATION = ? AND PRODUCT = ? "
@@ -726,7 +1105,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         + "AND ATTRIBUTESETINSTANCE_ID = ?",
                         new SerializerWriteBasicExt(stockdiaryDatas,
                             new int[] {6, 3, 4, 5})).exec(params);
-
                 if (updateresult == 0) {
                     new PreparedSentence(s
                         , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, "
@@ -787,10 +1165,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     new SerializerWriteBasicExt(paymenttabledatas,
                         new int[] {0, 1, 2})).exec(params);
                 return new PreparedSentence(s,
-                    "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, NOTES) "
-                    + "VALUES (?, ?, ?, ?, ?)",
+                    "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, NOTES, CURRENCY, TOTALCURRENCY) "
+                    + "VALUES (?, ?, ?, ?, ?, ?)",
                     new SerializerWriteBasicExt(paymenttabledatas,
-                        new int[] {3, 0, 4, 5, 6})).exec(params);
+                            new int[] {3, 0, 4, 5, 6, 7, 5})).exec(params);
             }
         };
     }
@@ -804,6 +1182,53 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 return new PreparedSentence(s
                     , "DELETE FROM RECEIPTS WHERE ID = ?"
                     , new SerializerWriteBasicExt(paymenttabledatas, new int[] {0})).exec(params);
+            }
+        };
+    }
+
+    public final SentenceExec getCurrencyInsert() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    new PreparedSentence(s,
+                        "UPDATE CURRENCIES SET MAIN = 0",
+                        new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
+                }
+                return new PreparedSentence(s,
+                    "INSERT INTO CURRENCIES (ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, MAIN) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                    new SerializerWriteBasicExt(currencyData, new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
+            }
+        };
+    }
+
+    public final SentenceExec getCurrencyUpdate() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    new PreparedSentence(s,
+                        "UPDATE CURRENCIES SET MAIN = 0",
+                        new SerializerWriteBasicExt(currencyData, new int[] {})).exec(params);
+                    Formats.setDefaultCurrency(new CurrencyInfo((Object[]) params));
+                }
+                return new PreparedSentence(s,
+                    "UPDATE CURRENCIES SET NAME = ?, SYMBOL = ?, DECIMALSEP = ?, THOUSANDSSEP = ?, FORMAT = ?, RATE = ?, MAIN = ? "
+                            + "WHERE ID = ?",
+                    new SerializerWriteBasicExt(currencyData, new int[] {1, 2, 3, 4, 5, 6, 7, 0})).exec(params);
+            }
+        };
+    }
+
+    public final SentenceExec getCurrencyDelete() {
+        return new SentenceExecTransaction(s) {
+            public int execInTransaction(Object params) throws BasicException {
+                if ((Boolean)((Object[]) params)[7] == true) {
+                    throw new BasicException("Cannot delete main currency");
+                }
+                return new PreparedSentence(s,
+                    "DELETE FROM CURRENCIES WHERE ID = ?",
+                    new SerializerWriteBasicExt(currencyData, new int[] {0})).exec(params);
             }
         };
     }
@@ -884,6 +1309,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         );
     }
 
+    public final TableDefinition getTableTariffAreas() {
+        return new TableDefinition(s,
+            "TARIFFAREAS"
+            , new String[] {"ID", "NAME", "TARIFFORDER"}
+            , new String[] {"ID", AppLocal.getIntString("Label.Name"), AppLocal.getIntString("label.prodorder")}
+            , new Datas[] {Datas.STRING, Datas.STRING, Datas.INT}
+            , new Formats[] {Formats.INT, Formats.STRING, Formats.INT}
+            , new int[] {0}
+        );
+    }
+
     public final TableDefinition getTableLocations() {
         return new TableDefinition(s,
             "LOCATIONS"
@@ -893,6 +1329,20 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new Formats[] {Formats.STRING, Formats.STRING, Formats.STRING}
             , new int[] {0}
         );
+    }
+
+    public final TableDefinition getTableCurrencies() {
+        return new TableDefinition(s,
+                "CURRENCIES",
+                new String[] {"ID", "NAME", "SYMBOL", "DECIMALSEP", "THOUSANDSSEP", "FORMAT", "RATE", "MAIN"},
+                new String[] {"ID", AppLocal.getIntString("Label.Name"), 
+                        "Symbol", "Decimal", "Thousands", "Format", "Rate", "Main"},
+                new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING,
+                        Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN},
+                new Formats[] { Formats.INT, Formats.STRING, Formats.STRING,
+                        Formats.STRING, Formats.STRING,
+                        Formats.STRING, Formats.DOUBLE, Formats.BOOLEAN},
+                new int[] {0});
     }
 
     protected static class CustomerExtRead implements SerializerRead {
@@ -908,18 +1358,19 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             c.setVisible(dr.getBoolean(9).booleanValue());
             c.setCurdate(dr.getTimestamp(10));
             c.setCurdebt(dr.getDouble(11));
-            c.setFirstname(dr.getString(12));
-            c.setLastname(dr.getString(13));
-            c.setEmail(dr.getString(14));
-            c.setPhone(dr.getString(15));
-            c.setPhone2(dr.getString(16));
-            c.setFax(dr.getString(17));
-            c.setAddress(dr.getString(18));
-            c.setAddress2(dr.getString(19));
-            c.setPostal(dr.getString(20));
-            c.setCity(dr.getString(21));
-            c.setRegion(dr.getString(22));
-            c.setCountry(dr.getString(23));
+            c.setPrepaid(dr.getDouble(12));
+            c.setFirstname(dr.getString(13));
+            c.setLastname(dr.getString(14));
+            c.setEmail(dr.getString(15));
+            c.setPhone(dr.getString(16));
+            c.setPhone2(dr.getString(17));
+            c.setFax(dr.getString(18));
+            c.setAddress(dr.getString(19));
+            c.setAddress2(dr.getString(20));
+            c.setPostal(dr.getString(21));
+            c.setCity(dr.getString(22));
+            c.setRegion(dr.getString(23));
+            c.setCountry(dr.getString(24));
 
             return c;
         }

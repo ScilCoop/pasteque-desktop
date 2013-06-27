@@ -22,17 +22,28 @@
 package com.openbravo.pos.widgets;
 
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 
 public class JEditorCurrency extends JEditorNumber {
     
 	private static final long serialVersionUID = 5096754100573262803L;
 	
+    private CurrencyInfo altCurrency;
+
 	/** Creates a new instance of JEditorCurrency */
     public JEditorCurrency() {
     }
-    
+
+    public void setAltCurrency(CurrencyInfo currency) {
+        this.altCurrency = currency;
+    }
+
     protected Formats getFormat() {
         return Formats.CURRENCY;
+    }
+    protected String getTextFormat() {
+        Formats.setAltCurrency(this.altCurrency);
+        return this.getFormat().formatValue(getDoubleValue());
     }
     protected int getMode() {
         return EditorKeys.MODE_DOUBLE;

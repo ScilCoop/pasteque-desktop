@@ -55,6 +55,7 @@ import javax.swing.JFrame;
 public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator {
 
     private ListProvider lpr;
+    private ListProvider lprLast10;
     private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     private DataLogicSales dlSales;
@@ -103,6 +104,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         
         //jtxtTicketID.activate();
         lpr = new ListProviderCreator(dlSales.getTicketsList(), this);
+        lprLast10 = new ListProviderCreator(dlSales.getLast10Tickets(), this);
 
         jListTickets.setCellRenderer(new FindTicketsRenderer());
 
@@ -113,6 +115,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         defaultValues();
 
         selectedTicket = null;
+        automaticLast10TicketsSearch();
     }
     
     public void executeSearch() {
@@ -125,7 +128,19 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
             e.printStackTrace();
         }        
     }
-    
+
+    /** Automatic filtering of tickets. Displays the last 10 tickets*/
+    public void automaticLast10TicketsSearch(){
+        try {
+            jListTickets.setModel(new MyListData(lprLast10.loadData()));
+            if (jListTickets.getModel().getSize() > 0) {
+                jListTickets.setSelectedIndex(0);
+            }
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initCombos() {
         String[] values = new String[] {AppLocal.getIntString("label.sales"),
                     AppLocal.getIntString("label.refunds"), AppLocal.getIntString("label.all")};

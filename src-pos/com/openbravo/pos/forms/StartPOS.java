@@ -71,10 +71,10 @@ public class StartPOS {
         splash.setUndecorated(true);
         splash.setResizable(false);
         splash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        splash.setPreferredSize(new java.awt.Dimension(600, 168));
+        splash.setPreferredSize(new java.awt.Dimension(432, 184));
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int splashWidth = 600;
-        int splashHeight = 168;
+        int splashWidth = 432;
+        int splashHeight = 184;
         int splashX = (screenSize.width - splashWidth) / 2;
         int splashY = (screenSize.height - splashHeight) / 2;
         splash.setBounds(splashX, splashY, splashWidth, splashHeight);

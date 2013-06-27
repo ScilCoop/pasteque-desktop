@@ -28,12 +28,12 @@ import com.openbravo.beans.LocaleResources;
  * @author adrianromero
  */
 public class AppLocal {
-
-    public static final String APP_NAME = "POS-Tech";
+    
+    public static final String APP_NAME = "Pasteque";
     public static final String APP_ID = "postech";
-    public static final String APP_VERSION = "1.2_beta3";
-    public static final String DB_VERSION = "3";
-
+    public static final String APP_VERSION = "2.0";
+    public static final String DB_VERSION = "4";
+  
     // private static List<ResourceBundle> m_messages;
     private static LocaleResources resources;
 

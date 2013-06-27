@@ -47,6 +47,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     private Properties attributes;
     private String productid;
     private String attsetinstid;
+    private boolean subproduct;
 
     /** Creates new TicketLineInfo */
     public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax, Properties props) {
@@ -104,6 +105,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public TicketLineInfo(TicketLineInfo line) {
         init(line.productid, line.attsetinstid, line.multiply, line.price, line.tax, (Properties) line.attributes.clone());
+        this.subproduct = line.isSubproduct();
     }
 
     private void init(String productid, String attsetinstid, double dMultiply, double dPrice, TaxInfo tax, Properties attributes) {
@@ -117,6 +119,8 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
         m_sTicket = null;
         m_iLine = -1;
+
+        this.subproduct = false;
     }
 
     void setTicket(String ticket, int line) {
@@ -173,6 +177,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         l.price = price;
         l.tax = tax;
         l.attributes = (Properties) attributes.clone();
+        l.subproduct = this.subproduct;
         return l;
     }
 
@@ -299,6 +304,13 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public double getValue() {
         return price * multiply * (1.0 + getTaxRate());
+    }
+
+    public boolean isSubproduct() {
+        return this.subproduct;
+    }
+    public void setSubproduct(boolean subproduct) {
+        this.subproduct = subproduct;
     }
 
     public String printName() {

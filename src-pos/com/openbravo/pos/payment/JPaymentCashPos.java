@@ -27,6 +27,7 @@ import com.openbravo.data.gui.MessageInf;
 import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.DataLogicSystem;
 import com.openbravo.pos.scripting.ScriptEngine;
@@ -54,6 +55,7 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private double m_dPaid;
     private double m_dTotal;
     private double partAmount;
+    private CurrencyInfo currency;
     
     /** Creates new form JPaymentCash */
     public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
@@ -79,10 +81,12 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         
         m_dTotal = dTotal;
         this.partAmount = partAmount;
+        this.currency = currency;
         
         m_jTendered.reset();
         m_jTendered.activate();
@@ -92,10 +96,12 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     public PaymentInfo executePayment() {
         if (this.m_dPaid - this.partAmount >= 0.0) {
             // Full part payment
-            return new PaymentInfoCash(this.partAmount, this.m_dPaid);
+            return new PaymentInfoCash(this.partAmount, this.m_dPaid,
+                    this.currency);
         } else {
             // Partial part amount
-            return new PaymentInfoCash(m_dPaid, m_dPaid);
+            return new PaymentInfoCash(m_dPaid, m_dPaid,
+                    this.currency);
         }        
     }
     public Component getComponent() {
@@ -114,12 +120,18 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         int iCompare = RoundUtils.compare(m_dPaid, this.partAmount);
         boolean fullPayment = RoundUtils.compare(m_dPaid, this.m_dTotal) >= 0
                               && this.m_dTotal - this.partAmount < 0.005;
-        
+        Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
-        m_jChangeEuros.setText(iCompare > 0 
-                ? Formats.CURRENCY.formatValue(new Double(m_dPaid - this.partAmount))
-                : null); 
-        
+        // Set change in main currency
+        if (iCompare > 0) {
+            double change = m_dPaid - this.partAmount;
+            if (!this.currency.isMain()) {
+                change /= this.currency.getRate();
+            }
+            m_jChangeEuros.setText(Formats.CURRENCY.formatValue(change));
+        } else {
+            m_jChangeEuros.setText(null);
+        }
         m_notifier.setStatus(m_dPaid > 0.0, fullPayment);
     }
     

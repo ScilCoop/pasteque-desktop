@@ -24,6 +24,8 @@ import javax.swing.table.AbstractTableModel;
 import com.openbravo.basic.BasicException;
 import com.openbravo.data.loader.*;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
+import com.openbravo.pos.forms.DataLogicSales;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.AppView;
 import com.openbravo.pos.util.StringUtils;
@@ -43,7 +45,8 @@ public class PaymentsModel {
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
     private List<CategoryLine> catSales;
-    
+    private static List<CurrencyInfo> currencies;
+
     private final static String[] PAYMENTHEADERS = {"Label.Payment", "label.totalcash"};
     
     private Integer m_iSales;
@@ -57,27 +60,12 @@ public class PaymentsModel {
 
     private PaymentsModel() {
     }    
-    
-    public static PaymentsModel emptyInstance() {
         
-        PaymentsModel p = new PaymentsModel();
-        
-        p.m_iPayments = new Integer(0);
-        p.m_dPaymentsTotal = new Double(0.0);
-        p.m_lpayments = new ArrayList<PaymentsLine>();
-        
-        p.m_iSales = null;
-        p.m_dSalesBase = null;
-        p.m_dSalesTaxes = null;
-        p.m_lsales = new ArrayList<SalesLine>();
-        p.catSales = new ArrayList<CategoryLine>();
-        
-        return p;
-    }
-    
     public static PaymentsModel loadInstance(AppView app) throws BasicException {
+        DataLogicSales dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
         
         PaymentsModel p = new PaymentsModel();
+        currencies = dlSales.getCurrenciesList().list();
         
         // Propiedades globales
         p.m_sHost = app.getProperties().getHost();
@@ -104,10 +92,10 @@ public class PaymentsModel {
         }  
         // Get total amount by payment type
         List l = new StaticSentence(app.getSession()            
-            , "SELECT PAYMENTS.PAYMENT, SUM(PAYMENTS.TOTAL) " +
+            , "SELECT PAYMENTS.PAYMENT, PAYMENTS.CURRENCY, SUM(PAYMENTS.TOTALCURRENCY) " +
               "FROM PAYMENTS, RECEIPTS " +
               "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ? " +
-              "GROUP BY PAYMENTS.PAYMENT"
+              "GROUP BY PAYMENTS.PAYMENT, PAYMENTS.CURRENCY"
             , SerializerWriteString.INSTANCE
             , new SerializerReadClass(PaymentsModel.PaymentsLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
             .list(app.getActiveCashIndex()); 
@@ -295,8 +283,8 @@ public class PaymentsModel {
             public Object getValueAt(int row, int column) {
                 PaymentsLine l = m_lpayments.get(row);
                 switch (column) {
-                case 0: return l.getType();
-                case 1: return l.getValue();
+                case 0: return new Object[] {l.getType(), l.getCurrency().getName(), l.getCurrency().isMain()};
+                case 1: return l;
                 default: return null;
                 }
             }  
@@ -351,11 +339,22 @@ public class PaymentsModel {
     public static class PaymentsLine implements SerializableRead {
         
         private String m_PaymentType;
+        private CurrencyInfo currency;
         private Double m_PaymentValue;
         
         public void readValues(DataRead dr) throws BasicException {
             m_PaymentType = dr.getString(1);
-            m_PaymentValue = dr.getDouble(2);
+            int currencyId = dr.getInt(2);
+            for (CurrencyInfo currency : currencies) {
+                if (currency.getID() == currencyId) {
+                    this.currency = currency;
+                    break;
+                }
+            }
+            if (this.currency == null) {
+                this.currency = currencies.get(0);
+            }
+            m_PaymentValue = dr.getDouble(3);
         }
         
         public String printType() {
@@ -365,11 +364,15 @@ public class PaymentsModel {
             return m_PaymentType;
         }
         public String printValue() {
+            Formats.setAltCurrency(this.currency);
             return Formats.CURRENCY.formatValue(m_PaymentValue);
         }
         public Double getValue() {
             return m_PaymentValue;
-        }        
+        }
+        public CurrencyInfo getCurrency() {
+            return this.currency;
+        }
     }
 
     public AbstractTableModel getCategoriesModel() {

@@ -1,0 +1,84 @@
+//    Openbravo POS is a point of sales application designed for touch screens.
+//    Copyright (C) 2007-2009 Openbravo, S.L.
+//    http://www.openbravo.com/product/pos
+//
+//    This file is part of Openbravo POS.
+//
+//    Openbravo POS is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    Openbravo POS is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
+
+report = new com.openbravo.pos.reports.PanelReportBean();
+
+report.setTitleKey("Menu.ConsolidatedSales");
+report.setReport("/com/openbravo/reports/consolidatedsales");
+report.setResourceBundle("com/openbravo/reports/consolidatedsales_messages");
+
+report.setSentence("SELECT AVERAGE.HOST, AVERAGE.DATESTART, AVERAGE.DATEEND, "
+        + "AVERAGE.TICKETS, AVERAGE.AVERAGE, "
+        + "REALCS.TICKETAMOUNT AS REALCS, THEOCS.AMOUNT AS THEOCS, THEOCS.SUBAMOUNT AS THEOSCS "
+        + "FROM "
+        + ""
+        + "(SELECT LIST.MONEY, HOST, DATESTART, DATEEND, COUNT(LIST.TICKET) AS TICKETS, AVG(LIST.TICKETAMOUNT) AS AVERAGE "
+        + "FROM "
+        + "(SELECT CLOSEDCASH.MONEY, HOST, DATESTART, DATEEND, "
+        + "SUM(PAYMENTS.TOTAL) AS TICKETAMOUNT, RECEIPTS.ID AS TICKET "
+        + "FROM PAYMENTS "
+        + "LEFT JOIN RECEIPTS ON RECEIPTS.ID = PAYMENTS.RECEIPT "
+        + "LEFT JOIN CLOSEDCASH ON CLOSEDCASH.MONEY = RECEIPTS.MONEY "
+        + "GROUP BY TICKET) "
+        + "AS LIST "
+        + "GROUP BY LIST.MONEY "
+        + ") AS AVERAGE "
+        + ""
+        + "LEFT JOIN "
+        + "(SELECT CLOSEDCASH.MONEY, HOST, DATESTART, DATEEND, SUM(PAYMENTS.TOTAL) AS TICKETAMOUNT "
+        + "FROM PAYMENTS "
+        + "LEFT JOIN RECEIPTS ON RECEIPTS.ID = PAYMENTS.RECEIPT "
+        + "LEFT JOIN CLOSEDCASH ON CLOSEDCASH.MONEY = RECEIPTS.MONEY "
+        + "WHERE PAYMENTS.PAYMENT IN ('cash', 'magcard', 'cheque', 'paperin') "
+        + "GROUP BY CLOSEDCASH.MONEY) AS REALCS "
+        + "ON AVERAGE.MONEY = REALCS.MONEY "
+        + ""
+        + "LEFT JOIN "
+        + "(SELECT CLOSEDCASH.MONEY, HOST, DATESTART, DATEEND, "
+        + "SUM(TICKETLINES.PRICE * (1 + TAXES.RATE) * TICKETLINES.UNITS) AS AMOUNT, "
+        + "SUM(TICKETLINES.PRICE * TICKETLINES.UNITS) AS SUBAMOUNT "
+        + "FROM TICKETLINES "
+        + "LEFT JOIN TAXES ON TICKETLINES.TAXID = TAXES.ID "
+        + "LEFT JOIN RECEIPTS ON TICKETLINES.TICKET = RECEIPTS.ID "
+        + "LEFT JOIN CLOSEDCASH ON CLOSEDCASH.MONEY = RECEIPTS.MONEY "
+        + "LEFT JOIN PRODUCTS ON TICKETLINES.PRODUCT = PRODUCTS.ID "
+        + "WHERE PRODUCTS.CATEGORY != '-1' "
+        + "GROUP BY CLOSEDCASH.MONEY) AS THEOCS "
+        + "ON AVERAGE.MONEY = THEOCS.MONEY "
+        + ""
+        + "WHERE ?(QBF_FILTER) "
+        + "ORDER BY HOST ASC, DATESTART ASC");
+
+report.addParameter("AVERAGE.DATESTART");
+report.addParameter("AVERAGE.DATEEND");
+report.addQBFFilter(new com.openbravo.pos.reports.JParamsDatesInterval());
+
+report.addField("HOST", com.openbravo.data.loader.Datas.STRING);
+report.addField("DATESTART", com.openbravo.data.loader.Datas.TIMESTAMP);
+report.addField("DATEEND", com.openbravo.data.loader.Datas.TIMESTAMP);
+report.addField("TICKETS", com.openbravo.data.loader.Datas.INT);
+report.addField("AVERAGE", com.openbravo.data.loader.Datas.DOUBLE);
+report.addField("REALCS", com.openbravo.data.loader.Datas.DOUBLE);
+report.addField("THEOCS", com.openbravo.data.loader.Datas.DOUBLE);
+report.addField("THEOSCS", com.openbravo.data.loader.Datas.DOUBLE);
+
+
+
+report;
+

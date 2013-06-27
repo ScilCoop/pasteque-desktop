@@ -23,7 +23,7 @@
 
 DIRNAME=`dirname $0`
 
-CP=$DIRNAME/pos-tech.jar
+CP=$DIRNAME/pasteque.jar
 
 CP=$CP:$DIRNAME/locales/
 CP=$CP:$DIRNAME/lib/substance.jar

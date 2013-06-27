@@ -33,16 +33,38 @@ public class StringUtils {
      
     private static final NumberFormat cardformat = new DecimalFormat("000000");
     private static final Random cardrandom = new Random();
+    private static final int CARD_SIZE = 7;
     
     /** Creates a new instance of StringUtils */
     private StringUtils() {
     }
-    
-    public static String getCardNumber() {
-    return cardformat.format(Math.abs(System.currentTimeMillis()) % 1000000L)
-         + cardformat.format(Math.abs(cardrandom.nextLong()) % 1000000L);
+
+    /** Generate customer card from its number
+     * @param number Customer number (may contain characters to match customer number).
+     * If null a random number is used, this is not recommended.
+     * @return Customer number on a defined number of characters.
+     */
+    public static String getCardNumber(String number) {
+        if (number == null) {
+            // Old random generator
+            return cardformat.format(Math.abs(System.currentTimeMillis()) % 1000000L)
+                     + cardformat.format(Math.abs(cardrandom.nextLong()) % 1000000L);
+        } else {
+            String num = new String(number);
+            while (num.length() < CARD_SIZE) {
+                num = "0" + num;
+            }
+            return num;
+        }
     }
-    
+    /** Generate random customer number for customer card.
+     * @deprecated As of release 1.3, replaced by {@link #getCardNumber(String)}
+     */
+    @Deprecated
+    public static String getCardNumber() {
+        return getCardNumber(null);
+    }
+
     public static String encodeXML(String sValue) {
         
         if (sValue == null) {

@@ -236,8 +236,16 @@ public class JRootApp extends JPanel implements AppView {
             sWareHouse = m_dlSystem.findLocationName(m_sInventoryLocation);
         } catch (BasicException e) {
             sWareHouse = null; // no he encontrado el almacen principal
-        }        
-        
+        }
+
+        // Initialize currency format
+        DataLogicSales m_dlSales = (DataLogicSales) getBean("com.openbravo.pos.forms.DataLogicSales");
+        try {
+            com.openbravo.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+
         // Show Hostname, Warehouse and URL in taskbar
         String url;
         try {
@@ -710,7 +718,7 @@ public class JRootApp extends JPanel implements AppView {
         m_jPanelLogin.add(m_jLogonName, c);
         // Version
         String version = String.format(AppLocal.getIntString("Label.Version"),
-                                       AppLocal.APP_VERSION);
+                AppLocal.getIntString("Version.Code"), AppLocal.APP_VERSION);
         JLabel versionLabel = WidgetsBuilder.createSmallLabel(version);
         c = new GridBagConstraints();
         c.gridx = 0;

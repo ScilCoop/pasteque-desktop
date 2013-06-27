@@ -19,6 +19,7 @@
 
 package com.openbravo.pos.payment;
 
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import java.awt.Component;
 
@@ -28,7 +29,8 @@ import java.awt.Component;
  */
 public interface JPaymentInterface {
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transactionID);    
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transactionID);    
     public PaymentInfo executePayment();
     public Component getComponent();
 }

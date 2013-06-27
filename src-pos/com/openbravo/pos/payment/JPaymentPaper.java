@@ -29,6 +29,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.customers.CustomerInfoExt;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.util.RoundUtils;
@@ -43,6 +44,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     private double m_dTicket;
     private double m_dTotal;
     private double partAmount;
+    private CurrencyInfo currency;
     
     private String m_sPaper; // "paperin", "paperout"
     // private String m_sCustomer; 
@@ -60,10 +62,12 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jTendered.addEditorKeys(m_jKeys);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         
         m_dTotal = dTotal;
         this.partAmount = partAmount;
+        this.currency = currency;
         
         m_jTendered.reset();
         m_jTendered.activate();
@@ -77,7 +81,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     
     public PaymentInfo executePayment() {
 
-        return new PaymentInfoTicket(m_dTicket, m_sPaper);
+        return new PaymentInfoTicket(m_dTicket, this.currency, m_sPaper);
     }    
     
     private void printState() {
@@ -89,6 +93,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
             m_dTicket = value;
         } 
         
+        Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTicket)));
         
         int iCompare = RoundUtils.compare(m_dTicket, m_dTotal);

@@ -30,8 +30,35 @@ import com.openbravo.pos.forms.AppLocal;
 public class DirectoryEvent implements ActionListener {
     
     private JTextComponent m_jTxtField;
+    private Listener listener;
     private JFileChooser m_fc;
-    
+
+    public DirectoryEvent(Listener listener, final String[] types,
+            final String titleKey) {
+        m_fc = new JFileChooser();
+        m_fc.resetChoosableFileFilters();
+        m_fc.addChoosableFileFilter(new FileFilter() {
+            public boolean accept(File f) {
+                if (f.isDirectory()) {
+                    return true;
+                } else {
+                    String filename = f.getName();
+                    for (String ext : types) {
+                        if (filename.endsWith("." + ext)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+            public String getDescription() {
+                return AppLocal.getIntString(titleKey);
+            }
+        });
+        m_fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        this.listener = listener;
+    }
+
     /** Creates a new instance of DirectoryChooser */
     public DirectoryEvent(JTextComponent TxtField) {
         m_jTxtField = TxtField;
@@ -56,13 +83,22 @@ public class DirectoryEvent implements ActionListener {
         });
         m_fc.setFileSelectionMode(JFileChooser.FILES_ONLY );
     }
-       
+
     public void actionPerformed(ActionEvent actionEvent) {
-        
-        m_fc.setCurrentDirectory(new File(m_jTxtField.getText()));      
+        if (m_jTxtField != null) {
+            m_fc.setCurrentDirectory(new File(m_jTxtField.getText()));
+        }
         if (m_fc.showOpenDialog(m_jTxtField) == JFileChooser.APPROVE_OPTION) {
-            m_jTxtField.setText(m_fc.getSelectedFile().getAbsolutePath());
+            String absPath = this.m_fc.getSelectedFile().getAbsolutePath();
+            if (m_jTxtField != null) {
+                m_jTxtField.setText(absPath);
+            } else if (this.listener != null) {
+                this.listener.fileChoosen(absPath);
+            }
         }
     }       
-    
+
+    public interface Listener {
+        public void fileChoosen(String absolutePath);
+    }
 }

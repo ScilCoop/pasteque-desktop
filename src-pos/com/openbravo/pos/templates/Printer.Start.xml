@@ -23,10 +23,10 @@
 <output>
     <display animation="scroll">
         <line>
-            <text>Openbravo POS</text>
+            <text>Pasteque</text>
         </line>
         <line>
-            <text>   Welcome   </text>
+            <text>   Bienvenue   </text>
         </line>
     </display>
 </output>

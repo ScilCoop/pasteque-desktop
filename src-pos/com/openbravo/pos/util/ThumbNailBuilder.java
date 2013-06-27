@@ -117,23 +117,20 @@ public class ThumbNailBuilder {
     }
     
     private Image createThumbNail(Image img) {
-//            MaskFilter filter = new MaskFilter(Color.WHITE);
-//            ImageProducer prod = new FilteredImageSource(img.getSource(), filter);
-//            img = Toolkit.getDefaultToolkit().createImage(prod);
         // The desired scaled size without deformation
         int targetw, targeth;
         double imgW = img.getWidth(null);
         double imgH = img.getHeight(null);
         // Set scale (imgSize * scale = desiredSize)
-        double scalex = (double) m_width / imgW;
-        double scaley = (double) m_height / imgH;
+        double scalex = (double) m_width / (double) img.getWidth(null);
+        double scaley = (double) m_height / (double) img.getHeight(null);
         if (scalex < 1.0 || scaley < 1.0) {
-            // Bigger image, need to reduce
+            // Bigger image, need to recude
             if (scalex < scaley) {
                 targetw = m_width;
-                targeth = (int) (imgH * scalex);
+                targeth = (int) (img.getHeight(null) * scalex);
             } else {
-                targetw = (int) (imgW * scaley);
+                targetw = (int) (img.getWidth(null) * scaley);
                 targeth = (int) m_height;
             }
         } else {
@@ -142,55 +139,19 @@ public class ThumbNailBuilder {
             targeth = (int) imgH;
         }
 
-        int midw = img.getWidth(null);
-        int midh = img.getHeight(null);
         BufferedImage midimg = null;
         Graphics2D g2d = null;
 
-        Image previmg = img;
-        int prevw = img.getWidth(null);
-        int prevh = img.getHeight(null);
+        int imgw = img.getWidth(null);
+        int imgh = img.getHeight(null);
 
-        do {
-            if (midw > targetw) {
-                midw /= 2;
-                if (midw < targetw) {
-                    midw = targetw;
-                }
-            } else {
-                //midw = targetw;
-            }
-            if (midh > targeth) {
-                midh /= 2;
-                if (midh < targeth) {
-                    midh = targeth;
-                }
-            } else {
-                //midh = targeth;
-            }
-            if (midimg == null) {
-                midimg = new BufferedImage(midw, midh, BufferedImage.TYPE_INT_ARGB);
-                g2d = midimg.createGraphics();
-                g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            }
-            g2d.drawImage(previmg, 0, 0, midw, midh, 0, 0, prevw, prevh, null);
-            prevw = midw;
-            prevh = midh;
-            previmg = midimg;
-        } while (midw > targetw || midh > targeth);
-
+        midimg = new BufferedImage(m_width, m_height, BufferedImage.TYPE_INT_ARGB);
+        int x = (m_width > targetw) ? (m_width - targetw) / 2 : 0;
+        int y = (m_height > targeth) ? (m_height - targeth) / 2 : 0;
+        g2d = midimg.createGraphics();
+        g2d.drawImage(img, x, y, x + targetw, y + targeth,
+                               0, 0, imgw, imgh, null);
         g2d.dispose();
-
-        if (m_width != midimg.getWidth() || m_height != midimg.getHeight()) {
-            midimg = new BufferedImage(m_width, m_height, BufferedImage.TYPE_INT_ARGB);
-            int x = (m_width > targetw) ? (m_width - targetw) / 2 : 0;
-            int y = (m_height > targeth) ? (m_height - targeth) / 2 : 0;
-            g2d = midimg.createGraphics();
-            g2d.drawImage(previmg, x, y, x + targetw, y + targeth,
-                                   0, 0, targetw, targeth, null);
-            g2d.dispose();
-            previmg = midimg;
-        } 
-        return previmg;           
+        return midimg;
     }    
 }

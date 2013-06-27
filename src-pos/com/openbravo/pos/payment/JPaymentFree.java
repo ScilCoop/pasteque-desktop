@@ -29,6 +29,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.util.RoundUtils;
@@ -42,6 +43,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
     private double m_dTotal;
     private double partAmount;
     private JPaymentNotifier m_notifier;
+    private CurrencyInfo currency;
     
     /** Creates new form JPaymentFree */
     public JPaymentFree(JPaymentNotifier notifier) {
@@ -51,11 +53,13 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
     }
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         
         m_dTotal = dTotal;
         this.partAmount = partAmount;
-        
+        this.currency = currency;
+       
         // m_jTotal.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
         m_jTendered.reset();
         m_jTendered.activate();
@@ -64,7 +68,11 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
     }
     
     public PaymentInfo executePayment() {
-        return new PaymentInfoFree(m_dPaid);
+        if (this.currency != null && !this.currency.isMain()) {
+            return new PaymentInfoFree(m_dPaid / this.currency.getRate());
+        } else {
+            return new PaymentInfoFree(m_dPaid);
+        }
     }
     public Component getComponent() {
         return this;
@@ -79,6 +87,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
             m_dPaid = value;
         } 
 
+        Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);

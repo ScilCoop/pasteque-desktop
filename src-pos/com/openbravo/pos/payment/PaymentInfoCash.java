@@ -20,6 +20,7 @@
 package com.openbravo.pos.payment;
 
 import com.openbravo.format.Formats;
+import com.openbravo.pos.admin.CurrencyInfo;
 
 public class PaymentInfoCash extends PaymentInfo {
     
@@ -27,13 +28,14 @@ public class PaymentInfoCash extends PaymentInfo {
     private double m_dTotal;
     
     /** Creates a new instance of PaymentInfoCash */
-    public PaymentInfoCash(double dTotal, double dPaid) {
+    public PaymentInfoCash(double dTotal, double dPaid, CurrencyInfo currency) {
         m_dTotal = dTotal;
         m_dPaid = dPaid;
+        this.currency = currency;
     }
     
     public PaymentInfo copyPayment(){
-        return new PaymentInfoCash(m_dTotal, m_dPaid);
+        return new PaymentInfoCash(m_dTotal, m_dPaid, this.currency);
     }
     
     public String getName() {
@@ -50,9 +52,14 @@ public class PaymentInfoCash extends PaymentInfo {
     }
     
     public String printPaid() {
+        Formats.setAltCurrency(this.currency);
         return Formats.CURRENCY.formatValue(new Double(m_dPaid));
     }   
     public String printChange() {
-        return Formats.CURRENCY.formatValue(new Double(m_dPaid - m_dTotal));
+        double change = m_dPaid - m_dTotal;
+        if (this.currency != null && !this.currency.isMain()) {
+            change /= this.currency.getRate();
+        }
+        return Formats.CURRENCY.formatValue(new Double(change));
     }    
 }

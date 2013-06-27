@@ -24,6 +24,7 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.JPanel;
+import com.openbravo.pos.admin.CurrencyInfo;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.customers.CustomerInfoExt;
@@ -38,6 +39,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
     private double m_dPaid;
     private double m_dTotal;
     private double partAmount;
+    private CurrencyInfo currency;
     
     /** Creates new form JPaymentCash */
     public JPaymentCheque(JPaymentNotifier notifier) {
@@ -50,10 +52,12 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         m_jTendered.addEditorKeys(m_jKeys);
     }
     
-    public void activate(CustomerInfoExt customerext, double dTotal, double partAmount, String transID) {
+    public void activate(CustomerInfoExt customerext, double dTotal,
+            double partAmount, CurrencyInfo currency, String transID) {
         
         m_dTotal = dTotal;
         this.partAmount = partAmount;
+        this.currency = currency;
         
         m_jTendered.reset();
         m_jTendered.activate();
@@ -62,7 +66,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
         
     }
     public PaymentInfo executePayment() {
-        return new PaymentInfoTicket(m_dPaid, "cheque");      
+        return new PaymentInfoTicket(m_dPaid, this.currency, "cheque");      
     }
     public Component getComponent() {
         return this;
@@ -77,6 +81,7 @@ public class JPaymentCheque extends javax.swing.JPanel implements JPaymentInterf
             m_dPaid = value;
         } 
 
+        Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
         
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);

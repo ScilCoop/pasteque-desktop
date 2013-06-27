@@ -196,6 +196,7 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/pasteque");
         DEFAULT_VALUES.put("db.user", "pt_demo");
         DEFAULT_VALUES.put("db.password", "demo");
+        DEFAULT_VALUES.put("ui.printticketbydefault", "1");
     }
 
     /** Load "default file", which values are expanded or overriden by the

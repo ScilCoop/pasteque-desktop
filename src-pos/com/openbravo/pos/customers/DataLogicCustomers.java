@@ -48,26 +48,30 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     protected Session s;
     private TableDefinition tcustomers;
-    private static Datas[] customerdatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.INT, Datas.BOOLEAN, Datas.STRING};
+    /** Type definition for customer reservation */
+    private static Datas[] customerdatas = new Datas[] {Datas.STRING,
+            Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.STRING,
+            Datas.STRING, Datas.STRING, Datas.INT, Datas.BOOLEAN,
+            Datas.STRING};
     
     public void init(Session s){
         
         this.s = s;
         tcustomers = new TableDefinition(s
             , "CUSTOMERS"
-            , new String[] { "ID", "TAXID", "SEARCHKEY", "NAME", "NOTES", "VISIBLE", "CARD", "MAXDEBT", "CURDATE", "CURDEBT"
+            , new String[] { "ID", "TAXID", "SEARCHKEY", "NAME", "NOTES", "VISIBLE", "CARD", "MAXDEBT", "CURDATE", "CURDEBT", "PREPAID"
                            , "FIRSTNAME", "LASTNAME", "EMAIL", "PHONE", "PHONE2", "FAX"
                            , "ADDRESS", "ADDRESS2", "POSTAL", "CITY", "REGION", "COUNTRY"
                            , "TAXCATEGORY" }
-            , new String[] { "ID", AppLocal.getIntString("label.taxid"), AppLocal.getIntString("label.searchkey"), AppLocal.getIntString("label.name"), AppLocal.getIntString("label.notes"), "VISIBLE", "CARD", AppLocal.getIntString("label.maxdebt"), AppLocal.getIntString("label.curdate"), AppLocal.getIntString("label.curdebt")
+            , new String[] { "ID", AppLocal.getIntString("label.taxid"), AppLocal.getIntString("label.searchkey"), AppLocal.getIntString("label.name"), AppLocal.getIntString("label.notes"), "VISIBLE", "CARD", AppLocal.getIntString("label.maxdebt"), AppLocal.getIntString("label.curdate"), AppLocal.getIntString("label.curdebt"), AppLocal.getIntString("Label.Prepaid")
                            , AppLocal.getIntString("label.firstname"), AppLocal.getIntString("label.lastname"), AppLocal.getIntString("label.email"), AppLocal.getIntString("label.phone"), AppLocal.getIntString("label.phone2"), AppLocal.getIntString("label.fax")
                            , AppLocal.getIntString("label.address"), AppLocal.getIntString("label.address2"), AppLocal.getIntString("label.postal"), AppLocal.getIntString("label.city"), AppLocal.getIntString("label.region"), AppLocal.getIntString("label.country")
                            , "TAXCATEGORY"}
-            , new Datas[] { Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.STRING, Datas.DOUBLE, Datas.TIMESTAMP, Datas.DOUBLE
+            , new Datas[] { Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.STRING, Datas.DOUBLE, Datas.TIMESTAMP, Datas.DOUBLE, Datas.DOUBLE
                           , Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING
                           , Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING
                           , Datas.STRING}
-            , new Formats[] { Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.BOOLEAN, Formats.STRING, Formats.CURRENCY, Formats.TIMESTAMP, Formats.CURRENCY
+            , new Formats[] { Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.BOOLEAN, Formats.STRING, Formats.CURRENCY, Formats.TIMESTAMP, Formats.CURRENCY, Formats.CURRENCY
                             , Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING
                             , Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING
                             , Formats.STRING}
@@ -98,10 +102,10 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     public SentenceList getTop10CustomerList() {
         return new StaticSentence(s
             , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
-            " TICKETS.CUSTOMER, Count( TICKETS.CUSTOMER ) AS Top10 FROM TICKETS " +
-            " INNER JOIN CUSTOMERS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
+            " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
+            " LEFT JOIN TICKETS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
             " WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) " +
-            " GROUP BY TICKETS.CUSTOMER ORDER BY Top10 DESC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
+            " GROUP BY CUSTOMERS.ID ORDER BY Top10 DESC, NAME ASC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
             , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
             , new SerializerRead() {
                     public Object readValues(DataRead dr) throws BasicException {
@@ -124,7 +128,25 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                         setString(2, customer.getId());
                 }});        
     }
-    
+
+    public Integer getNextCustomerNumber() throws BasicException {
+        Object[] data = (Object[]) new PreparedSentence(s,
+            "SELECT MAX(TAXID) FROM CUSTOMERS",
+            null,
+            new SerializerReadBasic(new Datas[] {Datas.STRING})).find();
+        if (data.length > 0) {
+            String number = (String) data[0];
+            try {
+                int inum = Integer.parseInt(number);
+                return inum + 1;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
     public final SentenceList getReservationsList() {
         return new PreparedSentence(s
             , "SELECT R.ID, R.CREATED, R.DATENEW, C.CUSTOMER, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, COALESCE(CUSTOMERS.NAME, R.TITLE),  R.CHAIRS, R.ISDONE, R.DESCRIPTION " +
