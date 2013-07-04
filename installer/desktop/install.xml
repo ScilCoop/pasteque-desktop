@@ -26,7 +26,7 @@ To launch the installer :
     The info section.
     -->
     <info>
-         <appname>Pasteque</appname>
+         <appname>@{app.name}</appname>
          <appversion>1.0</appversion>
          <appsubpath>${APP_NAME}</appsubpath>
          <url>http://pasteque-logiciel.fr</url>
@@ -37,7 +37,7 @@ To launch the installer :
          <javaversion>@{javac.minVMVersion}</javaversion>
          <requiresjdk>no</requiresjdk>
          <run-privileged condition="izpack.windowsinstall.7|izpack.windowsinstall.vista"/>
-         <uninstaller name="Pasteque-uninstaller.jar" path="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
+         <uninstaller name="@{name}-uninstaller.jar" path="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
      </info>
 
      <!--
