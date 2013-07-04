@@ -21,6 +21,7 @@ To launch the installer :
 -->
 
 <installation version="5.0">
+
     <!--
     The info section.
     -->
@@ -33,7 +34,7 @@ To launch the installer :
          <author name="Cédric Houbart" email="cedric@scil.coop"/>
          <author name="Philippe Pary" email="philippe@scil.coop"/>
          </authors>
-         <javaversion>1.6</javaversion>
+         <javaversion>@{javac.minVMVersion}</javaversion>
          <requiresjdk>no</requiresjdk>
          <run-privileged condition="izpack.windowsinstall.7|izpack.windowsinstall.vista"/>
          <uninstaller name="Pasteque-uninstaller.jar" path="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
@@ -148,27 +149,27 @@ To launch the installer :
     <!-- C L E A N  I N S T A L L ,  F I L E S  S O R T E D  B Y  O S      -->
     <!-- ================================================================= -->
 
-            <file src="@{basedir}/build/bin/lib"
+            <file src="@{dest.bin}/lib"
             targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
-            <file src="@{basedir}/build/bin/licensing"
+            <file src="@{dest.bin}/licensing"
             targetdir="$INSTALL_PATH"/>
-            <file src="@{basedir}/build/bin/res"
+            <file src="@{dest.bin}/res"
             targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
-            <file src="@{basedir}/build/bin/logging.properties"
+            <file src="@{dest.bin}/logging.properties"
             targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
-            <file src="@{basedir}/build/bin/pos-tech.jar"
+            <file src="@{dest.jar}/@{name}.jar"
             targetdir="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
-            <file src="@{basedir}/build/bin/README"
+            <file src="@{dest.bin}/README"
             targetdir="$INSTALL_PATH"/>
-            <file src="@{basedir}/installer/pasteque_launcher.png"
+            <file src="@{basedir}/installer/@{name}_launcher.png"
             targetdir="$INSTALL_PATH">
                 <os family="unix"/>
             </file>
-            <file src="@{basedir}/build/bin/configure.sh"
+            <file src="@{dest.bin}/configure.sh"
             targetdir="$INSTALL_PATH/bin">
                 <os family="unix"/>
             </file>
-            <file src="@{basedir}/build/bin/start.sh"
+            <file src="@{dest.bin}/start.sh"
             targetdir="${INSTALL_PATH}/bin">
                 <os family="unix"/>
             </file>
@@ -181,15 +182,15 @@ To launch the installer :
                 <os family="unix"/>
             </executable>
 
-            <file src="@{basedir}/installer/pasteque_launcher.ico"
+            <file src="@{basedir}/installer/@{name}_launcher.ico"
             targetdir="$INSTALL_PATH">
                 <os family="windows"/>
             </file>
-            <file src="@{basedir}/build/bin/configure.bat"
+            <file src="@{dest.bin}/configure.bat"
             targetdir="$INSTALL_PATH\bin">
                 <os family="windows"/>
             </file>
-            <file src="@{basedir}/build/bin/start.bat"
+            <file src="@{dest.bin}/start.bat"
             targetdir="$INSTALL_PATH\bin">
                 <os family="windows"/>
             </file>

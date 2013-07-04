@@ -250,19 +250,22 @@
     <!-- I N S T A L L E R                                                 -->
     <!-- ================================================================= -->
 
-    <path id="build.classpath">
-        <fileset dir="${user.home}/IzPack">
-            <include name="lib/*.jar"/>
-        </fileset>
-    </path>
-    <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
+    <target name="installer" depends="init.dist,build">
+        <path id="build.classpath">
+            <fileset dir="${user.home}/IzPack">
+                <include name="lib/*.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
 
-    <target name="installer">
         <izpack input="${basedir}/installer/desktop/install.xml"
-                output="${basedir}/release/unix_pasteque/${name}_${version}-install.jar"
+                output="${dest.dist}/${name}_${version}-install.jar"
                 installerType="standard"
                 basedir="${basedir}"
-                izPackDir="${user.home}/IzPack/"/>
+                izPackDir="${user.home}/IzPack/"
+                inheritAll="true"/>
+        <copy file="${basedir}/installer/desktop/install.sh" todir="${dest.dist}"/>
+        <chmod file="${dest.dist}/install.sh" perm="755"/>
     </target>
 
 </project>
