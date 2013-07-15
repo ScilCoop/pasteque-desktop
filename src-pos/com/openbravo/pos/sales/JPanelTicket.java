@@ -1313,6 +1313,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void printTicket(String sresourcename, TicketInfo ticket, Object ticketext) {
 
         String sresource = dlSystem.getResourceAsXML(sresourcename);
+        try {
+            taxeslogic.calculateTaxes(ticket);
+        } catch (TaxesException e) {
+            e.printStackTrace();
+        }
         if (sresource == null) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"));
             msg.show(JPanelTicket.this);
