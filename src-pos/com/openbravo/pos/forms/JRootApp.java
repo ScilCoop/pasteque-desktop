@@ -715,10 +715,15 @@ public class JRootApp extends JPanel implements AppView {
         c.weighty = 1;
         c.anchor = GridBagConstraints.SOUTH;
         m_jPanelLogin.add(m_jLogonName, c);
-        // Version
-        String version = String.format(AppLocal.getIntString("Label.Version"),
-                AppLocal.getIntString("Version.Code"), AppLocal.APP_VERSION);
-        JLabel versionLabel = WidgetsBuilder.createSmallLabel(version);
+        // About
+        JButton about = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/about.png")), WidgetsBuilder.SIZE_SMALL);
+        about.setBorder(BorderFactory.createEmptyBorder());
+        about.setContentAreaFilled(false);
+        about.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aboutActionPerformed(evt);
+            }
+        });
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 2;
@@ -727,7 +732,7 @@ public class JRootApp extends JPanel implements AppView {
         int versionInset = WidgetsBuilder.dipToPx(5);
         c.insets = new Insets(0, 0, 0, versionInset);
         c.anchor = GridBagConstraints.LINE_END;
-        m_jPanelLogin.add(versionLabel, c);
+        m_jPanelLogin.add(about, c);
         m_jPanelContainer.add(m_jPanelLogin, "login");
         add(m_jPanelContainer, java.awt.BorderLayout.CENTER);
 
@@ -749,6 +754,64 @@ public class JRootApp extends JPanel implements AppView {
 
     private void m_jCloseActionPerformed(java.awt.event.ActionEvent evt) {
         tryToClose();
+    }
+
+    private void aboutActionPerformed(java.awt.event.ActionEvent evt) {
+        final JFrame about = new JFrame();
+        about.setPreferredSize(new java.awt.Dimension(400, 300));
+        java.awt.Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        about.setBounds((screenSize.width-400)/2, (screenSize.height-300)/2, 400, 300);
+        about.setLayout(new GridBagLayout());
+        try {
+            about.setIconImage(javax.imageio.ImageIO.read(JRootFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        } 
+        GridBagConstraints c = null;
+
+        try {
+            ImageIcon icon = new ImageIcon(javax.imageio.ImageIO.read(JFrame.class.getResourceAsStream("/com/openbravo/images/favicon.png")));
+            JLabel iconLabel = new JLabel(icon);
+            c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.weightx = 0.3;
+            c.weighty = 0.3;
+            c.fill = GridBagConstraints.BOTH;
+            c.insets = new Insets(5, 5, 5, 5);
+            about.add(iconLabel, c);
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+
+        String version = String.format(AppLocal.getIntString("Label.Version"),
+                AppLocal.getIntString("Version.Code"), AppLocal.APP_VERSION);
+        JLabel aboutLabel = WidgetsBuilder.createSmallLabel(version);
+        c = new GridBagConstraints();
+        c.gridx = 1;
+        c.gridy = 0;
+        c.weightx = 0.7;
+        c.weighty = 0.3;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 5, 5, 5);
+        about.add(aboutLabel, c);
+
+        String licence = "<html>" + AppLocal.getIntString("Licence") + "</html>";
+        JLabel licenceLabel = WidgetsBuilder.createSmallLabel(licence);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.weighty = 0.7;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 5, 5, 5);
+        about.add(licenceLabel, c);
+
+        about.setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
+        about.setLocationRelativeTo(null);
+        about.pack();
+        about.setVisible(true);
     }
 
     private void m_txtKeysKeyTyped(java.awt.event.KeyEvent evt) {
