@@ -19,17 +19,20 @@
 
 package com.openbravo.pos.payment;
 
+import com.openbravo.pos.admin.CurrencyInfo;
+
 public class PaymentInfoFree extends PaymentInfo {
     
     private double m_dTotal;
    
     /** Creates a new instance of PaymentInfoFree */
-    public PaymentInfoFree(double dTotal) {
+    public PaymentInfoFree(double dTotal, CurrencyInfo currency) {
         m_dTotal = dTotal;
+        this.currency = currency;
     }
     
     public PaymentInfo copyPayment(){
-        return new PaymentInfoFree(m_dTotal);
+        return new PaymentInfoFree(m_dTotal, this.currency);
     }    
     public String getName() {
         return "free";

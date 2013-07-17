@@ -68,11 +68,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
     }
     
     public PaymentInfo executePayment() {
-        if (this.currency != null && !this.currency.isMain()) {
-            return new PaymentInfoFree(m_dPaid / this.currency.getRate());
-        } else {
-            return new PaymentInfoFree(m_dPaid);
-        }
+        return new PaymentInfoFree(m_dPaid, this.currency);
     }
     public Component getComponent() {
         return this;

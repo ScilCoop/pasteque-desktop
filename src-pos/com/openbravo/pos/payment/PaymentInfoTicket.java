@@ -29,7 +29,6 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  
     
     private static final long serialVersionUID = 8865238639097L;
     private double amount;
-    private CurrencyInfo currency;
     private String m_sName;
     private String m_transactionID;
     
@@ -49,12 +48,6 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  
         this.currency = currency;
         m_transactionID = transactionID;
     }
-    
-    public PaymentInfoTicket() {
-        m_sName = null;
-        amount = 0.0;
-        m_transactionID = null;
-     }
     
     public void readValues(DataRead dr) throws BasicException {
         m_sName = dr.getString(1);
