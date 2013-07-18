@@ -25,7 +25,7 @@ import com.openbravo.data.loader.SerializableRead;
 import com.openbravo.format.Formats;
 import com.openbravo.pos.admin.CurrencyInfo;
 
-public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  {
+public class PaymentInfoTicket extends PaymentInfo {
     
     private static final long serialVersionUID = 8865238639097L;
     private double amount;
@@ -47,12 +47,6 @@ public class PaymentInfoTicket extends PaymentInfo implements SerializableRead  
         this.amount = amount;
         this.currency = currency;
         m_transactionID = transactionID;
-    }
-    
-    public void readValues(DataRead dr) throws BasicException {
-        m_sName = dr.getString(1);
-        amount = dr.getDouble(2).doubleValue();
-        m_transactionID = dr.getString(3);
     }
     
     public PaymentInfo copyPayment(){

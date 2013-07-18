@@ -445,6 +445,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             null, CurrencyInfo.getSerializerRead());
     }
 
+    public CurrencyInfo getCurrency(int currencyId) throws BasicException {
+        return (CurrencyInfo) new StaticSentence(s,
+            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
+            + "MAIN FROM CURRENCIES WHERE ID = ?",
+            SerializerWriteInteger.INSTANCE, CurrencyInfo.getSerializerRead()).find(currencyId);
+    }
+
     public CurrencyInfo getMainCurrency() throws BasicException {
         List<CurrencyInfo> currencies = this.getCurrenciesList().list();
         for (CurrencyInfo curr : currencies) {
@@ -535,9 +542,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 , SerializerWriteString.INSTANCE
                 , new SerializerReadClass(TicketLineInfo.class)).list(ticket.getId()));
             ticket.setPayments(new PreparedSentence(s
-                , "SELECT PAYMENT, TOTAL, TRANSID FROM PAYMENTS WHERE RECEIPT = ?"
+                , "SELECT PAYMENT, CURRENCY, TOTALCURRENCY, TRANSID FROM PAYMENTS WHERE RECEIPT = ?"
                 , SerializerWriteString.INSTANCE
-                , new SerializerReadClass(PaymentInfoTicket.class)).list(ticket.getId()));
+                , new SerializerRead() {
+                        public Object readValues(DataRead dr) throws BasicException {
+                            String name = dr.getString(1);
+                            double amount = dr.getDouble(3).doubleValue();
+                            String transactionID = dr.getString(4);
+                            CurrencyInfo currency = getCurrency(dr.getInt(2).intValue());
+                            return new PaymentInfoTicket(amount, currency, name, transactionID);
+                        }
+                 }).list(ticket.getId()));
         }
         return ticket;
     }
