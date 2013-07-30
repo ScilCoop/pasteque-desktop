@@ -238,6 +238,11 @@ public class ProductInfoExt {
     }
 
     @Override
+    public int hashCode() {
+        return this.m_ID.hashCode();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof ProductInfoExt)) {
             return false;
