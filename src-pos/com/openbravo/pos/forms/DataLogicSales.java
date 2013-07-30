@@ -806,7 +806,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "C.CATORDER, P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
                 + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C "
                 + "ON P.ID = C.PRODUCT "
-                + "WHERE ?(QBF_FILTER) "
+                + "WHERE P.CATEGORY != '0' AND ?(QBF_FILTER) "
                 + "ORDER BY P.REFERENCE",
                 new String[] {"P.NAME", "P.PRICEBUY", "P.PRICESELL",
                     "P.CATEGORY", "P.CODE"}),
