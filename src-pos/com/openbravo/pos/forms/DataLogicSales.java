@@ -153,7 +153,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final List<CategoryInfo> getRootCategories() throws BasicException {
         return new PreparedSentence(s,
             "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID IS NULL "
-            + "ORDER BY NAME",
+            + "ORDER BY DISPORDER, NAME",
             null,
             CategoryInfo.getSerializerRead()).list();
     }
@@ -162,7 +162,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final List<CategoryInfo> getSubcategories(String category) throws BasicException  {
         return new PreparedSentence(s,
             "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID = ? "
-            + "ORDER BY NAME",
+            + "ORDER BY DISPORDER, NAME",
             SerializerWriteString.INSTANCE,
             CategoryInfo.getSerializerRead()).list(category);
     }
@@ -170,7 +170,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     //Subgrupos de una composición
     public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
         return new PreparedSentence(s
-            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY NAME"
+            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
             , SerializerWriteString.INSTANCE
             , new SerializerReadClass(SubgroupInfo.class)).list(composition);
     }
