@@ -81,7 +81,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
         tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
         compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
-        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE};
+        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.INT};
         subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
         currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
 
@@ -170,7 +170,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     //Subgrupos de una composición
     public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
         return new PreparedSentence(s
-            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
+            , "SELECT ID, NAME, IMAGE, DISPORDER FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
             , SerializerWriteString.INSTANCE
             , new SerializerReadClass(SubgroupInfo.class)).list(composition);
     }
@@ -984,26 +984,26 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         int ssize = ((Integer)values[14]).intValue();
         int cont = 15;
         for (int e = 0; e < ssize && i > 0; e++) {
-            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2]};
+            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2], values[cont +3]};
             //Eliminamos los productos que el subgrupo pudiera tener
             new PreparedSentence(s
                 , "DELETE FROM SUBGROUPS_PROD WHERE SUBGROUP = ?"
                 , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0})).exec(sparams);        
             
             i = new PreparedSentence(s
-                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE) VALUES (?, ?, ?, ?)"
-                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3})).exec(sparams);
+                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE, DISPORDER) VALUES (?, ?, ?, ?, ?)"
+                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3, 4})).exec(sparams);
 
-            int psize = ((Integer)values[cont+3]).intValue();
+            int psize = ((Integer)values[cont+4]).intValue();
             for (int o = 0; o < psize && i > 0; o++) {
-                Object[] pparams = new Object[] {values[cont], values[cont+o+4]};
+                Object[] pparams = new Object[] {values[cont], values[cont+o+5]};
                 
                 i = new PreparedSentence(s
                     , "INSERT INTO SUBGROUPS_PROD (SUBGROUP, PRODUCT) VALUES (?, ?)"
                     , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0, 1})).exec(pparams);
             }
             //Avanzamos el contador al siguiente subgrupo
-            cont += psize + 4;
+            cont += psize + 5;
         }
         
         return i;

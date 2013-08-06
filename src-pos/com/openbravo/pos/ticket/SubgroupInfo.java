@@ -38,6 +38,7 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
     private Integer m_sID;
     private String m_sName;
     private BufferedImage m_Image;
+    private int dispOrder;
     
     /** Constructor por defecto
      */
@@ -46,6 +47,7 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
         m_sID = null;
         m_sName = null;
         m_Image = null;
+        dispOrder = 0;
     }
     
     /**
@@ -66,6 +68,12 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
         m_sID = dr.getInt(1);
         m_sName = dr.getString(2);
         m_Image = ImageUtils.readImage(dr.getBytes(3));
+        Integer order = dr.getInt(4);
+        if (order == null) {
+            this.dispOrder = 0;
+        } else {
+            this.dispOrder = order.intValue();
+        }
     }
     
     /**
@@ -77,7 +85,8 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
     public void writeValues(DataWrite dp) throws BasicException {
         dp.setInt(1, m_sID);
         dp.setString(2, m_sName);
-        dp.setBytes(3, ImageUtils.writeImage(m_Image));        
+        dp.setBytes(3, ImageUtils.writeImage(m_Image));
+        dp.setInt(4, this.dispOrder);
     }
     
     public void setID(Integer sID) {
@@ -103,7 +112,15 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
     public void setImage(BufferedImage img) {
         m_Image = img;
     }
-    
+
+    public int getDispOrder() {
+        return this.dispOrder;
+    }
+
+    public void setDispOrder(int order) {
+        this.dispOrder = order;
+    }
+
     /**
      * Devuelve una cadena con el nombre del objeto
      * @return nombre

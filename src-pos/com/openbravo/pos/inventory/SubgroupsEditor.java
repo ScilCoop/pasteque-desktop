@@ -124,7 +124,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
      */
     public Object getValues() throws BasicException {
         int i = 0;
-        int ssize = getSubgroups().size() * 4;
+        int ssize = getSubgroups().size() * 5;
         
         if (ssize == 0)
             throw new BasicException(AppLocal.getIntString("message.emptycomposition"));
@@ -146,6 +146,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
             ret[++i] = s.getID();
             ret[++i] = s.getName();
             ret[++i] = s.getImage();
+            ret[++i] = s.getDispOrder();
             ret[++i] = getProducts(s).size();
             for (ProductInfoExt p: getProducts(s)) {
                 ret[++i] = p.getID();
@@ -431,6 +432,8 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         m_jName = new javax.swing.JTextField();
+        JLabel orderLbl = new javax.swing.JLabel();
+        m_jOrder = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         m_jLittleImageEditor = new com.openbravo.data.gui.JLittleImageEditor();
         m_jbtnNewSubgroup = new javax.swing.JButton();
@@ -516,10 +519,11 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
         jPanel4.setLayout(new java.awt.BorderLayout());
 
         jPanel5.setBorder(null);
-        jPanel5.setMinimumSize(new java.awt.Dimension(97, 105));
-        jPanel5.setPreferredSize(new java.awt.Dimension(252, 105));
+        jPanel5.setMinimumSize(new java.awt.Dimension(97, 135));
+        jPanel5.setPreferredSize(new java.awt.Dimension(252, 135));
 
         jLabel3.setText(AppLocal.getIntString("Label.Name")); // NOI18N
+        orderLbl.setText(AppLocal.getIntString("label.prodorder"));
 
         jLabel8.setText(AppLocal.getIntString("label.image")); // NOI18N
 
@@ -571,11 +575,13 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addGroup(jPanel5Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(orderLbl, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE))
                         .addGap(4, 4, 4)
                         .addGroup(jPanel5Layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                             .addComponent(m_jLittleImageEditor, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(m_jName, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(m_jName, GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE)
+                            .addComponent(m_jOrder,GroupLayout.PREFERRED_SIZE, 113, GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(m_jbtnNewSubgroup, GroupLayout.PREFERRED_SIZE, 31, GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(32, Short.MAX_VALUE))
@@ -589,6 +595,10 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
                         .addGroup(jPanel5Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
                             .addComponent(m_jName, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(orderLbl)
+                            .addComponent(m_jOrder, GroupLayout.PREFERRED_SIZE, 20, GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel5Layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
@@ -741,6 +751,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
                 m_selSubgr = s;
 //                m_selProd = null;
                 m_jName.setText(s.getName());
+                m_jOrder.setText(Integer.toString(s.getDispOrder()));
                 m_jLittleImageEditor.setImage(s.getImage());
             }
         }
@@ -758,6 +769,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private void m_jbtnNewSubgroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnNewSubgroupActionPerformed
         m_selSubgr = null;
         m_jName.setText("");
+        m_jOrder.setText("0");
         m_jLittleImageEditor.setImage(null);
 }//GEN-LAST:event_m_jbtnNewSubgroupActionPerformed
 
@@ -784,6 +796,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
                     selectSubgroupPanel(s);
                     m_selSubgr = s;
                     m_jName.setText(s.getName());
+                    m_jOrder.setText(Integer.toString(s.getDispOrder()));
                     m_jLittleImageEditor.setImage(s.getImage());
                 }
             } else 
@@ -803,11 +816,13 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private void m_jbtnSaveSubgroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jbtnSaveSubgroupActionPerformed
         SubgroupInfo s = new SubgroupInfo();
         String name = m_jName.getText().trim();
+        int order = Integer.parseInt(m_jOrder.getText().trim());
         Integer id = m_selSubgr == null ? (int) (System.currentTimeMillis() / 100) : m_selSubgr.getID();
         
         if (!(name.length()==0)) {
             s.setID(id);
             s.setName(name);
+            s.setDispOrder(order);
             s.setImage(m_jLittleImageEditor.getImage());
             
             if (m_selSubgr != null) { //Si es una modificacion
@@ -896,6 +911,7 @@ public class SubgroupsEditor extends JPanel implements ListSelectionListener, Ca
     private javax.swing.JList m_jListSubgroups;
     private com.openbravo.data.gui.JLittleImageEditor m_jLittleImageEditor;
     private javax.swing.JTextField m_jName;
+    private javax.swing.JTextField m_jOrder;
     private javax.swing.JComboBox m_jProduct;
     private javax.swing.JPanel m_jProducts;
     private javax.swing.JPanel m_jRootSubgroups;
