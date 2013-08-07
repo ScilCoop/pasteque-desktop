@@ -66,7 +66,7 @@ public class JRootFrame extends javax.swing.JFrame implements AppMessage {
             add(m_rootapp, BorderLayout.CENTER);            
  
             this.setIconImage(ImageLoader.readImage("favicon.png"));
-            setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
+            setTitle(AppLocal.APP_NAME);
             pack();
             setLocationRelativeTo(null);        
             

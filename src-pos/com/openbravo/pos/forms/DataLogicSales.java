@@ -83,7 +83,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
         tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
         compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
-        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE};
+        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.INT};
         subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
         currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
 
@@ -155,7 +155,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final List<CategoryInfo> getRootCategories() throws BasicException {
         return new PreparedSentence(s,
             "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID IS NULL "
-            + "ORDER BY NAME",
+            + "ORDER BY DISPORDER, NAME",
             null,
             CategoryInfo.getSerializerRead()).list();
     }
@@ -164,7 +164,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final List<CategoryInfo> getSubcategories(String category) throws BasicException  {
         return new PreparedSentence(s,
             "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID = ? "
-            + "ORDER BY NAME",
+            + "ORDER BY DISPORDER, NAME",
             SerializerWriteString.INSTANCE,
             CategoryInfo.getSerializerRead()).list(category);
     }
@@ -172,7 +172,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     //Subgrupos de una composición
     public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
         return new PreparedSentence(s
-            , "SELECT ID, NAME, IMAGE FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY NAME"
+            , "SELECT ID, NAME, IMAGE, DISPORDER FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
             , SerializerWriteString.INSTANCE
             , new SerializerReadClass(SubgroupInfo.class)).list(composition);
     }
@@ -447,6 +447,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             null, CurrencyInfo.getSerializerRead());
     }
 
+    public CurrencyInfo getCurrency(int currencyId) throws BasicException {
+        return (CurrencyInfo) new StaticSentence(s,
+            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
+            + "MAIN FROM CURRENCIES WHERE ID = ?",
+            SerializerWriteInteger.INSTANCE, CurrencyInfo.getSerializerRead()).find(currencyId);
+    }
+
     public CurrencyInfo getMainCurrency() throws BasicException {
         List<CurrencyInfo> currencies = this.getCurrenciesList().list();
         for (CurrencyInfo curr : currencies) {
@@ -537,9 +544,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 , SerializerWriteString.INSTANCE
                 , new SerializerReadClass(TicketLineInfo.class)).list(ticket.getId()));
             ticket.setPayments(new PreparedSentence(s
-                , "SELECT PAYMENT, TOTAL, TRANSID FROM PAYMENTS WHERE RECEIPT = ?"
+                , "SELECT PAYMENT, CURRENCY, TOTALCURRENCY, TRANSID FROM PAYMENTS WHERE RECEIPT = ?"
                 , SerializerWriteString.INSTANCE
-                , new SerializerReadClass(PaymentInfoTicket.class)).list(ticket.getId()));
+                , new SerializerRead() {
+                        public Object readValues(DataRead dr) throws BasicException {
+                            String name = dr.getString(1);
+                            double amount = dr.getDouble(3).doubleValue();
+                            String transactionID = dr.getString(4);
+                            CurrencyInfo currency = getCurrency(dr.getInt(2).intValue());
+                            return new PaymentInfoTicket(amount, currency, name, transactionID);
+                        }
+                 }).list(ticket.getId()));
         }
         return ticket;
     }
@@ -793,7 +808,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 + "C.CATORDER, P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
                 + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C "
                 + "ON P.ID = C.PRODUCT "
-                + "WHERE ?(QBF_FILTER) "
+                + "WHERE P.CATEGORY != '0' AND ?(QBF_FILTER) "
                 + "ORDER BY P.REFERENCE",
                 new String[] {"P.NAME", "P.PRICEBUY", "P.PRICESELL",
                     "P.CATEGORY", "P.CODE"}),
@@ -971,26 +986,26 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         int ssize = ((Integer)values[14]).intValue();
         int cont = 15;
         for (int e = 0; e < ssize && i > 0; e++) {
-            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2]};
+            Object[] sparams = new Object[] {values[cont], values[0].toString(), values[cont +1], values[cont +2], values[cont +3]};
             //Eliminamos los productos que el subgrupo pudiera tener
             new PreparedSentence(s
                 , "DELETE FROM SUBGROUPS_PROD WHERE SUBGROUP = ?"
                 , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0})).exec(sparams);        
             
             i = new PreparedSentence(s
-                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE) VALUES (?, ?, ?, ?)"
-                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3})).exec(sparams);
+                , "INSERT INTO SUBGROUPS (ID, COMPOSITION, NAME, IMAGE, DISPORDER) VALUES (?, ?, ?, ?, ?)"
+                , new SerializerWriteBasicExt(subgroupDatas, new int[] {0, 1, 2, 3, 4})).exec(sparams);
 
-            int psize = ((Integer)values[cont+3]).intValue();
+            int psize = ((Integer)values[cont+4]).intValue();
             for (int o = 0; o < psize && i > 0; o++) {
-                Object[] pparams = new Object[] {values[cont], values[cont+o+4]};
+                Object[] pparams = new Object[] {values[cont], values[cont+o+5]};
                 
                 i = new PreparedSentence(s
                     , "INSERT INTO SUBGROUPS_PROD (SUBGROUP, PRODUCT) VALUES (?, ?)"
                     , new SerializerWriteBasicExt(subgroup_prodDatas, new int[] {0, 1})).exec(pparams);
             }
             //Avanzamos el contador al siguiente subgrupo
-            cont += psize + 4;
+            cont += psize + 5;
         }
         
         return i;

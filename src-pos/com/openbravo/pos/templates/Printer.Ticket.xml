@@ -160,22 +160,6 @@
         </line>   
          <line>
             <text align ="right" length="42">${paymentline.printTotal()}</text>
-        </line>    
-        <line>
-            <text align ="left" length="22">Numero:</text>
-            <text>${paymentline.printCardNumber()}</text>
-        </line>
-        <line>
-            <text align ="left" length="22">Expiration date:</text>
-            <text>${paymentline.printExpirationDate()}</text>
-        </line>
-        <line>
-            <text align ="left" length="22">Operation:</text>
-            <text>${paymentline.printTransactionID()}</text>
-        </line>
-        <line>
-            <text align ="left" length="22">Authorization:</text>
-            <text>${paymentline.printAuthorization()}</text>
         </line>
          #end  
          #if ($paymentline.name == "magcardrefund")

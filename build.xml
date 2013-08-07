@@ -31,7 +31,7 @@
     <!-- application display name -->
     <property name="app.name" value="Pasteque"/>
     <!-- project version -->
-    <property name="version" value="1.3 beta 1"/>
+    <property name="version" value="1.3.0"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
