@@ -308,9 +308,9 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
     }
     
     public void loadTickets() {
-
+        String host = m_App.getProperties().getHost();
         Set<String> atickets = new HashSet<String>();
-        
+
         try {
             java.util.List<SharedTicketInfo> l = dlReceipts.getSharedTicketList();
             for (SharedTicketInfo ticket : l) {
@@ -319,9 +319,24 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         } catch (BasicException e) {
             new MessageInf(e).show(this);
         }            
-            
+
         for (Place table : m_aplaces) {
-            table.setPeople(atickets.contains(table.getId()));
+            if (atickets.contains(table.getId())) {
+                table.setPeople(true);
+                try {
+                TicketInfo tkt = dlReceipts.getSharedTicket(table.getId());
+                if (tkt.isLocked() && tkt.getLock().equals(host)) {
+                    table.setLocked(false);
+                } else {
+                    table.setLocked(true);
+                }
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                table.setPeople(false);
+                table.setLocked(false);
+            }
         }
     }
     

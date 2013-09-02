@@ -34,6 +34,7 @@ public class SharedTicketInfo implements SerializableRead, SerializableWrite {
     private static final long serialVersionUID = 7640633837719L;
     private String id;
     private String name;
+    private String lock;
     
     /** Creates a new instance of SharedTicketInfo */
     public SharedTicketInfo() {
@@ -54,5 +55,9 @@ public class SharedTicketInfo implements SerializableRead, SerializableWrite {
     
     public String getName() {
         return name;
-    }  
+    }
+
+    public String getLock() {
+        return this.lock;
+    }
 }

@@ -329,7 +329,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected abstract void resetSouthComponent();
      
     public void setActiveTicket(TicketInfo oTicket, Object oTicketExt) {
-       
+        // Release previous lock
+        if (m_oTicket != null) {
+            m_oTicket.unlock();
+        }
+
         m_oTicket = oTicket;
         m_oTicketExt = oTicketExt;
         
@@ -338,6 +342,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_oTicket.setUser(m_App.getAppUserView().getUser().getUserInfo());
             m_oTicket.setActiveCash(m_App.getActiveCashIndex());
             m_oTicket.setDate(new Date()); // Set the edition date.
+            // Lock the ticket
+            m_oTicket.lock(m_App.getProperties().getHost());
         }
         
         executeEvent(m_oTicket, m_oTicketExt, "ticket.show");

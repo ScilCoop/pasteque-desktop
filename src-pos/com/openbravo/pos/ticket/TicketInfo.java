@@ -63,6 +63,8 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private String m_sResponse;
     private Integer customersCount;
     private Integer tariffAreaId;
+    /** Id of terminal currently editing the ticket */
+    private String terminalLockId;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -91,6 +93,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(attributes);
         out.writeObject(m_aLines);
         out.writeObject(this.customersCount);
+        out.writeObject(this.terminalLockId);
     }
 
     public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
@@ -103,6 +106,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         attributes = (Properties) in.readObject();
         m_aLines = (List<TicketLineInfo>) in.readObject();
         this.customersCount = (Integer) in.readObject();
+        this.terminalLockId = (String) in.readObject();
         m_User = null;
         m_sActiveCash = null;
 
@@ -127,10 +131,13 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_User = new UserInfo(dr.getString(7), dr.getString(8));
         m_Customer = new CustomerInfoExt(dr.getString(9));
         this.customersCount = dr.getInt(10);
+
         m_aLines = new ArrayList<TicketLineInfo>();
 
         payments = new ArrayList<PaymentInfo>();
         taxes = null;
+        /* Note: terminalLockId is not stored in database fields, thus
+         * not read here */
     }
 
     public TicketInfo copyTicket() {
@@ -145,6 +152,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
         t.m_Customer = m_Customer;
         if (this.customersCount != null) {
             t.customersCount = this.customersCount;
+        }
+        if (this.terminalLockId != null) {
+            t.terminalLockId = this.terminalLockId;
         }
         t.m_aLines = new ArrayList<TicketLineInfo>();
         for (TicketLineInfo l : m_aLines) {
@@ -240,7 +250,20 @@ public class TicketInfo implements SerializableRead, Externalizable {
             return m_Customer.getId();
         }
     }
-    
+
+    public boolean isLocked() {
+        return this.terminalLockId != null;
+    }
+    public String getLock() {
+        return this.terminalLockId;
+    }
+    public void lock(String terminalId) {
+        this.terminalLockId = terminalId;
+    }
+    public void unlock() {
+        this.terminalLockId = null;
+    }
+
     public String getTransactionID(){
         return (getPayments().size()>0)
             ? ( getPayments().get(getPayments().size()-1) ).getTransactionID()

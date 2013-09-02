@@ -19,7 +19,9 @@
 
 package com.openbravo.pos.sales.restaurant;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -85,6 +87,13 @@ public class Place implements SerializableRead, java.io.Serializable {
     public void setPeople(boolean bValue) {
         m_bPeople = bValue;
         m_btn.setIcon(bValue ? ICO_OCU : ICO_FRE); 
+    }
+    public void setLocked(boolean lock) {
+        if (lock) {
+            m_btn.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
+        } else {
+            m_btn.setBorder(BorderFactory.createEmptyBorder());
+        }
     }     
     public void setButtonBounds() {
         Dimension d = m_btn.getPreferredSize();
