@@ -484,11 +484,6 @@ public class ProductsEditor extends JPanel implements EditorRecord {
     // Fields update procedures based upon single field functions
     
     private void updatePricesFromPriceSell() {
-        if (!priceselllock) {
-            priceselllock = true;
-            pricesell = readCurrency(m_jPriceSell.getText());
-            priceselllock = false;
-        }
         calculatePriceSellTax();
         updatePricesFromPriceSellTax(); // update prices from rounded tax sell
     }
