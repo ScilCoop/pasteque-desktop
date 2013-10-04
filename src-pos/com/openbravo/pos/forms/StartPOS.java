@@ -66,6 +66,20 @@ public class StartPOS {
     }
 
     public static void main (final String args[]) {
+        // Load config
+        final AppConfig config = new AppConfig(args);
+        config.load();
+        // set Locale.
+        String slang = config.getProperty("user.language");
+        String scountry = config.getProperty("user.country");
+        String svariant = config.getProperty("user.variant");
+        if (slang != null && !slang.equals("") && scountry != null
+                && svariant != null) {
+            Locale.setDefault(new Locale(slang, scountry, svariant));
+        }
+        String locale = config.getLocale();
+        // Set logo according to language
+        ImageIcon splashImage = ImageLoader.readImageIcon("logo.png", locale);
         // Show splash
         final JFrame splash = new JFrame();
         splash.setUndecorated(true);
@@ -78,7 +92,6 @@ public class StartPOS {
         int splashX = (screenSize.width - splashWidth) / 2;
         int splashY = (screenSize.height - splashHeight) / 2;
         splash.setBounds(splashX, splashY, splashWidth, splashHeight);
-        ImageIcon splashImage = ImageLoader.readImageIcon("logo.png");
         JLabel splashLabel = new JLabel(splashImage);
         splash.add(splashLabel, BorderLayout.CENTER);
         splash.setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
@@ -92,16 +105,7 @@ public class StartPOS {
                 if (!registerApp()) {
                     System.exit(1);
                 }
-                AppConfig config = new AppConfig(args);
-                config.load();
-                // set Locale.
-                String slang = config.getProperty("user.language");
-                String scountry = config.getProperty("user.country");
-                String svariant = config.getProperty("user.variant");
-                if (slang != null && !slang.equals("") && scountry != null
-                        && svariant != null) {
-                    Locale.setDefault(new Locale(slang, scountry, svariant));
-                }
+                
                 // Set the format patterns
                 Formats.setIntegerPattern(config.getProperty("format.integer"));
                 Formats.setDoublePattern(config.getProperty("format.double"));

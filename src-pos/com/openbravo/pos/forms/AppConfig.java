@@ -120,6 +120,17 @@ public class AppConfig implements AppProperties {
         }
     }
 
+    public String getLocale() {
+        String slang = this.getProperty("user.language");
+        String scountry = this.getProperty("user.country");
+        //String svariant = this.getProperty("user.variant"); Unused
+        String locCode = slang;
+        if (scountry != null) {
+            locCode += "_" + scountry;
+        }
+        return locCode;
+    }
+
     public boolean delete() {
         this.loadDefault();
         return this.configfile.delete();

@@ -663,7 +663,8 @@ public class JRootApp extends JPanel implements AppView {
 
         // Logo
         postechLogo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        postechLogo.setIcon(ImageLoader.readImageIcon("logo.png"));
+        postechLogo.setIcon(ImageLoader.readImageIcon("logo.png",
+                cfg.getLocale()));
         postechLogo.setAlignmentX(0.5F);
         postechLogo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         postechLogo.setMaximumSize(new java.awt.Dimension(800, 1024));

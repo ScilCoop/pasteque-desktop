@@ -36,11 +36,48 @@ public class ImageLoader {
         return icon;
     }
     
+    public static ImageIcon readImageIcon(String name, String locale) {
+        BufferedImage image = readImage(name, locale);
+        ImageIcon icon = new ImageIcon(image);
+        return icon;
+    }
+
     public static BufferedImage readImage(String name) {
+        return readImage(name, null);
+    }
+
+    public static BufferedImage readImage(String name, String locale) {
+        String fullLocName = null;
+        String locName = null;
+        if (locale != null) {
+            String[] loc = locale.split("_");
+            String lang = loc[0].replace(".", "").replace("/", "");
+            String country = null;
+            if (loc.length > 1) {
+                country = loc[1].replace(".", "").replace("/", "");
+                fullLocName = lang + "/" + country + "/" + name;
+            }
+            locName = lang + "/" + name;
+        }
         try {
             String base = System.getProperty("dirname.path");
             if (base == null) {
                 base = ".";
+            }
+            if (locale != null) {
+                // Try first with localized versions and fallback to generic
+                File f = new File(base + "/res/images/" + fullLocName);
+                if (f.exists()) {
+                    BufferedImage image = ImageIO.read(f);
+                    return image;
+                } else {
+                    f = new File(base + "/res/images/" + locName);
+                    if (f.exists()) {
+                        BufferedImage image = ImageIO.read(f);
+                        return image;
+                    }
+                }
+                // No localized version, fallback
             }
             File f = new File(base + "/res/images/" + name);
             if (f.exists()) {
@@ -59,4 +96,5 @@ public class ImageLoader {
             return null;
         }
     }
+
 }
