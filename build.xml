@@ -22,7 +22,7 @@
     along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
  -->
 
-<project name="openbravopos" basedir="." default="build">
+<project name="pasteque" basedir="." default="build">
     <!-- ================================================================= -->
     <!-- P R O P E R T I E S                                               -->
     <!-- ================================================================= -->
@@ -124,7 +124,7 @@
                 <attribute name="Implementation-Vendor" value="Scil"/>
                 <attribute name="Implementation-Title" value="${app.name}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
-                <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
+                <attribute name="Main-Class" value="fr.pasteque.pos.forms.StartPOS" />
     	    </manifest>
         </jar>
         <delete dir="${basedir}/build/zip" />
@@ -182,7 +182,7 @@
                 <attribute name="Implementation-Vendor" value="Scil"/>
                 <attribute name="Implementation-Title" value="${app.name}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
-                <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
+                <attribute name="Main-Class" value="fr.pasteque.pos.forms.StartPOS" />
             </manifest>
         </jar>
     </target>
