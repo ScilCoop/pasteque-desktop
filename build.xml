@@ -40,7 +40,7 @@
     <property name="javac.encoding" value="utf8"/>
     <!-- read in property files -->
     <property file="build.properties" />
-    <property name="src.pos" value="${basedir}/src-pos"/>
+    <property name="src.pos" value="${basedir}/src"/>
     <property name="locales" value="${basedir}/locales"/>
     <property name="graphics.src" value="${basedir}/graphics-src"/>
     <property name="lib" value="${basedir}/lib"/>
@@ -201,7 +201,7 @@
 
     <target name="dist.src" depends="init.dist" description="Generate the src zip file.">
         <mkdir dir="${basedir}/build/zip" />
-        <copy todir="${basedir}/build/zip/src-pos">
+        <copy todir="${basedir}/build/zip/src">
             <fileset dir="${src.pos}">
                 <exclude name="**/.nbattrs"/>
                 <exclude name="**/Thumbs.db"/>
