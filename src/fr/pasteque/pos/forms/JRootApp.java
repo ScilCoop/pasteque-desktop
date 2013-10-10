@@ -69,6 +69,7 @@ public class JRootApp extends JPanel implements AppView {
     private Date m_dActiveCashDateEnd;
     
     private String m_sInventoryLocation;
+    public static String posId = null;
     
     private StringBuffer inputtext;
    
@@ -213,6 +214,14 @@ public class JRootApp extends JPanel implements AppView {
             m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
         }
         
+        // Get or assign POS
+        posId = m_propsdb.getProperty("POS");
+        if (posId == null) {
+            posId = "1";
+            m_propsdb.setProperty("POS", posId);
+            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
+        }
+
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
         

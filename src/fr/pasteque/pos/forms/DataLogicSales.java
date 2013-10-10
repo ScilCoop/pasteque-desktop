@@ -215,7 +215,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     /** Get products from a category ID */
-    public List<ProductInfoExt> getProductCatalog(String category) throws BasicException  {
+    public List<ProductInfoExt> getProductCatalog(String category, String pos) throws BasicException  {
         return new PreparedSentence(s,
             "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
             + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
@@ -223,9 +223,15 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "P.DISCOUNTRATE "
             + "FROM PRODUCTS P, PRODUCTS_CAT O "
             + "WHERE P.ID = O.PRODUCT AND P.CATEGORY = ? "
+            + "AND O.POS_ID = ? "
             + "ORDER BY O.CATORDER, P.NAME",
-            SerializerWriteString.INSTANCE,
-            ProductInfoExt.getSerializerRead()).list(category);
+            new SerializerWrite<Object[]>() {
+                    public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
+                        Datas.STRING.setValue(dp, 1, (String) obj[0]);
+                        Datas.STRING.setValue(dp, 2, (String) obj[1]);
+                    }
+            },
+            ProductInfoExt.getSerializerRead()).list(category, pos);
     }
 
     /** Get products associated to a first one by ID */

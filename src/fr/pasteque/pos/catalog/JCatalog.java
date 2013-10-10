@@ -21,6 +21,7 @@
 
 package fr.pasteque.pos.catalog;
 
+import fr.pasteque.pos.forms.JRootApp;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.util.ThumbNailBuilder;
@@ -199,7 +200,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 }
                 
                 // Add products
-                java.util.List<ProductInfoExt> products = m_dlSales.getProductCatalog(catid);
+                java.util.List<ProductInfoExt> products = m_dlSales.getProductCatalog(catid, JRootApp.posId);
                 for (ProductInfoExt prod : products) {
                     jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
                 }
