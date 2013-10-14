@@ -204,13 +204,6 @@
                 <exclude name="**/Thumbs.db"/>
                 <exclude name="**/filesystem.attributes"/>
             </fileset>
-        </copy>        
-        <copy todir="${basedir}/build/zip/graphics-src">
-            <fileset dir="${graphics.src}">
-                <exclude name="**/.nbattrs"/>
-                <exclude name="**/Thumbs.db"/>
-                <exclude name="**/filesystem.attributes"/>
-            </fileset>
         </copy>
         <copy todir="${basedir}/build/zip/locales">
             <fileset dir="${basedir}/locales"/>
