@@ -85,12 +85,13 @@ public class ThumbNailBuilder {
         label.setOpaque(false);
         label.setLineWrap(true);
         label.setWrapStyleWord(true);
+	
         // Make font bold if text is not too long
         int wordsCount = text.split(" ").length;
         int charCount = text.length();
         label.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_SMALL));
         label.setText(text);
-        label.setSize(imgtext.getWidth(), 1); // Force width for preferredSize
+        label.setSize(imgtext.getWidth(), imgtext.getHeight()); // Force for preferredSize
         Dimension d = label.getPreferredSize();
         label.setBounds(0, 0, imgtext.getWidth(), d.height);  
         
