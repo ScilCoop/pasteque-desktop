@@ -35,6 +35,7 @@ import fr.pasteque.pos.util.ThumbNailBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import org.json.JSONObject;
 
 /**
  *
@@ -45,7 +46,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     private static final String RES_DIR = "res/";
     
     protected String m_sInitScript;
-    private SentenceFind m_dbversion;
     private SentenceExec m_dummy;
     
     protected SentenceList m_people;
@@ -75,7 +75,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
         m_sInitScript = "/fr/pasteque/pos/scripts/" + s.DB.getName();
 
-        m_dbversion = new PreparedSentence(s, "SELECT VERSION FROM APPLICATIONS WHERE ID = ?", SerializerWriteString.INSTANCE, SerializerReadString.INSTANCE);
         m_dummy = new StaticSentence(s, "SELECT * FROM PEOPLE WHERE 1 = 0");
          
         final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");        
@@ -157,7 +156,19 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 //    public abstract BaseSentence getShutdown();
     
     public final String findDbVersion() throws BasicException {
-        return (String) m_dbversion.find(AppLocal.APP_ID);
+        try {
+        ServerLoader loader = new ServerLoader();
+        ServerLoader.Response r = loader.read("VersionAPI", "");
+        if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+            JSONObject v = r.getObjContent();
+            return v.getString("level");
+        } else {
+            return null;
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
     public final void execDummy() throws BasicException {
         m_dummy.exec();
