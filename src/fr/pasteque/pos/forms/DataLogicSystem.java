@@ -35,6 +35,7 @@ import fr.pasteque.pos.util.ThumbNailBuilder;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -47,7 +48,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     
     protected String m_sInitScript;
     
-    protected SentenceList m_people;
     protected SentenceList m_peoplevisible;
     protected SentenceFind m_peoplebycard;  
     protected SerializerRead peopleread;
@@ -87,11 +87,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         };
 
-        m_people = new StaticSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE"
-            , null
-            , peopleread);
-        
         m_peoplevisible = new StaticSentence(s
             , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
             , null
@@ -182,7 +177,28 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
     public final List<AppUser> listPeople() throws BasicException {
-        return (List<AppUser>)m_people.list();
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("UsersAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<AppUser> users = new LinkedList<AppUser>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject jsU = a.getJSONObject(i);
+                    AppUser u = new AppUser(jsU.getString("id"),
+                            jsU.getString("name"), jsU.getString("password"),
+                            jsU.getString("card"),
+                            jsU.getJSONObject("role").getString("name"), null);
+                    users.add(u);
+                }
+                return users;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
     public final List listPeopleVisible() throws BasicException {
         return m_peoplevisible.list();
