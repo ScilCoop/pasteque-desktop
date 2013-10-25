@@ -46,7 +46,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     private static final String RES_DIR = "res/";
     
     protected String m_sInitScript;
-    private SentenceExec m_dummy;
     
     protected SentenceList m_people;
     protected SentenceList m_peoplevisible;
@@ -75,8 +74,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
         m_sInitScript = "/fr/pasteque/pos/scripts/" + s.DB.getName();
 
-        m_dummy = new StaticSentence(s, "SELECT * FROM PEOPLE WHERE 1 = 0");
-         
         final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");        
         peopleread = new SerializerRead() {
             public Object readValues(DataRead dr) throws BasicException {
@@ -171,7 +168,18 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
     public final void execDummy() throws BasicException {
-        m_dummy.exec();
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("" ,"");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_REJECTED)) {
+                return;
+            } else {
+                throw new BasicException("Bad server response");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
     public final List<AppUser> listPeople() throws BasicException {
         return (List<AppUser>)m_people.list();
