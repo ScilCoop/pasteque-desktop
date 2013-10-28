@@ -161,7 +161,8 @@ public class PaymentsModel {
         } 
         // Total taxes by type
         List<SalesLine> asales = new StaticSentence(app.getSession(),
-                "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT) " +
+                "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT), "
+                + "AVG(TAXES.RATE), SUM(TAXLINES.BASE) " +
                 "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
                 "AND RECEIPTS.MONEY = ?" +
                 "GROUP BY TAXCATEGORIES.NAME"
@@ -294,24 +295,40 @@ public class PaymentsModel {
     public static class SalesLine implements SerializableRead {
         
         private String m_SalesTaxName;
+        private Double taxRate;
+        private Double taxBase;
         private Double m_SalesTaxes;
         
         public void readValues(DataRead dr) throws BasicException {
             m_SalesTaxName = dr.getString(1);
             m_SalesTaxes = dr.getDouble(2);
+            this.taxRate = dr.getDouble(3);
+            this.taxBase = dr.getDouble(4);
         }
         public String printTaxName() {
             return m_SalesTaxName;
-        }      
+        }
+        public String printTaxRate() {
+        	return Formats.PERCENT.formatValue(this.taxRate);
+        }
         public String printTaxes() {
             return Formats.CURRENCY.formatValue(m_SalesTaxes);
+        }
+        public String printTaxBase() {
+            return Formats.CURRENCY.formatValue(this.taxBase);
         }
         public String getTaxName() {
             return m_SalesTaxName;
         }
+        public Double getTaxRate() {
+            return this.taxRate;
+        }
         public Double getTaxes() {
             return m_SalesTaxes;
-        }        
+        }
+        public Double getTaxBase() {
+            return this.taxBase;
+        }
     }
 
     public AbstractTableModel getSalesModel() {
