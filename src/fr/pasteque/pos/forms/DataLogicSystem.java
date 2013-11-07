@@ -34,6 +34,7 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.pos.util.ThumbNailBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -73,24 +74,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     public void init(Session s){
 
         m_sInitScript = "/fr/pasteque/pos/scripts/" + s.DB.getName();
-
-        final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");        
-        peopleread = new SerializerRead() {
-            public Object readValues(DataRead dr) throws BasicException {
-                return new AppUser(
-                        dr.getString(1),
-                        dr.getString(2),
-                        dr.getString(3),
-                        dr.getString(4),
-                        dr.getString(5),
-                        new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(dr.getBytes(6)))));                
-            }
-        };
-
-        m_peoplevisible = new StaticSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE VISIBLE = " + s.DB.TRUE()
-            , null
-            , peopleread);
 
         m_peoplebycard = new PreparedSentence(s
             , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
@@ -180,15 +163,32 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("UsersAPI", "getAll");
+            final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONArray a = r.getArrayContent();
                 List<AppUser> users = new LinkedList<AppUser>();
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject jsU = a.getJSONObject(i);
+                    String password = null;
+                    String card = null;
+                    if (!jsU.isNull("password")) {
+                        password = jsU.getString("password");
+                    }
+                    if (!jsU.isNull("card")) {
+                        card = jsU.getString("card");
+                    }
+                    ImageIcon icon;
+                    if (jsU.getBoolean("hasImage")) {
+                        byte[] data = loader.readBinary("user",
+                                jsU.getString("id"));
+                        icon = new ImageIcon(tnb.getThumbNail(ImageUtils.readImage(data)));
+                    } else {
+                        icon = new ImageIcon(tnb.getThumbNail(null));
+                    }
                     AppUser u = new AppUser(jsU.getString("id"),
-                            jsU.getString("name"), jsU.getString("password"),
-                            jsU.getString("card"),
-                            jsU.getJSONObject("role").getString("name"), null);
+                            jsU.getString("name"), password, card,
+                            jsU.getString("roleId"), icon,
+                            jsU.getBoolean("visible"));
                     users.add(u);
                 }
                 return users;
@@ -201,7 +201,14 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
     public final List listPeopleVisible() throws BasicException {
-        return m_peoplevisible.list();
+        List<AppUser> allUsers = this.listPeople();
+        List<AppUser> visUsers = new LinkedList<AppUser>();
+        for (AppUser user : allUsers) {
+            if (user.isVisible()) {
+                visUsers.add(user);
+            }
+        }
+        return visUsers;
     }      
     public final AppUser findPeopleByCard(String card) throws BasicException {
         return (AppUser) m_peoplebycard.find(card);

@@ -23,6 +23,7 @@ package fr.pasteque.data.loader;
 
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.util.AltEncrypter;
+import fr.pasteque.pos.util.URLBinGetter;
 import fr.pasteque.pos.util.URLTextGetter;
 
 import java.io.IOException;
@@ -38,6 +39,7 @@ public class ServerLoader {
     /** Lock to take and release for synchronous/asynchronous call. */
     private Object lock;
     private String url;
+    private String binUrl;
     private String user;
     private String password;
 
@@ -51,9 +53,20 @@ public class ServerLoader {
         this.url += "api.php";
     }
 
+    private void preformatBinUrl() {
+        if (!this.url.startsWith("http")) {
+            this.url = "http://" + this.url;
+        }
+        if (!this.url.endsWith("/")) {
+            this.url += "/";
+        }
+        this.url += "dbImg.php";
+    }
+
     /** Create from AppConfig */
     public ServerLoader() {
         String url = AppConfig.loadedInstance.getProperty("server.backoffice");
+        String binUrl = AppConfig.loadedInstance.getProperty("server.backoffice");
         String user = AppConfig.loadedInstance.getProperty("db.user");
         String password = AppConfig.loadedInstance.getProperty("db.password");
         if (password != null && password.startsWith("crypt:")) {
@@ -89,6 +102,13 @@ public class ServerLoader {
         return ret;
     }
 
+    private Map<String, String> binParams(String model, String id) {
+        Map<String, String> ret = new HashMap<String, String>();
+        ret.put("w", model);
+        ret.put("id", id);
+        return ret;
+    }
+
     private Response parseResponse(String resp) {
         JSONObject o = new JSONObject(resp);
         Response response = new Response(o);
@@ -121,6 +141,12 @@ public class ServerLoader {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    public byte[] readBinary(String model, String id)
+        throws SocketTimeoutException, URLBinGetter.ServerException,
+               IOException {
+        return URLBinGetter.getBinary(this.binUrl, this.binParams(model, id));
     }
 
     public class Response {

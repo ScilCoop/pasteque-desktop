@@ -52,7 +52,8 @@ public class AppUser {
     private String m_sName;
     private String m_sCard;
     private String m_sPassword;
-    private String m_sRole;
+    private String roleId;
+    private boolean visible;
     private Icon m_Icon;
 
     private Set<String> m_apermissions;
@@ -62,14 +63,16 @@ public class AppUser {
     }
 
     /** Creates a new instance of AppUser */
-    public AppUser(String id, String name, String password, String card, String role, Icon icon) {
+    public AppUser(String id, String name, String password, String card,
+            String roleId, Icon icon, boolean visible) {
         m_sId = id;
         m_sName = name;
         m_sPassword = password;
         m_sCard = card;
-        m_sRole = role;
+        this.roleId = roleId;
         m_Icon = icon;
         m_apermissions = null;
+        this.visible = visible;
     }
 
     public Icon getIcon() {
@@ -92,12 +95,16 @@ public class AppUser {
         return m_sPassword;
     }
 
-    public String getRole() {
-        return m_sRole;
+    public String getRoleId() {
+        return this.roleId;
     }
 
     public String getCard() {
         return m_sCard;
+    }
+
+    public boolean isVisible() {
+        return this.visible;
     }
 
     public boolean authenticate() {
@@ -116,7 +123,7 @@ public class AppUser {
         m_apermissions.add("fr.pasteque.pos.forms.JPanelMenu");
         m_apermissions.add("Menu.Exit");
 
-        String sRolePermisions = dlSystem.findRolePermissions(m_sRole);
+        String sRolePermisions = dlSystem.findRolePermissions(this.roleId);
 
         if (sRolePermisions != null) {
             try {
