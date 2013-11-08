@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.xml.bind.DatatypeConverter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -44,8 +45,6 @@ import org.json.JSONObject;
  * @author adrianromero
  */
 public class DataLogicSystem extends BeanFactoryDataSingle {
-    
-    private static final String RES_DIR = "res/";
     
     protected String m_sInitScript;
     
@@ -214,13 +213,21 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return (AppUser) m_peoplebycard.find(card);
     }   
     
-    public final String findRolePermissions(String sRole) {
-        
+    public final String findRolePermissions(String sRole) throws BasicException {
         try {
-            return Formats.BYTEA.formatValue(m_rolepermissions.find(sRole));        
-        } catch (BasicException e) {
-            return null;                    
-        }             
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("RolesAPI", "get",
+                    "id", sRole);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                return o.getString("permissions");
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
     
     public final void execChangePassword(Object[] userdata) throws BasicException {
@@ -232,58 +239,29 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
     
     private final byte[] getResource(String name) {
-
+        ServerLoader loader = new ServerLoader();
         byte[] resource;
-        
         resource = resourcescache.get(name);
-        
         if (resource == null) {
-            // Check resource on file system
-            String basePath = System.getProperty("dirname.path");
-            File resFile = new File(basePath + RES_DIR + name);
-            if (resFile.exists() && resFile.isFile() && resFile.canRead()) {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
-                byte[] buffer = new byte[2048];
-                BufferedInputStream bis = null;
+                // Check resource from server
                 try {
-                   bis = new BufferedInputStream(new FileInputStream(resFile));
-                } catch (FileNotFoundException fnfe) {
-                    // Unreachable
-                    fnfe.printStackTrace();
-                }
-                int read = 0;
-                try {
-                    read = bis.read(buffer, 0, buffer.length);
-                    while (read != -1) {
-                        bos.write(buffer, 0, read);
-                        read = bis.read(buffer, 0, buffer.length);
+                    ServerLoader.Response r = loader.read("ResourcesAPI", "get",
+                            "label", name);
+                    if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                        JSONObject o = r.getObjContent();
+                        String strRes = o.getString("content");
+                        if (o.getInt("type") == 0) {
+                            resource = strRes.getBytes();
+                        } else {
+                            resource = DatatypeConverter.parseBase64Binary(strRes);
+                        }
+                    } else {
+                        return null;
                     }
-                } catch (IOException ioe) {
-                    // TODO: log error;
-                    ioe.printStackTrace();
-                }
-                resource = bos.toByteArray();
-                try {
-                    bis.close();
-                } catch (IOException ioe) {
-                    // TODO: log error
-                    ioe.printStackTrace();
-                }
-                try {
-                    bos.close();
-                } catch (IOException ioe) {
-                    // TODO: log error
-                    ioe.printStackTrace();
-                }
-            } else {
-                // Check resource in database
-                try {
-                    resource = (byte[]) m_resourcebytes.find(name);
-                    resourcescache.put(name, resource);
-                } catch (BasicException e) {
+                } catch (Exception e) {
+                    e.printStackTrace();
                     resource = null;
                 }
-            }
         }
         return resource;
     }
@@ -297,6 +275,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
             resourcescache.put(name, data);
         } catch (BasicException e) {
+            e.printStackTrace();
         }
     }
     
@@ -321,6 +300,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             byte[] img = getResource(sName); // , ".png"
             return img == null ? null : ImageIO.read(new ByteArrayInputStream(img));
         } catch (IOException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -334,7 +314,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 p.storeToXML(o, AppLocal.APP_NAME, "UTF8");
                 setResource(sName, 0, o.toByteArray()); // El texto de las propiedades   
             } catch (IOException e) { // no deberia pasar nunca
-            }            
+                e.printStackTrace();
+            }
         }
     }
     
@@ -347,6 +328,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 p.loadFromXML(new ByteArrayInputStream(img));
             }
         } catch (IOException e) {
+            e.printStackTrace();
         }
         return p;
     }

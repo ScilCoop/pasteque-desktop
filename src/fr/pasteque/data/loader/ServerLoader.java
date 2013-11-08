@@ -94,7 +94,7 @@ public class ServerLoader {
         ret.put("password", this.password);
         ret.put("action", action);
         ret.put("p", api);
-        for (int i = 0; i < params.length; i++) {
+        for (int i = 0; i < params.length; i+= 2) {
             String key = params[i];
             String value = params[i + 1];
             ret.put(key, value);

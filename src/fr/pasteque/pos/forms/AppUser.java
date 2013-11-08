@@ -19,6 +19,7 @@
 
 package fr.pasteque.pos.forms;
 
+import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.LocalRes;
 import fr.pasteque.pos.ticket.UserInfo;
 import fr.pasteque.pos.util.Hashcypher;
@@ -123,7 +124,12 @@ public class AppUser {
         m_apermissions.add("fr.pasteque.pos.forms.JPanelMenu");
         m_apermissions.add("Menu.Exit");
 
-        String sRolePermisions = dlSystem.findRolePermissions(this.roleId);
+        String sRolePermisions = null;
+        try {
+            sRolePermisions = dlSystem.findRolePermissions(this.roleId);
+        } catch (BasicException e) {
+            logger.log(Level.SEVERE, "Unable to load permissions", e);
+        }
 
         if (sRolePermisions != null) {
             try {
