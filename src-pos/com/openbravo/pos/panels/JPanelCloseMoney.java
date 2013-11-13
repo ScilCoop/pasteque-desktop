@@ -381,7 +381,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr.fill = GridBagConstraints.HORIZONTAL;
         paymentsPanel.add(m_jCount, cstr);
 
-        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.Cash"));
+        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.paymenttotal"));
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr. gridy = 1;
