@@ -74,12 +74,12 @@ public class Hashcypher {
         String sPassword = JPasswordDialog.showEditPassword(parent,                 
                 AppLocal.getIntString("Label.Password"), 
                 AppLocal.getIntString("label.passwordnew"),
-                ImageLoader.readImageIcon("password"));
+                ImageLoader.readImageIcon("menu_password"));
         if (sPassword != null) {
             String sPassword2 = JPasswordDialog.showEditPassword(parent,                 
                     AppLocal.getIntString("Label.Password"), 
                     AppLocal.getIntString("label.passwordrepeat"),
-                    ImageLoader.readImageIcon("password.png"));
+                    ImageLoader.readImageIcon("menu_password.png"));
             if (sPassword2 != null) {
                 if (sPassword.equals(sPassword2)) {
                     return  Hashcypher.hashString(sPassword);
@@ -98,7 +98,7 @@ public class Hashcypher {
         String sPassword = JPasswordDialog.showEditPassword(parent,                 
                 AppLocal.getIntString("Label.Password"), 
                 AppLocal.getIntString("label.passwordold"),
-                ImageLoader.readImageIcon("password.png"));
+                ImageLoader.readImageIcon("menu_password.png"));
         if (sPassword != null) {
             if (Hashcypher.authenticate(sPassword, sOldPassword)) {
                 return changePassword(parent);               
