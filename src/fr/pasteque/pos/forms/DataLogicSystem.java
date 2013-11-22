@@ -71,11 +71,6 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 , "UPDATE PEOPLE SET APPPASSWORD = ? WHERE ID = ?"
                 ,new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}));
 
-        m_insertcash = new StaticSentence(s
-                , "INSERT INTO CLOSEDCASH(MONEY, HOST, HOSTSEQUENCE, DATESTART, DATEEND) " +
-                  "VALUES (?, ?, ?, ?, ?)"
-                , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP}));
-        
         resetResourcesCache();        
     }
 
@@ -300,9 +295,30 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             throw new BasicException(e);
         }
     }
-    
-    public final void execInsertCash(Object[] cash) throws BasicException {
-        m_insertcash.exec(cash);
+
+    /** Send a cash session to the server and return the updated session
+     * (id may have been set)
+     */
+    public final CashSession saveCashSession(CashSession cashSess)
+        throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.write("CashesAPI", "update",
+                    "cash", cashSess.toJSON().toString());
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                } else {
+                    return new CashSession(o);
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     } 
     
     public final String findLocationName(String iLocation) throws BasicException {

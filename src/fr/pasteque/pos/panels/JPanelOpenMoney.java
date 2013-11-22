@@ -31,6 +31,7 @@ import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.forms.JPanelView;
 import fr.pasteque.pos.forms.JPrincipalApp;
+import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -110,24 +111,20 @@ implements JPanelView {
     }
     
     private void openCash(java.awt.event.ActionEvent evt) {
-        // Open a new cash
+        // Open cash
         Date now = new Date();
-        // Open cash in database
+        CashSession cashSess = this.appView.getActiveCashSession();
+        cashSess.open(now);
+        // Send cash to server and update from answer
         try {
-            new StaticSentence(this.appView.getSession()
-                    , "UPDATE CLOSEDCASH SET DATESTART = ? WHERE HOST = ? AND MONEY = ?"
-                    , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.STRING, Datas.STRING})
-            ).exec(new Object[] {now, appView.getProperties().getHost(), appView.getActiveCashIndex()});
+            cashSess = this.dlSystem.saveCashSession(cashSess);
+            this.appView.setActiveCash(cashSess);
         } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE,
                         AppLocal.getIntString("message.cannotopencash"), e);
                 msg.show(this);
                 return;
         }
-        this.appView.setActiveCash(
-                this.appView.getActiveCashIndex(),
-                this.appView.getActiveCashSequence(),
-                now, null);
         // Go to original task
         this.principalApp.showTask(this.targetTask);
     }

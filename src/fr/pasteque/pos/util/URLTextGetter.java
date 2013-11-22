@@ -21,6 +21,7 @@ package fr.pasteque.pos.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -61,6 +62,23 @@ public class URLTextGetter {
         HttpURLConnection conn = (HttpURLConnection) finalURL.openConnection();
         if (postParams != null) {
             conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            // Format POST
+            String postBody = "";
+            for (String key : postParams.keySet()) {
+                postBody += URLEncoder.encode(key, "utf-8") + "="
+                        + URLEncoder.encode(postParams.get(key), "utf-8")
+                        + "&";
+            }
+            if (postBody.endsWith("&")) {
+                postBody = postBody.substring(0, postBody.length() - 1);
+            }
+            // Set
+            conn.setRequestProperty("Content-Length",
+                    String.valueOf(postBody.length()));
+            DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+            os.writeBytes(postBody);
+            os.close ();
         } else {
             conn.setRequestMethod("GET");
         }

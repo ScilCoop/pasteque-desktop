@@ -42,4 +42,8 @@ public abstract class DateUtils {
     public static Date readSecTimestamp(long timestamp) {
         return new Date(timestamp * 1000);
     }
+
+    public static long toSecTimestamp(Date date) {
+        return date.getTime() / 1000;
+    }
 }

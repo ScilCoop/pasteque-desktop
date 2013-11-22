@@ -56,6 +56,24 @@ public class CashSession {
 
     }
 
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("id", this.id);
+        o.put("host", this.host);
+        o.put("sequence", this.sequence);
+        if (this.openDate == null) {
+            o.put("openDate", JSONObject.NULL);
+        } else {
+            o.put("openDate", DateUtils.toSecTimestamp(this.openDate));
+        }
+        if (this.closeDate == null) {
+            o.put("closeDate", JSONObject.NULL);
+        } else {
+            o.put("closeDate", DateUtils.toSecTimestamp(this.closeDate));
+        }
+        return o;
+    }
+
     public String getId() {
         return this.id;
     }
@@ -72,8 +90,16 @@ public class CashSession {
         return this.openDate;
     }
 
+    public void open(Date d) {
+        this.openDate = d;
+    }
+
     public Date getCloseDate() {
         return this.closeDate;
+    }
+
+    public void close(Date d) {
+        this.closeDate = d;
     }
 
     /** Cash is opened when usable (opened and not closed) */

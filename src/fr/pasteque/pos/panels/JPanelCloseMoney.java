@@ -57,6 +57,7 @@ import fr.pasteque.pos.scripting.ScriptFactory;
 import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.printer.TicketParser;
 import fr.pasteque.pos.printer.TicketPrinterException;
+import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 /**
@@ -558,43 +559,30 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         if (res == JOptionPane.YES_OPTION) {
             
             Date dNow = new Date();
+            CashSession cashSess = m_App.getActiveCashSession();
+            cashSess.close(dNow);
             
-            try {               
+            try {
                 // Close cash in database
-                if (m_App.getActiveCashDateEnd() == null) {
-                    new StaticSentence(m_App.getSession()
-                        , "UPDATE CLOSEDCASH SET DATEEND = ? WHERE HOST = ? AND MONEY = ?"
-                        , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.STRING, Datas.STRING}))
-                        .exec(new Object[] {dNow, m_App.getProperties().getHost(), m_App.getActiveCashIndex()}); 
-                }
+                cashSess = m_dlSystem.saveCashSession(cashSess);
+                m_App.newActiveCash();
             } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
                 msg.show(this);
+                return;
             }
-            
+
+            // Prepare report and print
+            m_PaymentsToClose.setDateEnd(dNow);
+            printPayments("Printer.CloseCash");
+
+            // Show confirmation message
+            JOptionPane.showMessageDialog(this,
+                    AppLocal.getIntString("message.closecashok"),
+                    AppLocal.getIntString("message.title"),
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Refresh screen
             try {
-                // Create new cash token
-                m_App.setActiveCash(UUID.randomUUID().toString(), m_App.getActiveCashSequence() + 1, null, null);
-                
-                // Insert new cash token in database
-                m_dlSystem.execInsertCash(
-                        new Object[] {m_App.getActiveCashIndex(), m_App.getProperties().getHost(), m_App.getActiveCashSequence(), m_App.getActiveCashDateStart(), m_App.getActiveCashDateEnd()});                  
-               
-                // ponemos la fecha de fin
-                m_PaymentsToClose.setDateEnd(dNow);
-                
-                // print report
-                printPayments("Printer.CloseCash");
-                
-                // Show confirmation message
-                JOptionPane.showMessageDialog(this, AppLocal.getIntString("message.closecashok"), AppLocal.getIntString("message.title"), JOptionPane.INFORMATION_MESSAGE);
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-                msg.show(this);
-            }
-            
-            try {
-                // Refresh screen
                 loadData();
             } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("label.noticketstoclose"), e);

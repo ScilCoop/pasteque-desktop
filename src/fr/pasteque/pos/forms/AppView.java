@@ -24,6 +24,7 @@ import fr.pasteque.data.loader.Session;
 import fr.pasteque.pos.printer.*;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
+import fr.pasteque.pos.ticket.CashSession;
 
 /**
  *
@@ -38,8 +39,11 @@ public interface AppView {
     public Session getSession();
     public AppProperties getProperties();
     public Object getBean(String beanfactory) throws BeanFactoryException;
-     
+
+    public void newActiveCash();
     public void setActiveCash(String value, int iSeq, Date dStart, Date dEnd);
+    public void setActiveCash(CashSession cashSess);
+    public CashSession getActiveCashSession();
     public String getActiveCashIndex();
     public int getActiveCashSequence();
     public Date getActiveCashDateStart();
