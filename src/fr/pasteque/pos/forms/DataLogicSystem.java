@@ -30,8 +30,12 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.*;
+import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
+import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.util.ThumbNailBuilder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.Icon;
@@ -46,22 +50,14 @@ import org.json.JSONObject;
  */
 public class DataLogicSystem extends BeanFactoryDataSingle {
     
-    protected String m_sInitScript;
-    
-    protected SentenceList m_peoplevisible;
-    protected SentenceFind m_peoplebycard;  
     protected SerializerRead peopleread;
     
-    private SentenceFind m_rolepermissions; 
     private SentenceExec m_changepassword;    
     private SentenceFind m_locationfind;
     
-    private SentenceFind m_resourcebytes;
     private SentenceExec m_resourcebytesinsert;
     private SentenceExec m_resourcebytesupdate;
 
-    protected SentenceFind m_sequencecash;
-    protected SentenceFind m_activecash;
     protected SentenceExec m_insertcash;
     
     private Map<String, byte[]> resourcescache;
@@ -71,74 +67,28 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
     
     public void init(Session s){
-
-        m_sInitScript = "/fr/pasteque/pos/scripts/" + s.DB.getName();
-
-        m_peoplebycard = new PreparedSentence(s
-            , "SELECT ID, NAME, APPPASSWORD, CARD, ROLE, IMAGE FROM PEOPLE WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE()
-            , SerializerWriteString.INSTANCE
-            , peopleread);
-         
-        m_resourcebytes = new PreparedSentence(s
-            , "SELECT CONTENT FROM RESOURCES WHERE NAME = ?"
-            , SerializerWriteString.INSTANCE
-            , SerializerReadBytes.INSTANCE);
-        
-        Datas[] resourcedata = new Datas[] {Datas.STRING, Datas.STRING, Datas.INT, Datas.BYTES};
-        m_resourcebytesinsert = new PreparedSentence(s
-                , "INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES (?, ?, ?, ?)"
-                , new SerializerWriteBasic(resourcedata));
-        m_resourcebytesupdate = new PreparedSentence(s
-                , "UPDATE RESOURCES SET NAME = ?, RESTYPE = ?, CONTENT = ? WHERE NAME = ?"
-                , new SerializerWriteBasicExt(resourcedata, new int[] {1, 2, 3, 1}));
-        
-        m_rolepermissions = new PreparedSentence(s
-                , "SELECT PERMISSIONS FROM ROLES WHERE ID = ?"
-            , SerializerWriteString.INSTANCE
-            , SerializerReadBytes.INSTANCE);     
-        
         m_changepassword = new StaticSentence(s
                 , "UPDATE PEOPLE SET APPPASSWORD = ? WHERE ID = ?"
                 ,new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}));
 
-        m_sequencecash = new StaticSentence(s,
-                "SELECT MAX(HOSTSEQUENCE) FROM CLOSEDCASH WHERE HOST = ?",
-                SerializerWriteString.INSTANCE,
-                SerializerReadInteger.INSTANCE);
-        m_activecash = new StaticSentence(s
-            , "SELECT HOST, HOSTSEQUENCE, DATESTART, DATEEND FROM CLOSEDCASH WHERE MONEY = ?"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP}));            
         m_insertcash = new StaticSentence(s
                 , "INSERT INTO CLOSEDCASH(MONEY, HOST, HOSTSEQUENCE, DATESTART, DATEEND) " +
                   "VALUES (?, ?, ?, ?, ?)"
                 , new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING, Datas.INT, Datas.TIMESTAMP, Datas.TIMESTAMP}));
-            
-        m_locationfind = new StaticSentence(s
-                , "SELECT NAME FROM LOCATIONS WHERE ID = ?"
-                , SerializerWriteString.INSTANCE
-                , SerializerReadString.INSTANCE);   
         
         resetResourcesCache();        
     }
 
-
-    public String getInitScript() {
-        return m_sInitScript;
-    }
-    
-//    public abstract BaseSentence getShutdown();
-    
     public final String findDbVersion() throws BasicException {
         try {
-        ServerLoader loader = new ServerLoader();
-        ServerLoader.Response r = loader.read("VersionAPI", "");
-        if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-            JSONObject v = r.getObjContent();
-            return v.getString("level");
-        } else {
-            return null;
-        }
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("VersionAPI", "");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject v = r.getObjContent();
+                return v.getString("level");
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             throw new BasicException(e);
@@ -210,7 +160,13 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return visUsers;
     }      
     public final AppUser findPeopleByCard(String card) throws BasicException {
-        return (AppUser) m_peoplebycard.find(card);
+        List<AppUser> allUsers = this.listPeople();
+        for (AppUser user : allUsers) {
+            if (user.getCard() != null && user.getCard().equals(card)) {
+                return user;
+            }
+        }
+        return null;
     }   
     
     public final String findRolePermissions(String sRole) throws BasicException {
@@ -243,58 +199,42 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         byte[] resource;
         resource = resourcescache.get(name);
         if (resource == null) {
-                // Check resource from server
-                try {
-                    ServerLoader.Response r = loader.read("ResourcesAPI", "get",
-                            "label", name);
-                    if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                        JSONObject o = r.getObjContent();
-                        String strRes = o.getString("content");
-                        if (o.getInt("type") == 0) {
-                            resource = strRes.getBytes();
-                        } else {
-                            resource = DatatypeConverter.parseBase64Binary(strRes);
-                        }
+            // Check resource from server
+            try {
+                ServerLoader.Response r = loader.read("ResourcesAPI", "get",
+                        "label", name);
+                if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                    JSONObject o = r.getObjContent();
+                    String strRes = o.getString("content");
+                    if (o.getInt("type") == 0) {
+                        resource = strRes.getBytes();
                     } else {
-                        return null;
+                        resource = DatatypeConverter.parseBase64Binary(strRes);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    resource = null;
+                    resourcescache.put(name, resource);
+                } else {
+                    return null;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                resource = null;
+            }
         }
         return resource;
     }
-    
-    public final void setResource(String name, int type, byte[] data) {
-        
-        Object[] value = new Object[] {UUID.randomUUID().toString(), name, new Integer(type), data};
-        try {
-            if (m_resourcebytesupdate.exec(value) == 0) {
-                m_resourcebytesinsert.exec(value);
-            }
-            resourcescache.put(name, data);
-        } catch (BasicException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    public final void setResourceAsBinary(String sName, byte[] data) {
-        setResource(sName, 2, data);
-    }
-    
+
     public final byte[] getResourceAsBinary(String sName) {
         return getResource(sName);
     }
-    
+
     public final String getResourceAsText(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
     }
-    
+
     public final String getResourceAsXML(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
     }    
-    
+
     public final BufferedImage getResourceAsImage(String sName) {
         try {
             byte[] img = getResource(sName); // , ".png"
@@ -304,21 +244,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             return null;
         }
     }
-    
-    public final void setResourceAsProperties(String sName, Properties p) {
-        if (p == null) {
-            setResource(sName, 0, null); // texto
-        } else {
-            try {
-                ByteArrayOutputStream o = new ByteArrayOutputStream();
-                p.storeToXML(o, AppLocal.APP_NAME, "UTF8");
-                setResource(sName, 0, o.toByteArray()); // El texto de las propiedades   
-            } catch (IOException e) { // no deberia pasar nunca
-                e.printStackTrace();
-            }
-        }
-    }
-    
+
     public final Properties getResourceAsProperties(String sName) {
         
         Properties p = new Properties();
@@ -333,13 +259,46 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return p;
     }
 
-    public final int getSequenceCash(String host) throws BasicException {
-        Integer i = (Integer) m_sequencecash.find(host);
-        return (i == null) ? 1 : i.intValue();
+    public final CashRegisterInfo getCashRegister(String host)
+        throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashRegistersAPI", "get",
+                    "label", host);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                }
+                return new CashRegisterInfo(o);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
-    public final Object[] findActiveCash(String sActiveCashIndex) throws BasicException {
-        return (Object[]) m_activecash.find(sActiveCashIndex);
+    public CashSession getCashSession(String host) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashesAPI", "get",
+                    "host", host);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                } else {
+                    return new CashSession(o);
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
     
     public final void execInsertCash(Object[] cash) throws BasicException {
@@ -347,6 +306,19 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     } 
     
     public final String findLocationName(String iLocation) throws BasicException {
-        return (String) m_locationfind.find(iLocation);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("RolesAPI", "get",
+                    "id", iLocation);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                return o.getString("label");
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }    
 }

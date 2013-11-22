@@ -19,38 +19,38 @@
 //    You should have received a copy of the GNU General Public License
 //    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 
-package fr.pasteque.pos.forms;
+package fr.pasteque.pos.ticket;
 
-import fr.pasteque.beans.LocaleResources;
+import org.json.JSONObject;
 
-/**
- *
- * @author adrianromero
- */
-public class AppLocal {
-    
-    public static final String APP_NAME = "Pasteque";
-    public static final String APP_ID = "pasteque";
-    public static final String APP_VERSION = "2.0";
-    public static final String DB_VERSION = "5";
-  
-    // private static List<ResourceBundle> m_messages;
-    private static LocaleResources resources;
+/** Model for Cash register config. */
+public class CashRegisterInfo {
 
-    static {
-        AppLocal.resources = new LocaleResources();
-        AppLocal.resources.addBundleName("pos_messages");
+    private String label;
+    private String locationId;
+    private int posId;
+
+    public CashRegisterInfo(String label, String locationId, int posId) {
+        this.label = label;
+        this.locationId = locationId;
+        this.posId = posId;
     }
 
-    /** Creates a new instance of AppLocal */
-    private AppLocal() {
+    public CashRegisterInfo(JSONObject o) {
+        this.label = o.getString("label");
+        this.locationId = o.getString("locationId");
+        this.posId = o.getInt("posId");
     }
 
-    public static String getIntString(String sKey) {
-        return AppLocal.resources.getString(sKey);
+    public String getLabel() {
+        return this.label;
     }
 
-    public static String getIntString(String sKey, Object ... sValues) {
-        return AppLocal.resources.getString(sKey, sValues);
+    public String getLocationId() {
+        return this.locationId;
+    }
+
+    public int getPosId() {
+        return this.posId;
     }
 }

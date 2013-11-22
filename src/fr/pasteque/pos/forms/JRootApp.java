@@ -47,6 +47,8 @@ import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
 import fr.pasteque.pos.scanpal2.DeviceScannerFactory;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
+import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.sql.SQLException;
 import java.util.Locale;
@@ -59,7 +61,6 @@ import java.util.regex.Matcher;
 public class JRootApp extends JPanel implements AppView {
  
     private AppProperties m_props;
-    private Session session;     
     private DataLogicSystem m_dlSystem;
     
     private Properties m_propsdb = null;
@@ -69,7 +70,7 @@ public class JRootApp extends JPanel implements AppView {
     private Date m_dActiveCashDateEnd;
     
     private String m_sInventoryLocation;
-    public static String posId = null;
+    public static Integer posId = null;
     
     private StringBuffer inputtext;
    
@@ -104,122 +105,61 @@ public class JRootApp extends JPanel implements AppView {
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
-        // Database start
+        m_dlSystem = (DataLogicSystem) getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        
+        // Check database compatibility
+        String sDBVersion = readDataBaseVersion();
+        while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
+            // TODO: i18n
+            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatbile version", "Server version " + sDBVersion + ", expected " + AppLocal.DB_VERSION));
+            return false;
+        }     
+        
+        // Load host properties
+        CashRegisterInfo cashReg = null;
         try {
-            session = AppViewConnection.createSession(m_props);
+            cashReg = m_dlSystem.getCashRegister(m_props.getHost());
         } catch (BasicException e) {
-            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
+            JMessageDialog.showMessage(this,
+                    new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
+            return false;
+        }
+        if (cashReg == null) {
+            // Unknown cash register
+            // TODO: i18n
+            JMessageDialog.showMessage(this,
+                    new MessageInf(MessageInf.SGN_DANGER, "Unknown cash"));
             return false;
         }
 
-        m_dlSystem = (DataLogicSystem) getBean("fr.pasteque.pos.forms.DataLogicSystem");
-        
-        // Create or upgrade the database if database version is not the expected
-        String sDBVersion = readDataBaseVersion();
-        boolean upgradeAsked = false;
-        while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
-            
-            // Create or upgrade database
-            
-            String[] sScripts = null;
-            if (sDBVersion == null) {
-                sScripts = new String[2];
-            	sScripts[0] = m_dlSystem.getInitScript() + "-create.sql";
-            	sScripts[1] = m_dlSystem.getInitScript() + "-create-data.sql";
-            } else {
-                sScripts = new String[1];
-            	sScripts[0] = m_dlSystem.getInitScript() + "-upgrade-" + sDBVersion + ".sql";
-            }
-            // Check if scripts exists
-            for (String script : sScripts) {
-                if (JRootApp.class.getResource(script) == null) {
-                    JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, sDBVersion == null
-                            ? AppLocal.getIntString("message.databasenotsupported", session.DB.getName()) // Create script does not exists. Database not supported
-                            : AppLocal.getIntString("message.noupdatescript"))); // Upgrade script does not exist.
-                    session.close();
-                    return false;
-                }
-            }
-            // Create or upgrade script exists.
-            if ( upgradeAsked || JOptionPane.showConfirmDialog(this
-                    , AppLocal.getIntString(sDBVersion == null ? "message.createdatabase" : "message.updatedatabase")
-                    , AppLocal.getIntString("message.title")
-                    , JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {  
-                try {
-                    upgradeAsked = true;
-                    for (String script : sScripts) {
-                        BatchSentence bsentence = new BatchSentenceResource(session, script);
-                        bsentence.putParameter("APP_ID", Matcher.quoteReplacement(AppLocal.APP_ID));
-                        bsentence.putParameter("APP_NAME", Matcher.quoteReplacement(AppLocal.APP_NAME));
-                        bsentence.putParameter("DB_VERSION", Matcher.quoteReplacement(AppLocal.DB_VERSION));
-                        java.util.List l = bsentence.list();
-                        if (l.size() > 0) {
-                            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("Database.ScriptWarning"), l.toArray(new Throwable[l.size()])));
-                        }
-                    }
-                } catch (BasicException e) {
-                    JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, AppLocal.getIntString("Database.ScriptError"), e));
-                    session.close();
-                    return false;
-                }     
-            } else {
-                session.close();
-                return false;
-            }
-            sDBVersion = readDataBaseVersion();
-        }
-        
-        // Load host properties from resources
-        m_propsdb = m_dlSystem.getResourceAsProperties(m_props.getHost() + "/properties");
-        // Load cash token
+        // Load cash session
         try {
-            // Get cash token from resources
-            String sActiveCashIndex = m_propsdb.getProperty("activecash");
-            // Check active cash in database if found in resources
-            Object[] valcash = sActiveCashIndex == null
-                    ? null
-                    : m_dlSystem.findActiveCash(sActiveCashIndex);
-            if (valcash == null || !m_props.getHost().equals(valcash[0])) {
-                // No active cash found or token affected to an other host
-                // Create a new one
-                setActiveCash(UUID.randomUUID().toString(),
-                              m_dlSystem.getSequenceCash(m_props.getHost()) + 1,
-                              null, null);
-
-                // Insert new token in database
-                m_dlSystem.execInsertCash(new Object[] {getActiveCashIndex(),
-                                          m_props.getHost(),
-                                          getActiveCashSequence(),
-                                          getActiveCashDateStart(),
-                                          getActiveCashDateEnd()});
+            CashSession cashSess = m_dlSystem.getCashSession(cashReg.getLabel());
+            if (cashSess == null) {
+                // New cash session
+                this.setActiveCash(null, 0, null, null);
             } else {
-                // Active cash found, set it
-                setActiveCash(sActiveCashIndex, (Integer) valcash[1],
-                              (Date) valcash[2],
-                              (Date) valcash[3]);
+                this.setActiveCash(cashSess.getId(), cashSess.getSequence(),
+                        cashSess.getOpenDate(), cashSess.getCloseDate());
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
             msg.show(this);
-            session.close();
             return false;
         }  
         
-        // Leo la localizacion de la caja (Almacen).
-        m_sInventoryLocation = m_propsdb.getProperty("location");
+        // Load location
+        m_sInventoryLocation = cashReg.getLocationId();
         if (m_sInventoryLocation == null) {
+            // Not set, use default
             m_sInventoryLocation = "0";
-            m_propsdb.setProperty("location", m_sInventoryLocation);
-            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
         }
         
         // Get or assign POS
-        posId = m_propsdb.getProperty("POS");
+        posId = cashReg.getPosId();
         if (posId == null) {
-            posId = "1";
-            m_propsdb.setProperty("POS", posId);
-            m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
+            posId = 1;
         }
 
         // Inicializo la impresora...
@@ -256,15 +196,9 @@ public class JRootApp extends JPanel implements AppView {
         }
 
         // Show Hostname, Warehouse and URL in taskbar
-        String url;
-        try {
-            url = session.getURL();
-        } catch (SQLException e) {
-            url = "";
-        }        
-        m_jHost.setText("<html>" + m_props.getHost() + " - " + sWareHouse + "<br>" + url);
+        m_jHost.setText("<html>" + cashReg.getLabel() + " - " + sWareHouse);
         
-        showLogin();
+        this.showLogin();
 
         return true;
     }
@@ -285,8 +219,6 @@ public class JRootApp extends JPanel implements AppView {
 
             // apago el visor
             m_TP.getDeviceDisplay().clearVisor();
-            // me desconecto de la base de datos.
-            session.close();
 
             // Download Root form
             SwingUtilities.getWindowAncestor(this).dispose();
@@ -306,8 +238,9 @@ public class JRootApp extends JPanel implements AppView {
     }
     
     public Session getSession() {
-        return session;
-    } 
+        // TODO: remove from Interface
+        return null;
+    }
 
     public String getInventoryLocation() {
         return m_sInventoryLocation;
@@ -334,9 +267,6 @@ public class JRootApp extends JPanel implements AppView {
         m_iActiveCashSequence = iSeq;
         m_dActiveCashDateStart = dStart;
         m_dActiveCashDateEnd = dEnd;
-        
-        m_propsdb.setProperty("activecash", m_sActiveCashIndex);
-        m_dlSystem.setResourceAsProperties(m_props.getHost() + "/properties", m_propsdb);
     }   
        
     public AppProperties getProperties() {

@@ -24,6 +24,8 @@ import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.SerializerRead;
 
+import org.json.JSONObject;
+
 public class CurrencyInfo implements IKeyed {
     
     private static final long serialVersionUID = 4680364653429L;
@@ -35,19 +37,21 @@ public class CurrencyInfo implements IKeyed {
     private String format;
     private double rate;
     private boolean main;
+    private boolean active;
 
     /** Creates a new instance of FloorsInfo */
     public CurrencyInfo() {
     }
-    public CurrencyInfo(Object[] data) {
-        this.id = (Integer) data[0];
-        this.name = (String) data[1];
-        this.symbol = (String) data[2];
-        this.decimal = (String) data[3];
-        this.thousands = (String) data[4];
-        this.format = (String) data[5];
-        this.rate = (Double) data[6];
-        this.main = (Boolean) data[7];
+    public CurrencyInfo(JSONObject o) {
+        this.id = o.getInt("id");
+        this.name = o.getString("label");
+        this.symbol = o.getString("symbol");
+        this.decimal = o.getString("decimalSeparator");
+        this.thousands = o.getString("thousandsSeparator");
+        this.format = o.getString("format");
+        this.rate = o.getDouble("rate");
+        this.main = o.getBoolean("main");
+        this.active = o.getBoolean("active");
     }
 
     public Object getKey() {

@@ -27,6 +27,7 @@ import fr.pasteque.pos.ticket.TaxInfo;
 import fr.pasteque.pos.ticket.TicketInfo;
 import fr.pasteque.pos.ticket.TicketLineInfo;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import fr.pasteque.data.loader.*;
@@ -50,6 +51,8 @@ import fr.pasteque.pos.ticket.TariffInfo;
 import fr.pasteque.pos.ticket.TicketTaxInfo;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -119,54 +122,111 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     /** Get a product by ID */
     public final ProductInfoExt getProductInfo(String id) throws BasicException {
-        return (ProductInfoExt) new PreparedSentence(s,
-            "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
-            + "DISCOUNTENABLED, DISCOUNTRATE "
-            + "FROM PRODUCTS WHERE ID = ?",
-            SerializerWriteString.INSTANCE,
-            ProductInfoExt.getSerializerRead()).find(id);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("ProductsAPI", "get",
+                    "id", id);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                ProductInfoExt prd = new ProductInfoExt(o);
+                return prd;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     /** Get a product by code */
     public final ProductInfoExt getProductInfoByCode(String sCode) throws BasicException {
-        return (ProductInfoExt) new PreparedSentence(s,
-            "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
-            + "DISCOUNTENABLED, DISCOUNTRATE "
-            + "FROM PRODUCTS WHERE CODE = ?",
-            SerializerWriteString.INSTANCE,
-            ProductInfoExt.getSerializerRead()).find(sCode);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("ProductsAPI", "get",
+                    "code", sCode);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                ProductInfoExt prd = new ProductInfoExt(o);
+                return prd;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     /** Get a product by reference */
     public final ProductInfoExt getProductInfoByReference(String sReference) throws BasicException {
-        return (ProductInfoExt) new PreparedSentence(s,
-            "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-            + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, ATTRIBUTES, "
-            + "DISCOUNTENABLED, DISCOUNTRATE "
-            + "FROM PRODUCTS WHERE REFERENCE = ?",
-            SerializerWriteString.INSTANCE,
-            ProductInfoExt.getSerializerRead()).find(sReference);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("ProductsAPI", "get",
+                    "reference", sReference);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                ProductInfoExt prd = new ProductInfoExt(o);
+                return prd;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
 
     /** Get root categories */
     public final List<CategoryInfo> getRootCategories() throws BasicException {
-        return new PreparedSentence(s,
-            "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID IS NULL "
-            + "ORDER BY DISPORDER, NAME",
-            null,
-            CategoryInfo.getSerializerRead()).list();
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CategoriesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<CategoryInfo> rootCats = new ArrayList<CategoryInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    if (!o.isNull("parentId")) {
+                        CategoryInfo cat = new CategoryInfo(o);
+                        rootCats.add(cat);
+                    }
+                }
+                return rootCats;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     /** Get subcategories from parent ID */
     public final List<CategoryInfo> getSubcategories(String category) throws BasicException  {
-        return new PreparedSentence(s,
-            "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE PARENTID = ? "
-            + "ORDER BY DISPORDER, NAME",
-            SerializerWriteString.INSTANCE,
-            CategoryInfo.getSerializerRead()).list(category);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CategoriesAPI",
+                    "getChildren", "parentId", category);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<CategoryInfo> rootCats = new ArrayList<CategoryInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    if (!o.isNull("parentId")) {
+                        CategoryInfo cat = new CategoryInfo(o);
+                        rootCats.add(cat);
+                    }
+                }
+                return rootCats;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     //Subgrupos de una composición
@@ -208,30 +268,45 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     public final List<CategoryInfo> getCategoryComposition() throws BasicException {
-        return new PreparedSentence(s
-            , "SELECT ID, NAME, IMAGE FROM CATEGORIES WHERE ID = '0'"
-            , null
-            , CategoryInfo.getSerializerRead()).list();
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CategoriesAPI", "get",
+                    "id", "0");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                List<CategoryInfo> list = new ArrayList<CategoryInfo>();
+                list.add(new CategoryInfo(o));
+                return list;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     /** Get products from a category ID */
-    public List<ProductInfoExt> getProductCatalog(String category, String pos) throws BasicException  {
-        return new PreparedSentence(s,
-            "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
-            + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
-            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
-            + "P.DISCOUNTRATE "
-            + "FROM PRODUCTS P, PRODUCTS_CAT O "
-            + "WHERE P.ID = O.PRODUCT AND P.CATEGORY = ? "
-            + "AND O.POS_ID = ? "
-            + "ORDER BY O.CATORDER, P.NAME",
-            new SerializerWrite<Object[]>() {
-                    public void writeValues(DataWrite dp, Object[] obj) throws BasicException {
-                        Datas.STRING.setValue(dp, 1, (String) obj[0]);
-                        Datas.STRING.setValue(dp, 2, (String) obj[1]);
-                    }
-            },
-            ProductInfoExt.getSerializerRead()).list(category, pos);
+    public List<ProductInfoExt> getProductCatalog(String category, int pos) throws BasicException  {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("ProductsAPI",
+                    "getCategory", "id", category);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<ProductInfoExt> prds = new ArrayList<ProductInfoExt>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    prds.add(new ProductInfoExt(o));
+                }
+                return prds;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     /** Get products associated to a first one by ID */
@@ -446,28 +521,61 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new SerializerReadClass(FloorsInfo.class));
     }
 
-    public final SentenceList getCurrenciesList() {
-        return new StaticSentence(s,
-            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
-            + "MAIN FROM CURRENCIES ORDER BY MAIN DESC, NAME",
-            null, CurrencyInfo.getSerializerRead());
+    public final List<CurrencyInfo> getCurrenciesList() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CurrenciesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<CurrencyInfo> currencies = new ArrayList<CurrencyInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CurrencyInfo currency = new CurrencyInfo(o);
+                    currencies.add(currency);
+                }
+                return currencies;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     public CurrencyInfo getCurrency(int currencyId) throws BasicException {
-        return (CurrencyInfo) new StaticSentence(s,
-            "SELECT ID, NAME, SYMBOL, DECIMALSEP, THOUSANDSSEP, FORMAT, RATE, "
-            + "MAIN FROM CURRENCIES WHERE ID = ?",
-            SerializerWriteInteger.INSTANCE, CurrencyInfo.getSerializerRead()).find(currencyId);
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CurrenciesAPI", "get",
+                    "id", String.valueOf(currencyId));
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                CurrencyInfo currency = new CurrencyInfo(o);
+                return currency;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     public CurrencyInfo getMainCurrency() throws BasicException {
-        List<CurrencyInfo> currencies = this.getCurrenciesList().list();
-        for (CurrencyInfo curr : currencies) {
-            if (curr.isMain()) {
-                return curr;
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CurrenciesAPI", "getMain");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                CurrencyInfo currency = new CurrencyInfo(o);
+                return currency;
+            } else {
+                return null;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
         }
-        return null;
     }
 
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {

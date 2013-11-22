@@ -65,7 +65,7 @@ public class PaymentsModel {
         DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
         
         PaymentsModel p = new PaymentsModel();
-        currencies = dlSales.getCurrenciesList().list();
+        currencies = dlSales.getCurrenciesList();
         
         // Propiedades globales
         p.m_sHost = app.getProperties().getHost();

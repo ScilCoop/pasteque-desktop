@@ -24,6 +24,7 @@ import java.awt.image.*;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.ImageUtils;
 import fr.pasteque.data.loader.SerializerRead;
+import org.json.JSONObject;
 
 /**
  *
@@ -42,6 +43,12 @@ public class CategoryInfo implements IKeyed {
         m_sID = id;
         m_sName = name;
         m_Image = image;
+    }
+
+    public CategoryInfo(JSONObject o) {
+        this.m_sID = o.getString("id");
+        this.m_sName = o.getString("label");
+        this.m_Image = null;
     }
 
     public Object getKey() {

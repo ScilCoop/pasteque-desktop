@@ -73,7 +73,7 @@ public class JProductLineEdit extends javax.swing.JDialog implements ActionListe
     
     private TicketLineInfo init(AppView app, TicketLineInfo oLine) throws BasicException {
         DataLogicSales dl = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        this.currencies = dl.getCurrenciesList().list();
+        this.currencies = dl.getCurrenciesList();
         ComboBoxValModel currenciesModel = new ComboBoxValModel(this.currencies);
 
         // Inicializo los componentes

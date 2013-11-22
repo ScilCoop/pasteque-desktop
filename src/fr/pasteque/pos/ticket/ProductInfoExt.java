@@ -28,6 +28,7 @@ import fr.pasteque.data.loader.ImageUtils;
 import fr.pasteque.data.loader.SerializerRead;
 import fr.pasteque.format.Formats;
 import java.util.Properties;
+import org.json.JSONObject;
 
 /**
  *
@@ -70,6 +71,27 @@ public class ProductInfoExt {
         m_dPriceSell = 0.0;
         m_Image = null;
         attributes = new Properties();
+    }
+
+    public ProductInfoExt(JSONObject o) {
+        this.m_ID = o.getString("id");
+        this.m_sRef = o.getString("reference");
+        this.m_sCode = o.getString("barcode");
+        this.m_sName = o.getString("label");
+        this.m_bCom = false; // TODO: regression, add support for com products
+        this.m_bScale = o.getBoolean("scaled");
+        if (o.isNull("priceBuy")) {
+            this.m_dPriceBuy = NO_PRICE;
+        } else {
+            this.m_dPriceBuy = o.getDouble("priceBuy");
+        }
+        this.m_dPriceSell = o.getDouble("priceSell");
+        this.taxcategoryid = o.getString("taxCatId");
+        this.categoryid = o.getString("categoryId");
+        this.attributesetid = null; // TODO: regression, add support for attrs
+        this.attributes = new Properties();
+        this.discountEnabled = o.getBoolean("discountEnabled");
+        this.discountRate = o.getDouble("discountRate");
     }
 
     public final String getID() {

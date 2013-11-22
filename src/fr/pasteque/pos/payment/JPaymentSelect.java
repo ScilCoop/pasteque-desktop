@@ -94,7 +94,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
         // Init currencies
         DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
         try {
-            this.currencies = dlSales.getCurrenciesList().list();
+            this.currencies = dlSales.getCurrenciesList();
         } catch (BasicException e) {
             this.currencies = new ArrayList<CurrencyInfo>();
             e.printStackTrace();

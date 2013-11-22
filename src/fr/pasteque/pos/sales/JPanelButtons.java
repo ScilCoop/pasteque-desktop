@@ -175,7 +175,12 @@ public class JPanelButtons extends javax.swing.JPanel {
     }
     
     private JButton createButtonFunc(String sKey, String sImage, String title) {
-        JButton btn = WidgetsBuilder.createButton(new ImageIcon(tnbmacro.getThumbNail(panelticket.getResourceAsImage(sImage))), title, WidgetsBuilder.SIZE_MEDIUM);
+        ImageIcon icon = null;
+        if (sImage != null) {
+            icon = new ImageIcon(tnbmacro.getThumbNail(panelticket.getResourceAsImage(sImage)));
+        }
+        JButton btn = WidgetsBuilder.createButton(icon, title,
+                WidgetsBuilder.SIZE_MEDIUM);
         btn.setName(sKey);
         btn.setText(title);
         btn.setFocusPainted(false);
