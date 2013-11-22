@@ -111,7 +111,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         showingcategory = null;
                 
         // Load the taxes logic
-        taxeslogic = new TaxesLogic(m_dlSales.getTaxList().list());
+        taxeslogic = new TaxesLogic(m_dlSales.getTaxList());
 
         // Load all categories.
         java.util.List<CategoryInfo> categories = m_dlSales.getRootCategories(); 

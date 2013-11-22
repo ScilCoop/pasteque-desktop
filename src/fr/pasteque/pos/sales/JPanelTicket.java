@@ -117,17 +117,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private JTicketsBag m_ticketsbag;
 
-    private SentenceList senttax;
     private ListKeyed taxcollection;
     // private ComboBoxValModel m_TaxModel;
 
-    private SentenceList senttaxcategories;
     private ListKeyed taxcategoriescollection;
     private ComboBoxValModel taxcategoriesmodel;
     
     private TaxesLogic taxeslogic;
 
-    private SentenceList m_senttariff;
     private List m_TariffList;
     private ComboBoxValModel m_TariffModel;
 
@@ -180,9 +177,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     public void init(AppView app) throws BeanFactoryException {
         m_App = app;
-        dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
-        dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
+        this.dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        this.dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
+        this.dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
 
         m_ticketsbag = getJTicketsBag();
         m_jPanelBag.add(m_ticketsbag.getBagComponent(), BorderLayout.LINE_START);
@@ -210,12 +207,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         catcontainer.add(getSouthComponent(), BorderLayout.CENTER);
         m_iProduct = PRODUCT_SINGLE;
         
-        // El modelo de impuestos
-        senttax = dlSales.getTaxList();
-        senttaxcategories = dlSales.getTaxCategoriesList();
-        
         // Tariff areas
-        m_senttariff = dlSales.getTariffAreaList();
         m_TariffModel = new ComboBoxValModel();
 
         // ponemos a cero el estado
@@ -263,9 +255,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jaddtax.setSelected("true".equals(m_jbtnconfig.getProperty("taxesincluded")));
 
         // Inicializamos el combo de los impuestos.
-        java.util.List<TaxInfo> taxlist = senttax.list();
+        java.util.List<TaxInfo> taxlist = this.dlSales.getTaxList();
         taxcollection = new ListKeyed<TaxInfo>(taxlist);
-        java.util.List<TaxCategoryInfo> taxcategorieslist = senttaxcategories.list();
+        java.util.List<TaxCategoryInfo> taxcategorieslist = this.dlSales.getTaxCategoriesList();
         taxcategoriescollection = new ListKeyed<TaxCategoryInfo>(taxcategorieslist);
         
         taxcategoriesmodel = new ComboBoxValModel(taxcategorieslist);
@@ -292,7 +284,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
 
         // Initialize tariff area combobox
-        m_TariffList = m_senttariff.list();
+        m_TariffList = this.dlSales.getTariffAreaList();
         TariffInfo defaultArea = new TariffInfo("-1",
                 AppLocal.getIntString("Label.DefaultTariffArea"));
         m_TariffList.add(0, defaultArea);

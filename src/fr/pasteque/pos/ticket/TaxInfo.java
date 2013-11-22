@@ -21,7 +21,9 @@ package fr.pasteque.pos.ticket;
 
 import java.io.Serializable;
 import fr.pasteque.data.loader.IKeyed;
+import fr.pasteque.format.DateUtils;
 import java.util.Date;
+import org.json.JSONObject;
 
 /**
  *
@@ -53,6 +55,22 @@ public class TaxInfo implements Serializable, IKeyed {
         this.rate = rate;
         this.cascade = cascade;
         this.order = order;
+    }
+
+    public TaxInfo(JSONObject o) {
+        this.id = o.getString("id");
+        this.name = o.getString("label");
+        this.taxcategoryid = o.getString("taxCatId");
+        if (o.isNull("startDate")) {
+            this.validfrom = null;
+        } else {
+            this.validfrom = DateUtils.readSecTimestamp(o.getLong("startDate"));
+        }
+        this.taxcustcategoryid = null; // TODO: support for taxcustcategory
+        this.parentid = null; // TODO: support for parent tax
+        this.rate = o.getDouble("rate");
+        this.cascade = false; // TODO: support for tax cascade
+        this.order = null;
     }
     
     public Object getKey() {

@@ -450,26 +450,32 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
    
     // Listados para combo
-    public final SentenceList getTaxList() {
-        return new StaticSentence(s,
-            "SELECT ID, NAME, CATEGORY, VALIDFROM, CUSTCATEGORY, PARENTID, "
-            + "RATE, RATECASCADE, RATEORDER "
-            + "FROM TAXES "
-            + "ORDER BY NAME",
-            null,
-            new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new TaxInfo(
-                        dr.getString(1), 
-                        dr.getString(2),
-                        dr.getString(3),
-                        dr.getTimestamp(4),
-                        dr.getString(5),
-                        dr.getString(6),
-                        dr.getDouble(7).doubleValue(),
-                        dr.getBoolean(8).booleanValue(),
-                        dr.getInt(9));
-            }});
+    public final List<TaxInfo> getTaxList() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TaxesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<TaxInfo> taxes = new ArrayList<TaxInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    JSONArray a2 = o.getJSONArray("taxes");
+                    for (int j = 0; j < a2.length(); j++) {
+                        JSONObject o2 = a2.getJSONObject(j);
+                        TaxInfo tax = new TaxInfo(o2);
+                        taxes.add(tax);
+                    }
+                }
+                return taxes;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
+
     public final SentenceList getCategoriesList() {
         return new StaticSentence(s
             , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
@@ -492,14 +498,30 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 return new TaxCustCategoryInfo(dr.getString(1), dr.getString(2));
             }});
     }
-    public final SentenceList getTaxCategoriesList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME FROM TAXCATEGORIES ORDER BY NAME"
-            , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new TaxCategoryInfo(dr.getString(1), dr.getString(2));
-            }});
+
+    public final List<TaxCategoryInfo> getTaxCategoriesList()
+        throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TaxesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<TaxCategoryInfo> taxCats = new ArrayList<TaxCategoryInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    TaxCategoryInfo taxCat = new TaxCategoryInfo(o);
+                    taxCats.add(taxCat);
+                }
+                return taxCats;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
+
     public final SentenceList getAttributeSetList() {
         return new StaticSentence(s
             , "SELECT ID, NAME FROM ATTRIBUTESET ORDER BY NAME"
@@ -932,11 +954,26 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             productsRow.getSerializerRead());
     }
 
-    public final SentenceList getTariffAreaList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME, TARIFFORDER FROM TARIFFAREAS ORDER BY TARIFFORDER"
-            , null
-            , new SerializerReadClass(TariffInfo.class));
+    public final List<TariffInfo> getTariffAreaList() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TariffAreasAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<TariffInfo> areas = new ArrayList<TariffInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    TariffInfo area = new TariffInfo(o);
+                    areas.add(area);
+                }
+                return areas;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     public final SentenceExec getDebtUpdate() {

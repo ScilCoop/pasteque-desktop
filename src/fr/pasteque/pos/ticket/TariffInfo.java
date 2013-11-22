@@ -28,6 +28,7 @@ import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
+import org.json.JSONObject;
 
 /**
  *
@@ -51,7 +52,13 @@ public class TariffInfo implements Serializable, SerializableRead, SerializableW
         m_sName = name;
         m_iOrder = 0;
     }
-    
+
+    public TariffInfo(JSONObject o) {
+        this.m_sId = o.getString("id");
+        this.m_sName = o.getString("label");
+        this.m_iOrder = 0; // TODO: support for tariff area dispOrder
+    }
+
     public Object getKey() {
         return m_sId;
     }

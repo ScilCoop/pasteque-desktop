@@ -107,7 +107,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     }
 
     public void loadCatalog() throws BasicException {
-        taxeslogic = new TaxesLogic(m_dlSales.getTaxList().list());
+        taxeslogic = new TaxesLogic(m_dlSales.getTaxList());
         // delete all categories panel
         m_jProducts.removeAll();
         

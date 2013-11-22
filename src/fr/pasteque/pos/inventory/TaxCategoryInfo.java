@@ -21,6 +21,7 @@ package fr.pasteque.pos.inventory;
 
 import fr.pasteque.data.loader.IKeyed;
 import java.io.Serializable;
+import org.json.JSONObject;
 
 /**
  *
@@ -37,7 +38,12 @@ public class TaxCategoryInfo implements Serializable, IKeyed {
         m_sID = sID;
         m_sName = sName;      
     }
-    
+
+    public TaxCategoryInfo(JSONObject o) {
+        this.m_sID = o.getString("id");
+        this.m_sName = o.getString("label");
+    }
+
     public Object getKey() {
         return m_sID;
     }
