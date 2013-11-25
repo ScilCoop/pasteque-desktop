@@ -114,8 +114,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         taxeslogic = new TaxesLogic(m_dlSales.getTaxList());
 
         // Load all categories.
-        java.util.List<CategoryInfo> categories = m_dlSales.getRootCategories(); 
-        
+        java.util.List<CategoryInfo> categories = m_dlSales.getRootCategories();
         // Select the first category
         m_jListCategories.setCellRenderer(new SmallCategoryRenderer());
         m_jListCategories.setModel(new CategoriesListModel(categories)); // aCatList
@@ -245,7 +244,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     }
     
     private void showRootCategoriesPanel() {
-        
         selectIndicatorCategories();
         // Show selected root category
         CategoryInfo cat = (CategoryInfo) m_jListCategories.getSelectedValue();

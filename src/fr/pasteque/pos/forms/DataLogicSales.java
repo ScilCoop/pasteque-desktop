@@ -188,7 +188,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 List<CategoryInfo> rootCats = new ArrayList<CategoryInfo>();
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
-                    if (!o.isNull("parentId")) {
+                    if (o.isNull("parentId")) {
                         CategoryInfo cat = new CategoryInfo(o);
                         rootCats.add(cat);
                     }
@@ -311,7 +311,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     /** Get products associated to a first one by ID */
     public List<ProductInfoExt> getProductComments(String id) throws BasicException {
-        return new PreparedSentence(s,
+        return new ArrayList<ProductInfoExt>();
+        // TODO: enable product comments
+        /*return new PreparedSentence(s,
             "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
             + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
             + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
@@ -321,7 +323,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             + "AND M.PRODUCT = ? AND P.ISCOM = " + s.DB.TRUE() + " "
             + "ORDER BY O.CATORDER, P.NAME",
             SerializerWriteString.INSTANCE,
-            ProductInfoExt.getSerializerRead()).list(id);
+            ProductInfoExt.getSerializerRead()).list(id);*/
     }
   
     /** Get search all products query */
