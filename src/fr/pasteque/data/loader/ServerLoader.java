@@ -139,7 +139,7 @@ public class ServerLoader {
         try {
             return new Response(new JSONObject(resp));
         } catch (JSONException e) {
-            return null;
+            throw new URLTextGetter.ServerException(e.getMessage());
         }
     }
 

@@ -34,6 +34,8 @@ import fr.pasteque.data.loader.LocalRes;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.payment.PaymentInfoMagcard;
 import fr.pasteque.pos.util.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  *
@@ -79,6 +81,23 @@ public class TicketInfo implements SerializableRead, Externalizable {
         payments = new ArrayList<PaymentInfo>();
         taxes = null;
         m_sResponse = null;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("id", this.m_sId);
+        o.put("label", JSONObject.NULL); // TODO: support for ticket label
+        if (this.m_Customer != null) {
+            o.put("customer", this.m_Customer.getId());
+        } else {
+            o.put("customer", JSONObject.NULL);
+        }
+        JSONArray lines = new JSONArray();
+        for (TicketLineInfo l : this.m_aLines) {
+            lines.put(l.toJSON());
+        }
+        o.put("lines", lines);
+        return o;
     }
 
     public void writeExternal(ObjectOutput out) throws IOException {

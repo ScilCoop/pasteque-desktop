@@ -21,6 +21,7 @@
 
 package fr.pasteque.pos.forms;
 
+import fr.pasteque.format.DateUtils;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -697,150 +698,41 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return ticket;
     }
 
-    public final void saveTicket(final TicketInfo ticket, final String location) throws BasicException {
-
-        Transaction t = new Transaction(s) {
-            public Object transact() throws BasicException {
-
-                // Set Receipt Id
-                if (ticket.getTicketId() == 0) {
-                    switch (ticket.getTicketType()) {
-                        case TicketInfo.RECEIPT_NORMAL:
-                            ticket.setTicketId(getNextTicketIndex().intValue());
-                            break;
-                        case TicketInfo.RECEIPT_REFUND:
-                            ticket.setTicketId(getNextTicketRefundIndex().intValue());
-                            break;
-                        case TicketInfo.RECEIPT_PAYMENT:
-                            ticket.setTicketId(getNextTicketPaymentIndex().intValue());
-                            break;
-                        default:
-                            throw new BasicException();
-                    }
-                }
-
-                // new receipt
-                new PreparedSentence(s
-                    , "INSERT INTO RECEIPTS (ID, MONEY, DATENEW, ATTRIBUTES) VALUES (?, ?, ?, ?)"
-                    , SerializerWriteParams.INSTANCE
-                    ).exec(new DataParams() { public void writeValues() throws BasicException {
-                        setString(1, ticket.getId());
-                        setString(2, ticket.getActiveCash());
-                        setTimestamp(3, ticket.getDate());
-                        try {
-                            ByteArrayOutputStream o = new ByteArrayOutputStream();
-                            ticket.getProperties().storeToXML(o, AppLocal.APP_NAME, "UTF-8");
-                            setBytes(4, o.toByteArray());
-                        } catch (IOException e) {
-                            setBytes(4, null);
-                        }
-                    }});
-
-                // new ticket
-                new PreparedSentence(s,
-                    "INSERT INTO TICKETS (ID, TICKETTYPE, TICKETID, PERSON, "
-                    + "CUSTOMER, CUSTCOUNT) VALUES (?, ?, ?, ?, ?, ?)",
-                    SerializerWriteParams.INSTANCE
-                    ).exec(new DataParams() { public void writeValues() throws BasicException {
-                        setString(1, ticket.getId());
-                        setInt(2, ticket.getTicketType());
-                        setInt(3, ticket.getTicketId());
-                        setString(4, ticket.getUser().getId());
-                        setString(5, ticket.getCustomerId());
-                        setInt(6, ticket.getCustomersCount());
-                    }});
-
-                SentenceExec ticketlineinsert = new PreparedSentence(s
-                    , "INSERT INTO TICKETLINES (TICKET, LINE, PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE, TAXID, ATTRIBUTES) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-                    , SerializerWriteBuilder.INSTANCE);
-
-                for (TicketLineInfo l : ticket.getLines()) {
-                    ticketlineinsert.exec(l);
-                    if (l.getProductID() != null)  {
-                        // update the stock
-                        getStockDiaryInsert().exec(new Object[] {
-                            UUID.randomUUID().toString(),
-                            ticket.getDate(),
-                            l.getMultiply() < 0.0
-                                ? MovementReason.IN_REFUND.getKey()
-                                : MovementReason.OUT_SALE.getKey(),
-                            location,
-                            l.getProductID(),
-                            l.getProductAttSetInstId(),
-                            new Double(-l.getMultiply()),
-                            new Double(l.getPrice())
-                        });
-                        // Update prepaid
-                        if (isRefill(l.getProductID())) {
-                            addPrepaid(ticket.getCustomerId(),
-                                    l.getPrice());
-                        }
-                    }
-                }
-
-                SentenceExec paymentinsert = new PreparedSentence(s
-                    , "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, CURRENCY, TOTALCURRENCY, TRANSID, RETURNMSG) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-                    , SerializerWriteParams.INSTANCE);
-                for (final PaymentInfo p : ticket.getPayments()) {
-                    final CurrencyInfo currency;
-                    if (p.getCurrency() != null) {
-                        currency = p.getCurrency();
-                    } else {
-                        currency = getMainCurrency();
-                    }
-                    final double total;
-                    if (!currency.isMain()) {
-                        total = p.getTotal() / currency.getRate();
-                    } else {
-                        total = p.getTotal();
-                    }
-                    paymentinsert.exec(new DataParams() { public void writeValues() throws BasicException {
-                        setString(1, UUID.randomUUID().toString());
-                        setString(2, ticket.getId());
-                        setString(3, p.getName());
-                        setDouble(4, total);
-                        setInt(5, currency.getID());
-                        setDouble(6, p.getTotal());
-                        setString(7, ticket.getTransactionID());
-                        setBytes(8, (byte[]) Formats.BYTEA.parseValue(ticket.getReturnMessage()));
-                    }});
-
-                    if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
-
-                        // udate customer fields...
-                        ticket.getCustomer().updateCurDebt(p.getTotal(), ticket.getDate());
-
-                        // save customer fields...
-                        getDebtUpdate().exec(new DataParams() { public void writeValues() throws BasicException {
-                            setDouble(1, ticket.getCustomer().getCurdebt());
-                            setTimestamp(2, ticket.getCustomer().getCurdate());
-                            setString(3, ticket.getCustomer().getId());
-                        }});
-                    } else if ("prepaid".equals(p.getName())) {
-                        // Decrease prepaid amount
-                        addPrepaid(ticket.getCustomer().getId(), -p.getTotal());
-                    }
-                }
-
-                SentenceExec taxlinesinsert = new PreparedSentence(s
-                        , "INSERT INTO TAXLINES (ID, RECEIPT, TAXID, BASE, AMOUNT)  VALUES (?, ?, ?, ?, ?)"
-                        , SerializerWriteParams.INSTANCE);
-                if (ticket.getTaxes() != null) {
-                    for (final TicketTaxInfo tickettax: ticket.getTaxes()) {
-                        taxlinesinsert.exec(new DataParams() { public void writeValues() throws BasicException {
-                            setString(1, UUID.randomUUID().toString());
-                            setString(2, ticket.getId());
-                            setString(3, tickettax.getTaxInfo().getId());
-                            setDouble(4, tickettax.getSubTotal());
-                            setDouble(5, tickettax.getTax());
-                        }});
-                    }
-                }
-
-                return null;
+    public final void saveTicket(final TicketInfo ticket,
+            final String locationId,
+            final String cashId) throws BasicException {
+        JSONObject tktObj = new JSONObject();
+        tktObj.put("ticket", ticket.toJSON());
+        tktObj.put("cashier", ticket.getUser().toJSON());
+        if (ticket.getCustomer() != null) {
+            tktObj.put("customer", ticket.getCustomer().getId());
+        } else {
+            tktObj.put("customer", JSONObject.NULL);
+        }
+        JSONArray payments = new JSONArray();
+        for (PaymentInfo p : ticket.getPayments()) {
+            payments.put(p.toJSON());
+        }
+        tktObj.put("payments", payments);
+        tktObj.put("date", DateUtils.toSecTimestamp(ticket.getDate()));
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r;
+            if (locationId != null) {
+                r = loader.write("TicketsAPI", "save",
+                        "ticket", tktObj.toString(), "cashId", cashId,
+                        "locationId", locationId);
+            } else {
+                r = loader.write("TicketsAPI", "save",
+                        "ticket", tktObj.toString(), "cashId", cashId);
             }
-        };
-        t.execute();
+            if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                throw new BasicException("Bad server response");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     public final void deleteTicket(final TicketInfo ticket, final String location) throws BasicException {

@@ -19,6 +19,7 @@
 package fr.pasteque.pos.ticket;
 
 import java.io.Serializable;
+import org.json.JSONObject;
 
 /**
  *
@@ -34,6 +35,13 @@ public class UserInfo implements Serializable {
     public UserInfo(String id, String name) {
         m_sId = id;
         m_sName = name;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("id", this.m_sId);
+        o.put("name", this.m_sName);
+        return o;
     }
 
     public String getId() {

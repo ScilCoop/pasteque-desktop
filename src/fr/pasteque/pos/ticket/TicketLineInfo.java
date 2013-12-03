@@ -31,6 +31,7 @@ import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.forms.AppLocal;
 import java.util.Properties;
+import org.json.JSONObject;
 
 /**
  *
@@ -126,6 +127,20 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     void setTicket(String ticket, int line) {
         m_sTicket = ticket;
         m_iLine = line;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        JSONObject prd = new JSONObject();
+        prd.put("id", this.productid);
+        prd.put("label", this.getProductName());
+        prd.put("price", this.price);
+        prd.put("taxId", this.getProductTaxCategoryID());
+        prd.put("taxRate", this.getTaxRate());
+        prd.put("scaled", this.isProductScale());
+        o.put("product", prd);
+        o.put("quantity", this.multiply);
+        return o;
     }
 
     public void writeValues(DataWrite dp) throws BasicException {

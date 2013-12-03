@@ -21,6 +21,7 @@ package fr.pasteque.pos.payment;
 
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import org.json.JSONObject;
 
 public abstract class PaymentInfo {
 
@@ -34,7 +35,16 @@ public abstract class PaymentInfo {
     }
     public abstract PaymentInfo copyPayment();
     public abstract String getTransactionID();
-    
+
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("amount", this.getTotal());
+        JSONObject mode = new JSONObject();
+        mode.put("code", this.getName());
+        o.put("mode", mode);
+        return o;
+    }
+
     public String printTotal() {
         Formats.setAltCurrency(this.currency);
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
