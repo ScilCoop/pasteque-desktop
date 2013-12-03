@@ -89,7 +89,7 @@ public class ImageLoader {
             ioe.printStackTrace();
         }
         try {
-            return ImageIO.read(ImageLoader.class.getResource("/fr.pasteque.images/broken.png"));
+            return ImageIO.read(ImageLoader.class.getResource("/fr/pasteque/images/broken.png"));
         } catch (IOException ioe) {
             // Should never happen
             ioe.printStackTrace();
