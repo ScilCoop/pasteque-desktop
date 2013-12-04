@@ -326,8 +326,6 @@ public class JPanelConfigGeneral extends PanelConfig {
         jcboTicketsBag.setSelectedItem(config.getProperty("machine.ticketsbag"));
         jcboMarginType.setSelectedItem(config.getProperty("ui.margintype"));
 
-        jcbShowTitlebar.setSelected(!config.getProperty("ui.showtitlebar").equals("0"));
-        jcbShowFooterbar.setSelected(!config.getProperty("ui.showfooterbar").equals("0"));
         jcbAutoHideMenu.setSelected(!config.getProperty("ui.autohidemenu").equals("0"));
 
         StringParser p = new StringParser(config.getProperty("machine.printer"));

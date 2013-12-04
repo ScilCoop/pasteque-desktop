@@ -596,22 +596,6 @@ public class JRootApp extends JPanel implements AppView {
         setPreferredSize(new java.awt.Dimension(1024, 768));
         setLayout(new java.awt.BorderLayout());
 
-        // Header bar
-    	if (cfg == null || cfg.getProperty("ui.showtitlebar").equals("1")) {
-            m_jPanelTitle.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
-            m_jPanelTitle.setLayout(new java.awt.BorderLayout());
-
-            m_jLblTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-            m_jLblTitle.setText("Window.Title");
-            m_jPanelTitle.add(m_jLblTitle, java.awt.BorderLayout.CENTER);
-
-            poweredby.setIcon(ImageLoader.readImageIcon("poweredby.png"));
-            poweredby.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-            m_jPanelTitle.add(poweredby, java.awt.BorderLayout.LINE_END);
-
-            add(m_jPanelTitle, java.awt.BorderLayout.NORTH);
-        }
-
         m_jPanelContainer.setLayout(new java.awt.CardLayout());
 
         // Main login content
@@ -695,20 +679,6 @@ public class JRootApp extends JPanel implements AppView {
         m_jPanelContainer.add(m_jPanelLogin, "login");
         add(m_jPanelContainer, java.awt.BorderLayout.CENTER);
 
-        // Footer bar
-        if (cfg == null || cfg.getProperty("ui.showfooterbar").equals("1")) {
-            m_jPanelDown.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
-            m_jPanelDown.setLayout(new java.awt.BorderLayout());
-
-            m_jHost.setIcon(ImageLoader.readImageIcon("host.png"));
-            m_jHost.setText("*Hostname");
-            panelTask.add(m_jHost);
-
-            m_jPanelDown.add(panelTask, java.awt.BorderLayout.LINE_START);
-            m_jPanelDown.add(jPanel3, java.awt.BorderLayout.LINE_END);
-
-            add(m_jPanelDown, java.awt.BorderLayout.SOUTH);
-        }
     }
 
     private void m_jCloseActionPerformed(java.awt.event.ActionEvent evt) {
