@@ -45,8 +45,9 @@ public class JRefundLines extends javax.swing.JPanel {
         m_jTicketEdit = jTicketEdit;
         
         initComponents();
-        
-        ticketlines = new JTicketLines(dlSystem.getResourceAsXML("Ticket.Line"));
+
+        ticketlines = new JTicketLines();
+        ticketlines.init(dlSystem.getResourceAsXML("Ticket.Line"));
         
         this.linesContainer.add(ticketlines, BorderLayout.CENTER);
     }

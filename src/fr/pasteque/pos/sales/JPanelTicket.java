@@ -185,16 +185,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanelBag.add(m_ticketsbag.getBagComponent(), BorderLayout.LINE_START);
         add(m_ticketsbag.getNullComponent(), "null");
 
-        m_ticketlines = new JTicketLines(dlSystem.getResourceAsXML("Ticket.Line"));
-        m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        GridBagConstraints cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 1;
-        cstr.fill = GridBagConstraints.BOTH;
-        cstr.weightx = 1.0;
-        cstr.weighty = 1.0;
-        m_jInputContainer.add(m_ticketlines, cstr);
-
+        m_ticketlines.init(dlSystem.getResourceAsXML("Ticket.Line"));
         
         m_TTP = new TicketParser(m_App.getDeviceTicket(), dlSystem);
                
@@ -1658,14 +1649,47 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         this.setBackground(new Color(255, 204, 153));
         this.setLayout(new CardLayout());
 
+
         m_jPanContainer.setLayout(new GridBagLayout());
         GridBagConstraints cstr = null;
 
-        // Tickets buttons part
-        m_jOptions = new JPanel();
-        m_jOptions.setLayout(new GridBagLayout());
-        m_jButtons = new JPanel();
-        
+        // Main container is broken into 4 vertical parts
+        // Brand header
+        // Ticket header
+        // Input
+        // Footer
+
+        // Brand header
+        ///////////////
+        JPanel brandHeader = new JPanel();
+        brandHeader.setLayout(new GridBagLayout());
+        ImageIcon brand = ImageLoader.readImageIcon("logo_flat.png");
+        JLabel brandLabel = new JLabel(brand);
+        JLabel screenTitle = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TicketInput"));
+        JLabel date = WidgetsBuilder.createLabel("This is NOW!!");
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        brandHeader.add(brandLabel, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.anchor = GridBagConstraints.LINE_START;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        brandHeader.add(screenTitle, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        brandHeader.add(date, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.insets = new Insets(5, 5, 5, 5);
+        m_jPanContainer.add(brandHeader, cstr);
+
+        // Ticket info/buttons
+        //////////////////////
+        JPanel ticketHeader = new JPanel();
+        ticketHeader.setLayout(new GridBagLayout());
+        // Ticket id
         m_jTicketId = WidgetsBuilder.createLabel();
         m_jTicketId.setBackground(java.awt.Color.white);
         m_jTicketId.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -1673,9 +1697,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTicketId.setOpaque(true);
         m_jTicketId.setPreferredSize(new java.awt.Dimension(160, 25));
         m_jTicketId.setRequestFocusEnabled(false);
-        m_jButtons.add(m_jTicketId);
-
-        // Customers list button
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        ticketHeader.add(m_jTicketId, cstr);
+        // Customer button
         btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"), AppLocal.getIntString("Button.btnCustomer.toolTip"));
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
@@ -1685,9 +1710,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 btnCustomerActionPerformed(evt);
             }
         });
-        m_jButtons.add(btnCustomer);
-
-        // Split ticket button
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        ticketHeader.add(btnCustomer, cstr);
+        // Split button
         btnSplit = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_split.png"),AppLocal.getIntString("Button.btnSplit.toolTip"));
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
@@ -1697,52 +1723,57 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 btnSplitActionPerformed(evt);
             }
         });
-        m_jButtons.add(btnSplit);
-
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        ticketHeader.add(btnSplit, cstr);
+        // Ticket bag extra buttons
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        ticketHeader.add(m_jPanelBag, cstr);
+        // Script extra buttons
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        ticketHeader.add(m_jButtonsExt, cstr);
+        // Add container
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 0;
-        m_jOptions.add(m_jButtons, cstr);
-
-        //m_jPanelBag.setLayout(new java.awt.BorderLayout());
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
-        m_jOptions.add(m_jPanelBag, cstr);
-
-        
-        // Extra buttons
-        //m_jButtonsExt.setLayout(new javax.swing.BoxLayout(m_jButtonsExt, BoxLayout.LINE_AXIS));
-        cstr = new GridBagConstraints();
-        cstr.gridx = 2;
-        cstr.gridy = 0;
-        cstr.weightx = 1.0;
-        cstr.anchor = GridBagConstraints.LINE_END;
-        m_jOptions.add(m_jButtonsExt, cstr);
-
-        
-        // Pack buttons line
-        m_jOptions.setMaximumSize(new java.awt.Dimension(m_jOptions.getMaximumSize().width, m_jOptions.getPreferredSize().height));
-
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.weightx = 1.0;
         cstr.fill = GridBagConstraints.HORIZONTAL;
-        m_jPanContainer.add(m_jOptions, cstr);
+        m_jPanContainer.add(ticketHeader, cstr);        
         
-        
-        // Second panel line: ticket and input keyboard
-        m_jInputContainer.setLayout(new GridBagLayout());
+        // Main zone
+        ////////////
+        JPanel mainZone = new JPanel();
+        mainZone.setLayout(new GridBagLayout());
+        // Catalog
+        catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        catcontainer.setLayout(new java.awt.BorderLayout());
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridheight = 2;
+        cstr.weightx = 0.7;
+        cstr.weighty = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        mainZone.add(catcontainer, cstr);
+        // Ticket zone
+        JPanel ticketZone = new JPanel();
+        ticketZone.setLayout(new GridBagLayout());
+        // Ticket lines
+        m_ticketlines = new JTicketLines();
+        m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.fill = GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        ticketZone.add(m_ticketlines, cstr);
 
-        lineBtnsContainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        lineBtnsContainer.setLayout(new GridBagLayout());
-        int x = 0;
-        int y = 0;
-        int buttons = 5;
-
+        JPanel lineEditBtns = new JPanel();
+        lineEditBtns.setLayout(new GridBagLayout());
         // Up/down buttons
-        if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
+        if (cfg == null
+                || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
             m_jUp.setRequestFocusEnabled(false);
@@ -1752,11 +1783,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 }
             });
             cstr = new GridBagConstraints();
-            cstr.gridx = x;
-            cstr.gridy = y++;
+            cstr.gridx = 0;
             cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-            lineBtnsContainer.add(m_jUp, cstr);
-
+            lineEditBtns.add(m_jUp, cstr);
             m_jDown.setFocusPainted(false);
             m_jDown.setFocusable(false);
             m_jDown.setRequestFocusEnabled(false);
@@ -1766,12 +1795,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 }
             });
             cstr = new GridBagConstraints();
-            cstr.gridx = x;
-            cstr.gridy = y++;
+            cstr.gridx = 0;
             cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-            lineBtnsContainer.add(m_jDown, cstr);
+            lineEditBtns.add(m_jDown, cstr);
         }
-
         // Delete line
         m_jDelete.setFocusPainted(false);
         m_jDelete.setFocusable(false);
@@ -1782,11 +1809,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
+        cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(m_jDelete, cstr);
-
+        lineEditBtns.add(m_jDelete, cstr);
         // Find product
         m_jList.setFocusPainted(false);
         m_jList.setFocusable(false);
@@ -1797,11 +1822,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
+        cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(m_jList, cstr);
-
+        lineEditBtns.add(m_jList, cstr);
         // Edit line
         m_jEditLine.setFocusPainted(false);
         m_jEditLine.setFocusable(false);
@@ -1812,11 +1835,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
+        cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(m_jEditLine, cstr);
-
+        lineEditBtns.add(m_jEditLine, cstr);
         // Attributes
         jEditAttributes.setFocusPainted(false);
         jEditAttributes.setFocusable(false);
@@ -1827,11 +1848,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
+        cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(jEditAttributes, cstr);
-        
+        lineEditBtns.add(jEditAttributes, cstr);
         // Line discount button
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
@@ -1842,86 +1861,96 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridx = x;
-        cstr.gridy = y++;
+        cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineBtnsContainer.add(m_jbtnLineDiscount, cstr);
-
+        lineEditBtns.add(m_jbtnLineDiscount, cstr);
+        // Add line edit container
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 0;
-        cstr.gridheight = 3;
-        cstr.anchor = GridBagConstraints.NORTH;
-        m_jInputContainer.add(lineBtnsContainer, cstr);
+        ticketZone.add(lineEditBtns, cstr);
+        // Total zone
+        JPanel totalZone = new JPanel();
+        totalZone.setLayout(new GridBagLayout());
+        // Total
+        m_jTotalEuros.setRequestFocusEnabled(false);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 2;
+        cstr.gridy = 0;
+        cstr.gridheight = 2;
+        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        totalZone.add(m_jTotalEuros, cstr);
+        // Subtotal (label and amount)
+        m_jSubtotalEuros.setRequestFocusEnabled(false);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
+        totalZone.add(m_jSubtotalEuros, cstr);
+        m_jLblTotalEuros3.setText(AppLocal.getIntString("label.subtotalcash"));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
+        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
+        totalZone.add(m_jLblTotalEuros3, cstr);
+        // Taxes (label and amount)
+        m_jTaxesEuros.setRequestFocusEnabled(false);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
+        cstr.weightx = 1.0;
+        cstr.insets = new java.awt.Insets(5, 5, 0, 5);
+        totalZone.add(m_jTaxesEuros, cstr);
+        m_jLblTotalEuros2.setText(AppLocal.getIntString("label.taxcash"));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.insets = new java.awt.Insets(5, 0, 0, 0);
+        totalZone.add(m_jLblTotalEuros2, cstr);
+        // Add total zone
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.gridwidth = 2;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        ticketZone.add(totalZone, cstr);
+        // Add ticket zone
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        cstr.gridx = 1;
+        cstr.weightx = 0.3;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        mainZone.add(ticketZone, cstr);
+        // Numpad zone
+        JPanel numpadZone = new JPanel();
+        numpadZone.setLayout(new GridBagLayout());
+        m_jNumberKeys.addJNumberEventListener(new JNumberEventListener() {
+            public void keyPerformed(JNumberEvent evt) {
+                m_jNumberKeysKeyPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        mainZone.add(m_jNumberKeys, cstr);
+        // Add main zone container
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        m_jPanContainer.add(mainZone, cstr);
+
+        // Footer line
+        //////////////
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
-
-        m_jTotalEuros.setBackground(java.awt.Color.white);
-        m_jTotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        m_jTotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jTotalEuros.setOpaque(true);
-        m_jTotalEuros.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        m_jPanTotals.add(m_jTotalEuros, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        m_jPanTotals.add(m_jLblTotalEuros1, gridBagConstraints);
-
-        m_jSubtotalEuros.setBackground(java.awt.Color.white);
-        m_jSubtotalEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        m_jSubtotalEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jSubtotalEuros.setOpaque(true);
-        m_jSubtotalEuros.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.fill = GridBagConstraints.BOTH;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        m_jPanTotals.add(m_jSubtotalEuros, gridBagConstraints);
-
-        m_jTaxesEuros.setBackground(java.awt.Color.white);
-        m_jTaxesEuros.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
-        m_jTaxesEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jTaxesEuros.setOpaque(true);
-        m_jTaxesEuros.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        m_jPanTotals.add(m_jTaxesEuros, gridBagConstraints);
-
-        m_jLblTotalEuros2.setText(AppLocal.getIntString("label.taxcash")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        m_jPanTotals.add(m_jLblTotalEuros2, gridBagConstraints);
-
-        m_jLblTotalEuros3.setText(AppLocal.getIntString("label.subtotalcash")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        m_jPanTotals.add(m_jLblTotalEuros3, gridBagConstraints);
 
         // Tariff area
         m_jTariff.addActionListener(new java.awt.event.ActionListener() {
@@ -1946,20 +1975,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.anchor = GridBagConstraints.WEST;
         m_jInputContainer.add(m_jTariffPanel, cstr);
 
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 2;
-        cstr.anchor = GridBagConstraints.EAST;
-        m_jInputContainer.add(m_jPanTotals, cstr);
-
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
 
-        m_jNumberKeys.addJNumberEventListener(new JNumberEventListener() {
-            public void keyPerformed(JNumberEvent evt) {
-                m_jNumberKeysKeyPerformed(evt);
-            }
-        });
-        m_jPanEntries.add(m_jNumberKeys);
 
         // jPanel9: barcode entry line under keyboard
         jPanel9.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -2068,18 +2085,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridy = 1;
         cstr.weightx = 1.0;
         cstr.fill = GridBagConstraints.HORIZONTAL;
-        m_jPanContainer.add(m_jInputContainer, cstr);
-        // Last line: catalog selector
-        catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        catcontainer.setLayout(new java.awt.BorderLayout());
-        
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 2;
-        cstr.weightx = 1.0;
-        cstr.weighty = 1.0;
-        cstr.fill = GridBagConstraints.BOTH;
-        m_jPanContainer.add(catcontainer, cstr);
+        //m_jPanContainer.add(m_jInputContainer, cstr);
+
         this.add(m_jPanContainer, "ticket");
     }
 

@@ -62,10 +62,11 @@ public class JTicketLines extends javax.swing.JPanel {
     private TicketTableModel m_jTableModel;
     
     /** Creates new form JLinesTicket */
-    public JTicketLines(String ticketline) {
-        
-        initComponents();
-  
+    public JTicketLines() {
+        initComponents();  
+    }
+
+    public void init(String ticketline) {
         ColumnTicket[] acolumns = new ColumnTicket[0];
         
         if (ticketline != null) {
