@@ -20,6 +20,7 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
+import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.customers.JCustomerFinder;
@@ -240,7 +241,7 @@ public class SimpleReceipt extends javax.swing.JPanel {
         JLabel m_jLblTotalEuros3 = WidgetsBuilder.createLabel();
         JPanel m_jButtons = new javax.swing.JPanel();
         m_jTicketId = WidgetsBuilder.createLabel();
-        btnCustomer = WidgetsBuilder.createButton(new ImageIcon(getClass().getResource("/fr.pasteque.images/kuser.png")));
+        btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"));
         jPanel2 = new javax.swing.JPanel();
 
         setLayout(new java.awt.BorderLayout());
