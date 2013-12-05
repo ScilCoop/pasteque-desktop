@@ -376,7 +376,8 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         customer[7] = Formats.CURRENCY.parseValue(txtMaxdebt.getText(), new Double(0.0));
         customer[8] = Formats.TIMESTAMP.parseValue(txtCurdate.getText()); // not saved
         customer[9] = Formats.CURRENCY.parseValue(txtCurdebt.getText()); // not saved
-        customer[10] = Formats.CURRENCY.parseValue(txtPrepaid.getText());
+        customer[10] = Formats.CURRENCY.parseValue(txtPrepaid.getText(),
+                new Double(0.0));
 
         customer[11] = Formats.STRING.parseValue(txtFirstName.getText());
         customer[12] = Formats.STRING.parseValue(txtLastName.getText());
