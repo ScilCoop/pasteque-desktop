@@ -290,9 +290,8 @@ public class StockManagement extends JPanel
         // precondicion: prod != null
 
         MovementReason reason = (MovementReason) m_ReasonModel.getSelectedItem();
-        addLine(product, units, reason.isInput() 
-                ? product.getPriceBuy()
-                : product.getPriceSell());
+        this.addLine(product, units,
+                reason.getPrice(product.getPriceBuy(), product.getPriceSell()));
     }
     
     private void incProductByCode(String sCode) {
