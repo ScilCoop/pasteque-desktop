@@ -368,7 +368,12 @@ public class CustomersView extends javax.swing.JPanel implements EditorRecord {
         Object[] customer = new Object[24];
         customer[0] = m_oId == null ? UUID.randomUUID().toString() : m_oId;
         customer[1] = m_jTaxID.getText();
-        customer[2] = m_jSearchkey.getText();
+        String searchKey = m_jSearchkey.getText();
+        if (searchKey == null || searchKey.equals("")) {
+            // Use name as default search key
+            searchKey = m_jTaxID.getText() + "-" + m_jName.getText();
+        }
+        customer[2] = searchKey;
         customer[3] = m_jName.getText();
         customer[4] = m_jNotes.getText();
         customer[5] = Boolean.valueOf(m_jVisible.isSelected());
