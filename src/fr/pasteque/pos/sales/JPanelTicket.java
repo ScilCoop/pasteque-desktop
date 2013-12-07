@@ -2217,15 +2217,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
         finder.search(m_oTicket.getCustomer());
         finder.setVisible(true);
-        
-        try {
-            m_oTicket.setCustomer(finder.getSelectedCustomer() == null
-                    ? null
-                    : dlSales.loadCustomerExt(finder.getSelectedCustomer().getId()));
-        } catch (BasicException e) {
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
-            msg.show(this);            
-        }
+
+        this.m_oTicket.setCustomer(finder.getSelectedCustomer());
 
         refreshTicket();
 

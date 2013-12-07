@@ -33,6 +33,7 @@ import fr.pasteque.data.loader.SerializerReadBasic;
 import fr.pasteque.data.loader.SerializerWriteBasic;
 import fr.pasteque.data.loader.SerializerWriteBasicExt;
 import fr.pasteque.data.loader.SerializerWriteParams;
+import fr.pasteque.data.loader.ServerLoader;
 import fr.pasteque.data.loader.Session;
 import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.TableDefinition;
@@ -40,67 +41,105 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 /**
  *
  * @author adrianromero
  */
 public class DataLogicCustomers extends BeanFactoryDataSingle {
     
-    protected Session s;
-    private TableDefinition tcustomers;
-    /** Type definition for customer reservation */
-    private static Datas[] customerdatas = new Datas[] {Datas.STRING,
-            Datas.TIMESTAMP, Datas.TIMESTAMP, Datas.STRING, Datas.STRING,
-            Datas.STRING, Datas.STRING, Datas.INT, Datas.BOOLEAN,
-            Datas.STRING};
+    // TODO: use local database for caching
+    private static List<CustomerInfoExt> cache;
     
     public void init(Session s){
-        
-        this.s = s;
-        tcustomers = new TableDefinition(s
-            , "CUSTOMERS"
-            , new String[] { "ID", "TAXID", "SEARCHKEY", "NAME", "NOTES", "VISIBLE", "CARD", "MAXDEBT", "CURDATE", "CURDEBT", "PREPAID"
-                           , "FIRSTNAME", "LASTNAME", "EMAIL", "PHONE", "PHONE2", "FAX"
-                           , "ADDRESS", "ADDRESS2", "POSTAL", "CITY", "REGION", "COUNTRY"
-                           , "TAXCATEGORY" }
-            , new String[] { "ID", AppLocal.getIntString("label.taxid"), AppLocal.getIntString("label.searchkey"), AppLocal.getIntString("label.name"), AppLocal.getIntString("label.notes"), "VISIBLE", "CARD", AppLocal.getIntString("label.maxdebt"), AppLocal.getIntString("label.curdate"), AppLocal.getIntString("label.curdebt"), AppLocal.getIntString("Label.Prepaid")
-                           , AppLocal.getIntString("label.firstname"), AppLocal.getIntString("label.lastname"), AppLocal.getIntString("label.email"), AppLocal.getIntString("label.phone"), AppLocal.getIntString("label.phone2"), AppLocal.getIntString("label.fax")
-                           , AppLocal.getIntString("label.address"), AppLocal.getIntString("label.address2"), AppLocal.getIntString("label.postal"), AppLocal.getIntString("label.city"), AppLocal.getIntString("label.region"), AppLocal.getIntString("label.country")
-                           , "TAXCATEGORY"}
-            , new Datas[] { Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.STRING, Datas.DOUBLE, Datas.TIMESTAMP, Datas.DOUBLE, Datas.DOUBLE
-                          , Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING
-                          , Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING
-                          , Datas.STRING}
-            , new Formats[] { Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.BOOLEAN, Formats.STRING, Formats.CURRENCY, Formats.TIMESTAMP, Formats.CURRENCY, Formats.CURRENCY
-                            , Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING
-                            , Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING, Formats.STRING
-                            , Formats.STRING}
-            , new int[] {0}
-        );   
-        
+        DataLogicCustomers.cache = null; // Reset cache
     }
     
-    // CustomerList list
-    public SentenceList getCustomerList() {
-        return new StaticSentence(s
-            , new QBFBuilder("SELECT ID, TAXID, SEARCHKEY, NAME FROM CUSTOMERS WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) ORDER BY NAME", new String[] {"TAXID", "SEARCHKEY", "NAME"})
-            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
-            , new SerializerRead() {
-                    public Object readValues(DataRead dr) throws BasicException {
-                        CustomerInfo c = new CustomerInfo(dr.getString(1));
-                        c.setTaxid(dr.getString(2));
-                        c.setSearchkey(dr.getString(3));
-                        c.setName(dr.getString(4));
-                        return c;
-                    }
-                });
+    private static void loadCustomers() throws BasicException {
+         try {
+             ServerLoader loader = new ServerLoader();
+             ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
+             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                 DataLogicCustomers.cache = new ArrayList<CustomerInfoExt>();
+                 JSONArray a = r.getArrayContent();
+                 for (int i = 0; i < a.length(); i++) {
+                     JSONObject o = a.getJSONObject(i);
+                     CustomerInfoExt customer = new CustomerInfoExt(o);
+                     DataLogicCustomers.cache.add(customer);
+                 }
+             }
+         } catch (Exception e) {
+             throw new BasicException(e);
+         }
     }
+
+    /** Get all customers */
+    public List<CustomerInfoExt> getCustomerList() throws BasicException {
+        if (DataLogicCustomers.cache == null) {
+            DataLogicCustomers.loadCustomers();
+        }
+        return DataLogicCustomers.cache;
+    }
+
+    /** Search customers, use null as argument to disable filter */
+    public List<CustomerInfoExt> searchCustomers(String number,
+            String searchkey, String name) throws BasicException {
+        if (DataLogicCustomers.cache == null) {
+            DataLogicCustomers.loadCustomers();
+        }
+        List<CustomerInfoExt> results = new ArrayList<CustomerInfoExt>();
+        for (CustomerInfoExt c : DataLogicCustomers.cache) {
+            boolean matches = true;
+            if (number != null) {
+                String custNum = c.getTaxid();
+                if (custNum != null) {
+                    custNum = custNum.toLowerCase();
+                    if (!custNum.contains(number.toLowerCase())) {
+                        matches = false;
+                    }
+                } else {
+                    matches = false;
+                }
+            }
+            if (matches && searchkey != null) {
+                String custSK = c.getSearchkey();
+                if (custSK != null) {
+                    custSK = custSK.toLowerCase();
+                    if (!custSK.contains(searchkey.toLowerCase())) {
+                        matches = false;
+                    }
+                } else {
+                    matches = false;
+                }
+            }
+            if (matches && name != null) {
+                String custName = c.getName();
+                if (custName != null) {
+                    custName = custName.toLowerCase();
+                    if (!custName.contains(name.toLowerCase())) {
+                        matches = false;
+                    }
+                } else {
+                    matches = false;
+                }
+            }
+            if (matches) {
+                results.add(c);
+            }
+        }
+        return results;
+    }
+
 
     /** Gets the TOP 10 customer's list by number of tickets
      * with their id
      */
     public SentenceList getTop10CustomerList() {
-        return new StaticSentence(s
+        /*        return new StaticSentence(s
             , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
             " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
             " LEFT JOIN TICKETS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
@@ -115,49 +154,36 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                         c.setName(dr.getString(4));
                         return c;
                     }
-    });
-}
+                    });*/
+        // TODO: reenable top 10 customers list
+        return null;
+    }
        
     public int updateCustomerExt(final CustomerInfoExt customer) throws BasicException {
-     
-        return new PreparedSentence(s
+        /*        return new PreparedSentence(s
                 , "UPDATE CUSTOMERS SET NOTES = ? WHERE ID = ?"
                 , SerializerWriteParams.INSTANCE      
                 ).exec(new DataParams() { public void writeValues() throws BasicException {
                         setString(1, customer.getNotes());
                         setString(2, customer.getId());
-                }});        
-    }
-
-    public Integer getNextCustomerNumber() throws BasicException {
-        Object[] data = (Object[]) new PreparedSentence(s,
-            "SELECT MAX(TAXID) FROM CUSTOMERS",
-            null,
-            new SerializerReadBasic(new Datas[] {Datas.STRING})).find();
-        if (data.length > 0) {
-            String number = (String) data[0];
-            try {
-                int inum = Integer.parseInt(number);
-                return inum + 1;
-            } catch (NumberFormatException e) {
-                return null;
-            }
-        } else {
-            return null;
-        }
+                        }});*/
+        // TODO: reenable customer update
+        return 0;
     }
 
     public final SentenceList getReservationsList() {
-        return new PreparedSentence(s
+        /*        return new PreparedSentence(s
             , "SELECT R.ID, R.CREATED, R.DATENEW, C.CUSTOMER, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, COALESCE(CUSTOMERS.NAME, R.TITLE),  R.CHAIRS, R.ISDONE, R.DESCRIPTION " +
               "FROM RESERVATIONS R LEFT OUTER JOIN RESERVATION_CUSTOMERS C ON R.ID = C.ID LEFT OUTER JOIN CUSTOMERS ON C.CUSTOMER = CUSTOMERS.ID " +
               "WHERE R.DATENEW >= ? AND R.DATENEW < ?"
             , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.TIMESTAMP})
-            , new SerializerReadBasic(customerdatas));             
+            , new SerializerReadBasic(customerdatas));*/
+        // TODO: enable reservation list
+        return null;
     }
     
     public final SentenceExec getReservationsUpdate() {
-        return new SentenceExecTransaction(s) {
+        /*return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -172,11 +198,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "UPDATE RESERVATIONS SET ID = ?, CREATED = ?, DATENEW = ?, TITLE = ?, CHAIRS = ?, ISDONE = ?, DESCRIPTION = ? WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0, 1, 2, 6, 7, 8, 9, 0})).exec(params);
             }
-        };
+            };*/
+        // TODO: enable reservation update
+        return null;
     }
     
     public final SentenceExec getReservationsDelete() {
-        return new SentenceExecTransaction(s) {
+        /*        return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -186,11 +214,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "DELETE FROM RESERVATIONS WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0})).exec(params);
             }
-        };
+            };*/
+        // TODO: enable reservation delete
+        return null;
     }
     
     public final SentenceExec getReservationsInsert() {
-        return new SentenceExecTransaction(s) {
+        /*        return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 int i = new PreparedSentence(s
@@ -204,10 +234,9 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                 }
                 return i;
             }
-        };
+            };*/
+        // TODO: enable reservation create
+        return null;
     }
     
-    public final TableDefinition getTableCustomers() {
-        return tcustomers;
-    }  
 }

@@ -19,9 +19,11 @@
 
 package fr.pasteque.pos.customers;
 
+import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.util.RoundUtils;
 import java.util.Date;
+import org.json.JSONObject;
 
 /**
  *
@@ -54,6 +56,75 @@ public class CustomerInfoExt extends CustomerInfo {
     public CustomerInfoExt(String id) {
         super(id);
     } 
+
+    public CustomerInfoExt(JSONObject o) {
+        super(null);
+        if (!o.isNull("id")) {
+            this.id = o.getString("id");
+        }
+        if (!o.isNull("number")) {
+            this.taxid = o.getString("number");
+        }
+        if (!o.isNull("dispName")) {
+            this.name = o.getString("dispName");
+        }
+        if (!o.isNull("key")) {
+            this.searchkey = o.getString("key");
+        }
+        if (!o.isNull("custTaxId")) {
+            this.taxcustomerid = o.getString("custTaxId");
+        }
+        if (!o.isNull("notes")) {
+            this.notes = o.getString("notes");
+        }
+        this.visible = o.getBoolean("visible");
+        if (!o.isNull("card")) {
+            this.card = o.getString("card");
+        }
+        if (!o.isNull("maxDebt")) {
+            this.maxdebt = o.getDouble("maxDebt");
+        }
+        if (!o.isNull("debtDate")) {
+            this.curdate = DateUtils.readSecTimestamp(o.getLong("debtDate"));
+        }
+        this.prepaid = o.getDouble("prepaid");
+        if (!o.isNull("firstName")) {
+            this.firstname = o.getString("firstName");
+        }
+        if (!o.isNull("lastName")) {
+            this.lastname = o.getString("lastName");
+        }
+        if (!o.isNull("email")) {
+            this.email = o.getString("email");
+        }
+        if (!o.isNull("phone1")) {
+            this.phone = o.getString("phone1");
+        }
+        if (!o.isNull("phone2")) {
+            this.phone2 = o.getString("phone2");
+        }
+        if (!o.isNull("fax")) {
+            this.fax = o.getString("fax");
+        }
+        if (!o.isNull("addr1")) {
+            this.address = o.getString("addr1");
+        }
+        if (!o.isNull("addr2")) {
+            this.address2 = o.getString("addr2");
+        }
+        if (!o.isNull("zipCode")) {
+            this.postal = o.getString("zipCode");
+        }
+        if (!o.isNull("city")) {
+            this.city = o.getString("city");
+        }
+        if (!o.isNull("region")) {
+            this.region = o.getString("region");
+        }
+        if (!o.isNull("country")) {
+            this.country = o.getString("country");
+        }
+    }
   
     public String getTaxCustCategoryID() {
         return taxcustomerid;

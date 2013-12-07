@@ -22,6 +22,7 @@
 package fr.pasteque.pos.customers;
 
 import fr.pasteque.basic.BasicException;
+import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.QBFCompareEnum;
 import fr.pasteque.data.user.EditorCreator;
@@ -37,6 +38,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Window;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,10 +50,9 @@ import javax.swing.JPanel;
  */
 public class JCustomerFinder extends javax.swing.JDialog implements EditorCreator {
 
-    private CustomerInfo selectedCustomer;
-    private ListProvider lpr;
-    private ListProvider lprTop10;
-   
+    private CustomerInfoExt selectedCustomer;
+    private DataLogicCustomers dlc;
+
     /** Creates new form JCustomerFinder */
     private JCustomerFinder(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -61,8 +62,9 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     private JCustomerFinder(java.awt.Dialog parent, boolean modal) {
         super(parent, modal);
     }
-    
-    public static JCustomerFinder getCustomerFinder(Component parent, DataLogicCustomers dlCustomers) {
+
+    public static JCustomerFinder getCustomerFinder(Component parent,
+            DataLogicCustomers dlCustomers) {
         Window window = getWindow(parent);
         
         JCustomerFinder myMsg;
@@ -76,12 +78,12 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         return myMsg;
     }
     
-    public CustomerInfo getSelectedCustomer() {
+    public CustomerInfoExt getSelectedCustomer() {
         return selectedCustomer;
     }
 
     private void init(DataLogicCustomers dlCustomers) {
-
+        this.dlc = dlCustomers;
         initComponents();
 
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
@@ -96,9 +98,6 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
         
         m_jtxtTaxID.activate();
 
-        lpr = new ListProviderCreator(dlCustomers.getCustomerList(), this);
-        lprTop10 = new ListProviderCreator(dlCustomers.getTop10CustomerList(), this);
-
         jListCustomers.setCellRenderer(new CustomerRenderer());
 
         getRootPane().setDefaultButton(jcmdOK);
@@ -109,7 +108,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     public void search(CustomerInfo customer) {
         
         if (customer == null || customer.getName() == null || customer.getName().equals("")) {
-            
+            // Default filter: show top 10
             m_jtxtTaxID.reset();
             m_jtxtSearchKey.reset();
             m_jtxtName.reset();
@@ -118,7 +117,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
             
             automaticTop10ClientSearch();
         } else {
-            
+            // Filter by selected customer
             m_jtxtTaxID.setText(customer.getTaxid());
             m_jtxtSearchKey.setText(customer.getSearchkey());
             m_jtxtName.setText(customer.getName());
@@ -134,13 +133,22 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     }
     
     public void executeSearch() {
+        // Read field values
+        String number = this.m_jtxtTaxID.getText();
+        String searchKey = this.m_jtxtSearchKey.getText();
+        String name = this.m_jtxtName.getText();
         try {
-            jListCustomers.setModel(new MyListData(lpr.loadData()));
+            List<CustomerInfoExt> results = this.dlc.searchCustomers(number,
+                    searchKey, name);
+            jListCustomers.setModel(new MyListData(results));
             if (jListCustomers.getModel().getSize() > 0) {
                 jListCustomers.setSelectedIndex(0);
             }
         } catch (BasicException e) {
             e.printStackTrace();
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("Label.LoadError"), e);
+            msg.show(this);
+
         }        
     }
     
@@ -149,13 +157,9 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
      * of the customer's list by number of tickets with their id
      */
     public void automaticTop10ClientSearch(){
-        try {
-            jListCustomers.setModel(new MyListData(lprTop10.loadData()));
-            if (jListCustomers.getModel().getSize() > 0) {
-                jListCustomers.setSelectedIndex(0);
-            }
-        } catch (BasicException e) {
-            e.printStackTrace();
+        jListCustomers.setModel(new MyListData(new ArrayList<CustomerInfoExt>()));
+        if (jListCustomers.getModel().getSize() > 0) {
+            jListCustomers.setSelectedIndex(0);
         }
     }
 
@@ -382,7 +386,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
 
     private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {
 
-        selectedCustomer = (CustomerInfo) jListCustomers.getSelectedValue();
+        selectedCustomer = (CustomerInfoExt) jListCustomers.getSelectedValue();
         dispose();
         
     }
@@ -394,9 +398,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     }
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {
-
         executeSearch();
-        
     }
 
     private void jListCustomersValueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -408,7 +410,7 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     private void jListCustomersMouseClicked(java.awt.event.MouseEvent evt) {
         
         if (evt.getClickCount() == 2) {
-            selectedCustomer = (CustomerInfo) jListCustomers.getSelectedValue();
+            selectedCustomer = (CustomerInfoExt) jListCustomers.getSelectedValue();
             dispose();
         }
         
