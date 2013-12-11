@@ -436,7 +436,7 @@ public class JTicketsBagTicket extends JTicketsBag {
     }//GEN-LAST:event_m_jKeysActionPerformed
 
 private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        JTicketsFinder finder = JTicketsFinder.getReceiptFinder(this, m_dlSales, dlCustomers);
+        JTicketsFinder finder = JTicketsFinder.getReceiptFinder(this, this.m_App);
         finder.setVisible(true);
         FindTicketsInfo selectedTicket = finder.getSelectedCustomer();
         if (selectedTicket == null) {
