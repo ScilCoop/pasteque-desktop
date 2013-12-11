@@ -119,6 +119,7 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {
         m_restaurant.newTicket();
+        m_restaurant.loadTickets();
     }
 
     private void custCountBtnActionPerformed(java.awt.event.ActionEvent evt) {
