@@ -122,7 +122,8 @@ public class JTicketsBagRestaurant extends javax.swing.JPanel {
         m_restaurant.loadTickets();
     }
 
-    private void custCountBtnActionPerformed(java.awt.event.ActionEvent evt) {
+    // TODO: use of public UI event is an awfully dirty way to show popup
+    public void custCountBtnActionPerformed(java.awt.event.ActionEvent evt) {
         Double dblcount = JNumberDialog.showEditNumber(this, JNumberDialog.INT_POSITIVE, AppLocal.getIntString("Label.CustCount"), AppLocal.getIntString("Label.CustCountInput"), new ImageIcon(getClass().getResource("/com/openbravo/images/edit_group.png")));
         if (dblcount != null) {
             int count = (int) dblcount.doubleValue();

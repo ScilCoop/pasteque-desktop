@@ -56,6 +56,8 @@ import com.openbravo.pos.forms.AppConfig;
 import com.openbravo.pos.inventory.TaxCategoryInfo;
 import com.openbravo.pos.payment.JPaymentSelectReceipt;
 import com.openbravo.pos.payment.JPaymentSelectRefund;
+import com.openbravo.pos.sales.restaurant.JTicketsBagRestaurant;
+import com.openbravo.pos.sales.restaurant.JTicketsBagRestaurantMap;
 import com.openbravo.pos.ticket.ProductInfoExt;
 import com.openbravo.pos.ticket.TariffInfo;
 import com.openbravo.pos.ticket.TaxInfo;
@@ -428,6 +430,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     m_jKeyFactory.requestFocus();
                 }
             });
+
+            // Show customers count if not set in restaurant mode
+            if (this.m_ticketsbag instanceof JTicketsBagRestaurantMap) {
+                if (this.m_oTicket.getCustomersCount() == null) {
+                    if (!AppConfig.loadedInstance.getProperty("ui.autodisplaycustcount").equals("0")) {
+                    ((JTicketsBagRestaurant)this.m_ticketsbag.getBagComponent()).custCountBtnActionPerformed(null);
+                    }
+                }
+            }
         }
     }
 
