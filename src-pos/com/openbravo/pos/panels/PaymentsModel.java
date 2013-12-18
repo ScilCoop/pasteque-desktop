@@ -55,7 +55,7 @@ public class PaymentsModel {
     private java.util.List<SalesLine> m_lsales;
     private Integer custCount;
     
-    private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
+    private final static String[] SALEHEADERS = {"label.taxcash", "label.subtotalcash", "label.totalcash"};
     private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
 
     private PaymentsModel() {
@@ -161,7 +161,8 @@ public class PaymentsModel {
         } 
         // Total taxes by type
         List<SalesLine> asales = new StaticSentence(app.getSession(),
-                "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT) " +
+                "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.BASE), " +
+                " SUM(TAXLINES.AMOUNT) " +
                 "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
                 "AND RECEIPTS.MONEY = ?" +
                 "GROUP BY TAXCATEGORIES.NAME"
@@ -294,11 +295,13 @@ public class PaymentsModel {
     public static class SalesLine implements SerializableRead {
         
         private String m_SalesTaxName;
+        private Double subTotal;
         private Double m_SalesTaxes;
         
         public void readValues(DataRead dr) throws BasicException {
             m_SalesTaxName = dr.getString(1);
-            m_SalesTaxes = dr.getDouble(2);
+            this.subTotal = dr.getDouble(2);
+            m_SalesTaxes = dr.getDouble(3);
         }
         public String printTaxName() {
             return m_SalesTaxName;
@@ -311,7 +314,13 @@ public class PaymentsModel {
         }
         public Double getTaxes() {
             return m_SalesTaxes;
-        }        
+        }
+        public String printSubTotal() {
+            return Formats.CURRENCY.formatValue(this.subTotal);
+        }
+        public Double getSubTotal() {
+            return this.subTotal;
+        }
     }
 
     public AbstractTableModel getSalesModel() {
@@ -329,7 +338,8 @@ public class PaymentsModel {
                 SalesLine l = m_lsales.get(row);
                 switch (column) {
                 case 0: return l.getTaxName();
-                case 1: return l.getTaxes();
+                case 1: return l.getSubTotal();
+                case 2: return l.getTaxes();
                 default: return null;
                 }
             }  
