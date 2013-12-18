@@ -71,14 +71,16 @@
             <text bold="true">Taxes</text>
         </line>
         <line>
-            <text align ="right" length="42">Total</text>
+            <text align ="right" length="32">Ss-total</text>
+            <text align ="right" length="10">Total</text>
         </line>
         <line>
             <text>------------------------------------------</text>
         </line>
         #foreach ($line in $payments.getSaleLines())
         <line>
-            <text align ="left" length="32">${line.printTaxName()}</text>
+            <text align ="left" length="22">${line.printTaxName()}</text>
+            <text align ="right" length="10">${line.printSubTotal()}</text>
             <text align ="right" length="10">${line.printTaxes()}</text>
         </line> 
         #end        
