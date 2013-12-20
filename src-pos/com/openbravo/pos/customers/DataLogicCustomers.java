@@ -40,6 +40,8 @@ import com.openbravo.format.Formats;
 import com.openbravo.pos.forms.AppLocal;
 import com.openbravo.pos.forms.BeanFactoryDataSingle;
 
+import java.util.List;
+
 /**
  *
  * @author adrianromero
@@ -130,21 +132,24 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     }
 
     public Integer getNextCustomerNumber() throws BasicException {
-        Object[] data = (Object[]) new PreparedSentence(s,
-            "SELECT MAX(TAXID) FROM CUSTOMERS",
+        List data = new PreparedSentence(s,
+            "SELECT TAXID FROM CUSTOMERS",
             null,
-            new SerializerReadBasic(new Datas[] {Datas.STRING})).find();
-        if (data.length > 0) {
-            String number = (String) data[0];
+            new SerializerReadBasic(new Datas[] {Datas.STRING})).list();
+        int maxNum = 0;
+        for (int i = 0; i < data.size(); i++) {
+            Object[] obj = (Object[]) data.get(i);
+            String strNum = (String) obj[0];
             try {
-                int inum = Integer.parseInt(number);
-                return inum + 1;
+                int num = Integer.parseInt(strNum);
+                if (num > maxNum) {
+                    maxNum = num;
+                }
             } catch (NumberFormatException e) {
-                return null;
+                // Not a Number, ignore it
             }
-        } else {
-            return null;
         }
+        return maxNum + 1;
     }
 
     public final SentenceList getReservationsList() {
