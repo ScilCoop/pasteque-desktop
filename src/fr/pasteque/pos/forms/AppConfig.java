@@ -194,6 +194,8 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.touchbtnminheight", "0.4"); // in inches
         DEFAULT_VALUES.put("ui.touchbigbtnminwidth", "0.5"); // in inches
         DEFAULT_VALUES.put("ui.touchbigbtnminheight", "0.5"); // in inches
+        DEFAULT_VALUES.put("ui.touchhudgebtnminwidth", "0.8");  // in inches
+        DEFAULT_VALUES.put("ui.touchhudgebtnminheight", "0.6"); // in inches
         DEFAULT_VALUES.put("ui.touchsmallbtnminwidth", "0.3"); // in inches
         DEFAULT_VALUES.put("ui.touchsmallbtnminheight", "0.3"); // in inches
         DEFAULT_VALUES.put("ui.touchbtnspacing", "0.08"); // in inches

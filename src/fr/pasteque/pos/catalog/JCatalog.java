@@ -81,10 +81,14 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         
         m_jListCategories.addListSelectionListener(this);                
         m_jscrollcat.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
-        
+        AppConfig cfg = AppConfig.loadedInstance;
+        int widthCfg = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminwidth")));
+        int heightCfg = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminheight")));
         tnbcat = new ThumbNailBuilder(32, 32, "category_default.png");
-        tnbsubcat = new ThumbNailBuilder(width, height, "category_default.png");
-        tnbbutton = new ThumbNailBuilder(width, height, "product_default.png");
+        tnbsubcat = new ThumbNailBuilder(widthCfg, heightCfg,
+                "category_default.png");
+        tnbbutton = new ThumbNailBuilder(widthCfg, heightCfg,
+                "product_default.png");
     }
     
     public Component getComponent() {
@@ -360,8 +364,10 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     private class SmallCategoryRenderer extends DefaultListCellRenderer {
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            super.getListCellRendererComponent(list, null, index, isSelected, cellHasFocus);
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus) {
+            super.getListCellRendererComponent(list, null, index, isSelected,
+                    cellHasFocus);
             CategoryInfo cat = (CategoryInfo) value;
             setText(cat.getName());
             setIcon(new ImageIcon(tnbcat.getThumbNail(cat.getImage())));

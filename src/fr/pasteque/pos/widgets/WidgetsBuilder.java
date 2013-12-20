@@ -40,6 +40,7 @@ public class WidgetsBuilder {
     public static final int SIZE_SMALL = 0;
     public static final int SIZE_MEDIUM = 1;
     public static final int SIZE_BIG = 2;
+    public static final int SIZE_HUDGE = 3;
     
     private WidgetsBuilder() {}
     
@@ -93,6 +94,10 @@ public class WidgetsBuilder {
     	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminwidth")));
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminheight")));
     	            break;
+                case SIZE_HUDGE:
+                    minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminwidth")));
+                    minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminheight")));
+                    break;
     	        case SIZE_MEDIUM:
     	        default:
     	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
