@@ -202,7 +202,7 @@ public class CategoriesEditor extends JPanel implements EditorRecord {
         add(m_jCatalogDelete);
         m_jCatalogDelete.setBounds(370, 50, 170, 24);
 
-        jLabel5.setText(AppLocal.getIntString("label.prodcategory")); // NOI18N
+        jLabel5.setText(AppLocal.getIntString("label.parentcategory"));
         add(jLabel5);
         jLabel5.setBounds(20, 50, 90, 14);
         add(m_jCategory);
