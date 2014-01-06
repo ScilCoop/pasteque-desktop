@@ -28,13 +28,18 @@ import fr.pasteque.pos.util.URLTextGetter;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ServerLoader {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.data.loader.ServerLoader");
 
     /** Lock to take and release for synchronous/asynchronous call. */
     private Object lock;
@@ -122,8 +127,11 @@ public class ServerLoader {
     public Response read(String api, String action, String... params)
         throws SocketTimeoutException, URLTextGetter.ServerException,
                IOException {
+        logger.log(Level.INFO, "Reading " + api + " action " + action + " "
+                + Arrays.deepToString(params));
         String resp = URLTextGetter.getText(this.url,
                 this.params(api, action, params));
+        logger.log(Level.INFO, "Server response: " + resp);
         try {
             return new Response(new JSONObject(resp));
         } catch (JSONException e) {
@@ -134,8 +142,11 @@ public class ServerLoader {
     public Response write(String api, String action, String... params)
         throws SocketTimeoutException, URLTextGetter.ServerException,
                IOException {
+        logger.log(Level.INFO, "Writing " + api + " action " + action + " "
+                + Arrays.deepToString(params));
         String resp = URLTextGetter.getText(this.url, null,
                 this.params(api, action, params));
+        logger.log(Level.INFO, "Server response: " + resp);
         try {
             return new Response(new JSONObject(resp));
         } catch (JSONException e) {
