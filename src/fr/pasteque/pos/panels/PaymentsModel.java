@@ -28,6 +28,10 @@ import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
+import fr.pasteque.pos.ticket.CashSession;
+import fr.pasteque.pos.ticket.CategoryInfo;
+import fr.pasteque.pos.ticket.TaxInfo;
+import fr.pasteque.pos.ticket.ZTicket;
 import fr.pasteque.pos.util.StringUtils;
 
 /**
@@ -67,112 +71,61 @@ public class PaymentsModel {
         PaymentsModel p = new PaymentsModel();
         currencies = dlSales.getCurrenciesList();
         
-        // Propiedades globales
-        p.m_sHost = app.getProperties().getHost();
-        p.m_iSeq = app.getActiveCashSequence();
-        p.m_dDateStart = app.getActiveCashDateStart();
+        // Cash session info
+        CashSession cash = app.getActiveCashSession();
+        p.m_sHost = cash.getHost();
+        p.m_iSeq = cash.getSequence();
+        p.m_dDateStart = cash.getOpenDate();
         p.m_dDateEnd = null;
-        
+        // Load z ticket
+        ZTicket z = dlSales.getZTicket(cash.getId());
         
         // Get number of payments and total amount
-        Object[] valtickets = (Object []) new StaticSentence(app.getSession()
-            , "SELECT COUNT(*), SUM(PAYMENTS.TOTAL) " +
-              "FROM PAYMENTS, RECEIPTS " +
-              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ?"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE}))
-            .find(app.getActiveCashIndex());
-            
-        if (valtickets == null) {
-            p.m_iPayments = new Integer(0);
-            p.m_dPaymentsTotal = new Double(0.0);
-        } else {
-            p.m_iPayments = (Integer) valtickets[0];
-            p.m_dPaymentsTotal = (Double) valtickets[1];
-        }  
-        // Get total amount by payment type
-        List l = new StaticSentence(app.getSession()            
-            , "SELECT PAYMENTS.PAYMENT, PAYMENTS.CURRENCY, SUM(PAYMENTS.TOTALCURRENCY) " +
-              "FROM PAYMENTS, RECEIPTS " +
-              "WHERE PAYMENTS.RECEIPT = RECEIPTS.ID AND RECEIPTS.MONEY = ? " +
-              "GROUP BY PAYMENTS.PAYMENT, PAYMENTS.CURRENCY"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadClass(PaymentsModel.PaymentsLine.class)) //new SerializerReadBasic(new Datas[] {Datas.STRING, Datas.DOUBLE}))
-            .list(app.getActiveCashIndex()); 
-        
-        if (l == null) {
-            p.m_lpayments = new ArrayList();
-        } else {
-            p.m_lpayments = l;
+        p.m_iPayments = z.getPaymentCount();
+        p.m_dPaymentsTotal = 0.0;
+        p.m_lpayments = new ArrayList<PaymentsLine>();
+        for (ZTicket.Payment payment : z.getPayments()) {
+            p.m_dPaymentsTotal += payment.getAmount();
+            CurrencyInfo curr = dlSales.getCurrency(payment.getCurrencyId());
+            PaymentsLine l = new PaymentsLine(payment.getType(),
+                    curr, payment.getCurrencyAmount());
+            p.m_lpayments.add(l);
         }
         
         // Sales
-        Object[] recsales = (Object []) new StaticSentence(app.getSession(),
-            "SELECT COUNT(DISTINCT RECEIPTS.ID), " +
-            "SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), " +
-            "SUM(TICKETS.CUSTCOUNT) " +
-            "FROM RECEIPTS, TICKETS, TICKETLINES " +
-            "WHERE RECEIPTS.ID = TICKETLINES.TICKET " +
-            "AND RECEIPTS.ID = TICKETS.ID " +
-            "AND RECEIPTS.MONEY = ?",
-            SerializerWriteString.INSTANCE,
-            new SerializerReadBasic(new Datas[] {Datas.INT, Datas.DOUBLE, Datas.INT}))
-            .find(app.getActiveCashIndex());
-        if (recsales == null) {
-            p.m_iSales = null;
-            p.m_dSalesBase = null;
-        } else {
-            p.m_iSales = (Integer) recsales[0];
-            p.m_dSalesBase = (Double) recsales[1];
-            p.custCount = (Integer) recsales[2];
-        }
+        p.m_iSales = z.getTicketCount();
+        p.m_dSalesBase = z.getConsolidatedSales();
+        p.custCount = z.getCustomersCount();
 
         // Sales by categories
-        List catSales = new StaticSentence(app.getSession(),
-            "SELECT SUM(TICKETLINES.UNITS * TICKETLINES.PRICE), " +
-            "CATEGORIES.NAME " +
-            "FROM RECEIPTS, TICKETS, TICKETLINES, PRODUCTS, CATEGORIES " +
-            "WHERE RECEIPTS.ID = TICKETLINES.TICKET " +
-            "AND RECEIPTS.ID = TICKETS.ID " +
-            "AND TICKETLINES.PRODUCT = PRODUCTS.ID " +
-            "AND PRODUCTS.CATEGORY = CATEGORIES.ID " +
-            "AND RECEIPTS.MONEY = ? " +
-            "GROUP BY CATEGORIES.NAME",
-            SerializerWriteString.INSTANCE,
-            new SerializerReadClass(PaymentsModel.CategoryLine.class))
-            .list(app.getActiveCashIndex());
-        if (catSales == null) {
-            p.catSales = new ArrayList();
-        } else {
-            p.catSales = catSales;
-        }           
+        p.catSales = new ArrayList<CategoryLine>();
+        for (ZTicket.Category cat : z.getCategories()) {
+            String catId = cat.getId();
+            CategoryInfo catInfo = dlSales.getCategory(catId);
+            String name = catInfo.getName();
+            CategoryLine l = new CategoryLine(name, cat.getAmount());
+            p.catSales.add(l);
+        }
         
-        // Total taxes amount
-        Object[] rectaxes = (Object []) new StaticSentence(app.getSession(),
-            "SELECT SUM(TAXLINES.AMOUNT) " +
-            "FROM RECEIPTS, TAXLINES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND RECEIPTS.MONEY = ?"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadBasic(new Datas[] {Datas.DOUBLE}))
-            .find(app.getActiveCashIndex());            
-        if (rectaxes == null) {
-            p.m_dSalesTaxes = null;
-        } else {
-            p.m_dSalesTaxes = (Double) rectaxes[0];
-        } 
-        // Total taxes by type
-        List<SalesLine> asales = new StaticSentence(app.getSession(),
-                "SELECT TAXCATEGORIES.NAME, SUM(TAXLINES.AMOUNT), "
-                + "AVG(TAXES.RATE), SUM(TAXLINES.BASE) " +
-                "FROM RECEIPTS, TAXLINES, TAXES, TAXCATEGORIES WHERE RECEIPTS.ID = TAXLINES.RECEIPT AND TAXLINES.TAXID = TAXES.ID AND TAXES.CATEGORY = TAXCATEGORIES.ID " +
-                "AND RECEIPTS.MONEY = ?" +
-                "GROUP BY TAXCATEGORIES.NAME"
-                , SerializerWriteString.INSTANCE
-                , new SerializerReadClass(PaymentsModel.SalesLine.class))
-                .list(app.getActiveCashIndex());
-        if (asales == null) {
-            p.m_lsales = new ArrayList<SalesLine>();
-        } else {
-            p.m_lsales = asales;
+        // Taxes amount
+        p.m_lsales = new ArrayList<SalesLine>();
+        p.m_dSalesTaxes = 0.0;
+        List<TaxInfo> taxes = dlSales.getTaxList();
+        for (ZTicket.Tax tax : z.getTaxes()) {
+            p.m_dSalesTaxes += tax.getAmount();
+            String taxId = tax.getId();
+            String name = null;
+            double rate = 0.0;
+            for (TaxInfo t : taxes) {
+                if (t.getId().equals(taxId)) {
+                    name = t.getName();
+                    rate = t.getRate();
+                    break;
+                }
+            }
+            SalesLine l = new SalesLine(name, rate, tax.getBase(),
+                    tax.getAmount());
+            p.m_lsales.add(l);
         }
 
         return p;
@@ -292,18 +245,19 @@ public class PaymentsModel {
         };
     }
     
-    public static class SalesLine implements SerializableRead {
+    public static class SalesLine {
         
         private String m_SalesTaxName;
         private Double taxRate;
         private Double taxBase;
         private Double m_SalesTaxes;
-        
-        public void readValues(DataRead dr) throws BasicException {
-            m_SalesTaxName = dr.getString(1);
-            m_SalesTaxes = dr.getDouble(2);
-            this.taxRate = dr.getDouble(3);
-            this.taxBase = dr.getDouble(4);
+
+        public SalesLine(String taxName, double rate, double base,
+                double amount) {
+            this.m_SalesTaxName = taxName;
+            this.taxRate = rate;
+            this.taxBase = taxBase;
+            this.m_SalesTaxes = amount;
         }
         public String printTaxName() {
             return m_SalesTaxName;
@@ -353,25 +307,16 @@ public class PaymentsModel {
         };
     }
     
-    public static class PaymentsLine implements SerializableRead {
+    public static class PaymentsLine {
         
         private String m_PaymentType;
         private CurrencyInfo currency;
         private Double m_PaymentValue;
-        
-        public void readValues(DataRead dr) throws BasicException {
-            m_PaymentType = dr.getString(1);
-            int currencyId = dr.getInt(2);
-            for (CurrencyInfo currency : currencies) {
-                if (currency.getID() == currencyId) {
-                    this.currency = currency;
-                    break;
-                }
-            }
-            if (this.currency == null) {
-                this.currency = currencies.get(0);
-            }
-            m_PaymentValue = dr.getDouble(3);
+ 
+        public PaymentsLine(String type, CurrencyInfo currency, double value) {
+            this.m_PaymentType = type;
+            this.currency = currency;
+            this.m_PaymentValue = value;
         }
         
         public String printType() {
@@ -414,13 +359,13 @@ public class PaymentsModel {
         };
     }
 
-    public static class CategoryLine implements SerializableRead {
+    public static class CategoryLine {
         private String category;
         private Double amount;
 
-        public void readValues(DataRead dr) throws BasicException {
-            this.category = dr.getString(2);
-            this.amount = dr.getDouble(1);
+        public CategoryLine(String category, double amount) {
+            this.category = category;
+            this.amount = amount;
         }
         public String getCategory() {
             return this.category;

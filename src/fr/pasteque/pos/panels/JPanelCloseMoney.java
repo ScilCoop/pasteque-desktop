@@ -199,7 +199,38 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
         
-    }   
+    }
+
+    private void closeCash() {
+        Date dNow = new Date();
+        CashSession cashSess = m_App.getActiveCashSession();
+        cashSess.close(dNow);
+        try {
+            // Close cash in database
+            cashSess = m_dlSystem.saveCashSession(cashSess);
+            m_App.newActiveCash();
+        } catch (BasicException e) {
+            
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+            msg.show(this);
+            return;
+        }
+
+        // Prepare report and print
+        m_PaymentsToClose.setDateEnd(dNow);
+        printPayments("Printer.CloseCash");
+
+        // Show confirmation message
+        JOptionPane.showMessageDialog(this,
+                AppLocal.getIntString("message.closecashok"),
+                AppLocal.getIntString("message.title"),
+                JOptionPane.INFORMATION_MESSAGE);
+        // Log out
+        if (m_App instanceof JRootApp) {
+            ((JRootApp)m_App).closeAppView();
+        }
+        
+    }
 
     /** Print cash summary */
     private void printPayments(String report) {
@@ -557,41 +588,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         // TODO add your handling code here:
         int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannaclosecash"), AppLocal.getIntString("message.title"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (res == JOptionPane.YES_OPTION) {
-            
-            Date dNow = new Date();
-            CashSession cashSess = m_App.getActiveCashSession();
-            cashSess.close(dNow);
-            
-            try {
-                // Close cash in database
-                cashSess = m_dlSystem.saveCashSession(cashSess);
-                m_App.newActiveCash();
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-                msg.show(this);
-                return;
-            }
-
-            // Prepare report and print
-            m_PaymentsToClose.setDateEnd(dNow);
-            printPayments("Printer.CloseCash");
-
-            // Show confirmation message
-            JOptionPane.showMessageDialog(this,
-                    AppLocal.getIntString("message.closecashok"),
-                    AppLocal.getIntString("message.title"),
-                    JOptionPane.INFORMATION_MESSAGE);
-            // Refresh screen
-            try {
-                loadData();
-            } catch (BasicException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("label.noticketstoclose"), e);
-                msg.show(this);
-            }
-            // Log out
-            if (m_App instanceof JRootApp) {
-                ((JRootApp)m_App).closeAppView();
-            }
+            this.closeCash();
         }         
     }//GEN-LAST:event_m_jCloseCashActionPerformed
 

@@ -27,6 +27,7 @@ import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.TaxInfo;
 import fr.pasteque.pos.ticket.TicketInfo;
 import fr.pasteque.pos.ticket.TicketLineInfo;
+import fr.pasteque.pos.ticket.ZTicket;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -195,6 +196,22 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     }
                 }
                 return rootCats;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
+    public final CategoryInfo getCategory(String id) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CategoriesAPI", "get",
+                    "id", id);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                 return new CategoryInfo(r.getObjContent());
             } else {
                 return null;
             }
@@ -634,6 +651,27 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 SerializerWriteString.INSTANCE,
                 SerializerReadString.INSTANCE).find(id)
             != null;
+    }
+
+    public ZTicket getZTicket(String cashSessionId) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashesAPI", "zticket",
+                    "id", cashSessionId);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                } else {
+                    return new ZTicket(o);
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     private boolean isRefill(String productId) throws BasicException {
