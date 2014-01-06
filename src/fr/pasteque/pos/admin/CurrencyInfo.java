@@ -50,8 +50,8 @@ public class CurrencyInfo implements IKeyed {
         this.thousands = o.getString("thousandsSeparator");
         this.format = o.getString("format");
         this.rate = o.getDouble("rate");
-        this.main = o.getBoolean("main");
-        this.active = o.getBoolean("active");
+        this.main = o.getBoolean("isMain");
+        this.active = o.getBoolean("isActive");
     }
 
     public Object getKey() {
