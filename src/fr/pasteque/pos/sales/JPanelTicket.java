@@ -1699,6 +1699,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTicketId.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.NONE;
         ticketHeader.add(m_jTicketId, cstr);
         // Customer button
         btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"), AppLocal.getIntString("Button.btnCustomer.toolTip"));
@@ -1712,6 +1714,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.insets = new Insets(0, btnspacing, 0, btnspacing);
         ticketHeader.add(btnCustomer, cstr);
         // Split button
         btnSplit = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_split.png"),AppLocal.getIntString("Button.btnSplit.toolTip"));
