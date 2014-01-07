@@ -1751,7 +1751,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridx = 0;
         cstr.gridy = 0;
         cstr.gridheight = 2;
-        cstr.weightx = 0.7;
+        cstr.weightx = 1.0;
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.BOTH;
         mainZone.add(catcontainer, cstr);
@@ -1868,6 +1868,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 0;
+        cstr.weighty = 1.0;
+        cstr.fill = GridBagConstraints.VERTICAL;
         ticketZone.add(lineEditBtns, cstr);
         // Total zone
         JPanel totalZone = new JPanel();
@@ -1924,8 +1926,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         cstr.gridx = 1;
-        cstr.weightx = 0.3;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.fill = GridBagConstraints.BOTH;
+        cstr.weighty = 1.0;
         mainZone.add(ticketZone, cstr);
         // Numpad zone
         JPanel numpadZone = new JPanel();
