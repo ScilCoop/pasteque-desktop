@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=POS-Tech
-Comment=POS-Tech, logiciel de caisse
-Exec=pos-tech
-Terminal=false
-Type=Application
-StartupNotify=false
-Categories=GNOME;Office
-Icon=pos-tech

@@ -23,7 +23,7 @@
 
 DIRNAME=`dirname $0`
 
-CP=$DIRNAME/pos-tech.jar
+CP=$DIRNAME/pasteque.jar
 
 CP=$CP:$DIRNAME/lib/jasperreports-3.1.4.jar
 CP=$CP:$DIRNAME/lib/jcommon-1.0.15.jar
@@ -75,4 +75,4 @@ CYGWIN*|MINGW32*) LIBRARYPATH=/lib/Windows/i368-mingw32;;
 esac
 
 # start Openbravo POS
-java -cp $CP -Djava.util.logging.config.file=$DIRNAME/logging.properties -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -Djava.library.path=$DIRNAME$LIBRARYPATH -Ddirname.path=$DIRNAME/ com.openbravo.pos.forms.StartPOS "$@"
+java -cp $CP -Djava.util.logging.config.file=$DIRNAME/logging.properties -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -Djava.library.path=$DIRNAME$LIBRARYPATH -Ddirname.path=$DIRNAME/ fr.pasteque.pos.forms.StartPOS "$@"

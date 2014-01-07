@@ -22,14 +22,16 @@
     along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
  -->
 
-<project name="openbravopos" basedir="." default="build">
+<project name="pasteque" basedir="." default="build">
     <!-- ================================================================= -->
     <!-- P R O P E R T I E S                                               -->
     <!-- ================================================================= -->
     <!-- program name -->
-    <property name="name" value="pos-tech"/>
+    <property name="name" value="pasteque"/>
+    <!-- application display name -->
+    <property name="app.name" value="Pasteque"/>
     <!-- project version -->
-    <property name="version" value="1.2_beta3"/>
+    <property name="version" value="1.3.0"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
@@ -38,7 +40,7 @@
     <property name="javac.encoding" value="utf8"/>
     <!-- read in property files -->
     <property file="build.properties" />
-    <property name="src.pos" value="${basedir}/src-pos"/>
+    <property name="src.pos" value="${basedir}/src"/>
     <property name="locales" value="${basedir}/locales"/>
     <property name="graphics.src" value="${basedir}/graphics-src"/>
     <property name="lib" value="${basedir}/lib"/>
@@ -120,9 +122,9 @@
              basedir="${basedir}/build/zip">
             <manifest>
                 <attribute name="Implementation-Vendor" value="Scil"/>
-                <attribute name="Implementation-Title" value="POS-Tech"/>
+                <attribute name="Implementation-Title" value="${app.name}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
-                <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
+                <attribute name="Main-Class" value="fr.pasteque.pos.forms.StartPOS" />
     	    </manifest>
         </jar>
         <delete dir="${basedir}/build/zip" />
@@ -134,7 +136,7 @@
 
     <target name="build" depends="init.bin,jar" description="Build the executable environment">
         <mkdir dir="${dest.bin}" />
-        <copy file="${basedir}/pos-tech-logo-128.png" todir="${dest.bin}"/>
+        <copy file="${basedir}/${name}-logo-128.png" todir="${dest.bin}"/>
         <copy file="${basedir}/README" todir="${dest.bin}"/>
         <copy file="${basedir}/logging.properties" todir="${dest.bin}"/>
         <copy file="${dest.jar}/${name}.jar" todir="${dest.bin}"/>
@@ -178,9 +180,9 @@
              basedir="${dest.classes}/pos">
             <manifest>
                 <attribute name="Implementation-Vendor" value="Scil"/>
-                <attribute name="Implementation-Title" value="POS-Tech"/>
+                <attribute name="Implementation-Title" value="${app.name}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
-                <attribute name="Main-Class" value="com.openbravo.pos.forms.StartPOS" />
+                <attribute name="Main-Class" value="fr.pasteque.pos.forms.StartPOS" />
             </manifest>
         </jar>
     </target>
@@ -199,7 +201,7 @@
 
     <target name="dist.src" depends="init.dist" description="Generate the src zip file.">
         <mkdir dir="${basedir}/build/zip" />
-        <copy todir="${basedir}/build/zip/src-pos">
+        <copy todir="${basedir}/build/zip/src">
             <fileset dir="${src.pos}">
                 <exclude name="**/.nbattrs"/>
                 <exclude name="**/Thumbs.db"/>
@@ -226,7 +228,7 @@
                 <exclude name="**/filesystem.attributes"/>
             </fileset>
         </copy>
-        <copy file="${basedir}/pos-tech-logo-128.png" todir="${basedir}/build/zip"/>
+        <copy file="${basedir}/${name}-logo-128.png" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/README" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/logging.properties" todir="${basedir}/build/zip"/>
         <copy file="${basedir}/build.xml" todir="${basedir}/build/zip" />
@@ -244,6 +246,28 @@
         <mkdir dir="${dest.dist}" />
         <zip zipfile="${dest.dist}/${name}_${version}_src.zip" basedir="${basedir}/build/zip" />
         <delete dir="${basedir}/build/zip" />
+    </target>
+
+    <!-- ================================================================= -->
+    <!-- I N S T A L L E R                                                 -->
+    <!-- ================================================================= -->
+
+    <target name="installer" depends="init.dist,build">
+        <path id="build.classpath">
+            <fileset dir="${user.home}/IzPack">
+                <include name="lib/*.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
+
+        <izpack input="${basedir}/installer/desktop/install.xml"
+                output="${dest.dist}/${name}_${version}-install.jar"
+                installerType="standard"
+                basedir="${basedir}"
+                izPackDir="${user.home}/IzPack/"
+                inheritAll="true"/>
+        <copy file="${basedir}/installer/desktop/install.sh" todir="${dest.dist}"/>
+        <chmod file="${dest.dist}/install.sh" perm="755"/>
     </target>
 
 </project>
