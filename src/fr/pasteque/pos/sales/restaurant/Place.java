@@ -63,7 +63,7 @@ public class Place implements SerializableRead, java.io.Serializable {
         m_btn.setFocusable(false);
         m_btn.setRequestFocusEnabled(false);
         m_btn.setHorizontalTextPosition(SwingConstants.CENTER);
-        m_btn.setVerticalTextPosition(SwingConstants.BOTTOM);            
+        m_btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         m_btn.setIcon(ICO_FRE);
         m_btn.setText(m_sName);
     }
@@ -83,14 +83,23 @@ public class Place implements SerializableRead, java.io.Serializable {
     public boolean hasPeople() {
         return m_bPeople;
     }   
-    public void setPeople(boolean bValue) {
+    public void setPeople(boolean bValue, int custCount) {
         m_bPeople = bValue;
-        m_btn.setIcon(bValue ? ICO_OCU : ICO_FRE); 
-    }     
+        m_btn.setIcon(bValue ? ICO_OCU : ICO_FRE);
+        if (custCount > 0) {
+            m_btn.setText(m_sName + " (" + custCount + ")");
+            m_btn.setPreferredSize(null);
+            m_btn.revalidate();
+        } else {
+            m_btn.setText(m_sName);
+            m_btn.setPreferredSize(null);
+            m_btn.revalidate();
+        }
+    }
     public void setButtonBounds() {
         Dimension d = m_btn.getPreferredSize();
-        m_btn.setBounds(m_ix - d.width / 2, m_iy - d.height / 2, d.width, d.height); 
+        d.setSize(d.getWidth() + 30, d.getHeight());
+        m_btn.setBounds(m_ix - d.width / 2, m_iy - d.height / 2,
+                d.width, d.height);
     }
-}    
-
-    
+}

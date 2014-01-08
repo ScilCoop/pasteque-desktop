@@ -1,11 +1,13 @@
 
 [Desktop Entry]
-Name=POS-Tech
-Comment=POS-Tech, logiciel de caisse
-Exec=pos-tech
+Name=Pastèque
+GenericName=Cash register
+GenericName[fr]=Gestion de caisse
+Comment=Pastèque, the simple cash register solution
+Comment[fr]=Pastèque, la solution de caisse toute simple
+Exec=pasteque
 Terminal=false
 Type=Application
 StartupNotify=false
 Categories=GNOME;Office
-Icon=pos-tech
-Name[fr]=pasteque
+Icon=pasteque

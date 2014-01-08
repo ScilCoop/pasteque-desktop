@@ -57,6 +57,8 @@ import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.payment.JPaymentSelectReceipt;
 import fr.pasteque.pos.payment.JPaymentSelectRefund;
+import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurant;
+import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurantMap;
 import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.TariffInfo;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -407,6 +409,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     m_jKeyFactory.requestFocus();
                 }
             });
+
+            // Show customers count if not set in restaurant mode
+            if (this.m_ticketsbag instanceof JTicketsBagRestaurantMap) {
+                if (this.m_oTicket.getCustomersCount() == null) {
+                    if (!AppConfig.loadedInstance.getProperty("ui.autodisplaycustcount").equals("0")) {
+                    ((JTicketsBagRestaurant)this.m_ticketsbag.getBagComponent()).custCountBtnActionPerformed(null);
+                    }
+                }
+            }
         }
     }
 

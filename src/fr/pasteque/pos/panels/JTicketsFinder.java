@@ -33,6 +33,7 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.forms.AppLocal;
+import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.ticket.FindTicketsInfo;
@@ -54,8 +55,8 @@ import javax.swing.JFrame;
  */
 public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator {
 
+    private AppView app;
     private ListProvider lpr;
-    private ListProvider lprLast10;
     private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     private DataLogicSales dlSales;
@@ -72,7 +73,8 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         super(parent, modal);
     }
     
-    public static JTicketsFinder getReceiptFinder(Component parent, DataLogicSales dlSales, DataLogicCustomers dlCustomers) {
+    public static JTicketsFinder getReceiptFinder(Component parent,
+            AppView app) {
         Window window = getWindow(parent);
         
         JTicketsFinder myMsg;
@@ -81,7 +83,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         } else {
             myMsg = new JTicketsFinder((Dialog) window, true);
         }
-        myMsg.init(dlSales, dlCustomers);
+        myMsg.init(app);
         myMsg.applyComponentOrientation(parent.getComponentOrientation());
         return myMsg;
     }
@@ -90,21 +92,22 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         return selectedTicket;
     }
 
-    private void init(DataLogicSales dlSales, DataLogicCustomers dlCustomers) {
-        
+    private void init(AppView app) {
+        this.app = app;
+        dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
+        dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomers");
+
         this.dlSales = dlSales;
         this.dlCustomers = dlCustomers;
         
         initComponents();
 
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
-
         jtxtTicketID.addEditorKeys(m_jKeys);
         jtxtMoney.addEditorKeys(m_jKeys);
         
         //jtxtTicketID.activate();
         lpr = new ListProviderCreator(dlSales.getTicketsList(), this);
-        lprLast10 = new ListProviderCreator(dlSales.getLast10Tickets(), this);
 
         jListTickets.setCellRenderer(new FindTicketsRenderer());
 
@@ -115,24 +118,12 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         defaultValues();
 
         selectedTicket = null;
-        automaticLast10TicketsSearch();
+        this.executeSearch();
     }
     
     public void executeSearch() {
         try {
             jListTickets.setModel(new MyListData(lpr.loadData()));
-            if (jListTickets.getModel().getSize() > 0) {
-                jListTickets.setSelectedIndex(0);
-            }
-        } catch (BasicException e) {
-            e.printStackTrace();
-        }        
-    }
-
-    /** Automatic filtering of tickets. Displays the last 10 tickets*/
-    public void automaticLast10TicketsSearch(){
-        try {
-            jListTickets.setModel(new MyListData(lprLast10.loadData()));
             if (jListTickets.getModel().getSize() > 0) {
                 jListTickets.setSelectedIndex(0);
             }
@@ -180,8 +171,8 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         jcboMoney.repaint();
                 
         jtxtMoney.reset();
-        
-        jTxtStartDate.setText(null);
+
+        jTxtStartDate.setText(Formats.TIMESTAMP.formatValue(this.app.getActiveCashDateStart()));        
         jTxtEndDate.setText(null);
         
         jtxtCustomer.setText(null);

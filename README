@@ -1,15 +1,15 @@
-==== POS-Tech 1.3.0 ====
+==== Pasteque 1.4 ====
 
 == Installation and database configuration ==
 
 -- Requirements --
 
-POS-Tech requires Java 1.6 and corresponding database connector. Derby connector
-is provided in the lib directory.
+Pasteque requires Java 1.6 and corresponding database connector. Derby and MySQL
+connectors are provided in the lib directory.
 
 -- Installation procedure --
 
-To install POS-Tech just copy the entire directory where you want. By default
+To install Pasteque just copy the entire directory where you want. By default
 it will use a derby database in your home directory.
 
 Run configure.sh or configure.bat to change the configuration. Supported
@@ -17,11 +17,11 @@ databases are Derby, MySQL and PostgreSQL.
 
 == Other documentation ==
 
-Check http://trac.scil.coop/pos-tech for further information.
+Check http://redmine.scil.coop for further information.
 
 == Licencing ==
 
-POS-Tech is licenced under GNU General Public Licence version 3 or (at your
+Pasteque is licenced under GNU General Public Licence version 3 or (at your
 option) any later version.
 
 See licencing/gpl-3.0.txt for the whole licence text.

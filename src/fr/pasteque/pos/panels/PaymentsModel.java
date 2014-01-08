@@ -59,7 +59,7 @@ public class PaymentsModel {
     private java.util.List<SalesLine> m_lsales;
     private Integer custCount;
     
-    private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
+    private final static String[] SALEHEADERS = {"label.taxcash", "label.subtotalcash", "label.totalcash"};
     private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
 
     private PaymentsModel() {
@@ -300,7 +300,8 @@ public class PaymentsModel {
                 SalesLine l = m_lsales.get(row);
                 switch (column) {
                 case 0: return l.getTaxName();
-                case 1: return l.getTaxes();
+                case 1: return l.getTaxBase();
+                case 2: return l.getTaxes();
                 default: return null;
                 }
             }  

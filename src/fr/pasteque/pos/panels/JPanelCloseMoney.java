@@ -178,7 +178,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jTicketTable.setModel(m_PaymentsToClose.getPaymentsModel());
                 
         TableColumnModel jColumns = m_jTicketTable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(247);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
@@ -186,15 +186,17 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
         
         jColumns = m_jsalestable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(151);
         jColumns.getColumn(0).setResizable(false);
-        jColumns.getColumn(1).setPreferredWidth(100);
+        jColumns.getColumn(1).setPreferredWidth(98);
         jColumns.getColumn(1).setResizable(false);
+        jColumns.getColumn(2).setPreferredWidth(98);
+        jColumns.getColumn(2).setResizable(false);
 
         this.categoriesTable.setModel(m_PaymentsToClose.getCategoriesModel());
         
         jColumns = this.categoriesTable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(247);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
@@ -413,7 +415,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr.fill = GridBagConstraints.HORIZONTAL;
         paymentsPanel.add(m_jCount, cstr);
 
-        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.Cash"));
+        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.paymenttotal"));
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr. gridy = 1;

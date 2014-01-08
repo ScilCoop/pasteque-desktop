@@ -26,7 +26,7 @@ import fr.pasteque.pos.panels.ComboItemLocal;
  * @author adrianromero
  */
 public class MovementReason extends ComboItemLocal {
-    
+
     // public static final MovementReason NULL = new MovementReason(null, "");
     public static final MovementReason IN_PURCHASE = new MovementReason(+1, "stock.in.purchase");
     public static final MovementReason IN_REFUND = new MovementReason(+2, "stock.in.refund");
@@ -35,20 +35,21 @@ public class MovementReason extends ComboItemLocal {
     public static final MovementReason OUT_REFUND = new MovementReason(-2, "stock.out.refund");
     public static final MovementReason OUT_BREAK = new MovementReason(-3, "stock.out.break");
     public static final MovementReason OUT_MOVEMENT = new MovementReason(-4, "stock.out.movement");
-    
+
     public static final MovementReason OUT_CROSSING = new MovementReason(1000, "stock.out.crossing");
+
     public static final MovementReason RESET = new MovementReason(0, "Stock.Reset");
-   
+
     private MovementReason(Integer iKey, String sKeyValue) {
         super(iKey, sKeyValue);
-    }    
-    
+    }
+
     public boolean isInput() {
         return m_iKey.intValue() > 0;
     }
 
     public Double samesignum(Double d) {
-        
+
         if (d == null || m_iKey == null) {
             return d;
         } else if ((m_iKey.intValue() > 0 && d.doubleValue() < 0.0) ||
@@ -56,17 +57,17 @@ public class MovementReason extends ComboItemLocal {
             return new Double(-d.doubleValue());
         } else {
             return d;
-        }            
-    }    
-    
+        }
+    }
+
     public Double getPrice(Double dBuyPrice, Double dSellPrice) {
-        
-        if (this == IN_PURCHASE || this == OUT_REFUND || this == OUT_BREAK) {
-            return dBuyPrice;
-        } else if (this == OUT_SALE || this == IN_REFUND) {
+        // Sell price cases: sale, refund return
+        // Buy price cases: everything else
+
+        if (this == OUT_SALE || this == IN_REFUND) {
             return dSellPrice;
         } else {
-            return null;
+            return dBuyPrice;
         }
     }
 }
