@@ -21,7 +21,9 @@ package fr.pasteque.pos.sales.restaurant;
 
 import fr.pasteque.pos.ticket.TicketInfo;
 import java.util.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
 import fr.pasteque.pos.sales.*;
@@ -31,17 +33,17 @@ import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.SerializerReadClass;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
-import fr.pasteque.data.loader.SentenceList;
+import fr.pasteque.data.loader.ServerLoader;
 import fr.pasteque.pos.customers.CustomerInfo;
 import fr.pasteque.pos.ticket.TicketLineInfo;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class JTicketsBagRestaurantMap extends JTicketsBag {
 
-//    private static final Icon ICO_OCU = new ImageIcon(JTicketsBag.class.getResource("/fr.pasteque.images/edit_group.png"));
-//    private static final Icon ICO_FRE = new NullIcon(22, 22);
-        
-    private java.util.List<Place> m_aplaces;
-    private java.util.List<Floor> m_afloors;
+    /** Map of places indexed by floor id */
+    private Map<String, List<Place>> places;
+    private List<Floor> floors;
     
     private JTicketsBagRestaurant m_restaurantmap;  
     private JTicketsBagRestaurantRes m_jreservations;   
@@ -67,35 +69,33 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         m_PlaceCurrent = null;
         m_PlaceClipboard = null;
         customer = null;
-            
+        this.floors = new ArrayList<Floor>();
+        this.places = new HashMap<String, List<Place>>();
         try {
-            SentenceList sent = new StaticSentence(
-                    app.getSession(), 
-                    "SELECT ID, NAME, IMAGE FROM FLOORS ORDER BY NAME", 
-                    null, 
-                    new SerializerReadClass(Floor.class));
-            m_afloors = sent.list();
-               
-                
-            
-        } catch (BasicException eD) {
-            m_afloors = new ArrayList<Floor>();
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("PlacesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject oFloor = a.getJSONObject(i);
+                    Floor f = new Floor(oFloor);
+                    this.floors.add(f);
+                    this.places.put(f.getID(), new ArrayList<Place>());
+                    JSONArray aPlaces = oFloor.getJSONArray("places");
+                    for (int j = 0; j < aPlaces.length(); j++) {
+                        Place p = new Place(aPlaces.getJSONObject(j));
+                        this.places.get(f.getID()).add(p);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        try {
-            SentenceList sent = new StaticSentence(
-                    app.getSession(), 
-                    "SELECT ID, NAME, X, Y, FLOOR FROM PLACES ORDER BY FLOOR", 
-                    null, 
-                    new SerializerReadClass(Place.class));
-            m_aplaces = sent.list();
-        } catch (BasicException eD) {
-            m_aplaces = new ArrayList<Place>();
-        } 
-        
+
         initComponents(); 
           
         // add the Floors containers
-        if (m_afloors.size() > 1) {
+        if (this.floors.size() > 1) {
             // A tab container for 2 or more floors
             JTabbedPane jTabFloors = new JTabbedPane();
             jTabFloors.applyComponentOrientation(getComponentOrientation());
@@ -105,9 +105,8 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
             jTabFloors.setRequestFocusEnabled(false);
             m_jPanelMap.add(jTabFloors, BorderLayout.CENTER);
             
-            for (Floor f : m_afloors) {
+            for (Floor f : this.floors) {
                 f.getContainer().applyComponentOrientation(getComponentOrientation());
-                
                 JScrollPane jScrCont = new JScrollPane();
                 jScrCont.applyComponentOrientation(getComponentOrientation());
                 JPanel jPanCont = new JPanel();  
@@ -117,9 +116,9 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                 jScrCont.setViewportView(jPanCont);
                 jPanCont.add(f.getContainer());
             }
-        } else if (m_afloors.size() == 1) {
+        } else if (this.floors.size() == 1) {
             // Just a frame for 1 floor
-            Floor f = m_afloors.get(0);
+            Floor f = this.floors.get(0);
             f.getContainer().applyComponentOrientation(getComponentOrientation());
             
             JPanel jPlaces = new JPanel();
@@ -142,22 +141,13 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         }   
         
         // Add all the Table buttons.
-        Floor currfloor = null;
-        
-        
-        for (Place pl : m_aplaces) {
-            int iFloor = 0;
-            
-            if (currfloor == null || !currfloor.getID().equals(pl.getFloor())) {
-                // Look for a new floor
-                do {
-                    currfloor = m_afloors.get(iFloor++);
-                } while (!currfloor.getID().equals(pl.getFloor()));
+        for (Floor f : this.floors) {
+            List<Place> places = this.places.get(f.getID());
+            for (Place pl : places) {
+                f.getContainer().add(pl.getButton());
+                pl.setButtonBounds();
+                pl.getButton().addActionListener(new MyActionListener(pl));
             }
-
-            currfloor.getContainer().add(pl.getButton());
-            pl.setButtonBounds();
-            pl.getButton().addActionListener(new MyActionListener(pl));
         }
         
         // Add the reservations panel
@@ -216,6 +206,13 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         // postcondicion es que no tenemos ticket activado
     }
 
+    private List<Place> getAllPlaces() {
+        List<Place> all = new ArrayList<Place>();
+        for (Floor f : this.floors) {
+            all.addAll(this.places.get(f.getID()));
+        }
+        return all;
+    }
         
     protected JComponent getBagComponent() {
         return m_restaurantmap;
@@ -319,9 +316,9 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
             }
         } catch (BasicException e) {
             new MessageInf(e).show(this);
-        }            
-            
-        for (Place table : m_aplaces) {
+        }
+
+        for (Place table : this.getAllPlaces()) {
             boolean occupied = atickets.contains(table.getId());
             int custCount = 0;
             if (occupied) {
@@ -345,7 +342,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                 // Select a table
                 m_jText.setText(null);
                 // Enable all tables
-                for (Place place : m_aplaces) {
+                for (Place place : this.getAllPlaces()) {
                     place.getButton().setEnabled(true);
                 }
                 m_jbtnReservations.setEnabled(true);
@@ -353,7 +350,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                 // receive a customer
                 m_jText.setText(AppLocal.getIntString("label.restaurantcustomer", new Object[] {customer.getName()}));
                 // Enable all tables
-                for (Place place : m_aplaces) {
+                for (Place place : this.getAllPlaces()) {
                     place.getButton().setEnabled(!place.hasPeople());
                 }                
                 m_jbtnReservations.setEnabled(false);
@@ -362,7 +359,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
             // Moving or merging the receipt to another table
             m_jText.setText(AppLocal.getIntString("label.restaurantmove", new Object[] {m_PlaceClipboard.getName()}));
             // Enable all empty tables and origin table.
-            for (Place place : m_aplaces) {
+            for (Place place : this.getAllPlaces()) {
                 place.getButton().setEnabled(true);
             }  
             m_jbtnReservations.setEnabled(false);

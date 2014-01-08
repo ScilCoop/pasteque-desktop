@@ -27,10 +27,10 @@ import javax.swing.SwingConstants;
 import fr.pasteque.data.gui.NullIcon;
 import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.basic.BasicException;
+import org.json.JSONObject;
 
-public class Place implements SerializableRead, java.io.Serializable {
+public class Place implements java.io.Serializable {
     
     private static final long serialVersionUID = 8652254694281L;
     private static final Icon ICO_OCU = ImageLoader.readImageIcon("tkt_place_filled.png");
@@ -45,16 +45,12 @@ public class Place implements SerializableRead, java.io.Serializable {
     private boolean m_bPeople;
     private JButton m_btn;
         
-    /** Creates a new instance of TablePlace */
-    public Place() {
-    }        
-    
-    public void readValues(DataRead dr) throws BasicException {
-        m_sId = dr.getString(1);
-        m_sName = dr.getString(2);
-        m_ix = dr.getInt(3).intValue();
-        m_iy = dr.getInt(4).intValue();
-        m_sfloor = dr.getString(5);
+    public Place(JSONObject o) {
+        this.m_sId = o.getString("id");
+        this.m_sName = o.getString("label");
+        this.m_ix = o.getInt("x");
+        this.m_iy = o.getInt("y");
+        this.m_sfloor = o.getString("floorId");
         
         m_bPeople = false;
         m_btn = new JButton();

@@ -32,11 +32,11 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.ImageUtils;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.pos.util.ThumbNailBuilder;
 import java.awt.ComponentOrientation;
+import org.json.JSONObject;
 
-public class Floor implements SerializableRead {
+public class Floor {
     
     private static final long serialVersionUID = 8694154682897L;
     private String m_sID;
@@ -54,14 +54,16 @@ public class Floor implements SerializableRead {
         }            
     }
 
-    public void readValues(DataRead dr) throws BasicException {
-        m_sID = dr.getString(1);
-        m_sName = dr.getString(2);
-        BufferedImage img = ImageUtils.readImage(dr.getBytes(3));
+    public Floor(JSONObject o) {
+        this.m_sID = o.getString("id");
+        this.m_sName = o.getString("label");
+        // TODO restore background image
+        BufferedImage img = new BufferedImage(640, 480,
+                BufferedImage.TYPE_INT_ARGB);
         ThumbNailBuilder tnbcat = new ThumbNailBuilder(32, 32, defimg);
         m_container = new JPanelDrawing(img);
-        m_icon = new ImageIcon(tnbcat.getThumbNail(img));        
-    }    
+        m_icon = new ImageIcon(tnbcat.getThumbNail(img));
+    }
     
     public String getID() {
         return m_sID;
