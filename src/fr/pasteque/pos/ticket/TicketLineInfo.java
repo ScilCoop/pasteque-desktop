@@ -131,15 +131,13 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        JSONObject prd = new JSONObject();
-        prd.put("id", this.productid);
-        prd.put("label", this.getProductName());
-        prd.put("price", this.price);
-        prd.put("taxId", this.getProductTaxCategoryID());
-        prd.put("taxRate", this.getTaxRate());
-        prd.put("scaled", this.isProductScale());
-        o.put("product", prd);
+        o.put("dispOrder", this.m_iLine);
+        o.put("productId", this.productid);
+        o.put("attributes", JSONObject.NULL); // TODO: add attributes
         o.put("quantity", this.multiply);
+        o.put("price", this.price);
+        o.put("taxId", this.tax.getId());
+        o.put("discountRate", 0.0); // TODO: add discount rate
         return o;
     }
 

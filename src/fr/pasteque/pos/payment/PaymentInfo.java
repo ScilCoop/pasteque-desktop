@@ -26,6 +26,7 @@ import org.json.JSONObject;
 public abstract class PaymentInfo {
 
     protected CurrencyInfo currency;
+    // TODO: add id
     
     public abstract String getName();
     /** Get total of paiement in payment currency. */
@@ -38,10 +39,10 @@ public abstract class PaymentInfo {
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        o.put("amount", this.getTotal());
-        JSONObject mode = new JSONObject();
-        mode.put("code", this.getName());
-        o.put("mode", mode);
+        o.put("type", this.getName());
+        o.put("amount", this.currency.convertToMain(this.getTotal()));
+        o.put("currencyId", this.currency.getID());
+        o.put("currencyAmount", this.getTotal());
         return o;
     }
 

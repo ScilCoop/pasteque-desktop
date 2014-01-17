@@ -717,31 +717,12 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     public final void saveTicket(final TicketInfo ticket,
             final String locationId,
             final String cashId) throws BasicException {
-        JSONObject tktObj = new JSONObject();
-        tktObj.put("ticket", ticket.toJSON());
-        tktObj.put("cashier", ticket.getUser().toJSON());
-        if (ticket.getCustomer() != null) {
-            tktObj.put("customer", ticket.getCustomer().getId());
-        } else {
-            tktObj.put("customer", JSONObject.NULL);
-        }
-        JSONArray payments = new JSONArray();
-        for (PaymentInfo p : ticket.getPayments()) {
-            payments.put(p.toJSON());
-        }
-        tktObj.put("payments", payments);
-        tktObj.put("date", DateUtils.toSecTimestamp(ticket.getDate()));
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
-            if (locationId != null) {
-                r = loader.write("TicketsAPI", "save",
-                        "ticket", tktObj.toString(), "cashId", cashId,
-                        "locationId", locationId);
-            } else {
-                r = loader.write("TicketsAPI", "save",
-                        "ticket", tktObj.toString(), "cashId", cashId);
-            }
+            r = loader.write("TicketsAPI", "save",
+                    "ticket", ticket.toJSON().toString(), "cashId", cashId,
+                    "locationId", locationId);
             if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 throw new BasicException("Bad server response");
             }

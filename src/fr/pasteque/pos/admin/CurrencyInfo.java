@@ -75,6 +75,14 @@ public class CurrencyInfo implements IKeyed {
         };
     } 
 
+    public double convertToMain(double amount) {
+        if (this.main) {
+            return amount;
+        } else {
+            return amount * this.rate;
+        }
+    }
+
     public void setID(Integer id) {
         this.id = id;
     }

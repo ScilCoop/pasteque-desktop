@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import fr.pasteque.pos.payment.PaymentInfo;
 import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.SerializableRead;
+import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.LocalRes;
@@ -85,18 +86,43 @@ public class TicketInfo implements SerializableRead {
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        o.put("id", this.m_sId);
-        o.put("label", JSONObject.NULL); // TODO: support for ticket label
-        if (this.m_Customer != null) {
-            o.put("customer", this.m_Customer.getId());
-        } else {
-            o.put("customer", JSONObject.NULL);
+        if (this.m_sId != null) {
+            o.put("id", this.m_sId);
         }
+        o.put("date", DateUtils.toSecTimestamp(this.m_dDate));
+        o.put("userId", m_User.getId());
+        if (this.m_Customer != null) {
+            o.put("customerId", this.m_Customer.getId());
+        } else {
+            o.put("customerId", JSONObject.NULL);
+        }
+        o.put("type", this.tickettype);
+        if (this.customersCount != null) {
+            o.put("custCount", this.customersCount);
+        } else {
+            o.put("custCount", JSONObject.NULL);
+        }
+        if (this.tariffAreaId != null) {
+            o.put("tariffAreaId", this.tariffAreaId);
+        } else {
+            o.put("tariffAreaId", JSONObject.NULL);
+        }
+        o.put("discountProfileId", JSONObject.NULL); // TODO: add profile id
+        o.put("discountRate", 0.0); // TODO: discount rate
         JSONArray lines = new JSONArray();
         for (TicketLineInfo l : this.m_aLines) {
+            JSONObject jsLine = l.toJSON();
+            if (this.m_sId != null) {
+                jsLine.put("ticketId", this.m_sId);
+            }
             lines.put(l.toJSON());
         }
         o.put("lines", lines);
+        JSONArray payments = new JSONArray();
+        for (PaymentInfo p : this.payments) {
+            payments.put(p.toJSON());
+        }
+        o.put("payments", payments);
         return o;
     }
 
