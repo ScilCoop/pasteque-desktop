@@ -70,7 +70,6 @@ public class JRootApp extends JPanel implements AppView {
     private Date m_dActiveCashDateEnd;
     
     private String m_sInventoryLocation;
-    public static Integer posId = null;
     
     private StringBuffer inputtext;
    
@@ -156,12 +155,6 @@ public class JRootApp extends JPanel implements AppView {
             m_sInventoryLocation = "0";
         }
         
-        // Get or assign POS
-        posId = cashReg.getPosId();
-        if (posId == null) {
-            posId = 1;
-        }
-
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
         

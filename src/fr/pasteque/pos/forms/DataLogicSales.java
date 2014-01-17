@@ -305,7 +305,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     /** Get products from a category ID */
-    public List<ProductInfoExt> getProductCatalog(String category, int pos) throws BasicException  {
+    public List<ProductInfoExt> getProductCatalog(String category) throws BasicException  {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("ProductsAPI",

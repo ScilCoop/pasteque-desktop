@@ -28,18 +28,15 @@ public class CashRegisterInfo {
 
     private String label;
     private String locationId;
-    private int posId;
 
-    public CashRegisterInfo(String label, String locationId, int posId) {
+    public CashRegisterInfo(String label, String locationId) {
         this.label = label;
         this.locationId = locationId;
-        this.posId = posId;
     }
 
     public CashRegisterInfo(JSONObject o) {
         this.label = o.getString("label");
         this.locationId = o.getString("locationId");
-        this.posId = o.getInt("posId");
     }
 
     public String getLabel() {
@@ -50,7 +47,4 @@ public class CashRegisterInfo {
         return this.locationId;
     }
 
-    public int getPosId() {
-        return this.posId;
-    }
 }
