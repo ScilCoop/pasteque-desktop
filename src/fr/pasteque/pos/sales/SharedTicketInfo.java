@@ -20,16 +20,13 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.DataWrite;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.SerializableWrite;
+import org.json.JSONObject;
 
 /**
  *
  * @author adrianromero
  */
-public class SharedTicketInfo implements SerializableRead, SerializableWrite {
+public class SharedTicketInfo {
     
     private static final long serialVersionUID = 7640633837719L;
     private String id;
@@ -38,14 +35,10 @@ public class SharedTicketInfo implements SerializableRead, SerializableWrite {
     /** Creates a new instance of SharedTicketInfo */
     public SharedTicketInfo() {
     }
-    
-    public void readValues(DataRead dr) throws BasicException {
-        id = dr.getString(1);
-        name = dr.getString(2);
-    }   
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, id);
-        dp.setString(2, name);
+
+    public SharedTicketInfo(JSONObject o) {
+        this.id = o.getString("id");
+        this.name = o.getString("label");
     }
     
     public String getId() {

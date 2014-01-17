@@ -41,7 +41,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketInfo implements SerializableRead, Externalizable {
+public class TicketInfo implements SerializableRead {
 
     private static final long serialVersionUID = 2765650092387265178L;
 
@@ -100,8 +100,10 @@ public class TicketInfo implements SerializableRead, Externalizable {
         return o;
     }
 
-    public void writeExternal(ObjectOutput out) throws IOException {
-        // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
+    /** Serialize as shared ticket */
+    public byte[] serialize() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+        ObjectOutputStream out = new ObjectOutputStream(bos);
         out.writeObject(m_sId);
         out.writeInt(tickettype);
         out.writeInt(m_iTicketId);
@@ -110,18 +112,30 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(attributes);
         out.writeObject(m_aLines);
         out.writeObject(this.customersCount);
+        out.writeObject(this.tariffAreaId);
+        byte[] data = bos.toByteArray();
+        out.close();
+        return data;
     }
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
-        m_sId = (String) in.readObject();
-        tickettype = in.readInt();
-        m_iTicketId = in.readInt();
-        m_Customer = (CustomerInfoExt) in.readObject();
-        m_dDate = (Date) in.readObject();
-        attributes = (Properties) in.readObject();
-        m_aLines = (List<TicketLineInfo>) in.readObject();
-        this.customersCount = (Integer) in.readObject();
+    /** Deserialize as shared ticket */
+    public TicketInfo(byte[] data) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ObjectInputStream in = new ObjectInputStream(bis);
+        try {
+            m_sId = (String) in.readObject();
+            tickettype = in.readInt();
+            m_iTicketId = in.readInt();
+            m_Customer = (CustomerInfoExt) in.readObject();
+            m_dDate = (Date) in.readObject();
+            attributes = (Properties) in.readObject();
+            m_aLines = (List<TicketLineInfo>) in.readObject();
+            this.customersCount = (Integer) in.readObject();
+            this.tariffAreaId = (Integer) in.readObject();
+        } catch (ClassNotFoundException cnfe) {
+            // Should never happen
+            cnfe.printStackTrace();
+        }
         m_User = null;
         m_sActiveCash = null;
 
