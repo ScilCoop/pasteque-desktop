@@ -1830,6 +1830,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jList.setFocusPainted(false);
         m_jList.setFocusable(false);
         m_jList.setRequestFocusEnabled(false);
+        m_jList.setEnabled(false); // TODO: search products
         m_jList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jListActionPerformed(evt);
@@ -1856,6 +1857,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes.setFocusPainted(false);
         jEditAttributes.setFocusable(false);
         jEditAttributes.setRequestFocusEnabled(false);
+        jEditAttributes.setEnabled(false); // TODO: set attributes
         jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jEditAttributesActionPerformed(BUTTON_PERFORMED);
@@ -1869,6 +1871,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
         m_jbtnLineDiscount.setRequestFocusEnabled(false);
+        m_jbtnLineDiscount.setEnabled(false); // TODO: line discount
         m_jbtnLineDiscount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtnLineDiscountActionPerformed(evt);
