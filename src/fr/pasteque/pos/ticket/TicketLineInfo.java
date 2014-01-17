@@ -50,22 +50,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     private String attsetinstid;
     private boolean subproduct;
 
-    /** Creates new TicketLineInfo */
-    public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax, Properties props) {
-        init(productid, null, dMultiply, dPrice, tax, props);
-    }
-
-    public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax) {
-        init(productid, null, dMultiply, dPrice, tax, new Properties());
-    }
-
-    public TicketLineInfo(String productid, String productname, String producttaxcategory, double dMultiply, double dPrice, TaxInfo tax) {
-        Properties props = new Properties();
-        props.setProperty("product.name", productname);
-        props.setProperty("product.taxcategoryid", producttaxcategory);
-        init(productid, null, dMultiply, dPrice, tax, props);
-    }
-
     public TicketLineInfo(String productname, String producttaxcategory, double dMultiply, double dPrice, TaxInfo tax) {
 
         Properties props = new Properties();
@@ -74,7 +58,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         init(null, null, dMultiply, dPrice, tax, props);
     }
 
-    public TicketLineInfo() {
+    private TicketLineInfo() {
         init(null, null, 0.0, 0.0, null, new Properties());
     }
 
@@ -98,10 +82,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
             }
         }
         init(pid, null, dMultiply, dPrice, tax, attributes);
-    }
-
-    public TicketLineInfo(ProductInfoExt oProduct, double dPrice, TaxInfo tax, Properties attributes) {
-        this(oProduct, 1.0, dPrice, tax, attributes);
     }
 
     public TicketLineInfo(TicketLineInfo line) {
