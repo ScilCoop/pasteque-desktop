@@ -1,19 +1,16 @@
-==== Pasteque 1.4 ====
+==== Pasteque 2.0 ====
 
 == Installation and database configuration ==
 
 -- Requirements --
 
-Pasteque requires Java 1.6 and corresponding database connector. Derby and MySQL
-connectors are provided in the lib directory.
+Pasteque requires Java 1.6.
 
 -- Installation procedure --
 
-To install Pasteque just copy the entire directory where you want. By default
-it will use a derby database in your home directory.
+To install Pasteque just copy the entire directory where you want.
 
-Run configure.sh or configure.bat to change the configuration. Supported
-databases are Derby, MySQL and PostgreSQL.
+Run configure.sh or configure.bat to change the configuration.
 
 == Other documentation ==
 
