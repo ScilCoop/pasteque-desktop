@@ -45,6 +45,7 @@ import fr.pasteque.pos.catalog.CatalogSelector;
 import fr.pasteque.pos.catalog.JCatalogSubgroups;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.customers.DataLogicCustomers;
+import fr.pasteque.pos.customers.DiscountProfile;
 import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
@@ -364,9 +365,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jTicketId.setText(null);            
             m_ticketlines.clearTicketLines();
            
-            m_jSubtotalEuros.setText(null);
-            m_jTaxesEuros.setText(null);
+            this.subtotalLabel.setText(null);
             m_jTotalEuros.setText(null); 
+            this.discountLabel.setText(null);
         
             eraseAutomator();
             
@@ -457,13 +458,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void printPartialTotals(){
         if (m_oTicket == null) {
-            m_jSubtotalEuros.setText(null);
-            m_jTaxesEuros.setText(null);
+            this.subtotalLabel.setText(null);
             m_jTotalEuros.setText(null);
+            this.discountLabel.setText(null);
         } else {
-            m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
-            m_jTaxesEuros.setText(m_oTicket.printTax());
+            this.subtotalLabel.setText(AppLocal.getIntString("label.subtotalLine", m_oTicket.printSubTotal(), m_oTicket.printTax()));
             m_jTotalEuros.setText(m_oTicket.printTotal());
+            if (m_oTicket.getDiscountRate() > 0.0) {
+                this.discountLabel.setText(AppLocal.getIntString("label.totalDiscount", m_oTicket.printDiscountRate(), m_oTicket.printFullTotal()));
+            } else {
+                this.discountLabel.setText(null);
+            }
         }
     }
     
@@ -1637,11 +1642,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_line_attr.png"), AppLocal.getIntString("Button.jEditAttributes.toolTip"));
         m_jPanTotals = new JPanel();
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
-        m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.totalcash"));
-        m_jSubtotalEuros = WidgetsBuilder.createLabel();
-        m_jTaxesEuros = WidgetsBuilder.createLabel();
-        m_jLblTotalEuros2 = WidgetsBuilder.createLabel();
-        m_jLblTotalEuros3 = WidgetsBuilder.createLabel();
+        this.discountLabel = WidgetsBuilder.createLabel();
+        this.subtotalLabel = WidgetsBuilder.createSmallLabel(AppLocal.getIntString("label.subtotalLine"));
         m_jPanEntries = new JPanel();
         m_jNumberKeys = new JNumberKeys();
         jPanel9 = new JPanel();
@@ -1891,47 +1893,33 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Total zone
         JPanel totalZone = new JPanel();
         totalZone.setLayout(new GridBagLayout());
+        // Discount
+        this.discountLabel.setRequestFocusEnabled(false);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        totalZone.add(this.discountLabel, cstr);
         // Total
         m_jTotalEuros.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridx = 2;
+        cstr.gridx = 1;
         cstr.gridy = 0;
-        cstr.gridheight = 2;
-        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_END;
         cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        //cstr.fill = GridBagConstraints.HORIZONTAL;
         totalZone.add(m_jTotalEuros, cstr);
-        // Subtotal (label and amount)
-        m_jSubtotalEuros.setRequestFocusEnabled(false);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
-        cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
-        totalZone.add(m_jSubtotalEuros, cstr);
-        m_jLblTotalEuros3.setText(AppLocal.getIntString("label.subtotalcash"));
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
-        totalZone.add(m_jLblTotalEuros3, cstr);
-        // Taxes (label and amount)
-        m_jTaxesEuros.setRequestFocusEnabled(false);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 1;
-        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
-        cstr.weightx = 1.0;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 5);
-        totalZone.add(m_jTaxesEuros, cstr);
-        m_jLblTotalEuros2.setText(AppLocal.getIntString("label.taxcash"));
+        // Subtotal and total (label and amount)
+        this.subtotalLabel.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 1;
-        cstr.insets = new java.awt.Insets(5, 0, 0, 0);
-        totalZone.add(m_jLblTotalEuros2, cstr);
+        cstr.gridwidth = 2;
+        cstr.weightx = 1.0;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_END;
+        cstr.insets = new java.awt.Insets(5, 5, 5, 5);
+        totalZone.add(this.subtotalLabel, cstr);
         // Add total zone
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
@@ -2237,10 +2225,23 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         finder.search(m_oTicket.getCustomer());
         finder.setVisible(true);
 
+        CustomerInfoExt customer = finder.getSelectedCustomer();
         this.m_oTicket.setCustomer(finder.getSelectedCustomer());
-
+        if (customer != null && customer.getDiscountProfileId() != null) {
+            // Set discount profile and rate to ticket
+            try {
+                DiscountProfile profile = dlCustomers.getDiscountProfile(customer.getDiscountProfileId());
+                this.m_oTicket.setDiscountRate(profile.getRate());
+                this.m_oTicket.setDiscountProfileId(profile.getId());
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Reset discount profile and rate
+            this.m_oTicket.setDiscountProfileId(null);
+            this.m_oTicket.setDiscountRate(0.0);
+        }
         refreshTicket();
-
     }
 
     private void btnSplitActionPerformed(java.awt.event.ActionEvent evt) {
@@ -2301,9 +2302,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jEditLine;
     private javax.swing.JButton m_jEnter;
     private javax.swing.JTextField m_jKeyFactory;
-    private javax.swing.JLabel m_jLblTotalEuros1;
-    private javax.swing.JLabel m_jLblTotalEuros2;
-    private javax.swing.JLabel m_jLblTotalEuros3;
     private javax.swing.JButton m_jList;
     private JNumberKeys m_jNumberKeys;
     private javax.swing.JPanel m_jPanEntries;
@@ -2311,11 +2309,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JPanel m_jPanelBag;
     private javax.swing.JLabel m_jPor;
     private javax.swing.JLabel m_jPrice;
-    private javax.swing.JLabel m_jSubtotalEuros;
     private javax.swing.JComboBox m_jTax;
-    private javax.swing.JLabel m_jTaxesEuros;
     private javax.swing.JLabel m_jTicketId;
     private javax.swing.JLabel m_jTotalEuros;
+    private javax.swing.JLabel subtotalLabel;
+    private javax.swing.JLabel discountLabel;
     private javax.swing.JButton m_jUp;
     private javax.swing.JToggleButton m_jaddtax;
     private javax.swing.JButton m_jbtnLineDiscount;

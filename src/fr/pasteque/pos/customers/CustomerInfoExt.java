@@ -32,6 +32,7 @@ import org.json.JSONObject;
 public class CustomerInfoExt extends CustomerInfo {
     
     protected String taxcustomerid;
+    protected Integer discountProfileId;
     protected String notes;
     protected boolean visible;
     protected String card;
@@ -73,6 +74,9 @@ public class CustomerInfoExt extends CustomerInfo {
         }
         if (!o.isNull("custTaxId")) {
             this.taxcustomerid = o.getString("custTaxId");
+        }
+        if (!o.isNull("discountProfileId")) {
+            this.discountProfileId = o.getInt("discountProfileId");
         }
         if (!o.isNull("notes")) {
             this.notes = o.getString("notes");
@@ -132,6 +136,13 @@ public class CustomerInfoExt extends CustomerInfo {
     
     public void setTaxCustomerID(String taxcustomerid) {
         this.taxcustomerid = taxcustomerid;
+    }
+
+    public Integer getDiscountProfileId() {
+        return this.discountProfileId;
+    }
+    public void setDiscountProfileId(Integer id) {
+        this.discountProfileId = id;
     }
     
     public String getNotes() {

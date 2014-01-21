@@ -66,6 +66,8 @@ public class TicketInfo implements SerializableRead {
     private String m_sResponse;
     private Integer customersCount;
     private Integer tariffAreaId;
+    private Integer discountProfileId;
+    private double discountRate;
 
     /** Creates new TicketModel */
     public TicketInfo() {
@@ -107,8 +109,12 @@ public class TicketInfo implements SerializableRead {
         } else {
             o.put("tariffAreaId", JSONObject.NULL);
         }
-        o.put("discountProfileId", JSONObject.NULL); // TODO: add profile id
-        o.put("discountRate", 0.0); // TODO: discount rate
+        if (this.discountProfileId != null) {
+            o.put("discountProfileId", this.discountProfileId);
+        } else {
+            o.put("discountProfileId", JSONObject.NULL);
+        }
+        o.put("discountRate", this.discountRate);
         JSONArray lines = new JSONArray();
         for (TicketLineInfo l : this.m_aLines) {
             JSONObject jsLine = l.toJSON();
@@ -139,6 +145,8 @@ public class TicketInfo implements SerializableRead {
         out.writeObject(m_aLines);
         out.writeObject(this.customersCount);
         out.writeObject(this.tariffAreaId);
+        out.writeObject(this.discountProfileId);
+        out.writeDouble(this.discountRate);
         byte[] data = bos.toByteArray();
         out.close();
         return data;
@@ -158,6 +166,8 @@ public class TicketInfo implements SerializableRead {
             m_aLines = (List<TicketLineInfo>) in.readObject();
             this.customersCount = (Integer) in.readObject();
             this.tariffAreaId = (Integer) in.readObject();
+            this.discountProfileId = (Integer) in.readObject();
+            this.discountRate = in.readDouble();
         } catch (ClassNotFoundException cnfe) {
             // Should never happen
             cnfe.printStackTrace();
@@ -215,9 +225,14 @@ public class TicketInfo implements SerializableRead {
         for (PaymentInfo p : payments) {
             t.payments.add(p.copyPayment());
         }
-
+        if (this.tariffAreaId != null) {
+            t.tariffAreaId = new Integer(this.tariffAreaId);
+        }
+        if (this.discountProfileId != null) {
+            t.discountProfileId = new Integer(this.discountProfileId);
+        }
+        t.discountRate = this.discountRate;
         // taxes are not copied, must be calculated again.
-
         return t;
     }
 
@@ -356,6 +371,20 @@ public class TicketInfo implements SerializableRead {
         this.tariffAreaId = value;
     }
 
+    public Integer getDiscountProfileId() {
+        return this.discountProfileId;
+    }
+    public void setDiscountProfileId(Integer id) {
+        this.discountProfileId = id;
+    }
+
+    public double getDiscountRate() {
+        return this.discountRate;
+    }
+    public void setDiscountRate(double discountRate) {
+        this.discountRate = discountRate;
+    }
+
     public TicketLineInfo getLine(int index) {
         return m_aLines.get(index);
     }
@@ -422,7 +451,7 @@ public class TicketInfo implements SerializableRead {
         for (TicketLineInfo line : m_aLines) {
             sum += line.getSubValue();
         }
-        return sum;
+        return sum * (1 - this.discountRate);
     }
 
     public double getTax() {
@@ -437,12 +466,24 @@ public class TicketInfo implements SerializableRead {
                 sum += line.getTax();
             }
         }
+        return sum * (1 - this.discountRate);
+    }
+
+    public double getFullTotal() {
+        double sum = 0.0;
+        for (TicketLineInfo line : m_aLines) {
+            sum += line.getValue();
+        }
         return sum;
     }
 
     public double getTotal() {
         
-        return getSubTotal() + getTax();
+        return (getSubTotal() + getTax());
+    }
+
+    public double getDiscountAmount() {
+        return (getSubTotal() + getTax()) * this.discountRate;
     }
 
     public double getTotalPaid() {
@@ -557,6 +598,9 @@ public class TicketInfo implements SerializableRead {
         return Formats.CURRENCY.formatValue(new Double(getTax()));
     }
 
+    public String printFullTotal() {
+        return Formats.CURRENCY.formatValue(new Double(this.getFullTotal()));
+    }
     public String printTotal() {
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
     }
@@ -571,5 +615,13 @@ public class TicketInfo implements SerializableRead {
         } else {
             return "";
         }
+    }
+
+    public String printDiscountRate() {
+        return Formats.PERCENT.formatValue(this.discountRate);
+    }
+
+    public String printDiscountAmount() {
+        return Formats.CURRENCY.formatValue(new Double(this.getDiscountAmount()));
     }
 }

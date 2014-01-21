@@ -54,11 +54,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     // TODO: use local database for caching
     private static List<CustomerInfoExt> cache;
+    private static List<DiscountProfile> discProfileCache;
     
     public void init(Session s){
         DataLogicCustomers.cache = null; // Reset cache
+        DataLogicCustomers.discProfileCache = null;
     }
-    
+
     private static void loadCustomers() throws BasicException {
          try {
              ServerLoader loader = new ServerLoader();
@@ -238,5 +240,36 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         // TODO: enable reservation create
         return null;
     }
-    
+
+    private static void loadDiscountProfiles() throws BasicException {
+         try {
+             ServerLoader loader = new ServerLoader();
+             ServerLoader.Response r = loader.read("DiscountProfilesAPI",
+                     "getAll");
+             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                 DataLogicCustomers.discProfileCache = new ArrayList<DiscountProfile>();
+                 JSONArray a = r.getArrayContent();
+                 for (int i = 0; i < a.length(); i++) {
+                     JSONObject o = a.getJSONObject(i);
+                     DiscountProfile prof = new DiscountProfile(o);
+                     DataLogicCustomers.discProfileCache.add(prof);
+                 }
+             }
+         } catch (Exception e) {
+             throw new BasicException(e);
+         }
+    }
+
+    public DiscountProfile getDiscountProfile(int id) throws BasicException {
+        if (DataLogicCustomers.discProfileCache == null) {
+            DataLogicCustomers.loadDiscountProfiles();
+        }
+        for (DiscountProfile p : DataLogicCustomers.discProfileCache) {
+            if (id == p.getId()) {
+                return p;
+            }
+        }
+        return null;
+    }
+
 }
