@@ -33,14 +33,18 @@ public class CashSession {
     private int sequence;
     private Date openDate;
     private Date closeDate;
+    private Double openCash;
+    private Double closeCash;
 
     public CashSession(String id, String host, int sequence, Date openDate,
-            Date closeDate) {
+            Date closeDate, Double openCash, Double closeCash) {
         this.id = id;
         this.host = host;
         this.sequence = sequence;
         this.openDate = openDate;
         this.closeDate = closeDate;
+        this.openCash = openCash;
+        this.closeCash = closeCash;
     }
 
     public CashSession(JSONObject o) {
@@ -53,7 +57,12 @@ public class CashSession {
         if (!o.isNull("closeDate")) {
             this.closeDate = DateUtils.readSecTimestamp(o.getLong("closeDate"));
         }
-
+        if (!o.isNull("openCash")) {
+            this.openCash = o.getDouble("openCash");
+        }
+        if (!o.isNull("closeCash")) {
+            this.closeCash = o.getDouble("closeCash");
+        }
     }
 
     public JSONObject toJSON() {
@@ -70,6 +79,16 @@ public class CashSession {
             o.put("closeDate", JSONObject.NULL);
         } else {
             o.put("closeDate", DateUtils.toSecTimestamp(this.closeDate));
+        }
+        if (this.openCash == null) {
+            o.put("openCash", JSONObject.NULL);
+        } else {
+            o.put("openCash", this.openCash);
+        }
+        if (this.closeCash == null) {
+            o.put("closeCash", JSONObject.NULL);
+        } else {
+            o.put("closeCash", this.closeCash);
         }
         return o;
     }
@@ -113,5 +132,21 @@ public class CashSession {
 
     public boolean isClosed() {
         return this.closeDate == null;
+    }
+
+    public Double getOpenCash() {
+        return this.openCash;
+    }
+
+    public void setOpenCash(Double amount) {
+        this.openCash = amount;
+    }
+
+    public Double getCloseCash() {
+        return this.closeCash;
+    }
+
+    public void setCloseCash(Double amount) {
+        this.closeCash = amount;
     }
 }

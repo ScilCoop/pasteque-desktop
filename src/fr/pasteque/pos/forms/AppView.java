@@ -41,13 +41,11 @@ public interface AppView {
     public Object getBean(String beanfactory) throws BeanFactoryException;
 
     public void newActiveCash();
-    public void setActiveCash(String value, int iSeq, Date dStart, Date dEnd);
     public void setActiveCash(CashSession cashSess);
     public CashSession getActiveCashSession();
     public String getActiveCashIndex();
     public int getActiveCashSequence();
     public Date getActiveCashDateStart();
-    public Date getActiveCashDateEnd();
     
     public String getInventoryLocation();
     

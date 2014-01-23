@@ -64,10 +64,7 @@ public class JRootApp extends JPanel implements AppView {
     private DataLogicSystem m_dlSystem;
     
     private Properties m_propsdb = null;
-    private String m_sActiveCashIndex;
-    private int m_iActiveCashSequence;
-    private Date m_dActiveCashDateStart;
-    private Date m_dActiveCashDateEnd;
+    private CashSession activeCashSession;
     
     private String m_sInventoryLocation;
     
@@ -138,8 +135,7 @@ public class JRootApp extends JPanel implements AppView {
                 // New cash session
                 this.newActiveCash();
             } else {
-                this.setActiveCash(cashSess.getId(), cashSess.getSequence(),
-                        cashSess.getOpenDate(), cashSess.getCloseDate());
+                this.setActiveCash(cashSess);
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos
@@ -239,45 +235,29 @@ public class JRootApp extends JPanel implements AppView {
         return m_sInventoryLocation;
     }
     public CashSession getActiveCashSession() {
-        return new CashSession(m_sActiveCashIndex, m_props.getHost(),
-                m_iActiveCashSequence,
-                m_dActiveCashDateStart, m_dActiveCashDateEnd);
+        return this.activeCashSession;
     }
     public String getActiveCashIndex() {
-        return m_sActiveCashIndex;
+        return this.activeCashSession.getId();
     }
     public int getActiveCashSequence() {
-        return m_iActiveCashSequence;
+        return this.activeCashSession.getSequence();
     }
     public Date getActiveCashDateStart() {
-        return m_dActiveCashDateStart;
-    }
-    public Date getActiveCashDateEnd(){
-        return m_dActiveCashDateEnd;
+        return this.activeCashSession.getOpenDate();
     }
     
     public boolean isCashOpened() {
-        return m_dActiveCashDateStart != null;
+        return this.activeCashSession.isOpened();
     }
     
-    public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
-        m_sActiveCashIndex = sIndex;
-        m_iActiveCashSequence = iSeq;
-        m_dActiveCashDateStart = dStart;
-        m_dActiveCashDateEnd = dEnd;
-    }
     public void setActiveCash(CashSession cashSess) {
-        m_sActiveCashIndex = cashSess.getId();
-        m_iActiveCashSequence = cashSess.getSequence();
-        m_dActiveCashDateStart = cashSess.getOpenDate();
-        m_dActiveCashDateEnd = cashSess.getCloseDate();
+        this.activeCashSession = cashSess;
     }
 
     public void newActiveCash() {
-        m_sActiveCashIndex = null;
-        m_iActiveCashSequence = 0;
-        m_dActiveCashDateStart = null;
-        m_dActiveCashDateEnd = null;
+        this.activeCashSession = new CashSession(null, m_props.getHost(), 0,
+                null, null, null, null);
     }
 
     public AppProperties getProperties() {
