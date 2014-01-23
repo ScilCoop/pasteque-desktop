@@ -147,6 +147,7 @@ public class TicketInfo implements SerializableRead {
         out.writeObject(this.tariffAreaId);
         out.writeObject(this.discountProfileId);
         out.writeDouble(this.discountRate);
+        out.flush();
         byte[] data = bos.toByteArray();
         out.close();
         return data;
@@ -172,6 +173,7 @@ public class TicketInfo implements SerializableRead {
             // Should never happen
             cnfe.printStackTrace();
         }
+        in.close();
         m_User = null;
         m_sActiveCash = null;
 
