@@ -93,11 +93,9 @@ public abstract class JEditorAbstract extends javax.swing.JPanel implements Edit
         
         m_jText.setHorizontalAlignment(getAlignment());
         if (m_bActive) {
-            m_jMode.setText(getEditMode());
             m_jText.setText(getTextEdit());
             m_jText.setForeground(javax.swing.UIManager.getDefaults().getColor("Label.foreground"));
         } else {
-            m_jMode.setText(null);
             try {
                 m_jText.setText(getTextFormat());
                 m_jText.setForeground(javax.swing.UIManager.getDefaults().getColor("Label.foreground"));
@@ -124,7 +122,6 @@ public abstract class JEditorAbstract extends javax.swing.JPanel implements Edit
         panBackground = new javax.swing.JPanel();
         m_jText = new javax.swing.JButton();
         m_jText.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_MEDIUM));
-        m_jMode = new javax.swing.JLabel();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -150,11 +147,6 @@ public abstract class JEditorAbstract extends javax.swing.JPanel implements Edit
         panBackground.add(m_jText, java.awt.BorderLayout.CENTER);
 
         add(panBackground, java.awt.BorderLayout.CENTER);
-
-        m_jMode.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_SMALL));
-        m_jMode.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        m_jMode.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        add(m_jMode, java.awt.BorderLayout.LINE_END);
     }
 
     private void m_jTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jTextActionPerformed
@@ -162,10 +154,8 @@ public abstract class JEditorAbstract extends javax.swing.JPanel implements Edit
         activate();
         
     }
-    
-    
-    private javax.swing.JLabel m_jMode;
+
     private javax.swing.JButton m_jText;
     private javax.swing.JPanel panBackground;
- 
+
 }
