@@ -90,8 +90,6 @@ public class JPanelCloseMoney extends JPanel
     private JLabel totalAmount;
     private double total;
     private JLabel expectedAmount;
-    private double expectedTotal;
-
 
     /** Creates new form JPanelCloseMoney */
     public JPanelCloseMoney() {
@@ -250,25 +248,6 @@ public class JPanelCloseMoney extends JPanel
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
-
-        // Count expected cash
-        AppConfig cfg = AppConfig.loadedInstance;
-        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
-        if (showCount) {
-            this.expectedTotal = 0.0;
-            // Get initial fund
-            CashSession session = m_App.getActiveCashSession();
-            if (session.getOpenCash() != null) {
-                this.expectedTotal = session.getOpenCash();
-            }
-            // Add cash payments
-            for (PaymentsModel.PaymentsLine line : m_PaymentsToClose.getPaymentLines()) {
-                if (line.getType().equals("cash")
-                        && line.getCurrency().isMain()) {
-                    this.expectedTotal += line.getValue();
-                }
-            }
-        }
     }
 
     /** Show confirm popup to close cash and close cash if confirmed */
@@ -426,13 +405,13 @@ public class JPanelCloseMoney extends JPanel
         this.updateMatchingCount();
     }
     public void updateExpectedAmount() {
-        this.expectedAmount.setText(Formats.CURRENCY.formatValue(this.expectedTotal));
+        this.expectedAmount.setText(this.m_PaymentsToClose.printExpectedCash());
     }
     /** Check if total and expected amount are equal
      * and update UI accordingly
      */
     public void updateMatchingCount() {
-        if (this.total != this.expectedTotal) {
+        if (this.total != this.m_PaymentsToClose.getExpectedCash()) {
             this.totalAmount.setForeground(Color.RED);
         } else {
             this.totalAmount.setForeground(Color.BLACK);

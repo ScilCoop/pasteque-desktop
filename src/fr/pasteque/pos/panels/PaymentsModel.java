@@ -40,11 +40,7 @@ import fr.pasteque.pos.util.StringUtils;
  */
 public class PaymentsModel {
 
-    private String m_sHost;
-    private int m_iSeq;
-    private Date m_dDateStart;
-    private Date m_dDateEnd;       
-            
+    private CashSession cashSession;
     private Integer m_iPayments;
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
@@ -58,6 +54,7 @@ public class PaymentsModel {
     private Double m_dSalesTaxes;
     private java.util.List<SalesLine> m_lsales;
     private Integer custCount;
+    private Double expectedCash;
     
     private final static String[] SALEHEADERS = {"label.taxcash", "label.subtotalcash", "label.totalcash"};
     private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
@@ -73,10 +70,7 @@ public class PaymentsModel {
         
         // Cash session info
         CashSession cash = app.getActiveCashSession();
-        p.m_sHost = cash.getHost();
-        p.m_iSeq = cash.getSequence();
-        p.m_dDateStart = cash.getOpenDate();
-        p.m_dDateEnd = null;
+        p.cashSession = cash;
         // Load z ticket
         ZTicket z = dlSales.getZTicket(cash.getId());
         
@@ -128,6 +122,23 @@ public class PaymentsModel {
             p.m_lsales.add(l);
         }
 
+        // Count expected cash
+        if (p.hasFunds()) {
+            double expectedTotal = 0.0;
+            // Get initial fund
+            if (p.cashSession.getOpenCash() != null) {
+                expectedTotal = p.cashSession.getOpenCash();
+            }
+            // Add cash payments
+            for (PaymentsModel.PaymentsLine line : p.getPaymentLines()) {
+                if (line.getType().equals("cash")
+                        && line.getCurrency().isMain()) {
+                    expectedTotal += line.getValue();
+                }
+            }
+            p.expectedCash = expectedTotal;
+        }
+
         return p;
     }
 
@@ -144,34 +155,69 @@ public class PaymentsModel {
         return m_dPaymentsTotal.doubleValue();
     }
     public String getHost() {
-        return m_sHost;
+        return this.cashSession.getHost();
     }
     public int getSequence() {
-        return m_iSeq;
+        return this.cashSession.getSequence();
     }
     public Date getDateStart() {
-        return m_dDateStart;
+        return this.cashSession.getOpenDate();
     }
     public void setDateEnd(Date dValue) {
-        m_dDateEnd = dValue;
+        this.cashSession.close(dValue);
     }
     public Date getDateEnd() {
-        return m_dDateEnd;
+        return this.cashSession.getCloseDate();
     }
-    
+    public Double getOpenCash() {
+        return this.cashSession.getOpenCash();
+    }
+    public Double getCloseCash() {
+        return this.cashSession.getCloseCash();
+    }
+    /** Check if cash was counted at open and/or close */
+    public boolean hasFunds() {
+        return this.cashSession.getOpenCash() != null
+                || this.cashSession.getCloseCash() != null;
+    }
+    public Double getExpectedCash() {
+        return this.expectedCash;
+    }
+
     public String printHost() {
-        return StringUtils.encodeXML(m_sHost);
+        return StringUtils.encodeXML(this.cashSession.getHost());
     }
     public String printSequence() {
-        return Formats.INT.formatValue(m_iSeq);
+        return Formats.INT.formatValue(this.cashSession.getSequence());
     }
     public String printDateStart() {
-        return Formats.TIMESTAMP.formatValue(m_dDateStart);
+        return Formats.TIMESTAMP.formatValue(this.cashSession.getOpenDate());
     }
     public String printDateEnd() {
-        return Formats.TIMESTAMP.formatValue(m_dDateEnd);
+        return Formats.TIMESTAMP.formatValue(this.cashSession.getCloseDate());
     }  
-    
+    public String printOpenCash() {
+        if (this.cashSession.getOpenCash() != null) {
+            return Formats.CURRENCY.formatValue(this.cashSession.getOpenCash());
+        } else {
+            return "";
+        }
+    }
+    public String printCloseCash() {
+        if (this.cashSession.getCloseCash() != null) {
+            return Formats.CURRENCY.formatValue(this.cashSession.getCloseCash());
+        } else {
+            return "";
+        }
+    }
+    public String printExpectedCash() {
+        if (this.expectedCash != null) {
+            return Formats.CURRENCY.formatValue(this.expectedCash);
+        } else {
+            return "";
+        }
+    }
+
     public String printPayments() {
         return Formats.INT.formatValue(m_iPayments);
     }
