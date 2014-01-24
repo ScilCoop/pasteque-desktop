@@ -79,8 +79,10 @@ implements JPanelView, CoinCountButton.Listener {
         this.dlSystem = (DataLogicSystem) appView.getBean("fr.pasteque.pos.forms.DataLogicSystem");
         this.coinButtons = new ArrayList<CoinCountButton>();
         initComponents();
+        AppConfig cfg = AppConfig.loadedInstance;
+        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
         boolean canOpen = this.principalApp.getUser().hasPermission("button.openmoney");
-        if (canOpen) {
+        if (showCount && canOpen) {
             String code = this.dlSystem.getResourceAsXML("payment.cash");
             if (code != null) {
                 try {
