@@ -46,4 +46,8 @@ public abstract class DateUtils {
     public static long toSecTimestamp(Date date) {
         return date.getTime() / 1000;
     }
+
+    public static Date readMilliTimestamp(long timestamp) {
+        return new Date(timestamp);
+    }
 }

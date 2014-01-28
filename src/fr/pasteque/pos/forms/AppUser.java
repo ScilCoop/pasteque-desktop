@@ -25,6 +25,7 @@ import fr.pasteque.pos.ticket.UserInfo;
 import fr.pasteque.pos.util.Hashcypher;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 import java.util.*;
 import java.util.logging.Level;
@@ -42,8 +43,9 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author adrianromero
  */
-public class AppUser {
+public class AppUser implements Serializable {
 
+    static final long serialVersionUID = 2043301290925208037L;
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.AppUser");
 
     private static SAXParser m_sp = null;

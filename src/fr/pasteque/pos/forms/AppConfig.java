@@ -40,6 +40,8 @@ public class AppConfig implements AppProperties {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.AppConfig");
 
+    private static final String DEFAULT_DIR = System.getProperty("user.home")
+            + "/." + AppLocal.APP_ID;
     public static AppConfig loadedInstance;
 
     private Properties m_propsconfig;
@@ -53,6 +55,10 @@ public class AppConfig implements AppProperties {
         }
     }
 
+    public String getDataDir() {
+        return DEFAULT_DIR;
+    }
+
     public AppConfig(File configfile) {
         this.init(configfile);
     }
@@ -62,6 +68,10 @@ public class AppConfig implements AppProperties {
         m_propsconfig = new Properties();
 
         logger.info("Reading configuration file: " + configfile.getAbsolutePath());
+        File dir = new File(this.getDataDir());
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
     }
 
     private File getDefaultConfig() {

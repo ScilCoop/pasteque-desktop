@@ -32,6 +32,9 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.UsersCache;
+import fr.pasteque.pos.caching.ResourcesCache;
+import fr.pasteque.pos.caching.RolesCache;
 import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.util.ThumbNailBuilder;
@@ -103,7 +106,9 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             throw new BasicException(e);
         }
     }
-    public final List<AppUser> listPeople() throws BasicException {
+
+    /** Get users from server */
+    private List<AppUser> loadUsers() throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("UsersAPI", "getAll");
@@ -140,10 +145,30 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BasicException(e);
         }
     }
+    /** Get all users */
+    public final List<AppUser> listPeople() throws BasicException {
+        List<AppUser> data = null;
+        try {
+            data = UsersCache.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            data = this.loadUsers();
+            if (data != null) {
+                try {
+                    UsersCache.save(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return data;
+    }
+    /** Get visible users */
     public final List listPeopleVisible() throws BasicException {
         List<AppUser> allUsers = this.listPeople();
         List<AppUser> visUsers = new LinkedList<AppUser>();
@@ -153,7 +178,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         }
         return visUsers;
-    }      
+    }
+    /** Get user by card. Return null if nothing is found. */
     public final AppUser findPeopleByCard(String card) throws BasicException {
         List<AppUser> allUsers = this.listPeople();
         for (AppUser user : allUsers) {
@@ -162,25 +188,51 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         }
         return null;
-    }   
-    
-    public final String findRolePermissions(String sRole) throws BasicException {
+    }
+
+    private final Map<String, String> loadRoles() throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("RolesAPI", "get",
-                    "id", sRole);
+            ServerLoader.Response r = loader.read("RolesAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                return o.getString("permissions");
+                JSONArray a = r.getArrayContent();
+                Map<String, String> roles = new HashMap<String, String>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    roles.put(o.getString("id"), o.getString("permissions"));
+                }
+                return roles;
             } else {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BasicException(e);
         }
     }
-    
+    public final String findRolePermissions(String sRole) throws BasicException {
+        Map<String, String> data = null;
+        try {
+            data = RolesCache.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            data = this.loadRoles();
+            if (data != null) {
+                try {
+                    RolesCache.save(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (data != null) {
+            return data.get(sRole);
+        } else {
+            return null;
+        }
+    }
+
     public final void execChangePassword(Object[] userdata) throws BasicException {
         m_changepassword.exec(userdata);
     }
@@ -188,8 +240,9 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     public final void resetResourcesCache() {
         resourcescache = new HashMap<String, byte[]>();      
     }
-    
-    private final byte[] getResource(String name) {
+
+    /** Load resource from server */
+    private final byte[] loadResource(String name) {
         ServerLoader loader = new ServerLoader();
         byte[] resource;
         resource = resourcescache.get(name);
@@ -216,6 +269,25 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         }
         return resource;
+    }
+    private byte[] getResource(String name) {
+        byte[] data = null;
+        try {
+            data = ResourcesCache.load(name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            data = this.loadResource(name);
+            if (data != null) {
+                try {
+                    ResourcesCache.save(name, data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return data;
     }
 
     public final byte[] getResourceAsBinary(String sName) {

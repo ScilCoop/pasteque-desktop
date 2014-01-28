@@ -38,9 +38,11 @@ import fr.pasteque.data.loader.Session;
 import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.TableDefinition;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.CustomersCache;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONArray;
@@ -53,48 +55,60 @@ import org.json.JSONObject;
 public class DataLogicCustomers extends BeanFactoryDataSingle {
     
     // TODO: use local database for caching
-    private static List<CustomerInfoExt> cache;
     private static List<DiscountProfile> discProfileCache;
     
     public void init(Session s){
-        DataLogicCustomers.cache = null; // Reset cache
         DataLogicCustomers.discProfileCache = null;
     }
 
-    private static void loadCustomers() throws BasicException {
+    /** Load customers list from server */
+    private static List<CustomerInfoExt> loadCustomers() throws BasicException {
          try {
              ServerLoader loader = new ServerLoader();
              ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
              if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                 DataLogicCustomers.cache = new ArrayList<CustomerInfoExt>();
+                 List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
                  JSONArray a = r.getArrayContent();
                  for (int i = 0; i < a.length(); i++) {
                      JSONObject o = a.getJSONObject(i);
                      CustomerInfoExt customer = new CustomerInfoExt(o);
-                     DataLogicCustomers.cache.add(customer);
+                     data.add(customer);
                  }
+                 return data;
              }
          } catch (Exception e) {
              throw new BasicException(e);
          }
+         return null;
     }
 
     /** Get all customers */
     public List<CustomerInfoExt> getCustomerList() throws BasicException {
-        if (DataLogicCustomers.cache == null) {
-            DataLogicCustomers.loadCustomers();
+        List<CustomerInfoExt> data = null;
+        try {
+            data = CustomersCache.load();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return DataLogicCustomers.cache;
+        if (data == null) {
+            data = DataLogicCustomers.loadCustomers();
+            if (data != null) {
+                try {
+                    CustomersCache.save(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return data;
     }
 
     /** Search customers, use null as argument to disable filter */
     public List<CustomerInfoExt> searchCustomers(String number,
             String searchkey, String name) throws BasicException {
-        if (DataLogicCustomers.cache == null) {
-            DataLogicCustomers.loadCustomers();
-        }
+        List<CustomerInfoExt> data = this.getCustomerList();
         List<CustomerInfoExt> results = new ArrayList<CustomerInfoExt>();
-        for (CustomerInfoExt c : DataLogicCustomers.cache) {
+        for (CustomerInfoExt c : data) {
             boolean matches = true;
             if (number != null) {
                 String custNum = c.getTaxid();
