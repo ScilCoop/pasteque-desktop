@@ -452,11 +452,12 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     } 
     
-    public final String findLocationName(String iLocation) throws BasicException {
+    public final String findLocationName(String locationId)
+        throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("RolesAPI", "get",
-                    "id", iLocation);
+            ServerLoader.Response r = loader.read("LocationsAPI", "get",
+                    "id", locationId);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
                 return o.getString("label");
