@@ -37,6 +37,7 @@ import fr.pasteque.beans.RoundedBorder;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.gui.JMessageDialog;
 import fr.pasteque.data.loader.ImageLoader;
+import fr.pasteque.pos.caching.UsersCache;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
@@ -326,12 +327,21 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         }
         public void actionPerformed(ActionEvent evt) {
                        
-            String sNewPassword = Hashcypher.changePassword(JPrincipalApp.this, m_appuser.getPassword());
-            if (sNewPassword != null) {
+            String[] passwords = Hashcypher.changePassword(JPrincipalApp.this, m_appuser.getPassword());
+            if (passwords != null) {
                 try {
-                    
-                    m_dlSystem.execChangePassword(new Object[] {sNewPassword, m_appuser.getId()});
-                    m_appuser.setPassword(sNewPassword);
+                    if (m_dlSystem.changePassword(m_appuser.getId(),
+                                    passwords[0], passwords[1])) {
+                        m_appuser.setPassword(Hashcypher.hashString(passwords[1]));
+                        try {
+                            UsersCache.updatePwd(m_appuser.getId(),
+                                    passwords[1]);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        throw new BasicException();
+                    }
                 } catch (BasicException e) {
                     JMessageDialog.showMessage(JPrincipalApp.this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotchangepassword")));             
                 }

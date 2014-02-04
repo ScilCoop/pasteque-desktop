@@ -233,10 +233,24 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
 
-    public final void execChangePassword(Object[] userdata) throws BasicException {
-        m_changepassword.exec(userdata);
+    public final boolean changePassword(String userId, String oldPwd,
+            String newPwd) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.write("UsersAPI", "updPwd",
+                    "id", userId, "oldPwd", oldPwd, "newPwd", newPwd);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                boolean ok = r.getResponse().getBoolean("content");
+                return ok;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-    
+
     public final void resetResourcesCache() {
         resourcescache = new HashMap<String, byte[]>();      
     }

@@ -83,6 +83,20 @@ public class UsersCache {
         os.close();
     }
 
+    public static void updatePwd(String userId, String hashPassword) throws IOException {
+        List<AppUser> data = UsersCache.load();
+        if (data == null) {
+            return;
+        } else {
+            for (AppUser user : data) {
+                if (user.getId().equals(userId)) {
+                    user.setPassword(hashPassword);
+                }
+            }
+            UsersCache.save(data);
+        }
+    }
+
     public Date getDate() {
         File cache = new File(path());
         if (!cache.exists()) {
