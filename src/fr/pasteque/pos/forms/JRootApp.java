@@ -184,6 +184,10 @@ public class JRootApp extends JPanel implements AppView {
             e.printStackTrace();
         }
 
+        // Preload caches
+        m_dlSystem.preloadUsers();
+        m_dlSystem.preloadRoles();
+
         // Show Hostname, Warehouse and URL in taskbar
         m_jHost.setText("<html>" + cashReg.getLabel() + " - " + sWareHouse);
         

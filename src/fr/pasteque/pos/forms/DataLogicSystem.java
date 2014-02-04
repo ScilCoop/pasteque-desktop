@@ -25,6 +25,8 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Properties;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -52,7 +54,9 @@ import org.json.JSONObject;
  * @author adrianromero
  */
 public class DataLogicSystem extends BeanFactoryDataSingle {
-    
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DataLogicSystem");
+
     protected SerializerRead peopleread;
     
     private SentenceExec m_changepassword;    
@@ -148,6 +152,28 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             throw new BasicException(e);
         }
     }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadUsers() {
+        try {
+            logger.log(Level.INFO, "Preloading users");
+            List<AppUser> data = this.loadUsers();
+            if (data == null) {
+                return false;
+            }
+            try {
+                UsersCache.save(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     /** Get all users */
     public final List<AppUser> listPeople() throws BasicException {
         List<AppUser> data = null;
@@ -207,6 +233,25 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         } catch (Exception e) {
             throw new BasicException(e);
+        }
+    }
+    public boolean preloadRoles() {
+        try {
+            logger.log(Level.INFO, "Preloading roles");
+            Map<String, String> data = this.loadRoles();
+            if (data == null) {
+                return false;
+            }
+            try {
+                RolesCache.save(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
         }
     }
     public final String findRolePermissions(String sRole) throws BasicException {
