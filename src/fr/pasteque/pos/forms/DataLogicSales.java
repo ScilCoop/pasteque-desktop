@@ -399,20 +399,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             ProductInfoExt.getSerializerRead());
     }
 
-    public final SentenceList getCompositionList() {
-        return new StaticSentence(s
-            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
-            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.TAXCAT, "
-            + "P.CATEGORY, P.ATTRIBUTESET_ID, P.IMAGE, "
-            + "P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
-            + "FROM PRODUCTS P, CATEGORIES C "
-            + "WHERE P.CATEGORY = C.ID AND C.ID LIKE '0' "
-            + "AND ?(QBF_FILTER) ORDER BY P.NAME"
-            , new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
-            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
-            , new SerializerReadClass(ProductInfoExt.class));
-    }
-
     //Tickets and Receipt list
     public SentenceList getTicketsList() {
          return new StaticSentence(s,
@@ -481,21 +467,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , null
             , CategoryInfo.getSerializerRead());
     }
-    public final SentenceList getAllCategoriesList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
-            + "ORDER BY NAME"
-            , null
-            , CategoryInfo.getSerializerRead());
-    }
-    public final SentenceList getTaxCustCategoriesList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME FROM TAXCUSTCATEGORIES ORDER BY NAME"
-            , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new TaxCustCategoryInfo(dr.getString(1), dr.getString(2));
-            }});
-    }
 
     public final List<TaxCategoryInfo> getTaxCategoriesList()
         throws BasicException {
@@ -527,18 +498,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
                 return new AttributeSetInfo(dr.getString(1), dr.getString(2));
             }});
-    }
-    public final SentenceList getLocationsList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME, ADDRESS FROM LOCATIONS ORDER BY NAME"
-            , null
-            , new SerializerReadClass(LocationInfo.class));
-    }
-    public final SentenceList getFloorsList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME FROM FLOORS ORDER BY NAME"
-            , null
-            , new SerializerReadClass(FloorsInfo.class));
     }
 
     public final List<CurrencyInfo> getCurrenciesList() throws BasicException {
@@ -821,28 +780,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
             , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
             , new SerializerReadBasic(compositionDatas));
-    }
-
-    /** Get query of ordered products of a category */
-    public final SentenceList getProductCatQBF() {
-        return new StaticSentence(s,
-            new QBFBuilder(
-                "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
-                + "P.PRICEBUY, P.PRICESELL, P.CATEGORY, P.TAXCAT, "
-                + "P.ATTRIBUTESET_ID, P.IMAGE, P.STOCKCOST, P.STOCKVOLUME, "
-                + "CASE WHEN C.PRODUCT IS NULL THEN " + s.DB.FALSE()
-                + " ELSE " + s.DB.TRUE() + " END, "
-                + "C.CATORDER, P.ATTRIBUTES, P.DISCOUNTENABLED, P.DISCOUNTRATE "
-                + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C "
-                + "ON P.ID = C.PRODUCT "
-                + "WHERE P.CATEGORY != '0' AND ?(QBF_FILTER) "
-                + "ORDER BY P.REFERENCE",
-                new String[] {"P.NAME", "P.PRICEBUY", "P.PRICESELL",
-                    "P.CATEGORY", "P.CODE"}),
-            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING,
-                Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.DOUBLE,
-                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-            productsRow.getSerializerRead());
     }
 
     public final List<TariffInfo> getTariffAreaList() throws BasicException {
