@@ -21,28 +21,28 @@
 
 package fr.pasteque.pos.forms;
 
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.Properties;
-import java.util.UUID;
-import javax.imageio.ImageIO;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
-import fr.pasteque.pos.caching.UsersCache;
 import fr.pasteque.pos.caching.ResourcesCache;
 import fr.pasteque.pos.caching.RolesCache;
+import fr.pasteque.pos.caching.UsersCache;
 import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.util.ThumbNailBuilder;
+
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.xml.bind.DatatypeConverter;
@@ -57,28 +57,14 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DataLogicSystem");
 
-    protected SerializerRead peopleread;
-    
-    private SentenceExec m_changepassword;    
-    private SentenceFind m_locationfind;
-    
-    private SentenceExec m_resourcebytesinsert;
-    private SentenceExec m_resourcebytesupdate;
-
-    protected SentenceExec m_insertcash;
-    
     private Map<String, byte[]> resourcescache;
-    
-    /** Creates a new instance of DataLogicSystem */
-    public DataLogicSystem() {            
-    }
-    
-    public void init(Session s){
-        m_changepassword = new StaticSentence(s
-                , "UPDATE PEOPLE SET APPPASSWORD = ? WHERE ID = ?"
-                ,new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}));
 
-        resetResourcesCache();        
+    /** Creates a new instance of DataLogicSystem */
+    public DataLogicSystem() {
+    }
+
+    public void init(Session s){
+        resetResourcesCache();
     }
 
     public final String findDbVersion() throws BasicException {
@@ -116,7 +102,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("UsersAPI", "getAll");
-            final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");
+            final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32,
+                    "default_user.png");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONArray a = r.getArrayContent();
                 List<AppUser> users = new LinkedList<AppUser>();
@@ -254,7 +241,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             return false;
         }
     }
-    public final String findRolePermissions(String sRole) throws BasicException {
+    public final String findRolePermissions(String sRole)
+        throws BasicException {
         Map<String, String> data = null;
         try {
             data = RolesCache.load();
@@ -297,7 +285,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
 
     public final void resetResourcesCache() {
-        resourcescache = new HashMap<String, byte[]>();      
+        resourcescache = new HashMap<String, byte[]>();
     }
 
     /** Load resource from server */
@@ -359,7 +347,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
     public final String getResourceAsXML(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
-    }    
+    }
 
     public final BufferedImage getResourceAsImage(String sName) {
         try {
@@ -372,7 +360,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
 
     public final Properties getResourceAsProperties(String sName) {
-        
+
         Properties p = new Properties();
         try {
             byte[] img = getResourceAsBinary(sName);
@@ -450,8 +438,8 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             e.printStackTrace();
             throw new BasicException(e);
         }
-    } 
-    
+    }
+
     public final String findLocationName(String locationId)
         throws BasicException {
         try {
@@ -468,5 +456,5 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             e.printStackTrace();
             throw new BasicException(e);
         }
-    }    
+    }
 }
