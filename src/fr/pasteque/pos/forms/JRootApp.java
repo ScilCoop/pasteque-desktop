@@ -43,6 +43,8 @@ import fr.pasteque.data.loader.BatchSentence;
 import fr.pasteque.data.loader.BatchSentenceResource;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.Session;
+import fr.pasteque.pos.caching.ResourcesCache;
+import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
@@ -102,6 +104,7 @@ public class JRootApp extends JPanel implements AppView {
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
         m_dlSystem = (DataLogicSystem) getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        DataLogicCustomers dlCust = (DataLogicCustomers) getBean("fr.pasteque.pos.customers.DataLogicCustomers");
         
         // Check database compatibility
         String sDBVersion = readDataBaseVersion();
@@ -187,6 +190,12 @@ public class JRootApp extends JPanel implements AppView {
         // Preload caches
         m_dlSystem.preloadUsers();
         m_dlSystem.preloadRoles();
+        dlCust.preloadCustomers();
+        // Reload resources cache
+        java.util.List<String> cachedRes = ResourcesCache.list();
+        for (String res : cachedRes) {
+            m_dlSystem.preloadResource(res);
+        }
 
         // Show Hostname, Warehouse and URL in taskbar
         m_jHost.setText("<html>" + cashReg.getLabel() + " - " + sWareHouse);

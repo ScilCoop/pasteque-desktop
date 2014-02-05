@@ -45,6 +45,8 @@ import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -53,6 +55,8 @@ import org.json.JSONObject;
  * @author adrianromero
  */
 public class DataLogicCustomers extends BeanFactoryDataSingle {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.customers.DataLogicCustomers");
     
     // TODO: use local database for caching
     private static List<DiscountProfile> discProfileCache;
@@ -62,7 +66,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
     }
 
     /** Load customers list from server */
-    private static List<CustomerInfoExt> loadCustomers() throws BasicException {
+    private List<CustomerInfoExt> loadCustomers() throws BasicException {
          try {
              ServerLoader loader = new ServerLoader();
              ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
@@ -81,6 +85,28 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
          }
          return null;
     }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadCustomers() {
+        try {
+            logger.log(Level.INFO, "Preloading customers");
+            List<CustomerInfoExt> data = this.loadCustomers();
+            if (data == null) {
+                return false;
+            }
+            try {
+                CustomersCache.save(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     /** Get all customers */
     public List<CustomerInfoExt> getCustomerList() throws BasicException {
@@ -91,7 +117,7 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
             e.printStackTrace();
         }
         if (data == null) {
-            data = DataLogicCustomers.loadCustomers();
+            data = this.loadCustomers();
             if (data != null) {
                 try {
                     CustomersCache.save(data);

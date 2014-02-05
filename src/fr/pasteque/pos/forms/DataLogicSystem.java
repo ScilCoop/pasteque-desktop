@@ -57,15 +57,11 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DataLogicSystem");
 
-    private Map<String, byte[]> resourcescache;
-
     /** Creates a new instance of DataLogicSystem */
     public DataLogicSystem() {
     }
 
-    public void init(Session s){
-        resetResourcesCache();
-    }
+    public void init(Session s){}
 
     public final String findDbVersion() throws BasicException {
         try {
@@ -284,38 +280,52 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
 
-    public final void resetResourcesCache() {
-        resourcescache = new HashMap<String, byte[]>();
-    }
-
     /** Load resource from server */
-    private final byte[] loadResource(String name) {
+    private final byte[] loadResource(String name) throws BasicException {
         ServerLoader loader = new ServerLoader();
         byte[] resource;
-        resource = resourcescache.get(name);
-        if (resource == null) {
-            // Check resource from server
-            try {
-                ServerLoader.Response r = loader.read("ResourcesAPI", "get",
-                        "label", name);
-                if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                    JSONObject o = r.getObjContent();
-                    String strRes = o.getString("content");
-                    if (o.getInt("type") == 0) {
-                        resource = strRes.getBytes();
-                    } else {
-                        resource = DatatypeConverter.parseBase64Binary(strRes);
-                    }
-                    resourcescache.put(name, resource);
+        // Check resource from server
+        try {
+            ServerLoader.Response r = loader.read("ResourcesAPI", "get",
+                    "label", name);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                String strRes = o.getString("content");
+                if (o.getInt("type") == 0) {
+                    resource = strRes.getBytes();
                 } else {
-                    return null;
+                    resource = DatatypeConverter.parseBase64Binary(strRes);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                resource = null;
+            } else {
+                return null;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            resource = null;
         }
         return resource;
+    }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadResource(String name) {
+        try {
+            logger.log(Level.INFO, "Preloading resource " + name);
+            byte[] data = this.loadResource(name);
+            if (data == null) {
+                return false;
+            }
+            try {
+                ResourcesCache.save(name, data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     private byte[] getResource(String name) {
         byte[] data = null;
@@ -325,13 +335,17 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             e.printStackTrace();
         }
         if (data == null) {
-            data = this.loadResource(name);
-            if (data != null) {
-                try {
-                    ResourcesCache.save(name, data);
-                } catch (IOException e) {
-                    e.printStackTrace();
+            try {
+                data = this.loadResource(name);
+                if (data != null) {
+                    try {
+                        ResourcesCache.save(name, data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            } catch (BasicException e) {
+                e.printStackTrace();
             }
         }
         return data;

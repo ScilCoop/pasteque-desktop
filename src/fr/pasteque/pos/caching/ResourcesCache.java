@@ -28,6 +28,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -90,5 +91,21 @@ public class ResourcesCache {
         } else {
             return DateUtils.readMilliTimestamp(cache.lastModified());
         }
+    }
+
+    /** Get cached resource names */
+    public static List<String> list() {
+        File dir = new File(AppConfig.loadedInstance.getDataDir());
+        String[] files = dir.list();
+        List<String> list = new ArrayList<String>();
+        if (files != null) {
+            for (String name : files) {
+                if (name.startsWith("res-") && name.endsWith(".cache")) {
+                    String resName = name.substring(4, name.length() - 6);
+                    list.add(resName);
+                }
+            }
+        }
+        return list;
     }
 }
