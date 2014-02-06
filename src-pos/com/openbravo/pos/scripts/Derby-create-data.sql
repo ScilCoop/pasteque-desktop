@@ -23,12 +23,10 @@
 INSERT INTO ROLES(ID, NAME, PERMISSIONS) VALUES('0', 'Rôle administrateur', $FILE{/com/openbravo/pos/templates/Role.Administrator.xml} );
 INSERT INTO ROLES(ID, NAME, PERMISSIONS) VALUES('1', 'Rôle responsable', $FILE{/com/openbravo/pos/templates/Role.Manager.xml} );
 INSERT INTO ROLES(ID, NAME, PERMISSIONS) VALUES('2', 'Rôle employé', $FILE{/com/openbravo/pos/templates/Role.Employee.xml} );
-INSERT INTO ROLES(ID, NAME, PERMISSIONS) VALUES('3', 'Rôle invité', $FILE{/com/openbravo/pos/templates/Role.Guest.xml} );
 
 INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES ('0', 'Administrateur', NULL, '0', 1, NULL);
 INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES ('1', 'Responsable', NULL, '1', 1, NULL);
 INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES ('2', 'Employé', NULL, '2', 1, NULL);
-INSERT INTO PEOPLE(ID, NAME, APPPASSWORD, ROLE, VISIBLE, IMAGE) VALUES ('3', 'Invité', NULL, '3', 1, NULL);
 
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('0', 'Printer.Start', 0, $FILE{/com/openbravo/pos/templates/Printer.Start.xml});
 INSERT INTO RESOURCES(ID, NAME, RESTYPE, CONTENT) VALUES('1', 'Printer.Ticket', 0, $FILE{/com/openbravo/pos/templates/Printer.Ticket.xml});
