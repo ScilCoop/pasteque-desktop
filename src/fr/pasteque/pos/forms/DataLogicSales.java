@@ -32,12 +32,15 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.model.Field;
 import fr.pasteque.data.model.Row;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import fr.pasteque.pos.caching.CatalogCache;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
 import fr.pasteque.pos.inventory.TaxCustCategoryInfo;
@@ -61,6 +64,8 @@ import org.json.JSONObject;
  * @author adrianromero
  */
 public class DataLogicSales extends BeanFactoryDataSingle {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DatalogicSales");
 
     protected Session s;
 
@@ -122,6 +127,53 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return productsRow;
     }
 
+    public boolean preloadCategories() {
+        try {
+            logger.log(Level.INFO, "Preloading categories");
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CategoriesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<CategoryInfo> categories = new ArrayList<CategoryInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CategoryInfo cat = new CategoryInfo(o);
+                    categories.add(cat);
+                }
+                CatalogCache.refreshCategories(categories);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public boolean preloadProducts() {
+        try {
+            logger.log(Level.INFO, "Preloading products");
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("ProductsAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<ProductInfoExt> products = new ArrayList<ProductInfoExt>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    ProductInfoExt prd = new ProductInfoExt(o);
+                    products.add(prd);
+                }
+                CatalogCache.refreshProducts(products);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     /** Get a product by ID */
     public final ProductInfoExt getProductInfo(String id) throws BasicException {
         try {
@@ -180,29 +232,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
 
-    /** Get root categories */
+    /** Get root categories. Categories must be preloaded. */
     public final List<CategoryInfo> getRootCategories() throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CategoriesAPI", "getAll");
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONArray a = r.getArrayContent();
-                List<CategoryInfo> rootCats = new ArrayList<CategoryInfo>();
-                for (int i = 0; i < a.length(); i++) {
-                    JSONObject o = a.getJSONObject(i);
-                    if (o.isNull("parentId")) {
-                        CategoryInfo cat = new CategoryInfo(o);
-                        rootCats.add(cat);
-                    }
-                }
-                return rootCats;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CatalogCache.getRootCategories();
     }
 
     public final CategoryInfo getCategory(String id) throws BasicException {
@@ -221,30 +253,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    /** Get subcategories from parent ID */
+    /** Get subcategories from parent ID. Categories must be preloaded. */
     public final List<CategoryInfo> getSubcategories(String category) throws BasicException  {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CategoriesAPI",
-                    "getChildren", "parentId", category);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONArray a = r.getArrayContent();
-                List<CategoryInfo> rootCats = new ArrayList<CategoryInfo>();
-                for (int i = 0; i < a.length(); i++) {
-                    JSONObject o = a.getJSONObject(i);
-                    if (!o.isNull("parentId")) {
-                        CategoryInfo cat = new CategoryInfo(o);
-                        rootCats.add(cat);
-                    }
-                }
-                return rootCats;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CatalogCache.getSubcategories(category);
     }
 
     //Subgrupos de una composición
@@ -304,27 +315,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    /** Get products from a category ID */
+    /** Get products from a category ID. Products must be preloaded. */
     public List<ProductInfoExt> getProductCatalog(String category) throws BasicException  {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("ProductsAPI",
-                    "getCategory", "id", category);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONArray a = r.getArrayContent();
-                List<ProductInfoExt> prds = new ArrayList<ProductInfoExt>();
-                for (int i = 0; i < a.length(); i++) {
-                    JSONObject o = a.getJSONObject(i);
-                    prds.add(new ProductInfoExt(o));
-                }
-                return prds;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CatalogCache.getProductsByCategory(category);
     }
 
     /** Get products associated to a first one by ID */

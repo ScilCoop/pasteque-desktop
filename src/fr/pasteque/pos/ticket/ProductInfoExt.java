@@ -27,6 +27,7 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ImageUtils;
 import fr.pasteque.data.loader.SerializerRead;
 import fr.pasteque.format.Formats;
+import java.io.Serializable;
 import java.util.Properties;
 import org.json.JSONObject;
 
@@ -35,7 +36,7 @@ import org.json.JSONObject;
  * @author adrianromero
  *
  */
-public class ProductInfoExt {
+public class ProductInfoExt implements Serializable {
 
     private static final long serialVersionUID = 7587696873036L;
     private static final double NO_PRICE = -1.345d;

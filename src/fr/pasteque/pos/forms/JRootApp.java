@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.sql.SQLException;
 import javax.swing.*;
 
 import fr.pasteque.pos.printer.*;
@@ -43,6 +44,7 @@ import fr.pasteque.data.loader.BatchSentence;
 import fr.pasteque.data.loader.BatchSentenceResource;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.Session;
+import fr.pasteque.pos.caching.LocalDB;
 import fr.pasteque.pos.caching.ResourcesCache;
 import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.forms.AppConfig;
@@ -195,6 +197,14 @@ public class JRootApp extends JPanel implements AppView {
         java.util.List<String> cachedRes = ResourcesCache.list();
         for (String res : cachedRes) {
             m_dlSystem.preloadResource(res);
+        }
+        // Init local cache
+        try {
+            LocalDB.init();
+            m_dlSales.preloadCategories();
+            m_dlSales.preloadProducts();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         // Show Hostname, Warehouse and URL in taskbar
