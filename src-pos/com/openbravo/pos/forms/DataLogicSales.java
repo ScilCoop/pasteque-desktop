@@ -80,7 +80,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
         tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
         tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
-        compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
+        compositionDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
         subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.INT};
         subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
         currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
