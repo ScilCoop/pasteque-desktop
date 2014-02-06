@@ -27,9 +27,9 @@ To launch the installer :
     -->
     <info>
          <appname>@{app.name}</appname>
-         <appversion>1.0</appversion>
+         <appversion>@{version}</appversion>
          <appsubpath>${APP_NAME}</appsubpath>
-         <url>http://pasteque-logiciel.fr</url>
+         <url>@{app.website}</url>
          <authors>
          <author name="Cédric Houbart" email="cedric@scil.coop"/>
          <author name="Philippe Pary" email="philippe@scil.coop"/>
@@ -81,25 +81,25 @@ To launch the installer :
     -->
     <resources>
         <res id="shortcutSpec.xml"
-        src="@{basedir}/installer/desktop/defaultShortcutSpec.xml"/>
+        src="@{src.inst}/desktop/defaultShortcutSpec.xml"/>
         <res id="shortcutSpec.xml_fra"
-        src="@{basedir}/installer/desktop/defaultShortcutSpec_fr.xml"/>
+        src="@{src.inst}/desktop/defaultShortcutSpec_fr.xml"/>
         <res id="Unix_shortcutSpec.xml"
-        src="@{basedir}/installer/desktop/unixShortcutSpec.xml"/>
+        src="@{src.inst}/desktop/unixShortcutSpec.xml"/>
         <res id="Unix_shortcutSpec.xml_fra"
-        src="@{basedir}/installer/desktop/unixShortcutSpec_fr.xml"/>
+        src="@{src.inst}/desktop/unixShortcutSpec_fr.xml"/>
         <res id="LicencePanel.licence"
         src="@{basedir}/licensing/gpl-3.0.txt"/>
         <res id="Installer.image"
-        src="@{basedir}/installer/installer_left.png"/>
+        src="@{src.inst}/installer_left.png"/>
         <res id="installer.langsel.img"
-        src="@{basedir}/installer/installer_splash.png"/>
+        src="@{src.inst}/installer_splash.png"/>
         <res id="Heading.image"
-        src="@{basedir}/installer/installer_top.png"/>
+        src="@{src.inst}/installer_top.png"/>
         <res id="packsLang.xml_eng"
-        src="@{basedir}/installer/locales/packsLang.xml_eng" />
+        src="@{src.inst}/locales/packsLang.xml_eng" />
         <res id="packsLang.xml_fra"
-        src="@{basedir}/installer/locales/packsLang.xml_fra" />
+        src="@{src.inst}/locales/packsLang.xml_fra" />
     </resources>
 
     <!--
@@ -131,16 +131,16 @@ To launch the installer :
 <!--
             <file src="@{basedir}/build/bin"
             targetdir="$INSTALL_PATH"/>
-            <file src="@{basedir}/installer/pasteque_launcher.png"
+            <file src="@{src.inst}/pasteque_launcher.png"
             targetdir="$INSTALL_PATH"/>
-            <file src="@{basedir}/installer/desktop/executable.sh"
+            <file src="@{src.inst}/desktop/executable.sh"
             targetdir="$INSTALL_PATH/bin"/>
             <executable targetfile="$INSTALL_PATH/bin/executable.sh"
             stage="postinstall" keep="no">
                 <os family="unix"/>
             </executable>
 
-            <file src="@{basedir}/installer/pasteque_launcher.ico"
+            <file src="@{src.inst}/pasteque_launcher.ico"
             targetdir="$INSTALL_PATH"/>
         </pack>
 -->
@@ -157,11 +157,11 @@ To launch the installer :
             targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
             <file src="@{dest.bin}/logging.properties"
             targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
-            <file src="@{dest.jar}/@{name}.jar"
+            <file src="@{dest.bin}/@{name}.jar"
             targetdir="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
             <file src="@{dest.bin}/README"
             targetdir="$INSTALL_PATH"/>
-            <file src="@{basedir}/installer/@{name}_launcher.png"
+            <file src="@{src.inst}/@{name}_launcher.png"
             targetdir="$INSTALL_PATH">
                 <os family="unix"/>
             </file>
@@ -173,7 +173,7 @@ To launch the installer :
             targetdir="${INSTALL_PATH}/bin">
                 <os family="unix"/>
             </file>
-            <file src="@{basedir}/installer/desktop/executable.sh"
+            <file src="@{src.inst}/desktop/executable.sh"
             targetdir="$INSTALL_PATH/bin">
                 <os family="unix"/>
             </file>
@@ -182,7 +182,7 @@ To launch the installer :
                 <os family="unix"/>
             </executable>
 
-            <file src="@{basedir}/installer/@{name}_launcher.ico"
+            <file src="@{src.inst}/@{name}_launcher.ico"
             targetdir="$INSTALL_PATH">
                 <os family="windows"/>
             </file>

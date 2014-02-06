@@ -30,6 +30,7 @@
     <property name="name" value="pasteque"/>
     <!-- application display name -->
     <property name="app.name" value="Pasteque"/>
+    <property name="app.website" value="http://pasteque-logiciel.fr"/>
     <!-- project version -->
     <property name="version" value="2.0_alpha3"/>
     <!-- javac properties -->
@@ -45,6 +46,7 @@
     <property name="graphics.src" value="${basedir}/graphics-src"/>
     <property name="lib" value="${basedir}/lib"/>
     <property name="launchers" value="${basedir}/launchers"/>
+    <property name="src.inst" value="${basedir}/installer"/>
 
     <!-- the jar directory -->
     <property name="dest.jar" value="${basedir}/build/jar"/>
@@ -246,8 +248,7 @@
     <!-- ================================================================= -->
     <!-- I N S T A L L E R                                                 -->
     <!-- ================================================================= -->
-
-    <target name="installer" depends="init.dist,build">
+    <target name="installer" depends="dist">
         <path id="build.classpath">
             <fileset dir="${user.home}/IzPack">
                 <include name="lib/*.jar"/>
@@ -255,14 +256,12 @@
         </path>
         <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
 
-        <izpack input="${basedir}/installer/desktop/install.xml"
+        <izpack input="${src.inst}/desktop/install.xml"
                 output="${dest.dist}/${name}_${version}-install.jar"
                 installerType="standard"
                 basedir="${basedir}"
                 izPackDir="${user.home}/IzPack/"
                 inheritAll="true"/>
-        <copy file="${basedir}/installer/desktop/install.sh" todir="${dest.dist}"/>
-        <chmod file="${dest.dist}/install.sh" perm="755"/>
     </target>
 
 </project>
