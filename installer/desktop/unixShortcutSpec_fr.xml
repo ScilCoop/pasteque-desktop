@@ -38,10 +38,10 @@ Quelques paramètres pour les raccourcis
     Shortcut of the application uninstaller
     -->
     <shortcut
-        name="Pastèque-Désinstallateur"
+        name="Pastèque Désinstaller"
         target="$INSTALL_PATH/bin/uninstall.sh"
         description="Désinstaller Pastèque"
-        iconFile="$INSTALL_PATH/pasteque_launcher.png"
+        iconFile="$INSTALL_PATH/pasteque_uninstall.png"
         programGroup="yes"
         desktop="no"
         type="Application"
