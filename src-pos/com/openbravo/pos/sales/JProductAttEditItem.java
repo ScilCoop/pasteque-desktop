@@ -23,6 +23,7 @@ package com.openbravo.pos.sales;
 
 import com.openbravo.pos.widgets.JEditorKeys;
 import com.openbravo.pos.widgets.JEditorString;
+import com.openbravo.pos.widgets.WidgetsBuilder;
 import java.awt.Component;
 
 /**
@@ -73,7 +74,7 @@ public class JProductAttEditItem extends javax.swing.JPanel implements JProductA
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        jLabel1 = WidgetsBuilder.createLabel();
         jValue = new JEditorString();
 
         jLabel1.setText("jLabel1");
