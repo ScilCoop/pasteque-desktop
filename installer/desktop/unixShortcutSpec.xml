@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- ================================================================= -->
+<!-- L I N U X  S H O R T C U T                                        -->
+<!-- ================================================================= -->
+
+<!--
+The documentation to modify this file correctly can be found here
+http://izpack.org/documentation/desktop-shortcuts.html
+-->
+
+<!--
+Some settings for the shortcut panel
+-->
+<shortcuts>
+    <skipIfNotSupported/>
+    <defaultCurrentUser/>
+    <!--
+    Shortcut of the application
+    -->
+    <shortcut
+        name="Pasteque"
+        target="$INSTALL_PATH/bin/start.sh"
+        description="Launch Pasteque"
+        iconFile="$INSTALL_PATH/pasteque_launcher.png"
+        initialState="normal"
+        programGroup="yes"
+        desktop="yes"
+        type="Application"
+        terminal="false"
+        encoding="UTF-8"
+        createForAll="true"
+        categories="GNOME;GTK;Office">
+    <createForPack name="Core"/>
+    </shortcut>
+    <!--
+    Shortcut of the application uninstaller
+    -->
+    <shortcut
+        name="Pasteque uninstall"
+        target="$INSTALL_PATH/bin/uninstall.sh"
+        description="Uninstall Pasteque"
+        iconFile="$INSTALL_PATH/pasteque_uninstall.png"
+        programGroup="yes"
+        desktop="no"
+        type="Application"
+        terminal="false"
+        encoding="UTF-8"
+        categories="GNOME;GTK;Office">
+    <createForPack name="Core"/>
+    </shortcut>
+</shortcuts>

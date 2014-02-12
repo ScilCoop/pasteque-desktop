@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="yes"?>
+
+
+<!-- ================================================================= -->
+<!-- P A S T E Q U E  I N S T A L L E R                                -->
+<!-- ================================================================= -->
+
+<!--
+The documentation to modify this file correctly can be found here
+http://izpack.org/documentation/
+-->
+
+<!--
+To compile it :
+- change the variables to match to what you want
+- go into directory where the build.xml file is and
+- call "ant installer"
+
+To launch the installer :
+- call "java -jar /path/to/file/created"
+-->
+
+<installation version="5.0">
+
+    <!--
+    The info section.
+    -->
+    <info>
+         <appname>@{app.name}</appname>
+         <appversion>@{version}</appversion>
+         <appsubpath>${APP_NAME}</appsubpath>
+         <url>@{app.website}</url>
+         <authors>
+             <author name="Scil" email="contact@scil.coop"/>
+         </authors>
+         <javaversion>@{javac.minVMVersion}</javaversion>
+         <requiresjdk>no</requiresjdk>
+         <run-privileged condition="izpack.windowsinstall.7|izpack.windowsinstall.vista"/>
+         <uninstaller name="uninstall.jar" path="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
+     </info>
+
+     <!--
+     The gui preferences indication.
+     Sets the installer window to 640x480. It will not be able to change the size.
+     -->
+    <guiprefs width="640" height="480" resizable="no">
+         <modifier key="layoutAnchor" value="CENTER"/>
+         <modifier key="paragraphYGap" value="15"/>
+     </guiprefs>
+
+    <variables>
+        <variable name="DesktopShortcutCheckboxEnabled" value="true"/>
+    </variables>
+
+    <!--
+    The locale section.
+    Asks here to include the English and French langpacks.
+    -->
+    <locale>
+        <langpack iso3="fra"/>
+        <langpack iso3="eng"/>
+    </locale>
+
+    <!--
+    The resources section.
+    The ids must be these ones if you want to use the LicencePanel and/or the InfoPanel.
+    -->
+    <resources>
+        <res id="shortcutSpec.xml"
+        src="@{src.inst}/desktop/defaultShortcutSpec.xml"/>
+        <res id="shortcutSpec.xml_fra"
+        src="@{src.inst}/desktop/defaultShortcutSpec_fr.xml"/>
+        <res id="Unix_shortcutSpec.xml"
+        src="@{src.inst}/desktop/unixShortcutSpec.xml"/>
+        <res id="Unix_shortcutSpec.xml_fra"
+        src="@{src.inst}/desktop/unixShortcutSpec_fr.xml"/>
+        <res id="LicencePanel.licence"
+        src="@{basedir}/licensing/gpl-3.0.txt"/>
+        <res id="Installer.image"
+        src="@{src.inst}/installer_left.png"/>
+        <res id="installer.langsel.img"
+        src="@{src.inst}/installer_splash.png"/>
+        <res id="packsLang.xml_eng"
+        src="@{src.inst}/locales/packsLang.xml_eng" />
+        <res id="packsLang.xml_fra"
+        src="@{src.inst}/locales/packsLang.xml_fra" />
+    </resources>
+
+    <!--
+    The panels section.
+    We indicate here which panels we want to use. The order will be respected.
+    -->
+    <panels>
+        <panel classname="CheckedHelloPanel" id="Hello"/>
+        <panel classname="LicencePanel" id="License"/>
+        <panel classname="TargetPanel" id="Target"/>
+        <panel classname="InstallPanel" id="Install"/>
+        <panel classname="ShortcutPanel" id="Shortcutpanel"/>
+        <panel classname="SimpleFinishPanel" id="Finish"/>
+    </panels>
+
+    <!--
+    The packs section.
+    Here, we specify our packs.
+   -->
+    <packs>
+        <pack name="Core" id="core.package" required="yes">
+        <description/>
+
+    <!-- ================================================================= -->
+    <!-- E A S Y  I N S T A L L ,  A L L  F I L E S  I N C L U D E D       -->
+    <!-- ================================================================= -->
+
+<!--
+            <file src="@{basedir}/build/bin"
+            targetdir="$INSTALL_PATH"/>
+            <file src="@{src.inst}/pasteque_launcher.png"
+            targetdir="$INSTALL_PATH"/>
+            <file src="@{src.inst}/desktop/executable.sh"
+            targetdir="$INSTALL_PATH/bin"/>
+            <executable targetfile="$INSTALL_PATH/bin/executable.sh"
+            stage="postinstall" keep="no">
+                <os family="unix"/>
+            </executable>
+
+            <file src="@{src.inst}/pasteque_launcher.ico"
+            targetdir="$INSTALL_PATH"/>
+        </pack>
+-->
+
+    <!-- ================================================================= -->
+    <!-- C L E A N  I N S T A L L ,  F I L E S  S O R T E D  B Y  O S      -->
+    <!-- ================================================================= -->
+
+            <file src="@{dest.bin}/lib"
+            targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
+            <file src="@{dest.bin}/licensing"
+            targetdir="$INSTALL_PATH"/>
+            <file src="@{dest.bin}/locales"
+            targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
+            <file src="@{dest.bin}/reports"
+            targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
+            <file src="@{dest.bin}/logging.properties"
+            targetdir="$INSTALL_PATH${FILE_SEPARATOR}bin"/>
+            <file src="@{dest.bin}/@{name}.jar"
+            targetdir="${INSTALL_PATH}${FILE_SEPARATOR}bin"/>
+            <file src="@{dest.bin}/README"
+            targetdir="$INSTALL_PATH"/>
+            <file src="@{src.inst}/@{name}_launcher.png"
+            targetdir="$INSTALL_PATH">
+                <os family="unix"/>
+            </file>
+            <file src="@{src.inst}/@{name}_uninstall.png"
+            targetdir="$INSTALL_PATH">
+                <os family="unix"/>
+            </file>
+            <file src="@{dest.bin}/configure.sh"
+            targetdir="$INSTALL_PATH/bin">
+                <os family="unix"/>
+            </file>
+            <file src="@{dest.bin}/start.sh"
+            targetdir="${INSTALL_PATH}/bin">
+                <os family="unix"/>
+            </file>
+            <file src="@{src.inst}/desktop/executable.sh"
+            targetdir="$INSTALL_PATH/bin">
+                <os family="unix"/>
+            </file>
+            <executable targetfile="$INSTALL_PATH/bin/executable.sh"
+            stage="postinstall" keep="no">
+                <os family="unix"/>
+            </executable>
+
+            <file src="@{src.inst}/@{name}_launcher.ico"
+            targetdir="$INSTALL_PATH">
+                <os family="windows"/>
+            </file>
+            <file src="@{src.inst}/@{name}_uninstall.ico"
+            targetdir="$INSTALL_PATH">
+                <os family="windows"/>
+            </file>
+            <file src="@{dest.bin}/configure.bat"
+            targetdir="$INSTALL_PATH\bin">
+                <os family="windows"/>
+            </file>
+            <file src="@{dest.bin}/start.bat"
+            targetdir="$INSTALL_PATH\bin">
+                <os family="windows"/>
+            </file>
+        </pack>
+    </packs>
+
+    <natives>
+        <native type="izpack" name="ShellLink.dll"/>
+        <native type="izpack" name="ShellLink_x64.dll"/>
+        <native type="3rdparty" name="COIOSHelper.dll" stage="both">
+            <os family="windows"/>
+        </native>
+        <native type="3rdparty" name="COIOSHelper_x64.dll" stage="both">
+            <os family="windows"/>
+        </native>
+
+        <listeners>
+            <listener classname="RegistryInstallerListener" stage="install">
+                <os family="windows"/>
+            </listener>
+            <listener classname="RegistryUninstallerListener" stage="uninstall">
+                <os family="windows"/>
+            </listener>
+        </listeners>
+    </natives>
+</installation>

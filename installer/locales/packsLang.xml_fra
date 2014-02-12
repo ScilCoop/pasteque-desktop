@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+
+<langpack>
+    <str id="core.package" txt="Pastèque"/>
+    <str id="core.package.description" txt="Le pack Pastèque contient tous les fichiers nécessaires à la bonne execution du programme. Ces fichiers sont obligatoirement installés."/>
+</langpack>

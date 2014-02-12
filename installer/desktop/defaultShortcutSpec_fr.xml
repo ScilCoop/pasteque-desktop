@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- ================================================================= -->
+<!-- R A C C O U R C I  W I N D O W S                                  -->
+<!-- ================================================================= -->
+
+<!--
+La documentation pour correctement modifier ce fichier peut se trouver
+sur ce site.
+http://izpack.org/documentation/desktop-shortcuts.html
+-->
+
+<!--
+Quelques paramètres pour les raccourcis
+-->
+<shortcuts>
+    <skipIfNotSupported/>
+    <defaultCurrentUser/>
+    <programGroup defaultName="Scil\Pastèque" location="applications"/>
+    <!--
+    Raccourci de l'application
+    -->
+    <shortcut
+        name="Pastèque"
+        target="$INSTALL_PATH\bin\start.bat"
+        description="Lancer Pastèque"
+        iconFile="$INSTALL_PATH\pasteque_launcher.ico"
+        iconIndex="0"
+        initialState="noShow"
+        programGroup="yes"
+        desktop="yes"
+        applications="no"
+        startMenu="yes"
+        startup="no">>
+    <createForPack name="Core"/>
+    </shortcut>
+    <!--
+    Raccourci du désinstallateur de l'application
+    -->
+    <shortcut
+        name="Pastèque Désinstaller"
+        target="$INSTALL_PATH\bin\uninstaller.jar"
+        description="Désinstaller Pastèque"
+        iconFile="$INSTALL_PATH\pasteque_uninstall.ico"
+        programGroup="yes"
+        desktop="no"
+        applications="no"
+        startMenu="no"
+        startup="no">
+    <createForPack name="Core"/>
+    </shortcut>
+
+</shortcuts>

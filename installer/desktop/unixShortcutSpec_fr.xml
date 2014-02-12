@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- ================================================================= -->
+<!-- R A C C O U R C I  L I N U X                                      -->
+<!-- ================================================================= -->
+
+<!--
+La documentation pour correctement modifier ce fichier peut se trouver
+sur ce site.
+http://izpack.org/documentation/desktop-shortcuts.html
+-->
+
+<!--
+Quelques paramètres pour les raccourcis
+-->
+<shortcuts>
+    <skipIfNotSupported/>
+    <defaultCurrentUser/>
+    <!--
+    Raccourci de l'application
+    -->
+    <shortcut
+        name="Pastèque"
+        target="$INSTALL_PATH/bin/start.sh"
+        description="Lancer Pastèque"
+        iconFile="$INSTALL_PATH/pasteque_launcher.png"
+        initialState="normal"
+        programGroup="yes"
+        desktop="yes"
+        type="Application"
+        terminal="false"
+        encoding="UTF-8"
+        createForAll="true"
+        categories="GNOME;GTK;Office">
+    <createForPack name="Core"/>
+    </shortcut>
+    <!--
+    Shortcut of the application uninstaller
+    -->
+    <shortcut
+        name="Pastèque Désinstaller"
+        target="$INSTALL_PATH/bin/uninstall.sh"
+        description="Désinstaller Pastèque"
+        iconFile="$INSTALL_PATH/pasteque_uninstall.png"
+        programGroup="yes"
+        desktop="no"
+        type="Application"
+        terminal="false"
+        encoding="UTF-8"
+        categories="GNOME;GTK;Office">
+    <createForPack name="Core"/>
+    </shortcut>
+</shortcuts>

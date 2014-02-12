@@ -28,6 +28,9 @@
     <!-- ================================================================= -->
     <!-- program name -->
     <property name="name" value="pasteque"/>
+    <!-- application display name -->
+    <property name="app.name" value="Pasteque"/>
+    <property name="app.website" value="http://pasteque-logiciel.fr"/>
     <!-- project version -->
     <property name="version" value="1.4.0"/>
     <!-- javac properties -->
@@ -35,6 +38,7 @@
     <property name="javac.optimize" value="on"/>
     <property name="javac.debug" value="on"/>
     <property name="javac.minVMVersion" value="1.6"/>
+    <property name="javac.encoding" value="utf8"/>
     <!-- read in property files -->
     <property file="build.properties" />
     <property name="src.pos" value="${basedir}/src-pos"/>
@@ -43,6 +47,7 @@
     <property name="graphics.src" value="${basedir}/graphics-src"/>
     <property name="lib" value="${basedir}/lib"/>
     <property name="launchers" value="${basedir}/launchers"/>
+    <property name="src.inst" value="${basedir}/installer"/>
 
     <!-- the jar directory -->
     <property name="dest.jar" value="${basedir}/build/jar"/>
@@ -240,6 +245,25 @@
         <mkdir dir="${dest.dist}" />
         <zip zipfile="${dest.dist}/${name}_${version}_src.zip" basedir="${basedir}/build/zip" />
         <delete dir="${basedir}/build/zip" />
+    </target>
+
+    <!-- ================================================================= -->
+    <!-- I N S T A L L E R                                                 -->
+    <!-- ================================================================= -->
+    <target name="installer" depends="dist">
+        <path id="build.classpath">
+            <fileset dir="${user.home}/IzPack">
+                <include name="lib/*.jar"/>
+            </fileset>
+        </path>
+        <taskdef name="izpack" classpathref="build.classpath" classname="com.izforge.izpack.ant.IzPackTask"/>
+
+        <izpack input="${src.inst}/desktop/install.xml"
+                output="${dest.dist}/${name}_${version}-install.jar"
+                installerType="standard"
+                basedir="${basedir}"
+                izPackDir="${user.home}/IzPack/"
+                inheritAll="true"/>
     </target>
 
 </project>

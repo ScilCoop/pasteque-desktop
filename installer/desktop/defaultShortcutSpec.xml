@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<!-- ================================================================= -->
+<!-- W I N D O W S  S H O R T C U T                                    -->
+<!-- ================================================================= -->
+
+<!--
+The documentation to modify this file correctly can be found here
+http://izpack.org/documentation/desktop-shortcuts.html
+-->
+
+<!--
+Some settings for the shortcut panel
+-->
+<shortcuts>
+    <skipIfNotSupported/>
+    <defaultCurrentUser/>
+    <programGroup defaultName="Scil\Pasteque" location="applications"/>
+    <!--
+    Shortcut of the application
+    -->
+    <shortcut
+        name="Pasteque"
+        target="$INSTALL_PATH\bin\start.bat"
+        description="Launch Pasteque"
+        iconFile="$INSTALL_PATH\pasteque_launcher.ico"
+        iconIndex="0"
+        initialState="noShow"
+        programGroup="yes"
+        desktop="yes"
+        applications="no"
+        startMenu="yes"
+        startup="no">
+    <createForPack name="Core"/>
+    </shortcut>
+    <!--
+    Shortcut of the application uninstaller
+    -->
+    <shortcut
+        name="Pasteque uninstall"
+        target="$INSTALL_PATH\bin\uninstaller.jar"
+        description="Uninstall Pasteque"
+        iconFile="$INSTALL_PATH\pasteque_uninstall.ico"
+        iconIndex="0"
+        initialState="noShow"
+        programGroup="yes"
+        desktop="no"
+        applications="no"
+        startMenu="no"
+        startup="no">
+    <createForPack name="Core"/>
+    </shortcut>
+
+</shortcuts>
