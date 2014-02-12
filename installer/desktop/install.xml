@@ -45,14 +45,6 @@ To launch the installer :
      -->
     <guiprefs width="640" height="480" resizable="no">
          <modifier key="layoutAnchor" value="CENTER"/>
-         <modifier key="useHeadingPanel" value="yes"/>
-         <modifier key="useHeadingForSummary" value="yes"/>
-         <modifier key="headingImageOnLeft" value="yes"/>
-         <modifier key="headingLineCount" value="2"/>
-         <modifier key="headingFontSize" value="1.5"/>
-         <modifier key="headingBackgroundColor" value="0x00ffffff"/>
-         <modifier key="headingPanelCounter" value="text"/>
-         <modifier key="headingPanelCounterPos" value="inHeading"/>
          <modifier key="paragraphYGap" value="15"/>
      </guiprefs>
 
@@ -88,8 +80,6 @@ To launch the installer :
         src="@{src.inst}/installer_left.png"/>
         <res id="installer.langsel.img"
         src="@{src.inst}/installer_splash.png"/>
-        <res id="Heading.image"
-        src="@{src.inst}/installer_top.png"/>
         <res id="packsLang.xml_eng"
         src="@{src.inst}/locales/packsLang.xml_eng" />
         <res id="packsLang.xml_fra"
