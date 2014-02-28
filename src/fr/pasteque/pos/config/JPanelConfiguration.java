@@ -51,7 +51,7 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
     
     /** Creates new form JPanelConfiguration */
     public JPanelConfiguration(AppView oApp) {
-        this(oApp.getProperties(), (DataLogicSystem) oApp.getBean("fr.pasteque.pos.forms.DataLogicSystem"));  
+        this(oApp.getProperties(), new DataLogicSystem());
     }
     
     public JPanelConfiguration(AppProperties props, DataLogicSystem dls) {

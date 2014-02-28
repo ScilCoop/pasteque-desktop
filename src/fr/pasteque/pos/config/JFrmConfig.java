@@ -54,19 +54,11 @@ public class JFrmConfig extends javax.swing.JFrame {
         
         addWindowListener(new MyFrameListener()); 
         
-        String dlsBean = "fr.pasteque.pos.forms.DataLogicSystem";
-        DataLogicSystem dls = null;
+        DataLogicSystem dls = new DataLogicSystem();
         try {
-            this.session = AppViewConnection.createSession(props);
-            Class bfclass = Class.forName(dlsBean);
-            if (BeanFactory.class.isAssignableFrom(bfclass)) {
-                BeanFactory bf = (BeanFactory) bfclass.newInstance();
-                dls = (DataLogicSystem) bf.getBean();
-                dls.init(this.session);
-                String dbVersion = dls.findDbVersion();
-                if (!AppLocal.DB_VERSION.equals(dbVersion)) {
-                    dls = null;
-                }
+            String dbVersion = dls.findDbVersion();
+            if (!AppLocal.DB_VERSION.equals(dbVersion)) {
+                dls = null;
             }
         } catch (Exception e) {
             dls = null;

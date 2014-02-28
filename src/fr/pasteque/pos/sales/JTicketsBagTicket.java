@@ -61,7 +61,7 @@ public class JTicketsBagTicket extends JTicketsBag {
         
         super(app, panelticket);
         m_panelticketedit = panelticket; 
-        m_dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_dlSystem = new DataLogicSystem();
         dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
         
         // Inicializo la impresora...

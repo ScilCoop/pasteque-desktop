@@ -76,7 +76,7 @@ implements JPanelView, CoinCountButton.Listener {
         this.appView = appView;
         this.principalApp = principalApp;
         this.targetTask = targetTask;
-        this.dlSystem = (DataLogicSystem) appView.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        this.dlSystem = new DataLogicSystem();
         this.coinButtons = new ArrayList<CoinCountButton>();
         initComponents();
         AppConfig cfg = AppConfig.loadedInstance;

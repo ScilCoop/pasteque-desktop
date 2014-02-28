@@ -80,7 +80,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         this.app = app;
         dlcustomers = (DataLogicCustomers) app.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
         dlsales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        dlsystem = (DataLogicSystem) app.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        dlsystem = new DataLogicSystem();
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
     }
 

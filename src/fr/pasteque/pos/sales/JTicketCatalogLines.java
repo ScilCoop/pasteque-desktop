@@ -40,7 +40,7 @@ public class JTicketCatalogLines extends javax.swing.JPanel {
         
         DataLogicSystem dlSystem = null;
         DataLogicSales dlSales = null;
-        dlSystem = (DataLogicSystem) app.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        dlSystem = new DataLogicSystem();
         dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
         
         initComponents();

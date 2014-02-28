@@ -53,15 +53,13 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class DataLogicSystem extends BeanFactoryDataSingle {
+public class DataLogicSystem {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DataLogicSystem");
 
     /** Creates a new instance of DataLogicSystem */
     public DataLogicSystem() {
     }
-
-    public void init(Session s){}
 
     public final String findDbVersion() throws BasicException {
         try {

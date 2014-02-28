@@ -99,7 +99,7 @@ public class JPanelCloseMoney extends JPanel
     public void init(AppView app) throws BeanFactoryException {
         
         m_App = app;
-        m_dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_dlSystem = new DataLogicSystem();
         // Init z ticket
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 

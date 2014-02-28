@@ -105,7 +105,7 @@ public class JRootApp extends JPanel implements AppView {
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
-        m_dlSystem = (DataLogicSystem) getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_dlSystem = new DataLogicSystem();
         DataLogicCustomers dlCust = (DataLogicCustomers) getBean("fr.pasteque.pos.customers.DataLogicCustomers");
         
         // Check database compatibility

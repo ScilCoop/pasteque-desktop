@@ -80,7 +80,7 @@ public class JPrincipalApp extends javax.swing.JPanel implements AppUserView {
         m_appview = appview; 
         m_appuser = appuser;
                    
-        m_dlSystem = (DataLogicSystem) m_appview.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_dlSystem = new DataLogicSystem();
         
         // Cargamos los permisos del usuario
         m_appuser.fillPermissions(m_dlSystem);

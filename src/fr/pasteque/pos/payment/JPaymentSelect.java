@@ -89,7 +89,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
     
     public void init(AppView app) {
         this.app = app;
-        dlSystem = (DataLogicSystem) app.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        dlSystem = new DataLogicSystem();
         printselected = !AppConfig.loadedInstance.getProperty("ui.printticketbydefault").equals("0");
         // Init currencies
         DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");

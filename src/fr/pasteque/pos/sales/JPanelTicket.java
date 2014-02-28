@@ -180,7 +180,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     public void init(AppView app) throws BeanFactoryException {
         m_App = app;
-        this.dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        this.dlSystem = new DataLogicSystem();
         this.dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
         this.dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
 
