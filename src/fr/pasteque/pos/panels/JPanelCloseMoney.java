@@ -177,6 +177,16 @@ public class JPanelCloseMoney extends JPanel
         cl.show(this, "cashcount");
         this.updateExpectedAmount();
         this.updateAmount();
+        // Open drawer
+        String code = this.m_dlSystem.getResourceAsXML("Printer.OpenDrawer");
+        if (code != null) {
+            try {
+                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                script.eval(code);
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            }
+        }
     }
     private void showZTicket() {
         CardLayout cl = (CardLayout) this.getLayout();

@@ -111,8 +111,22 @@ implements JPanelView, CoinCountButton.Listener {
     
     public void activate() throws BasicException {
         this.updateAmount();
-    }   
-    
+        // Open drawer if allowed to open and counting
+        AppConfig cfg = AppConfig.loadedInstance;
+        if (this.principalApp.getUser().hasPermission("button.openmoney")
+                && cfg.getProperty("ui.countmoney").equals("1")) {
+            String code = this.dlSystem.getResourceAsXML("Printer.OpenDrawer");
+            if (code != null) {
+                try {
+                    ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                    script.eval(code);
+                } catch (ScriptException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     public boolean deactivate() {
         return true;
     }
