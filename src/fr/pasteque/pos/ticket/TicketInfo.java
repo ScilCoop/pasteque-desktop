@@ -33,6 +33,9 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.LocalRes;
 import fr.pasteque.pos.customers.CustomerInfoExt;
+import fr.pasteque.pos.customers.DataLogicCustomers;
+import fr.pasteque.pos.forms.AppUser;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.payment.PaymentInfoMagcard;
 import fr.pasteque.pos.util.StringUtils;
 import org.json.JSONArray;
@@ -84,6 +87,42 @@ public class TicketInfo implements SerializableRead {
         payments = new ArrayList<PaymentInfo>();
         taxes = null;
         m_sResponse = null;
+    }
+
+    public TicketInfo(JSONObject o) throws BasicException {
+        this.m_sId = o.getString("id");
+        this.m_iTicketId = o.getInt("ticketId");
+        this.m_dDate = DateUtils.readSecTimestamp(o.getLong("date"));
+        DataLogicSystem dlSystem = new DataLogicSystem();
+        AppUser user = dlSystem.getPeople(o.getString("userId"));
+        this.m_User = new UserInfo(user.getId(), user.getName());
+        if (!o.isNull("customerId")) {
+            DataLogicCustomers dlCust = new DataLogicCustomers();
+            this.m_Customer = dlCust.getCustomer(o.getString("customerId"));
+        }
+        this.tickettype = o.getInt("type");
+        if (!o.isNull("custCount")) {
+            this.customersCount = o.getInt("custCount");
+        }
+        if (!o.isNull("tariffAreaId")) {
+            this.tariffAreaId = o.getInt("tariffAreaId");
+        }
+        if (!o.isNull("discountProfileId")) {
+            this.discountProfileId = o.getInt("discountProfileId");
+        }
+        this.discountRate = o.getDouble("discountRate");
+        this.m_aLines = new ArrayList<TicketLineInfo>();
+        JSONArray jsLines = o.getJSONArray("lines");
+        for (int i = 0; i < jsLines.length(); i++) {
+            JSONObject jsLine = jsLines.getJSONObject(i);
+            this.m_aLines.add(new TicketLineInfo(jsLine));
+        }
+        this.payments = new ArrayList<PaymentInfo>();
+        JSONArray jsPayments = o.getJSONArray("payments");
+        for (int i = 0; i < jsPayments.length(); i++) {
+            JSONObject jsPay = jsPayments.getJSONObject(i);
+            this.payments.add(PaymentInfo.readJSON(jsPay));
+        }
     }
 
     public JSONObject toJSON() {

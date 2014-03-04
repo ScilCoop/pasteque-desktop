@@ -22,6 +22,7 @@
 package fr.pasteque.pos.forms;
 
 import fr.pasteque.format.DateUtils;
+import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -392,6 +393,28 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             ProductInfoExt.getSerializerRead());
     }
 
+    /** Get the list of tickets from opened cash sessions. */
+    public List<TicketInfo> getSessionTickets() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TicketsAPI", "getOpen");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<TicketInfo> list = new ArrayList<TicketInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    list.add(new TicketInfo(o));
+                }
+                return list;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
     //Tickets and Receipt list
     public SentenceList getTicketsList() {
          return new StaticSentence(s,
@@ -414,18 +437,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             new SerializerReadClass(FindTicketsInfo.class));
     }
 
-    //User list
-    public final SentenceList getUserList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME FROM PEOPLE ORDER BY NAME"
-            , null
-            , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-                return new TaxCategoryInfo(
-                        dr.getString(1), 
-                        dr.getString(2));
-            }});
-    }
-   
     // Listados para combo
     public final List<TaxInfo> getTaxList() throws BasicException {
         try {
@@ -451,6 +462,15 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             e.printStackTrace();
             throw new BasicException(e);
         }
+    }
+    public TaxInfo getTax(String taxId) throws BasicException {
+        List<TaxInfo> taxes = this.getTaxList();
+        for (TaxInfo t : taxes) {
+            if (t.getId().equals(taxId)) {
+                return t;
+            }
+        }
+        return null;
     }
 
     public final SentenceList getCategoriesList() {
@@ -575,12 +595,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     public final boolean isCashActive(String id) throws BasicException {
-
-        return new PreparedSentence(s,
-                "SELECT MONEY FROM CLOSEDCASH WHERE DATEEND IS NULL AND MONEY = ?",
-                SerializerWriteString.INSTANCE,
-                SerializerReadString.INSTANCE).find(id)
-            != null;
+        DataLogicSystem dlSystem = new DataLogicSystem();
+        CashSession session = dlSystem.getCashSessionById(id);
+        return session.isOpened();
     }
 
     public ZTicket getZTicket(String cashSessionId) throws BasicException {

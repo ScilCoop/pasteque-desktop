@@ -186,6 +186,15 @@ public class DataLogicSystem {
         }
         return visUsers;
     }
+    public final AppUser getPeople(String id) throws BasicException {
+        List<AppUser> allUsers = this.listPeople();
+        for (AppUser user : allUsers) {
+            if (user.getId() != null && user.getId().equals(id)) {
+                return user;
+            }
+        }
+        return null;
+    }
     /** Get user by card. Return null if nothing is found. */
     public final AppUser findPeopleByCard(String card) throws BasicException {
         List<AppUser> allUsers = this.listPeople();
@@ -411,6 +420,27 @@ public class DataLogicSystem {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("CashesAPI", "get",
                     "host", host);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                } else {
+                    return new CashSession(o);
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
+    public CashSession getCashSessionById(String id) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashesAPI", "get",
+                    "id", id);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
                 if (o == null) {

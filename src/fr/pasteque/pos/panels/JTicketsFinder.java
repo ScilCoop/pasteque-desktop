@@ -35,9 +35,10 @@ import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.DataLogicSales;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
-import fr.pasteque.pos.ticket.FindTicketsInfo;
 import fr.pasteque.pos.ticket.FindTicketsRenderer;
+import fr.pasteque.pos.ticket.TicketInfo;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -56,12 +57,11 @@ import javax.swing.JFrame;
 public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator {
 
     private AppView app;
-    private ListProvider lpr;
-    private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     private DataLogicSales dlSales;
     private DataLogicCustomers dlCustomers;
-    private FindTicketsInfo selectedTicket;
+    private DataLogicSystem dlSystem;
+    private TicketInfo selectedTicket;
    
     /** Creates new form JCustomerFinder */
     private JTicketsFinder(java.awt.Frame parent, boolean modal) {
@@ -88,26 +88,22 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         return myMsg;
     }
     
-    public FindTicketsInfo getSelectedCustomer() {
+    public TicketInfo getSelectedCustomer() {
         return selectedTicket;
     }
 
     private void init(AppView app) {
         this.app = app;
-        dlSales = (DataLogicSales) app.getBean("com.openbravo.pos.forms.DataLogicSales");
-        dlCustomers = (DataLogicCustomers) app.getBean("com.openbravo.pos.customers.DataLogicCustomers");
+        this.dlSales = new DataLogicSales();
+        this.dlCustomers = new DataLogicCustomers();
+        this.dlSystem = new DataLogicSystem();
 
-        this.dlSales = dlSales;
-        this.dlCustomers = dlCustomers;
-        
         initComponents();
-
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         jtxtTicketID.addEditorKeys(m_jKeys);
         jtxtMoney.addEditorKeys(m_jKeys);
         
         //jtxtTicketID.activate();
-        lpr = new ListProviderCreator(dlSales.getTicketsList(), this);
 
         jListTickets.setCellRenderer(new FindTicketsRenderer());
 
@@ -123,7 +119,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
     
     public void executeSearch() {
         try {
-            jListTickets.setModel(new MyListData(lpr.loadData()));
+            jListTickets.setModel(new MyListData(this.dlSales.getSessionTickets()));
             if (jListTickets.getModel().getSize() > 0) {
                 jListTickets.setSelectedIndex(0);
             }
@@ -139,14 +135,13 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         
         jcboMoney.setModel(ListQBFModelNumber.getMandatoryNumber());
         
-        m_sentcat = dlSales.getUserList();
         m_CategoryModel = new ComboBoxValModel(); 
         
-        List catlist=null;
+        List catlist = new ArrayList();
         try {
-            catlist = m_sentcat.list();
+            catlist = this.dlSystem.listPeople();
         } catch (BasicException ex) {
-            ex.getMessage();
+            ex.printStackTrace();
         }
         catlist.add(0, null);
         m_CategoryModel = new ComboBoxValModel(catlist);
@@ -542,7 +537,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         setBounds((screenSize.width-695)/2, (screenSize.height-684)/2, 695, 684);
     }// </editor-fold>//GEN-END:initComponents
     private void jcmdOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcmdOKActionPerformed
-        selectedTicket = (FindTicketsInfo) jListTickets.getSelectedValue();
+        selectedTicket = (TicketInfo) jListTickets.getSelectedValue();
         dispose();
     }//GEN-LAST:event_jcmdOKActionPerformed
 
@@ -562,7 +557,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
     private void jListTicketsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListTicketsMouseClicked
         
         if (evt.getClickCount() == 2) {
-            selectedTicket = (FindTicketsInfo) jListTickets.getSelectedValue();
+            selectedTicket = (TicketInfo) jListTickets.getSelectedValue();
             dispose();
         }
         

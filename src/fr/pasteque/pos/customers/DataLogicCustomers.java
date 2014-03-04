@@ -129,6 +129,16 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return data;
     }
 
+    public CustomerInfoExt getCustomer(String id) throws BasicException {
+        List<CustomerInfoExt> data = this.getCustomerList();
+        for (CustomerInfoExt c : data) {
+            if (c.getId().equals(id)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     /** Search customers, use null as argument to disable filter */
     public List<CustomerInfoExt> searchCustomers(String number,
             String searchkey, String name) throws BasicException {

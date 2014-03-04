@@ -30,6 +30,7 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.forms.AppLocal;
+import fr.pasteque.pos.forms.DataLogicSales;
 import java.util.Properties;
 import org.json.JSONObject;
 
@@ -119,6 +120,29 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         o.put("taxId", this.tax.getId());
         o.put("discountRate", 0.0); // TODO: add discount rate
         return o;
+    }
+
+    public TicketLineInfo(JSONObject o) throws BasicException {
+        this.m_iLine = o.getInt("dispOrder");
+        String prdId = o.getString("productId");
+        DataLogicSales dlSales = new DataLogicSales();
+        ProductInfoExt product = dlSales.getProductInfo(prdId);
+        this.attributes = new Properties();
+        attributes.setProperty("product.name", product.getName());
+        attributes.setProperty("product.com",
+                product.isCom() ? "true" : "false");
+        attributes.setProperty("product.scale",
+                product.isScale() ? "true" : "false");
+        // TODO: attributes
+        attributes.setProperty("product.taxcategoryid",
+                product.getTaxCategoryID());
+        if (product.getCategoryID() != null) {
+            attributes.setProperty("product.categoryid",
+                    product.getCategoryID());
+        }
+        this.multiply = o.getDouble("quantity");
+        this.price = o.getDouble("price");
+        this.tax = dlSales.getTax(o.getString("taxId"));
     }
 
     public void writeValues(DataWrite dp) throws BasicException {

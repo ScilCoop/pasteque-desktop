@@ -19,14 +19,18 @@
 
 package fr.pasteque.pos.payment;
 
+import fr.pasteque.basic.BasicException;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import fr.pasteque.pos.forms.DataLogicSales;
 import org.json.JSONObject;
 
+/** Generic PaymentInfo as stored in database.
+ * Use subclasses when creating a new PaymentInfo.
+ */
 public abstract class PaymentInfo {
 
     protected CurrencyInfo currency;
-    // TODO: add id
     
     public abstract String getName();
     /** Get total of paiement in payment currency. */
@@ -46,8 +50,19 @@ public abstract class PaymentInfo {
         return o;
     }
 
+    public static PaymentInfo readJSON(JSONObject o) throws BasicException {
+        String type = o.getString("type");
+        double amount = o.getDouble("amount");
+        int currencyId = o.getInt("currencyId");
+        double currencyAmount = o.getDouble("currencyAmount");
+        DataLogicSales dlSales = new DataLogicSales();
+        return new PaymentInfoGeneric(type, currencyAmount,
+                dlSales.getCurrency(currencyId));
+    }
+
     public String printTotal() {
         Formats.setAltCurrency(this.currency);
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
     }
+
 }

@@ -20,8 +20,10 @@
 package fr.pasteque.pos.ticket;
 
 import fr.pasteque.data.loader.ImageLoader;
+import fr.pasteque.format.Formats;
 
 import java.awt.Component;
+import java.util.Date;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -47,9 +49,25 @@ public class FindTicketsRenderer extends DefaultListCellRenderer {
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         super.getListCellRendererComponent(list, null, index, isSelected, cellHasFocus);
+        TicketInfo tkt = (TicketInfo) value;
+        int ticketType = tkt.getTicketType();
+        String sCustomer;
+        if (tkt.getCustomer() == null) {
+            sCustomer = "";
+        } else {
+            sCustomer = tkt.getCustomer().getName();
+        }
+        int ticketId = tkt.getTicketId();
+        Date date = tkt.getDate();
+        double total = tkt.getTotal();
+        String name = tkt.getUser().getName();
+        String sHtml = "<tr><td width=\"30\">"+ "["+ ticketId +"]" +"</td>" +
+                "<td width=\"100\">"+ Formats.TIMESTAMP.formatValue(date) +"</td>" +
+                "<td align=\"center\" width=\"100\">"+ sCustomer +"</td>" +
+                "<td align=\"right\" width=\"100\">"+ Formats.CURRENCY.formatValue(total) +"</td>"+
+                "<td width=\"100\">"+ Formats.STRING.formatValue(name) +"</td></tr>";
 
-        int ticketType = ((FindTicketsInfo)value).getTicketType();
-        setText("<html><table>" + value.toString() +"</table></html>");
+        setText("<html><table>" + sHtml +"</table></html>");
         if (ticketType == RECEIPT_NORMAL) {
             setIcon(icoTicketNormal);
         } else {

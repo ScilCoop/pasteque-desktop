@@ -157,16 +157,7 @@ public class JTicketsBagTicket extends JTicketsBag {
             TicketInfo ticket = (iTicketid==-1) 
                 ? m_dlSales.loadTicket(iTickettype,  m_jTicketEditor.getValueInteger())
                 : m_dlSales.loadTicket(iTickettype, iTicketid) ;
-
-            if (ticket == null) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notexiststicket"));
-                msg.show(this);
-            } else {
-                m_ticket = ticket;
-                m_ticketCopy = null; // se asigna al pulsar el boton de editar o devolver
-                printTicket();
-            }
-            
+            this.readTicket(ticket);
         } catch (BasicException e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotloadticket"), e);
             msg.show(this);
@@ -175,14 +166,22 @@ public class JTicketsBagTicket extends JTicketsBag {
         m_jTicketEditor.reset();
         m_jTicketEditor.activate();
     }
-    
+    private void readTicket(TicketInfo ticket) {
+        if (ticket == null) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                    AppLocal.getIntString("message.notexiststicket"));
+            msg.show(this);
+        } else {
+            m_ticket = ticket;
+            m_ticketCopy = null; // se asigna al pulsar el boton de editar o devolver
+            printTicket();
+        }
+    }
+
     private void printTicket() {
-        
         // imprimo m_ticket
-        
         try {
-            m_jEdit.setEnabled(
-                    m_ticket != null
+            m_jEdit.setEnabled(m_ticket != null
                     && (m_ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL || m_ticket.getTicketType() == TicketInfo.RECEIPT_REFUND)
                     && m_dlSales.isCashActive(m_ticket.getActiveCash()));
         } catch (BasicException e) {
@@ -401,13 +400,12 @@ public class JTicketsBagTicket extends JTicketsBag {
         JTicketsFinder finder = JTicketsFinder.getReceiptFinder(this,
                 this.m_App);
         finder.setVisible(true);
-        FindTicketsInfo selectedTicket = finder.getSelectedCustomer();
+        TicketInfo selectedTicket = finder.getSelectedCustomer();
         if (selectedTicket == null) {
             m_jTicketEditor.reset();
             m_jTicketEditor.activate();
         } else {
-            readTicket(selectedTicket.getTicketId(),
-                    selectedTicket.getTicketType());
+            readTicket(selectedTicket);
         }
     }
 
