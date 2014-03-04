@@ -37,7 +37,6 @@ import fr.pasteque.pos.scripting.ScriptException;
 import fr.pasteque.pos.scripting.ScriptFactory;
 import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.panels.JTicketsFinder;
-import fr.pasteque.pos.ticket.FindTicketsInfo;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagTicket extends JTicketsBag {

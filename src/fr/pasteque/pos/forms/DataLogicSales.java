@@ -51,7 +51,6 @@ import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.mant.FloorsInfo;
 import fr.pasteque.pos.payment.PaymentInfo;
 import fr.pasteque.pos.payment.PaymentInfoTicket;
-import fr.pasteque.pos.ticket.FindTicketsInfo;
 import fr.pasteque.pos.ticket.SubgroupInfo;
 import fr.pasteque.pos.ticket.TariffInfo;
 import fr.pasteque.pos.ticket.TicketTaxInfo;
@@ -417,7 +416,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     //Tickets and Receipt list
     public SentenceList getTicketsList() {
-         return new StaticSentence(s,
+        /*return new StaticSentence(s,
             new QBFBuilder(
                 "SELECT T.TICKETID, T.TICKETTYPE, R.DATENEW, P.NAME, C.NAME, "
                 + "SUM(PM.TOTAL) "
@@ -434,7 +433,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 Datas.OBJECT, Datas.INT, Datas.OBJECT, Datas.DOUBLE,
                 Datas.OBJECT, Datas.TIMESTAMP, Datas.OBJECT, Datas.TIMESTAMP,
                 Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-            new SerializerReadClass(FindTicketsInfo.class));
+                new SerializerReadClass(FindTicketsInfo.class));*/
+        return null;
     }
 
     // Listados para combo
