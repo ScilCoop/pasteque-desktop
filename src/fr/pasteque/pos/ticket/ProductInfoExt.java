@@ -48,6 +48,7 @@ public class ProductInfoExt implements Serializable {
     protected boolean m_bCom;
     protected boolean m_bScale;
     protected String categoryid;
+    protected int dispOrder;
     protected String taxcategoryid;
     protected String attributesetid;
     protected double m_dPriceBuy;
@@ -93,6 +94,9 @@ public class ProductInfoExt implements Serializable {
         this.attributes = new Properties();
         this.discountEnabled = o.getBoolean("discountEnabled");
         this.discountRate = o.getDouble("discountRate");
+        if (!o.isNull("dispOrder")) {
+            this.dispOrder = o.getInt("dispOrder");
+        }
     }
 
     public final String getID() {
@@ -141,6 +145,10 @@ public class ProductInfoExt implements Serializable {
 
     public final void setScale(boolean bValue) {
         m_bScale = bValue;
+    }
+
+    public final int getDispOrder() {
+        return this.dispOrder;
     }
 
     public final String getCategoryID() {

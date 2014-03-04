@@ -81,7 +81,7 @@ public class LocalDB {
             stmt.execute("CREATE TABLE products ("
                     + "id VARCHAR(255), ref VARCHAR(255), label VARCHAR(255), "
                     + "barcode VARCHAR(255), categoryId VARCHAR(255), "
-                    + "data BINARY(5000000), "
+                    + "dispOrder INTEGER(255), data BINARY(5000000), "
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE categories ("
                     + "id VARCHAR(255), parentId VARCHAR(255), "

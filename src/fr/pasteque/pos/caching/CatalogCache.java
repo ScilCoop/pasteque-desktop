@@ -56,7 +56,7 @@ public class CatalogCache {
         subCategories = LocalDB.prepare("SELECT data FROM categories "
                 + "WHERE parentId = ? ORDER BY dispOrder");
         productsByCat = LocalDB.prepare("SELECT data FROM products "
-                + "WHERE categoryId = ?");
+                + "WHERE categoryId = ? ORDER BY dispOrder");
         productsSearch = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE ref LIKE ? AND label LIKE ?");
         productByBarcode = LocalDB.prepare("SELECT data FROM products "
@@ -140,18 +140,19 @@ public class CatalogCache {
         try {
             LocalDB.execute("TRUNCATE TABLE products");
             PreparedStatement stmt = LocalDB.prepare("INSERT INTO products "
-                    + "(id, ref, label, barcode, categoryId, data) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)");
+                    + "(id, ref, label, barcode, categoryId, dispOrder, data) "
+                    + "VALUES (?, ?, ?, ?, ?, ?, ?)");
             for (ProductInfoExt prd : products) {
                 stmt.setString(1, prd.getID());
                 stmt.setString(2, prd.getReference());
                 stmt.setString(3, prd.getName());
                 stmt.setString(4, prd.getCode());
                 stmt.setString(5, prd.getCategoryID());
+                stmt.setInt(6, prd.getDispOrder());
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
                 ObjectOutputStream os = new ObjectOutputStream(bos);
                 os.writeObject(prd);
-                stmt.setBytes(6, bos.toByteArray());
+                stmt.setBytes(7, bos.toByteArray());
                 os.close();
                 stmt.execute();
             }
