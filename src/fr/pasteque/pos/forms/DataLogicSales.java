@@ -42,8 +42,10 @@ import fr.pasteque.data.model.Field;
 import fr.pasteque.data.model.Row;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.caching.CatalogCache;
+import fr.pasteque.pos.caching.TaxesCache;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
+import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.inventory.TaxCustCategoryInfo;
 import fr.pasteque.pos.inventory.LocationInfo;
 import fr.pasteque.pos.inventory.MovementReason;
@@ -422,16 +424,19 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    // Listados para combo
-    public final List<TaxInfo> getTaxList() throws BasicException {
+    public boolean preloadTaxes() {
         try {
+            logger.log(Level.INFO, "Preloading taxes");
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("TaxesAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONArray a = r.getArrayContent();
+                List<TaxCategoryInfo> taxCats = new ArrayList<TaxCategoryInfo>();
                 List<TaxInfo> taxes = new ArrayList<TaxInfo>();
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
+                    TaxCategoryInfo taxCat = new TaxCategoryInfo(o);
+                    taxCats.add(taxCat);
                     JSONArray a2 = o.getJSONArray("taxes");
                     for (int j = 0; j < a2.length(); j++) {
                         JSONObject o2 = a2.getJSONObject(j);
@@ -439,23 +444,23 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                         taxes.add(tax);
                     }
                 }
-                return taxes;
+                TaxesCache.refreshTaxCategories(taxCats);
+                TaxesCache.refreshTaxes(taxes);
+                return true;
             } else {
-                return null;
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
+            return false;
         }
     }
+
+    public final List<TaxInfo> getTaxList() throws BasicException {
+        return TaxesCache.getTaxes();
+    }
     public TaxInfo getTax(String taxId) throws BasicException {
-        List<TaxInfo> taxes = this.getTaxList();
-        for (TaxInfo t : taxes) {
-            if (t.getId().equals(taxId)) {
-                return t;
-            }
-        }
-        return null;
+        return TaxesCache.getTax(taxId);
     }
 
     public final SentenceList getCategoriesList() {
@@ -468,25 +473,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final List<TaxCategoryInfo> getTaxCategoriesList()
         throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("TaxesAPI", "getAll");
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONArray a = r.getArrayContent();
-                List<TaxCategoryInfo> taxCats = new ArrayList<TaxCategoryInfo>();
-                for (int i = 0; i < a.length(); i++) {
-                    JSONObject o = a.getJSONObject(i);
-                    TaxCategoryInfo taxCat = new TaxCategoryInfo(o);
-                    taxCats.add(taxCat);
-                }
-                return taxCats;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return TaxesCache.getTaxCats();
     }
 
     public final SentenceList getAttributeSetList() {

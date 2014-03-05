@@ -87,6 +87,13 @@ public class LocalDB {
                     + "id VARCHAR(255), parentId VARCHAR(255), "
                     + "dispOrder INTEGER(255), data BINARY(5000000), "
                     + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE taxCats ("
+                    + "id VARCHAR(255), data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE taxes ("
+                    + "id VARCHAR(255), taxCatId VARCHAR(255), "
+                    + "data BINARY(500000) ,"
+                    + "PRIMARY KEY (id))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }

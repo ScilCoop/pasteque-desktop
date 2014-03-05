@@ -203,6 +203,7 @@ public class JRootApp extends JPanel implements AppView {
             LocalDB.init();
             m_dlSales.preloadCategories();
             m_dlSales.preloadProducts();
+            m_dlSales.preloadTaxes();
         } catch (SQLException e) {
             e.printStackTrace();
         }
