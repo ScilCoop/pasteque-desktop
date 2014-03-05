@@ -33,6 +33,7 @@ import fr.pasteque.format.Formats;
 import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.forms.AppLocal;
+import fr.pasteque.pos.forms.AppUser;
 import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.forms.DataLogicSystem;
@@ -155,7 +156,11 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
             }
             Date start = (Date) Formats.TIMESTAMP.parseValue(jTxtStartDate.getText());
             Date stop = (Date) Formats.TIMESTAMP.parseValue(jTxtEndDate.getText());
+            AppUser user = (AppUser) jcboUser.getSelectedItem();
             String userId = null;
+            if (user != null) {
+                userId = user.getId();
+            }
             String customerId = null;
             List<TicketInfo> tkts = this.dlSales.searchTickets(tktId, tktType,
                     null, start, stop, customerId, userId);
