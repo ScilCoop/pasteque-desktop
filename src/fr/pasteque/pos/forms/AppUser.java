@@ -248,4 +248,8 @@ public class AppUser implements Serializable {
         public void characters(char[] ch, int start, int length) throws SAXException {}
     }
 
+    @Override
+    public String toString() {
+        return this.m_sName;
+    }
 }
