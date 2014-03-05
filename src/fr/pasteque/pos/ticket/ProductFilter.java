@@ -38,7 +38,6 @@ import fr.pasteque.pos.reports.ReportEditorCreator;
 
 public class ProductFilter extends javax.swing.JPanel implements ReportEditorCreator {
     
-    private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
 
     /** Creates new form JQBFProduct */
@@ -52,7 +51,6 @@ public class ProductFilter extends javax.swing.JPanel implements ReportEditorCre
         DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
        
         // El modelo de categorias
-        m_sentcat = dlSales.getCategoriesList();
         m_CategoryModel = new ComboBoxValModel();          
          
         m_jCboName.setModel(ListQBFModelNumber.getMandatoryString());
@@ -61,8 +59,8 @@ public class ProductFilter extends javax.swing.JPanel implements ReportEditorCre
     }
     
     public void activate() throws BasicException {
-
-        List catlist = m_sentcat.list();
+        DataLogicSales dlSales = new DataLogicSales();
+        List catlist = dlSales.getCategories();
         catlist.add(0, null);
         m_CategoryModel = new ComboBoxValModel(catlist);
         m_jCategory.setModel(m_CategoryModel);

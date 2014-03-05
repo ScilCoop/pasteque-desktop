@@ -43,7 +43,6 @@ import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class ProductFilterSales extends javax.swing.JPanel implements EditorCreator {
     
-    private SentenceList m_sentcat;
     private ComboBoxValModel m_CategoryModel;
     
     /** Creates new form ProductFilterSales */
@@ -51,7 +50,6 @@ public class ProductFilterSales extends javax.swing.JPanel implements EditorCrea
         initComponents();
         
         // El modelo de categorias
-        m_sentcat = dlSales.getCategoriesList();
         m_CategoryModel = new ComboBoxValModel();           
         
         m_jCboPriceBuy.setModel(ListQBFModelNumber.getMandatoryNumber());
@@ -75,7 +73,8 @@ public class ProductFilterSales extends javax.swing.JPanel implements EditorCrea
         m_jtxtName.activate();
         
         try {
-            List catlist = m_sentcat.list();
+            DataLogicSales dlSales = new DataLogicSales();
+            List catlist = dlSales.getCategories();
             catlist.add(0, null);
             m_CategoryModel = new ComboBoxValModel(catlist);
             m_jCategory.setModel(m_CategoryModel);

@@ -235,6 +235,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return CatalogCache.getSubcategories(category);
     }
 
+    public final List<CategoryInfo> getCategories() throws BasicException {
+        return CatalogCache.getCategories();
+    }
+
+
     //Subgrupos de una composición
     public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
         return new PreparedSentence(s
@@ -461,14 +466,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
     public TaxInfo getTax(String taxId) throws BasicException {
         return TaxesCache.getTax(taxId);
-    }
-
-    public final SentenceList getCategoriesList() {
-        return new StaticSentence(s
-            , "SELECT ID, NAME, IMAGE FROM CATEGORIES "
-            + "WHERE ID != '0' ORDER BY NAME"
-            , null
-            , CategoryInfo.getSerializerRead());
     }
 
     public final List<TaxCategoryInfo> getTaxCategoriesList()
