@@ -93,6 +93,7 @@ public class TicketInfo implements SerializableRead {
         this.m_sId = o.getString("id");
         this.m_iTicketId = o.getInt("ticketId");
         this.m_dDate = DateUtils.readSecTimestamp(o.getLong("date"));
+        this.m_sActiveCash = o.getString("cashId");
         DataLogicSystem dlSystem = new DataLogicSystem();
         AppUser user = dlSystem.getPeople(o.getString("userId"));
         this.m_User = new UserInfo(user.getId(), user.getName());
