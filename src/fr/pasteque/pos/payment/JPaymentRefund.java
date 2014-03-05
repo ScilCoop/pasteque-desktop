@@ -30,6 +30,7 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
     private double m_dTotal;
     
     private String m_sName;
+    private CurrencyInfo currency;
     
     /** Creates new form JPaymentChequeRefund */
     public JPaymentRefund(JPaymentNotifier notifier, String sName) {
@@ -43,12 +44,12 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
         m_dTotal = dTotal;
-        
+        this.currency = currency;
         m_notifier.setStatus(true, true);
     }
     
     public PaymentInfo executePayment() {
-        return new PaymentInfoTicket(m_dTotal, null, m_sName);
+        return new PaymentInfoTicket(m_dTotal, this.currency, m_sName);
     }
     public Component getComponent() {
         return this;

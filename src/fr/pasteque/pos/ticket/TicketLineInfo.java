@@ -124,9 +124,9 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public TicketLineInfo(JSONObject o) throws BasicException {
         this.m_iLine = o.getInt("dispOrder");
-        String prdId = o.getString("productId");
+        this.productid = o.getString("productId");
         DataLogicSales dlSales = new DataLogicSales();
-        ProductInfoExt product = dlSales.getProductInfo(prdId);
+        ProductInfoExt product = dlSales.getProductInfo(this.productid);
         this.attributes = new Properties();
         attributes.setProperty("product.name", product.getName());
         attributes.setProperty("product.com",
