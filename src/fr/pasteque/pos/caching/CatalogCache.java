@@ -47,6 +47,7 @@ public class CatalogCache {
 
     private static PreparedStatement category;
     private static PreparedStatement subCategories;
+    private static PreparedStatement product;
     private static PreparedStatement productsByCat;
     private static PreparedStatement productsSearch;
     private static PreparedStatement productByBarcode;
@@ -58,6 +59,8 @@ public class CatalogCache {
                 + "WHERE id = ?");
         subCategories = LocalDB.prepare("SELECT data FROM categories "
                 + "WHERE parentId = ? ORDER BY dispOrder");
+        product = LocalDB.prepare("SELECT data FROM products "
+                + "WHERE id = ?");
         productsByCat = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE categoryId = ? ORDER BY dispOrder");
         productsSearch = LocalDB.prepare("SELECT data FROM products "
@@ -206,6 +209,26 @@ public class CatalogCache {
             subCategories.setString(1, catId);
             ResultSet rs = subCategories.executeQuery();
             return readCategoryResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static ProductInfoExt getProduct(String prdId)
+        throws BasicException {
+        try {
+            if (product == null) {
+                init();
+            }
+            product.clearParameters();
+            product.setString(1, prdId);
+            ResultSet rs = product.executeQuery();
+            List<ProductInfoExt> prds = readProductResult(rs);
+            if (prds.size() > 0) {
+                return prds.get(0);
+            } else {
+                return null;
+            }
         } catch (SQLException e) {
             throw new BasicException(e);
         }

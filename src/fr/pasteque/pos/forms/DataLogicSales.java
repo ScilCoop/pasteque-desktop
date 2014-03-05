@@ -175,22 +175,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     /** Get a product by ID */
-    public final ProductInfoExt getProductInfo(String id) throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("ProductsAPI", "get",
-                    "id", id);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                ProductInfoExt prd = new ProductInfoExt(o);
-                return prd;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+    public final ProductInfoExt getProductInfo(String id)
+        throws BasicException {
+        return CatalogCache.getProduct(id);
     }
 
     /** Get a product by code */
