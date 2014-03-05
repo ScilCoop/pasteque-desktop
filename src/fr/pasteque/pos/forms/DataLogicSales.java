@@ -42,6 +42,7 @@ import fr.pasteque.data.model.Field;
 import fr.pasteque.data.model.Row;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.caching.CatalogCache;
+import fr.pasteque.pos.caching.CurrenciesCache;
 import fr.pasteque.pos.caching.TaxesCache;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
@@ -482,8 +483,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             }});
     }
 
-    public final List<CurrencyInfo> getCurrenciesList() throws BasicException {
+
+    public boolean preloadCurrencies() {
         try {
+            logger.log(Level.INFO, "Preloading currencies");
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("CurrenciesAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
@@ -494,49 +497,27 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     CurrencyInfo currency = new CurrencyInfo(o);
                     currencies.add(currency);
                 }
-                return currencies;
+                CurrenciesCache.refreshCurrencies(currencies);
+                return true;
             } else {
-                return null;
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
+            return false;
         }
+    }
+
+    public final List<CurrencyInfo> getCurrenciesList() throws BasicException {
+        return CurrenciesCache.getCurrencies();
     }
 
     public CurrencyInfo getCurrency(int currencyId) throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CurrenciesAPI", "get",
-                    "id", String.valueOf(currencyId));
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                CurrencyInfo currency = new CurrencyInfo(o);
-                return currency;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CurrenciesCache.getCurrency(currencyId);
     }
 
     public CurrencyInfo getMainCurrency() throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CurrenciesAPI", "getMain");
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                CurrencyInfo currency = new CurrencyInfo(o);
-                return currency;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CurrenciesCache.getMainCurrency();
     }
 
     public CustomerInfoExt findCustomerExt(String card) throws BasicException {

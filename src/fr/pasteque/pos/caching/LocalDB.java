@@ -92,7 +92,10 @@ public class LocalDB {
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE taxes ("
                     + "id VARCHAR(255), taxCatId VARCHAR(255), "
-                    + "data BINARY(500000) ,"
+                    + "data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE currencies ("
+                    + "id INTEGER(255), main BOOLEAN, data BINARY(500000), "
                     + "PRIMARY KEY (id))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }

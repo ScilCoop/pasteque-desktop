@@ -24,9 +24,10 @@ import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.SerializerRead;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
-public class CurrencyInfo implements IKeyed {
+public class CurrencyInfo implements IKeyed, Serializable {
     
     private static final long serialVersionUID = 4680364653429L;
     private Integer id;

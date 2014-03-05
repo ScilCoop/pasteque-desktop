@@ -181,14 +181,7 @@ public class JRootApp extends JPanel implements AppView {
             sWareHouse = null; // no he encontrado el almacen principal
         }
 
-        // Initialize currency format
-        DataLogicSales m_dlSales = (DataLogicSales) getBean("fr.pasteque.pos.forms.DataLogicSales");
-        try {
-            fr.pasteque.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
-        } catch (BasicException e) {
-            e.printStackTrace();
-        }
-
+        DataLogicSales m_dlSales = new DataLogicSales();
         // Preload caches
         m_dlSystem.preloadUsers();
         m_dlSystem.preloadRoles();
@@ -204,7 +197,15 @@ public class JRootApp extends JPanel implements AppView {
             m_dlSales.preloadCategories();
             m_dlSales.preloadProducts();
             m_dlSales.preloadTaxes();
+            m_dlSales.preloadCurrencies();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Initialize currency format
+        try {
+            fr.pasteque.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
+        } catch (BasicException e) {
             e.printStackTrace();
         }
 
