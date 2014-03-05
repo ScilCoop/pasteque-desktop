@@ -30,6 +30,7 @@ import fr.pasteque.data.user.EditorCreator;
 import fr.pasteque.data.user.ListProvider;
 import fr.pasteque.data.user.ListProviderCreator;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.forms.AppLocal;
@@ -63,6 +64,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
     private DataLogicCustomers dlCustomers;
     private DataLogicSystem dlSystem;
     private TicketInfo selectedTicket;
+    private CustomerInfoExt selectedCustomer;
    
     /** Creates new form JCustomerFinder */
     private JTicketsFinder(java.awt.Frame parent, boolean modal) {
@@ -162,6 +164,9 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
                 userId = user.getId();
             }
             String customerId = null;
+            if (this.selectedCustomer != null) {
+                customerId = this.selectedCustomer.getId();
+            }
             List<TicketInfo> tkts = this.dlSales.searchTickets(tktId, tktType,
                     null, start, stop, customerId, userId);
             jListTickets.setModel(new MyListData(tkts));
@@ -639,21 +644,17 @@ Date date;
         }
 }//GEN-LAST:event_btnDateEndActionPerformed
 
-private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
+    private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
         finder.search(null);
         finder.setVisible(true);
-        
-        try {
-            jtxtCustomer.setText(finder.getSelectedCustomer() == null
-                    ? null
-                    : dlSales.loadCustomerExt(finder.getSelectedCustomer().getId()).toString());
-        } catch (BasicException e) {
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
-            msg.show(this);            
+        this.selectedCustomer = finder.getSelectedCustomer();
+        if (this.selectedCustomer == null) {
+            jtxtCustomer.setText(null);
+        } else {
+            jtxtCustomer.setText(this.selectedCustomer.getName());
         }
-
-}//GEN-LAST:event_btnCustomerActionPerformed
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCustomer;
