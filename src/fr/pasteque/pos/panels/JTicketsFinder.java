@@ -114,10 +114,10 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         defaultValues();
 
         selectedTicket = null;
-        this.executeSearch();
+        this.searchOpenedTickets();
     }
-    
-    public void executeSearch() {
+
+    private void searchOpenedTickets() {
         try {
             jListTickets.setModel(new MyListData(this.dlSales.getSessionTickets()));
             if (jListTickets.getModel().getSize() > 0) {
@@ -126,6 +126,47 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         } catch (BasicException e) {
             e.printStackTrace();
         }
+    }
+
+    public void executeSearch() {
+        try {
+            String strTktId = jtxtTicketID.getText();
+            Integer tktId = null;
+            if (strTktId.equals("")) {
+                tktId = null;
+            } else {
+                try {
+                    tktId = Integer.parseInt(strTktId);
+                } catch (NumberFormatException e) {
+                    // Stay null
+                }
+            }
+            Integer tktType = null;
+            switch (jComboBoxTicket.getSelectedIndex()) {
+            case 0:
+                tktType = TicketInfo.RECEIPT_NORMAL;
+                break;
+            case 1:
+                tktType = TicketInfo.RECEIPT_REFUND;
+                break;
+            case 2:
+                tktType = null; // all
+                break;
+            }
+            Date start = (Date) Formats.TIMESTAMP.parseValue(jTxtStartDate.getText());
+            Date stop = (Date) Formats.TIMESTAMP.parseValue(jTxtEndDate.getText());
+            String userId = null;
+            String customerId = null;
+            List<TicketInfo> tkts = this.dlSales.searchTickets(tktId, tktType,
+                    null, start, stop, customerId, userId);
+            jListTickets.setModel(new MyListData(tkts));
+            if (jListTickets.getModel().getSize() > 0) {
+                jListTickets.setSelectedIndex(0);
+            }
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void initCombos() {

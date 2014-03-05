@@ -415,26 +415,36 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     //Tickets and Receipt list
-    public SentenceList getTicketsList() {
-        /*return new StaticSentence(s,
-            new QBFBuilder(
-                "SELECT T.TICKETID, T.TICKETTYPE, R.DATENEW, P.NAME, C.NAME, "
-                + "SUM(PM.TOTAL) "
-                + "FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID "
-                + "LEFT OUTER JOIN PAYMENTS PM ON R.ID = PM.RECEIPT "
-                + "LEFT OUTER JOIN CUSTOMERS C ON C.ID = T.CUSTOMER "
-                + "LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID "
-                + "WHERE ?(QBF_FILTER) "
-                + "GROUP BY T.ID, T.TICKETID, T.TICKETTYPE, R.DATENEW, "
-                + "P.NAME, C.NAME ORDER BY R.DATENEW DESC, T.TICKETID",
-                new String[] {"T.TICKETID", "T.TICKETTYPE", "PM.TOTAL",
-                    "R.DATENEW", "R.DATENEW", "P.NAME", "C.NAME"}),
-            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.INT,
-                Datas.OBJECT, Datas.INT, Datas.OBJECT, Datas.DOUBLE,
-                Datas.OBJECT, Datas.TIMESTAMP, Datas.OBJECT, Datas.TIMESTAMP,
-                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-                new SerializerReadClass(FindTicketsInfo.class));*/
-        return null;
+    public List<TicketInfo> searchTickets(Integer ticketId, Integer ticketType,
+            String cashId, Date start, Date stop, String customerId,
+            String userId) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TicketsAPI", "search",
+                    "ticketId", ticketId != null ? ticketId.toString() : null,
+                    "ticketType",
+                    ticketType != null ? ticketType.toString() : null,
+                    "cashId", cashId,
+                    "dateStart",
+                    start != null ? String.valueOf(DateUtils.toSecTimestamp(start)) : null,
+                    "dateStop",
+                    stop != null ? String.valueOf(DateUtils.toSecTimestamp(stop)) : null,
+                    "customerId", customerId, "userId", userId);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<TicketInfo> list = new ArrayList<TicketInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    list.add(new TicketInfo(o));
+                }
+                return list;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
 
     // Listados para combo

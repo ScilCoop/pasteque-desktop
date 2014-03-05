@@ -100,9 +100,11 @@ public class ServerLoader {
         ret.put("action", action);
         ret.put("p", api);
         for (int i = 0; i < params.length; i+= 2) {
-            String key = params[i];
-            String value = params[i + 1];
-            ret.put(key, value);
+            if (params[i + 1] != null) {
+                String key = params[i];
+                String value = params[i + 1];
+                ret.put(key, value);
+            }
         }
         return ret;
     }
