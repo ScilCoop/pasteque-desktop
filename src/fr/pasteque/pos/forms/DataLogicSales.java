@@ -571,27 +571,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    private boolean isRefill(String productId) throws BasicException {
-        return new PreparedSentence(s,
-                "SELECT ID FROM PRODUCTS WHERE ID= ? AND CATEGORY = ?",
-                new SerializerWriteBasic(Datas.STRING, Datas.STRING),
-                SerializerReadString.INSTANCE).find(productId, "-1")
-                != null;
-    }
-    private void addPrepaid(final String customerId, final double amount)
-        throws BasicException {
-        PreparedSentence ps = new PreparedSentence(s,
-                "UPDATE CUSTOMERS SET PREPAID = (PREPAID + ?) "
-                + "WHERE ID = ?",
-                SerializerWriteParams.INSTANCE);
-        ps.exec(new DataParams() {
-                public void writeValues() throws BasicException {
-                    setDouble(1, amount);
-                    setString(2, customerId);
-                }
-            });
-    }
-
     public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
         TicketInfo ticket = (TicketInfo) new PreparedSentence(s,
                 "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, "
@@ -653,7 +632,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     public final void deleteTicket(final TicketInfo ticket, final String location) throws BasicException {
 
-        Transaction t = new Transaction(s) {
+        /*Transaction t = new Transaction(s) {
             public Object transact() throws BasicException {
 
                 // update the inventory
@@ -711,7 +690,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 return null;
             }
         };
-        t.execute();
+        t.execute();*/
     }
 
     public final Integer getNextTicketIndex() throws BasicException {
@@ -726,21 +705,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_PAYMENT").find();
     }
 
-    public final SentenceList getCompositionQBF() {
-        return new StaticSentence(s
-            , new QBFBuilder("SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, "
-            + "P.ISCOM, P.ISSCALE, P.PRICEBUY, P.PRICESELL, P.CATEGORY, P.TAXCAT, "
-            + "P.IMAGE, "
-            + "CASE WHEN C.PRODUCT IS NULL THEN " + s.DB.FALSE()
-            + " ELSE " + s.DB.TRUE() + " END, "
-            + "C.CATORDER, P.ATTRIBUTES "
-            + "FROM PRODUCTS P LEFT OUTER JOIN PRODUCTS_CAT C ON P.ID = C.PRODUCT "
-            + "WHERE P.CATEGORY LIKE '0' AND ?(QBF_FILTER) "
-            + "ORDER BY P.NAME",
-            new String[] {"P.NAME", "P.PRICESELL", "P.CODE"})
-            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.STRING})
-            , new SerializerReadBasic(compositionDatas));
-    }
 
     public final List<TariffInfo> getTariffAreaList() throws BasicException {
         try {
@@ -764,96 +728,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    public final SentenceExec getDebtUpdate() {
-
-        return new PreparedSentence(s
-                , "UPDATE CUSTOMERS SET CURDEBT = ?, CURDATE = ? WHERE ID = ?"
-                , SerializerWriteParams.INSTANCE);
-    }
-
-    public final SentenceExec getStockDiaryInsert() {
-        return new SentenceExecTransaction(s) {
-            public int execInTransaction(Object params) throws BasicException {
-                int updateresult = 0;
-                if (((Object[]) params)[2].equals(new Integer(0))) {
-                    // Reset stock before insert
-                    updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
-                    ? new PreparedSentence(s,
-                        "UPDATE STOCKCURRENT SET UNITS = (0) "
-                        + "WHERE LOCATION = ? AND PRODUCT = ? "
-                        + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {3, 4})).exec(params)
-                    : new PreparedSentence(s,
-                        "UPDATE STOCKCURRENT SET UNITS = (0) "
-                        + "WHERE LOCATION = ? AND PRODUCT = ? "
-                        + "AND ATTRIBUTESETINSTANCE_ID = ?",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {3, 4, 5})).exec(params);
-                }
-                updateresult = ((Object[]) params)[5] == null // si ATTRIBUTESETINSTANCE_ID is null
-                    ? new PreparedSentence(s,
-                        "UPDATE STOCKCURRENT SET UNITS = (UNITS + ?) "
-                        + "WHERE LOCATION = ? AND PRODUCT = ? "
-                        + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {6, 3, 4})).exec(params)
-                    : new PreparedSentence(s,
-                        "UPDATE STOCKCURRENT SET UNITS = (UNITS + ?) "
-                        + "WHERE LOCATION = ? AND PRODUCT = ? "
-                        + "AND ATTRIBUTESETINSTANCE_ID = ?",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {6, 3, 4, 5})).exec(params);
-                if (updateresult == 0) {
-                    new PreparedSentence(s
-                        , "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, "
-                        + "ATTRIBUTESETINSTANCE_ID, UNITS) "
-                        + "VALUES (?, ?, ?, ?)",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {3, 4, 5, 6})).exec(params);
-                }
-                return new PreparedSentence(s,
-                    "INSERT INTO STOCKDIARY (ID, DATENEW, REASON, LOCATION, "
-                    + "PRODUCT, ATTRIBUTESETINSTANCE_ID, UNITS, PRICE) "
-                    + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                    new SerializerWriteBasicExt(stockdiaryDatas,
-                        new int[] {0, 1, 2, 3, 4, 5, 6, 7})).exec(params);
-            }
-        };
-    }
-
-    public final SentenceExec getStockDiaryDelete() {
-        return new SentenceExecTransaction(s) {
-            public int execInTransaction(Object params) throws BasicException {
-                int updateresult = ((Object[]) params)[5] == null // if ATTRIBUTESETINSTANCE_ID is null
-                        ? new PreparedSentence(s,
-                            "UPDATE STOCKCURRENT SET UNITS = (UNITS - ?) "
-                            + "WHERE LOCATION = ? AND PRODUCT = ? "
-                            + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
-                            new SerializerWriteBasicExt(stockdiaryDatas,
-                                new int[] {6, 3, 4})).exec(params)
-                        : new PreparedSentence(s,
-                            "UPDATE STOCKCURRENT SET UNITS = (UNITS - ?) "
-                            + "WHERE LOCATION = ? AND PRODUCT = ? "
-                            + "AND ATTRIBUTESETINSTANCE_ID = ?",
-                            new SerializerWriteBasicExt(stockdiaryDatas,
-                                new int[] {6, 3, 4, 5})).exec(params);
-
-                if (updateresult == 0) {
-                    new PreparedSentence(s,
-                        "INSERT INTO STOCKCURRENT (LOCATION, PRODUCT, "
-                        + "ATTRIBUTESETINSTANCE_ID, UNITS) "
-                        + "VALUES (?, ?, ?, -(?))",
-                        new SerializerWriteBasicExt(stockdiaryDatas,
-                            new int[] {3, 4, 5, 6})).exec(params);
-                }
-                return new PreparedSentence(s,
-                    "DELETE FROM STOCKDIARY WHERE ID = ?",
-                    new SerializerWriteBasicExt(stockdiaryDatas,
-                        new int[] {0})).exec(params);
-            }
-        };
-    }
 
     public final SentenceExec getPaymentMovementInsert() {
         return new SentenceExecTransaction(s) {
@@ -885,26 +759,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         };
     }
 
-    public final double findProductStock(String warehouse, String id, String attsetinstid) throws BasicException {
-
-        PreparedSentence p = attsetinstid == null
-                ? new PreparedSentence(s,
-                    "SELECT UNITS FROM STOCKCURRENT "
-                    + "WHERE LOCATION = ? AND PRODUCT = ? "
-                    + "AND ATTRIBUTESETINSTANCE_ID IS NULL",
-                    new SerializerWriteBasic(Datas.STRING, Datas.STRING),
-                    SerializerReadDouble.INSTANCE)
-                : new PreparedSentence(s,
-                    "SELECT UNITS FROM STOCKCURRENT "
-                    + "WHERE LOCATION = ? AND PRODUCT = ? "
-                    + "AND ATTRIBUTESETINSTANCE_ID = ?",
-                    new SerializerWriteBasic(Datas.STRING, Datas.STRING,
-                        Datas.STRING),
-                    SerializerReadDouble.INSTANCE);
-
-        Double d = (Double) p.find(warehouse, id, attsetinstid);
-        return d == null ? 0.0 : d.doubleValue();
-    }
 
     protected static class CustomerExtRead implements SerializerRead {
         public Object readValues(DataRead dr) throws BasicException {
