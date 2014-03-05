@@ -238,19 +238,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     public final CategoryInfo getCategory(String id) throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CategoriesAPI", "get",
-                    "id", id);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                 return new CategoryInfo(r.getObjContent());
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CatalogCache.getCategory(id);
     }
 
     /** Get subcategories from parent ID. Categories must be preloaded. */

@@ -45,6 +45,7 @@ public class CatalogCache {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.caching.CatalogCache");
 
+    private static PreparedStatement category;
     private static PreparedStatement subCategories;
     private static PreparedStatement productsByCat;
     private static PreparedStatement productsSearch;
@@ -53,6 +54,8 @@ public class CatalogCache {
     private CatalogCache() {}
 
     private static void init() throws SQLException {
+        category = LocalDB.prepare("SELECT data FROM categories "
+                + "WHERE id = ?");
         subCategories = LocalDB.prepare("SELECT data FROM categories "
                 + "WHERE parentId = ? ORDER BY dispOrder");
         productsByCat = LocalDB.prepare("SELECT data FROM products "
@@ -159,6 +162,25 @@ public class CatalogCache {
         } catch (SQLException e) {
             throw new BasicException(e);
         } catch (IOException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static CategoryInfo getCategory(String catId) throws BasicException {
+        try {
+            if (category == null) {
+                init();
+            }
+            category.clearParameters();
+            category.setString(1, catId);
+            ResultSet rs = category.executeQuery();
+            List<CategoryInfo> cats = readCategoryResult(rs);
+            if (cats.size() > 0) {
+                return cats.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
             throw new BasicException(e);
         }
     }
