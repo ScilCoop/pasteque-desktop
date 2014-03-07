@@ -111,24 +111,13 @@ public class JTicketsBagTicket extends JTicketsBag {
         return true;       
         // postcondicion es que no tenemos ticket activado ni ticket en el panel
     }
-    
+
     public void deleteTicket() {
-        
-        if (m_ticketCopy != null) {           
-            // Para editar borramos el ticket anterior
-            try {               
-                m_dlSales.deleteTicket(m_ticketCopy, m_App.getInventoryLocation());
-            } catch (BasicException eData) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.nosaveticket"), eData);
-                msg.show(this);                
-            }            
-        }
-        
         m_ticket = null;
         m_ticketCopy = null;
         resetToTicket(); 
-    }    
-        
+    }
+
     public void canceleditionTicket() {
         
         m_ticketCopy = null;

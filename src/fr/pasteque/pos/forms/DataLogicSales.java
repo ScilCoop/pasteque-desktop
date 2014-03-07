@@ -612,6 +612,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return ticket;
     }
 
+    /** Save or edit ticket */
     public final void saveTicket(final TicketInfo ticket,
             final String locationId,
             final String cashId) throws BasicException {

@@ -74,7 +74,6 @@ public class TicketInfo implements SerializableRead {
 
     /** Creates new TicketModel */
     public TicketInfo() {
-        m_sId = UUID.randomUUID().toString();
         tickettype = RECEIPT_NORMAL;
         m_iTicketId = 0; // incrementamos
         m_dDate = new Date();
@@ -124,6 +123,7 @@ public class TicketInfo implements SerializableRead {
             JSONObject jsPay = jsPayments.getJSONObject(i);
             this.payments.add(PaymentInfo.readJSON(jsPay));
         }
+        this.attributes = new Properties();
     }
 
     public JSONObject toJSON() {
@@ -246,7 +246,9 @@ public class TicketInfo implements SerializableRead {
 
     public TicketInfo copyTicket() {
         TicketInfo t = new TicketInfo();
-
+        if (this.m_sId != null) {
+            t.m_sId = new String(this.m_sId);
+        }
         t.tickettype = tickettype;
         t.m_iTicketId = m_iTicketId;
         t.m_dDate = m_dDate;
