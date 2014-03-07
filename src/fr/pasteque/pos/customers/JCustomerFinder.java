@@ -106,7 +106,6 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     }
     
     public void search(CustomerInfo customer) {
-        
         if (customer == null || customer.getName() == null || customer.getName().equals("")) {
             // Default filter: show top 10
             m_jtxtTaxID.reset();
@@ -157,7 +156,11 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
      * of the customer's list by number of tickets with their id
      */
     public void automaticTop10ClientSearch(){
-        jListCustomers.setModel(new MyListData(new ArrayList<CustomerInfoExt>()));
+        try {
+            jListCustomers.setModel(new MyListData(this.dlc.getTop10CustomerList()));
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
         if (jListCustomers.getModel().getSize() > 0) {
             jListCustomers.setSelectedIndex(0);
         }

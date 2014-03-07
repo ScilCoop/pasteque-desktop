@@ -67,23 +67,40 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
 
     /** Load customers list from server */
     private List<CustomerInfoExt> loadCustomers() throws BasicException {
-         try {
-             ServerLoader loader = new ServerLoader();
-             ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
-             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                 List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
-                 JSONArray a = r.getArrayContent();
-                 for (int i = 0; i < a.length(); i++) {
-                     JSONObject o = a.getJSONObject(i);
-                     CustomerInfoExt customer = new CustomerInfoExt(o);
-                     data.add(customer);
-                 }
-                 return data;
-             }
-         } catch (Exception e) {
-             throw new BasicException(e);
-         }
-         return null;
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CustomerInfoExt customer = new CustomerInfoExt(o);
+                    data.add(customer);
+                }
+                return data;
+            }
+        } catch (Exception e) {
+            throw new BasicException(e);
+        }
+        return null;
+    }
+    private List<String> loadTopCustomers() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CustomersAPI", "getTop");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<String> data = new ArrayList<String>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    data.add(a.getString(i));
+                }
+                return data;
+            }
+        } catch (Exception e) {
+            throw new BasicException(e);
+        }
+        return null;
     }
     /** Preload and update cache if possible. Return true if succes. False
      * otherwise and cache is not modified.
@@ -92,12 +109,14 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         try {
             logger.log(Level.INFO, "Preloading customers");
             List<CustomerInfoExt> data = this.loadCustomers();
+            List<String> topIds = this.loadTopCustomers();
             if (data == null) {
                 return false;
             }
             try {
-                CustomersCache.save(data);
-            } catch (IOException e) {
+                CustomersCache.refreshCustomers(data);
+                CustomersCache.refreshRanking(topIds);
+            } catch (BasicException e) {
                 e.printStackTrace();
                 return false;
             }
@@ -110,105 +129,25 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
 
     /** Get all customers */
     public List<CustomerInfoExt> getCustomerList() throws BasicException {
-        List<CustomerInfoExt> data = null;
-        try {
-            data = CustomersCache.load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if (data == null) {
-            data = this.loadCustomers();
-            if (data != null) {
-                try {
-                    CustomersCache.save(data);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return data;
+        return CustomersCache.getCustomers();
     }
 
     public CustomerInfoExt getCustomer(String id) throws BasicException {
-        List<CustomerInfoExt> data = this.getCustomerList();
-        for (CustomerInfoExt c : data) {
-            if (c.getId().equals(id)) {
-                return c;
-            }
-        }
-        return null;
+        return CustomersCache.getCustomer(id);
     }
 
     /** Search customers, use null as argument to disable filter */
     public List<CustomerInfoExt> searchCustomers(String number,
             String searchkey, String name) throws BasicException {
-        List<CustomerInfoExt> data = this.getCustomerList();
-        List<CustomerInfoExt> results = new ArrayList<CustomerInfoExt>();
-        for (CustomerInfoExt c : data) {
-            boolean matches = true;
-            if (number != null) {
-                String custNum = c.getTaxid();
-                if (custNum != null) {
-                    custNum = custNum.toLowerCase();
-                    if (!custNum.contains(number.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches && searchkey != null) {
-                String custSK = c.getSearchkey();
-                if (custSK != null) {
-                    custSK = custSK.toLowerCase();
-                    if (!custSK.contains(searchkey.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches && name != null) {
-                String custName = c.getName();
-                if (custName != null) {
-                    custName = custName.toLowerCase();
-                    if (!custName.contains(name.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches) {
-                results.add(c);
-            }
-        }
-        return results;
+        return CustomersCache.searchCustomers(number, searchkey, name);
     }
 
 
     /** Gets the TOP 10 customer's list by number of tickets
      * with their id
      */
-    public SentenceList getTop10CustomerList() {
-        /*        return new StaticSentence(s
-            , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
-            " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
-            " LEFT JOIN TICKETS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
-            " WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) " +
-            " GROUP BY CUSTOMERS.ID ORDER BY Top10 DESC, NAME ASC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
-            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
-            , new SerializerRead() {
-                    public Object readValues(DataRead dr) throws BasicException {
-                        CustomerInfo c = new CustomerInfo(dr.getString(1));
-                        c.setTaxid(dr.getString(2));
-                        c.setSearchkey(dr.getString(3));
-                        c.setName(dr.getString(4));
-                        return c;
-                    }
-                    });*/
-        // TODO: reenable top 10 customers list
-        return null;
+    public List<CustomerInfoExt> getTop10CustomerList() throws BasicException {
+        return CustomersCache.getTopCustomers();
     }
        
     public int updateCustomerExt(final CustomerInfoExt customer) throws BasicException {

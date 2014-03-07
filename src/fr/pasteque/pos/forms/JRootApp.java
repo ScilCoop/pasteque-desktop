@@ -185,7 +185,6 @@ public class JRootApp extends JPanel implements AppView {
         // Preload caches
         m_dlSystem.preloadUsers();
         m_dlSystem.preloadRoles();
-        dlCust.preloadCustomers();
         // Reload resources cache
         java.util.List<String> cachedRes = ResourcesCache.list();
         for (String res : cachedRes) {
@@ -198,6 +197,7 @@ public class JRootApp extends JPanel implements AppView {
             m_dlSales.preloadProducts();
             m_dlSales.preloadTaxes();
             m_dlSales.preloadCurrencies();
+            dlCust.preloadCustomers();
         } catch (SQLException e) {
             e.printStackTrace();
         }

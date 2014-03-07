@@ -97,6 +97,13 @@ public class LocalDB {
             stmt.execute("CREATE TABLE currencies ("
                     + "id INTEGER(255), main BOOLEAN, data BINARY(500000), "
                     + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE customers ("
+                    + "id VARCHAR(255), number INTEGER(255), key VARCHAR(255), "
+                    + "name VARCHAR(255), data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE customerRanking ("
+                    + "id VARCHAR(255), rank INTEGER(255), "
+                    + "PRIMARY KEY (id))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }

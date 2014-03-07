@@ -19,17 +19,19 @@
 
 package fr.pasteque.pos.caching;
 
-import fr.pasteque.format.DateUtils;
+import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.forms.AppConfig;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,58 +40,165 @@ public class CustomersCache {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.caching.CustomersCache");
 
-    private static String path() {
-        return AppConfig.loadedInstance.getDataDir() + "/customers.cache";
-    }
+    private static PreparedStatement customers;
+    private static PreparedStatement customer;
+    private static PreparedStatement ranking;
+    private static PreparedStatement search;
 
     private CustomersCache() {}
 
-    /** Get cached data if any, null otherwise */
-    public static List<CustomerInfoExt> load() throws IOException {
-        File cache = new File(path());
-        logger.log(Level.INFO, "Reading customers from "
-                + cache.getAbsolutePath());
-        if (cache.exists()) {
-            FileInputStream fis = new FileInputStream(cache);
-            ObjectInputStream os = new ObjectInputStream(fis);
-            List <CustomerInfoExt> data = null;
-            try {
-                data = (List<CustomerInfoExt>) os.readObject();
-            } catch (ClassNotFoundException e) {
-                // Should never happen
-                os.close();
-                throw new IOException(e.getMessage());
+    private static void init() throws SQLException {
+        customers = LocalDB.prepare("SELECT data FROM customers");
+        customer = LocalDB.prepare("SELECT data FROM customers "
+                + "WHERE id = ?");
+        ranking = LocalDB.prepare("SELECT data FROM customers, customerRanking "
+                + "WHERE customers.id = customerRanking.id "
+                + "ORDER BY rank ASC");
+        search = LocalDB.prepare("SELECT data FROM customers "
+                + "WHERE LOWER(number) LIKE LOWER(?) "
+                + "AND LOWER(key) LIKE LOWER(?) AND LOWER(name) LIKE LOWER(?)");
+    }
+
+    private static List<CustomerInfoExt> readCustomerResult(ResultSet rs)
+        throws BasicException {
+        try {
+            List<CustomerInfoExt> custs = new ArrayList<CustomerInfoExt>();
+            while (rs.next()) {
+                byte[] data = rs.getBytes("data");
+                ByteArrayInputStream bis = new ByteArrayInputStream(data);
+                ObjectInputStream os = new ObjectInputStream(bis);
+                CustomerInfoExt cust = (CustomerInfoExt) os.readObject();
+                custs.add(cust);
             }
-            os.close();
-            logger.log(Level.INFO, "Read " + data.size() + " customers");
-            return data;
-        } else {
-            return null;
+            return custs;
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
+        } catch (ClassNotFoundException e) {
+            // Should never happen
+            throw new BasicException(e);
         }
     }
 
-    public static void save(List<CustomerInfoExt> data) throws IOException {
-        File cache = new File(path());
-        logger.log(Level.INFO, "Saving " + data.size() + " customers in "
-                + cache.getAbsoluteFile());
-        if (!cache.exists()) {
-            cache.createNewFile();
-            logger.log(Level.INFO, "Created cache file "
-                    + cache.getAbsoluteFile());
+    /** Clear and replace customers. */
+    public static void refreshCustomers(List<CustomerInfoExt> customers)
+        throws BasicException {
+        try {
+            LocalDB.execute("TRUNCATE TABLE customers");
+            PreparedStatement stmt = LocalDB.prepare("INSERT INTO customers "
+                    + "(id, number, key, name, data) VALUES (?, ?, ?, ?, ?)");
+            for (CustomerInfoExt cust : customers) {
+                stmt.setString(1, cust.getId());
+                stmt.setString(2, cust.getTaxid());
+                stmt.setString(3, cust.getSearchkey());
+                stmt.setString(4, cust.getName());
+                ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
+                ObjectOutputStream os = new ObjectOutputStream(bos);
+                os.writeObject(cust);
+                stmt.setBytes(5, bos.toByteArray());
+                os.close();
+                stmt.execute();
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
         }
-        FileOutputStream fos = new FileOutputStream(cache);
-        ObjectOutputStream os = new ObjectOutputStream(fos);
-        os.writeObject(data);
-        os.flush();
-        os.close();
+    }
+    /** Clear and replace customer ranking. */
+    public static void refreshRanking(List<String> ids)
+        throws BasicException {
+        try {
+            LocalDB.execute("TRUNCATE TABLE customerRanking");
+            PreparedStatement stmt = LocalDB.prepare("INSERT "
+                    + "INTO customerRanking "
+                    + "(id, rank) VALUES (?, ?)");
+            for (int i = 0; i < ids.size(); i++) {
+                stmt.setString(1, ids.get(i));
+                stmt.setInt(2, i);
+                stmt.execute();
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
     }
 
-    public Date getDate() {
-        File cache = new File(path());
-        if (!cache.exists()) {
-            return null;
+    /** Get cached data if any, null otherwise */
+    public static List<CustomerInfoExt> getCustomers() throws BasicException {
+        try {
+            if (customers == null) {
+                init();
+            }
+            ResultSet rs = customers.executeQuery();
+            return readCustomerResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static CustomerInfoExt getCustomer(String id) throws BasicException {
+        try {
+            if (customer == null) {
+                init();
+            }
+            customer.clearParameters();
+            customer.setString(1, id);
+            ResultSet rs = customer.executeQuery();
+            List<CustomerInfoExt> custs = readCustomerResult(rs);
+            if (custs.size() > 0) {
+                return custs.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    /** Get cached data if any, null otherwise */
+    public static List<CustomerInfoExt> getTopCustomers()
+        throws BasicException {
+        try {
+            if (ranking == null) {
+                init();
+            }
+            ResultSet rs = ranking.executeQuery();
+            return readCustomerResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static List<CustomerInfoExt> searchCustomers(String number,
+            String searchkey, String name) throws BasicException {
+        if (number == null) {
+            number = "%%";
         } else {
-            return DateUtils.readMilliTimestamp(cache.lastModified());
+            number = "%" + number + "%";
+        }
+        if (searchkey == null) {
+            searchkey = "%%";
+        } else {
+            searchkey = "%" + searchkey + "%";
+        }
+        if (name == null) {
+            name = "%%";
+        } else {
+            name = "%" + name + "%";
+        }
+        try {
+            if (search == null) {
+                init();
+            }
+            search.clearParameters();
+            search.setString(1, number);
+            search.setString(2, searchkey);
+            search.setString(3, name);
+            ResultSet rs = search.executeQuery();
+            return readCustomerResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
         }
     }
 }
