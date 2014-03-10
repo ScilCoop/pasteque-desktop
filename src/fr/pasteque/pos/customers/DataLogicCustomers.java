@@ -136,6 +136,11 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return CustomersCache.getCustomer(id);
     }
 
+    public CustomerInfoExt getCustomerByCard(String card)
+        throws BasicException {
+        return CustomersCache.getCustomerByCard(card);
+    }
+
     /** Search customers, use null as argument to disable filter */
     public List<CustomerInfoExt> searchCustomers(String number,
             String searchkey, String name) throws BasicException {

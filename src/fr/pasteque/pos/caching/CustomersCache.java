@@ -42,6 +42,7 @@ public class CustomersCache {
 
     private static PreparedStatement customers;
     private static PreparedStatement customer;
+    private static PreparedStatement customerCard;
     private static PreparedStatement ranking;
     private static PreparedStatement search;
 
@@ -51,6 +52,8 @@ public class CustomersCache {
         customers = LocalDB.prepare("SELECT data FROM customers");
         customer = LocalDB.prepare("SELECT data FROM customers "
                 + "WHERE id = ?");
+        customerCard = LocalDB.prepare("SELECT data FROM customers "
+                + "WHERE card = ?");
         ranking = LocalDB.prepare("SELECT data FROM customers, customerRanking "
                 + "WHERE customers.id = customerRanking.id "
                 + "ORDER BY rank ASC");
@@ -87,16 +90,18 @@ public class CustomersCache {
         try {
             LocalDB.execute("TRUNCATE TABLE customers");
             PreparedStatement stmt = LocalDB.prepare("INSERT INTO customers "
-                    + "(id, number, key, name, data) VALUES (?, ?, ?, ?, ?)");
+                    + "(id, number, key, name, card, data) VALUES "
+                    + "(?, ?, ?, ?, ?, ?)");
             for (CustomerInfoExt cust : customers) {
                 stmt.setString(1, cust.getId());
                 stmt.setString(2, cust.getTaxid());
                 stmt.setString(3, cust.getSearchkey());
                 stmt.setString(4, cust.getName());
+                stmt.setString(5, cust.getCard());
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
                 ObjectOutputStream os = new ObjectOutputStream(bos);
                 os.writeObject(cust);
-                stmt.setBytes(5, bos.toByteArray());
+                stmt.setBytes(6, bos.toByteArray());
                 os.close();
                 stmt.execute();
             }
@@ -145,6 +150,26 @@ public class CustomersCache {
             customer.clearParameters();
             customer.setString(1, id);
             ResultSet rs = customer.executeQuery();
+            List<CustomerInfoExt> custs = readCustomerResult(rs);
+            if (custs.size() > 0) {
+                return custs.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static CustomerInfoExt getCustomerByCard(String card)
+        throws BasicException {
+        try {
+            if (customerCard == null) {
+                init();
+            }
+            customerCard.clearParameters();
+            customerCard.setString(1, card);
+            ResultSet rs = customerCard.executeQuery();
             List<CustomerInfoExt> custs = readCustomerResult(rs);
             if (custs.size() > 0) {
                 return custs.get(0);

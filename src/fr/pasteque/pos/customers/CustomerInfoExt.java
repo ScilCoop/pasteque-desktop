@@ -91,6 +91,9 @@ public class CustomerInfoExt extends CustomerInfo {
         if (!o.isNull("debtDate")) {
             this.curdate = DateUtils.readSecTimestamp(o.getLong("debtDate"));
         }
+        if (!o.isNull("currDebt")) {
+            this.curdebt = o.getDouble("currDebt");
+        }
         this.prepaid = o.getDouble("prepaid");
         if (!o.isNull("firstName")) {
             this.firstname = o.getString("firstName");

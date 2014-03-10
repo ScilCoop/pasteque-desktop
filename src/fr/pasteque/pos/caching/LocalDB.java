@@ -99,7 +99,8 @@ public class LocalDB {
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE customers ("
                     + "id VARCHAR(255), number INTEGER(255), key VARCHAR(255), "
-                    + "name VARCHAR(255), data BINARY(500000), "
+                    + "name VARCHAR(255), card VARCHAR(255), "
+                    + "data BINARY(500000), "
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE customerRanking ("
                     + "id VARCHAR(255), rank INTEGER(255), "
