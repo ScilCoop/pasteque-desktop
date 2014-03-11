@@ -28,6 +28,7 @@ import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
+import fr.pasteque.pos.ticket.CashMove;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -129,10 +130,13 @@ public class PaymentsModel {
             if (p.cashSession.getOpenCash() != null) {
                 expectedTotal = p.cashSession.getOpenCash();
             }
-            // Add cash payments
+            // Add cash payments and movements
             for (PaymentsModel.PaymentsLine line : p.getPaymentLines()) {
                 if (line.getType().equals("cash")
                         && line.getCurrency().isMain()) {
+                    expectedTotal += line.getValue();
+                } else if (line.getType().equals(CashMove.CASH_MOVE_OUT)
+                        || line.getType().equals(CashMove.CASH_MOVE_IN)) {
                     expectedTotal += line.getValue();
                 }
             }
