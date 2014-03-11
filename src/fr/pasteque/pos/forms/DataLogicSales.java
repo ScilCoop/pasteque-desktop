@@ -54,6 +54,7 @@ import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.mant.FloorsInfo;
 import fr.pasteque.pos.payment.PaymentInfo;
 import fr.pasteque.pos.payment.PaymentInfoTicket;
+import fr.pasteque.pos.ticket.CashMove;
 import fr.pasteque.pos.ticket.SubgroupInfo;
 import fr.pasteque.pos.ticket.TariffInfo;
 import fr.pasteque.pos.ticket.TicketTaxInfo;
@@ -729,37 +730,24 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-
-    public final SentenceExec getPaymentMovementInsert() {
-        return new SentenceExecTransaction(s) {
-            public int execInTransaction(Object params) throws BasicException {
-                new PreparedSentence(s,
-                    "INSERT INTO RECEIPTS (ID, MONEY, DATENEW) "
-                    + "VALUES (?, ?, ?)",
-                    new SerializerWriteBasicExt(paymenttabledatas,
-                        new int[] {0, 1, 2})).exec(params);
-                return new PreparedSentence(s,
-                    "INSERT INTO PAYMENTS (ID, RECEIPT, PAYMENT, TOTAL, NOTES, CURRENCY, TOTALCURRENCY) "
-                    + "VALUES (?, ?, ?, ?, ?, ?)",
-                    new SerializerWriteBasicExt(paymenttabledatas,
-                            new int[] {3, 0, 4, 5, 6, 7, 5})).exec(params);
+    public boolean saveMove(CashMove move) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.write("CashMvtsAPI", "move",
+                    "cashId", move.getCashId(),
+                    "date", String.valueOf(DateUtils.toSecTimestamp(move.getDate())),
+                    "note", move.getNote(),
+                    "payment", move.getPayment().toJSON().toString());
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                return true;
+            } else {
+                return false;
             }
-        };
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
     }
-
-    public final SentenceExec getPaymentMovementDelete() {
-        return new SentenceExecTransaction(s) {
-            public int execInTransaction(Object params) throws BasicException {
-                new PreparedSentence(s
-                    , "DELETE FROM PAYMENTS WHERE ID = ?"
-                    , new SerializerWriteBasicExt(paymenttabledatas, new int[] {3})).exec(params);
-                return new PreparedSentence(s
-                    , "DELETE FROM RECEIPTS WHERE ID = ?"
-                    , new SerializerWriteBasicExt(paymenttabledatas, new int[] {0})).exec(params);
-            }
-        };
-    }
-
 
     protected static class CustomerExtRead implements SerializerRead {
         public Object readValues(DataRead dr) throws BasicException {
