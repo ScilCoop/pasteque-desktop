@@ -23,6 +23,7 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.gui.ComboBoxValModel;
+import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.forms.AppLocal;
@@ -30,7 +31,11 @@ import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.BeanFactoryApp;
 import fr.pasteque.pos.forms.BeanFactoryException;
 import fr.pasteque.pos.forms.DataLogicSales;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.forms.JPanelView;
+import fr.pasteque.pos.scripting.ScriptEngine;
+import fr.pasteque.pos.scripting.ScriptException;
+import fr.pasteque.pos.scripting.ScriptFactory;
 import fr.pasteque.pos.ticket.CashMove;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
@@ -84,6 +89,17 @@ public class JPanelPayments extends JPanel implements JPanelView, BeanFactoryApp
 
     public void activate() {
         this.reasonModel.setSelectedKey("cashin");
+        // Open drawer
+        DataLogicSystem dlSys = new DataLogicSystem();
+        String code = dlSys.getResourceAsXML("Printer.OpenDrawer");
+        if (code != null) {
+            try {
+                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                script.eval(code);
+            } catch (ScriptException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public boolean deactivate() {
@@ -92,6 +108,12 @@ public class JPanelPayments extends JPanel implements JPanelView, BeanFactoryApp
 
     public boolean requiresOpenedCash() {
         return true;
+    }
+
+    private void reset() {
+        this.reasonModel.setSelectedKey("cashin");
+        this.total.setDoubleValue(null);
+        this.notes.setText(null);
     }
 
     private static abstract class PaymentReason implements IKeyed {
@@ -241,9 +263,17 @@ public class JPanelPayments extends JPanel implements JPanelView, BeanFactoryApp
         try {
             if (!dlSales.saveMove(move)) {
                 throw new BasicException("saveMove failed");
+            } else {
+                this.reset();
+                MessageInf msg = new MessageInf(MessageInf.SGN_SUCCESS,
+                        AppLocal.getIntString("Message.CashMovementSaved"));
+                msg.show(this);
             }
         } catch (BasicException e) {
-            // TODO display error
+            e.printStackTrace();
+            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE,
+                    AppLocal.getIntString("message.cannotexecute"), e);
+            msg.show(this);
         }
     }
 
