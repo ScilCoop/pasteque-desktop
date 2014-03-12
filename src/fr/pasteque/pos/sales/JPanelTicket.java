@@ -181,8 +181,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     public void init(AppView app) throws BeanFactoryException {
         m_App = app;
         this.dlSystem = new DataLogicSystem();
-        this.dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        this.dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
+        this.dlSales = new DataLogicSales();
+        this.dlCustomers = new DataLogicCustomers();
 
         m_ticketsbag = getJTicketsBag();
         m_jPanelBag.add(m_ticketsbag.getBagComponent(), BorderLayout.LINE_START);
@@ -813,7 +813,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 if (sCode.startsWith("c")) {
                     // barcode of a customers card
                     try {
-                        CustomerInfoExt newcustomer = dlSales.findCustomerExt(sCode);
+                        CustomerInfoExt newcustomer = this.dlCustomers.getCustomerByCard(sCode);
                         if (newcustomer == null) {
                             Toolkit.getDefaultToolkit().beep();
                             new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.nocustomer")).show(this);

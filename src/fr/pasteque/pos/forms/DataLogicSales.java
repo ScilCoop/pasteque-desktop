@@ -521,18 +521,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return CurrenciesCache.getMainCurrency();
     }
 
-    public CustomerInfoExt findCustomerExt(String card) throws BasicException {
-        return (CustomerInfoExt) new PreparedSentence(s,
-                "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, "
-                + "NOTES, MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
-                + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
-                + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
-                + "FROM CUSTOMERS "
-                + "WHERE CARD = ? AND VISIBLE = " + s.DB.TRUE(),
-                SerializerWriteString.INSTANCE,
-                new CustomerExtRead()).find(card);
-    }
-
     public CustomerInfoExt loadCustomerExt(String id) throws BasicException {
         return (CustomerInfoExt) new PreparedSentence(s,
                 "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, NOTES, "
