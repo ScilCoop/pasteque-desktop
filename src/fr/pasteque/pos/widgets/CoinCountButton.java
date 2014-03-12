@@ -80,6 +80,10 @@ public class CoinCountButton {
         this.component.add(this.input, cstr);
     }
 
+    public void reset() {
+        this.input.reset();
+    }
+
     public int getCount() {
         try {
             return this.input.getValueInteger();
