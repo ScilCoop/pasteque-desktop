@@ -1839,7 +1839,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jList.setFocusPainted(false);
         m_jList.setFocusable(false);
         m_jList.setRequestFocusEnabled(false);
-        m_jList.setEnabled(false); // TODO: search products
         m_jList.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jListActionPerformed(evt);

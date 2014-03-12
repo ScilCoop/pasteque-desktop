@@ -66,7 +66,7 @@ public class CatalogCache {
         productsByCat = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE categoryId = ? ORDER BY dispOrder");
         productsSearch = LocalDB.prepare("SELECT data FROM products "
-                + "WHERE ref LIKE ? AND label LIKE ?");
+                + "WHERE LOWER(ref) LIKE ? AND LOWER(label) LIKE ?");
         productByBarcode = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE barcode = ?");
     }
@@ -258,6 +258,50 @@ public class CatalogCache {
             productsByCat.clearParameters();
             productsByCat.setString(1, catId);
             ResultSet rs = productsByCat.executeQuery();
+            return readProductResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static ProductInfoExt getProductByCode(String code)
+        throws BasicException {
+        try {
+            if (productByBarcode == null) {
+                init();
+            }
+            productByBarcode.clearParameters();
+            productByBarcode.setString(1, code);
+            ResultSet rs = product.executeQuery();
+            List<ProductInfoExt> prds = readProductResult(rs);
+            if (prds.size() > 0) {
+                return prds.get(0);
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static List<ProductInfoExt> searchProducts(String label, String ref)
+        throws BasicException {
+        try {
+            if (productsSearch == null) {
+                init();
+            }
+            productsSearch.clearParameters();
+            if (ref == null) {
+                productsSearch.setString(1, "%%");
+            } else {
+                productsSearch.setString(1, "%" + ref.toLowerCase() + "%");
+            }
+            if (label == null) {
+                productsSearch.setString(2, "%%");
+            } else {
+                productsSearch.setString(2, "%" + label.toLowerCase() + "%");
+            }
+            ResultSet rs = productsSearch.executeQuery();
             return readProductResult(rs);
         } catch (SQLException e) {
             throw new BasicException(e);

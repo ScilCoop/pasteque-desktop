@@ -42,7 +42,7 @@ import fr.pasteque.pos.widgets.WidgetsBuilder;
 public class JProductFinder extends javax.swing.JDialog {
 
     private ProductInfoExt m_ReturnProduct;
-    private ListProvider lpr;
+    private ProductFilterSales filter;
     
     public final static int PRODUCT_ALL = 0;
     public final static int PRODUCT_NORMAL = 1;
@@ -64,22 +64,9 @@ public class JProductFinder extends javax.swing.JDialog {
         jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
 
         //ProductFilter jproductfilter = new ProductFilter(app);
-        ProductFilterSales jproductfilter = new ProductFilterSales(dlSales, m_jKeys);
-        jproductfilter.activate();
-        m_jProductSelect.add(jproductfilter, BorderLayout.CENTER);
-        switch (productsType) {
-            case PRODUCT_NORMAL:
-                lpr = new ListProviderCreator(dlSales.getProductListNormal(), jproductfilter);
-                break;
-            case PRODUCT_AUXILIAR:               
-                lpr = new ListProviderCreator(dlSales.getProductListAuxiliar(), jproductfilter);
-                break;
-            default: // PRODUCT_ALL
-                lpr = new ListProviderCreator(dlSales.getProductList(), jproductfilter);
-                break;
-                
-        }
-       
+        this.filter = new ProductFilterSales(dlSales, m_jKeys);
+        this.filter.activate();
+        m_jProductSelect.add(this.filter, BorderLayout.CENTER);
         jListProducts.setCellRenderer(new ProductRenderer());
         
         getRootPane().setDefaultButton(jcmdOK);   
@@ -272,10 +259,13 @@ public class JProductFinder extends javax.swing.JDialog {
         
     }//GEN-LAST:event_jListProductsValueChanged
 
-    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchBtnActionPerformed
-
+    private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            jListProducts.setModel(new MyListData(lpr.loadData()));
+            String[] filter = this.filter.getFilter();
+            DataLogicSales dlSales = new DataLogicSales();
+            java.util.List<ProductInfoExt> data = dlSales.searchProducts(filter[0],
+                    filter[1]);
+            jListProducts.setModel(new MyListData(data));
             if (jListProducts.getModel().getSize() > 0) {
                 jListProducts.setSelectedIndex(0);
             }
@@ -283,7 +273,7 @@ public class JProductFinder extends javax.swing.JDialog {
             e.printStackTrace();
         }
         
-    }//GEN-LAST:event_searchBtnActionPerformed
+    }
     
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

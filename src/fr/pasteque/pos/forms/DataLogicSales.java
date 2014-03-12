@@ -190,42 +190,13 @@ public class DataLogicSales extends BeanFactoryDataSingle {
 
     /** Get a product by code */
     public final ProductInfoExt getProductInfoByCode(String sCode) throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("ProductsAPI", "get",
-                    "code", sCode);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                ProductInfoExt prd = new ProductInfoExt(o);
-                return prd;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+        return CatalogCache.getProductByCode(sCode);
     }
 
-    /** Get a product by reference */
-    public final ProductInfoExt getProductInfoByReference(String sReference) throws BasicException {
-        try {
-            ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("ProductsAPI", "get",
-                    "reference", sReference);
-            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                ProductInfoExt prd = new ProductInfoExt(o);
-                return prd;
-            } else {
-                return null;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
-        }
+    public List<ProductInfoExt> searchProducts(String label, String reference)
+        throws BasicException {
+        return CatalogCache.searchProducts(label, reference);
     }
-
 
     /** Get root categories. Categories must be preloaded. */
     public final List<CategoryInfo> getRootCategories() throws BasicException {
