@@ -673,19 +673,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         t.execute();*/
     }
 
-    public final Integer getNextTicketIndex() throws BasicException {
-        return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM").find();
-    }
-
-    public final Integer getNextTicketRefundIndex() throws BasicException {
-        return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_REFUND").find();
-    }
-
-    public final Integer getNextTicketPaymentIndex() throws BasicException {
-        return (Integer) s.DB.getSequenceSentence(s, "TICKETSNUM_PAYMENT").find();
-    }
-
-
     public final List<TariffInfo> getTariffAreaList() throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
@@ -727,34 +714,4 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    protected static class CustomerExtRead implements SerializerRead {
-        public Object readValues(DataRead dr) throws BasicException {
-            CustomerInfoExt c = new CustomerInfoExt(dr.getString(1));
-            c.setTaxid(dr.getString(2));
-            c.setSearchkey(dr.getString(3));
-            c.setName(dr.getString(4));
-            c.setCard(dr.getString(5));
-            c.setTaxCustomerID(dr.getString(6));
-            c.setNotes(dr.getString(7));
-            c.setMaxdebt(dr.getDouble(8));
-            c.setVisible(dr.getBoolean(9).booleanValue());
-            c.setCurdate(dr.getTimestamp(10));
-            c.setCurdebt(dr.getDouble(11));
-            c.setPrepaid(dr.getDouble(12));
-            c.setFirstname(dr.getString(13));
-            c.setLastname(dr.getString(14));
-            c.setEmail(dr.getString(15));
-            c.setPhone(dr.getString(16));
-            c.setPhone2(dr.getString(17));
-            c.setFax(dr.getString(18));
-            c.setAddress(dr.getString(19));
-            c.setAddress2(dr.getString(20));
-            c.setPostal(dr.getString(21));
-            c.setCity(dr.getString(22));
-            c.setRegion(dr.getString(23));
-            c.setCountry(dr.getString(24));
-
-            return c;
-        }
-    }
 }
