@@ -19,15 +19,7 @@
 
 package fr.pasteque.pos.ticket;
 
-import fr.pasteque.data.loader.DataWrite;
-import java.util.*;
-import java.io.*;
-import fr.pasteque.pos.util.*;
-import fr.pasteque.data.loader.IKeyed;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.SerializableWrite;
-import fr.pasteque.basic.BasicException;
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /**
@@ -35,68 +27,44 @@ import org.json.JSONObject;
  * @author  Luis Ig. Bacas Riveiro	lbacas@opensistemas.com
  * @author  Pablo J. Urbano Santos	purbano@opensistemas.com
  */
-public class TariffInfo implements Serializable, SerializableRead, SerializableWrite, IKeyed {
-    
-    private String m_sId;
+public class TariffInfo implements Serializable {
+
+    private int id;
     private String m_sName;
     private int m_iOrder;
-    
-    
-    /** Creates new TariffInfo */
-    public TariffInfo() {
-        this(UUID.randomUUID().toString(), null);
-    }
-    
-    public TariffInfo(String id, String name) {
-        m_sId = id;
+
+    public TariffInfo(int id, String name) {
+        this.id = id;
         m_sName = name;
         m_iOrder = 0;
     }
 
     public TariffInfo(JSONObject o) {
-        this.m_sId = o.getString("id");
+        this.id = o.getInt("id");
         this.m_sName = o.getString("label");
-        this.m_iOrder = 0; // TODO: support for tariff area dispOrder
+        this.m_iOrder = o.getInt("dispOrder");
     }
 
-    public Object getKey() {
-        return m_sId;
+    public int getID() {
+        return this.id;
     }
 
-    public void readValues(DataRead dr) throws BasicException {
-        m_sId = dr.getString(1);
-        m_sName = dr.getString(2);
-        m_iOrder = dr.getInt(3).intValue();
-    }
-
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, m_sId);
-        dp.setString(2, m_sName);
-        dp.setInt(3, m_iOrder);
-    }
-        
-    public String getID() {
-        return m_sId;
-    }
-    
-    
     public String getName() {
         return m_sName;
     }
     public void setName(String sName) {
         m_sName = sName;
     }
-    
-    
+
+
     public int getOrder() {
         return m_iOrder;
     }
     public void setOrder (int iOrder) {
         m_iOrder = iOrder;
     }
-    
+
     public String toString(){
         return m_sName;
     }
 }
-    

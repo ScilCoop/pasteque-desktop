@@ -31,7 +31,9 @@ import fr.pasteque.pos.ticket.TicketLineInfo;
 import fr.pasteque.pos.ticket.ZTicket;
 import java.util.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,7 @@ import fr.pasteque.data.model.Row;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.caching.CatalogCache;
 import fr.pasteque.pos.caching.CurrenciesCache;
+import fr.pasteque.pos.caching.TariffAreasCache;
 import fr.pasteque.pos.caching.TaxesCache;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.customers.DataLogicCustomers;
@@ -249,21 +252,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             , "SELECT ID, NAME, IMAGE, DISPORDER FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
             , SerializerWriteString.INSTANCE
             , new SerializerReadClass(SubgroupInfo.class)).list(composition);
-    }
-
-    //Productos de un grupo de tarifas
-    public final List<ProductInfoExt> getTariffProds(String area) throws BasicException  {
-        return new PreparedSentence(s
-            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
-            + "P.PRICEBUY, TAP.PRICESELL, P.TAXCAT, P.CATEGORY, "
-            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
-            + "P.DISCOUNTRATE " +
-              "FROM PRODUCTS P " +
-              "		LEFT OUTER JOIN TARIFFAREAS_PROD TAP ON P.ID = TAP.PRODUCTID " +
-              "		LEFT OUTER JOIN TARIFFAREAS TA ON TA.ID = TAP.TARIFFID " +
-              "WHERE TA.ID = ? ORDER BY P.NAME"
-            , SerializerWriteString.INSTANCE
-            , ProductInfoExt.getSerializerRead()).list(area);
     }
 
     //Producto de un subgrupo de una composicion
@@ -673,26 +661,47 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         t.execute();*/
     }
 
-    public final List<TariffInfo> getTariffAreaList() throws BasicException {
+    public boolean preloadTariffAreas() {
         try {
+            logger.log(Level.INFO, "Preloading tariff areas");
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("TariffAreasAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONArray a = r.getArrayContent();
+                Map<Integer, Map<String, Double>> prices = new HashMap<Integer, Map<String, Double>>();
                 List<TariffInfo> areas = new ArrayList<TariffInfo>();
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
                     TariffInfo area = new TariffInfo(o);
                     areas.add(area);
+                    Map<String, Double> areaPrices = new HashMap<String, Double>();
+                    JSONArray aPrices = o.getJSONArray("prices");
+                    for (int j = 0; j < aPrices.length(); j++) {
+                        JSONObject oPrice = aPrices.getJSONObject(j);
+                        String prdId = oPrice.getString("productId");
+                        double price = oPrice.getDouble("price");
+                        areaPrices.put(prdId, price);
+                    }
+                    prices.put(area.getID(), areaPrices);
                 }
-                return areas;
+                TariffAreasCache.refreshTariffAreas(areas);
+                TariffAreasCache.refreshPrices(prices);
+                return true;
             } else {
-                return null;
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
+            return false;
         }
+    }
+
+    public Double getTariffAreaPrice(int tariffAreaId, String productId) throws BasicException {
+        return TariffAreasCache.getPrice(tariffAreaId, productId);
+    }
+
+    public final List<TariffInfo> getTariffAreaList() throws BasicException {
+        return TariffAreasCache.getAreas();
     }
 
     public boolean saveMove(CashMove move) throws BasicException {

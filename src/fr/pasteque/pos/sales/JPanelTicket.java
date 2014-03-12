@@ -279,16 +279,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         // Initialize tariff area combobox
         m_TariffList = this.dlSales.getTariffAreaList();
-        TariffInfo defaultArea = new TariffInfo("-1",
+        TariffInfo defaultArea = new TariffInfo(-1,
                 AppLocal.getIntString("Label.DefaultTariffArea"));
         m_TariffList.add(0, defaultArea);
         m_TariffModel = new ComboBoxValModel(m_TariffList);
         m_jTariff.setModel(m_TariffModel);
         if (m_TariffList.size() > 1) {
             this.updateTariffCombo();
-            m_jTariffPanel.setVisible(true);
+            m_jTariff.setVisible(true);
         } else {
-            m_jTariffPanel.setVisible(false);
+            m_jTariff.setVisible(false);
         }
 
         // Authorization for buttons
@@ -447,7 +447,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void switchTariffArea(TariffInfo area) {
         if (m_oTicket != null) {
-            if (area.getID().equals("-1")) {
+            if (area.getID() == -1) {
                 m_oTicket.setTariffArea(null);
             } else {
                 m_oTicket.setTariffArea(new Integer(area.getID()));
@@ -508,20 +508,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Update price from tariff area if needed
         if (m_oTicket.getTariffArea() != null) {
             // TODO: don't update price of composition product (which price is 0)
-            List<ProductInfoExt> prods = null;
-            // Get prices list
+            // Get tariff area price
             try {
-                prods = dlSales.getTariffProds(String.valueOf(m_oTicket.getTariffArea()));
-            } catch (BasicException ex) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.errorchangetariff"), ex);
-                msg.show(JPanelTicket.this);
-            }
-            if (prods != null) {
-                for (ProductInfoExt p : prods) {
-                    if (p.getID().equals(oLine.getProductID())) {
-                        oLine.setPrice(p.getPriceSell());
-                    }
+                Double price = this.dlSales.getTariffAreaPrice(m_oTicket.getTariffArea(), oLine.getProductID());
+                if (price != null) {
+                    oLine.setPrice(price);
                 }
+            } catch (BasicException e) {
+                e.printStackTrace();
             }
         }
         if (executeEventAndRefresh("ticket.addline", new ScriptArg("line", oLine)) == null) {
@@ -1655,7 +1649,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeyFactory = new JTextField();
         catcontainer = new JPanel();
         m_jInputContainer = new JPanel();
-        m_jTariffPanel = new JPanel();
         m_jTariff = WidgetsBuilder.createComboBox();
         JLabel tariffLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TariffArea"));
 
@@ -1774,12 +1767,26 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Ticket zone
         JPanel ticketZone = new JPanel();
         ticketZone.setLayout(new GridBagLayout());
+        // Tariff area
+        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jTariffActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridwidth = 2;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.insets = new Insets(btnspacing, btnspacing,
+                btnspacing, btnspacing);
+        ticketZone.add(m_jTariff, cstr);
         // Ticket lines
         m_ticketlines = new JTicketLines();
         m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
         cstr.weighty = 1.0;
@@ -1886,7 +1893,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Add line edit container
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.VERTICAL;
         ticketZone.add(lineEditBtns, cstr);
@@ -1923,7 +1930,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Add total zone
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         cstr.gridwidth = 2;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         ticketZone.add(totalZone, cstr);
@@ -1958,29 +1965,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         //////////////
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
-
-        // Tariff area
-        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jTariffActionPerformed(evt);
-            }
-        });
-        m_jTariffPanel.setLayout(new java.awt.GridBagLayout());
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.insets = new Insets(0, 5, 0, 5);
-        m_jTariffPanel.add(tariffLbl, cstr);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
-        m_jTariffPanel.add(m_jTariff, cstr);
-
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.anchor = GridBagConstraints.WEST;
-        m_jInputContainer.add(m_jTariffPanel, cstr);
 
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
 
@@ -2319,5 +2303,4 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jbtnLineDiscount;
     private javax.swing.JPanel m_jInputContainer;
     private javax.swing.JComboBox m_jTariff;
-    private javax.swing.JPanel m_jTariffPanel;
 }

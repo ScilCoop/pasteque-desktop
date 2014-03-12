@@ -105,6 +105,12 @@ public class LocalDB {
             stmt.execute("CREATE TABLE customerRanking ("
                     + "id VARCHAR(255), rank INTEGER(255), "
                     + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE tariffAreas ("
+                    + "id INTEGER(255), data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE tariffAreaPrices ("
+                    + "areaId INTEGER(255), prdId VARCHAR(255), price DOUBLE, "
+                    + "PRIMARY KEY (areaId, prdId))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }
