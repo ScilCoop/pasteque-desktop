@@ -45,6 +45,7 @@ import fr.pasteque.pos.caching.CatalogCache;
 import fr.pasteque.pos.caching.CurrenciesCache;
 import fr.pasteque.pos.caching.TaxesCache;
 import fr.pasteque.pos.customers.CustomerInfoExt;
+import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.inventory.TaxCustCategoryInfo;
@@ -521,18 +522,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return CurrenciesCache.getMainCurrency();
     }
 
-    public CustomerInfoExt loadCustomerExt(String id) throws BasicException {
-        return (CustomerInfoExt) new PreparedSentence(s,
-                "SELECT ID, TAXID, SEARCHKEY, NAME, CARD, TAXCATEGORY, NOTES, "
-                + "MAXDEBT, VISIBLE, CURDATE, CURDEBT, PREPAID, "
-                + "FIRSTNAME, LASTNAME, EMAIL, PHONE, PHONE2, FAX, "
-                + "ADDRESS, ADDRESS2, POSTAL, CITY, REGION, COUNTRY "
-                + "FROM CUSTOMERS "
-                + "WHERE ID = ?",
-                SerializerWriteString.INSTANCE,
-                new CustomerExtRead()).find(id);
-    }
-
     public final boolean isCashActive(String id) throws BasicException {
         DataLogicSystem dlSystem = new DataLogicSystem();
         CashSession session = dlSystem.getCashSessionById(id);
@@ -576,9 +565,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         if (ticket != null) {
 
             String customerid = ticket.getCustomerId();
+            DataLogicCustomers dlCustomers = new DataLogicCustomers();
             ticket.setCustomer(customerid == null
                     ? null
-                    : loadCustomerExt(customerid));
+                    : dlCustomers.getCustomer(customerid));
 
             ticket.setLines(new PreparedSentence(s
                 , "SELECT L.TICKET, L.LINE, L.PRODUCT, L.ATTRIBUTESETINSTANCE_ID, L.UNITS, L.PRICE, T.ID, T.NAME, T.CATEGORY, T.VALIDFROM, T.CUSTCATEGORY, T.PARENTID, T.RATE, T.RATECASCADE, T.RATEORDER, L.ATTRIBUTES " +

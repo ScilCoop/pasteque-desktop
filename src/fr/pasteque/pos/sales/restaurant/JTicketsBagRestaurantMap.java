@@ -26,6 +26,7 @@ import java.awt.CardLayout;
 import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
+import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.sales.*;
 import fr.pasteque.pos.forms.*; 
 import fr.pasteque.data.loader.ImageLoader;
@@ -63,7 +64,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         super(app, panelticket);
         
         dlReceipts = (DataLogicReceipts) app.getBean("fr.pasteque.pos.sales.DataLogicReceipts");
-        dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
+        dlSales = new DataLogicSales();
         
         m_restaurantmap = new JTicketsBagRestaurant(app, this);
         m_PlaceCurrent = null;
@@ -444,9 +445,10 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                         ticket = new TicketInfo();
 
                         try {
+                            DataLogicCustomers dlCust = new DataLogicCustomers();
                             ticket.setCustomer(customer.getId() == null
                                     ? null
-                                    : dlSales.loadCustomerExt(customer.getId()));
+                                    : dlCust.getCustomer(customer.getId()));
                         } catch (BasicException e) {
                             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), e);
                             msg.show(JTicketsBagRestaurantMap.this);            
