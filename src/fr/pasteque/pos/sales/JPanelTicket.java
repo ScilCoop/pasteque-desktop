@@ -498,8 +498,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (oProduct.isDiscountEnabled()) {
             double rate = oProduct.getDiscountRate();
             if (rate > 0.005) {
-                // Add discount line
-                this.addDiscountLine(line, oProduct.getDiscountRate());
+                line.setDiscountRate(rate);
             }
         }
     }
@@ -555,22 +554,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    /** Add a discount line related to an other one */
-    private void addDiscountLine(TicketLineInfo line, double discountRate) {
-        int index = this.m_ticketlines.getSelectedIndex();
-        String sdiscount = Formats.PERCENT.formatValue(discountRate);
-        TicketLineInfo newLine = new TicketLineInfo(
-                AppLocal.getIntString("label.discount") + " " + sdiscount,
-                line.getProductTaxCategoryID(),
-                line.getMultiply(),
-                -line.getPrice () * discountRate,
-                line.getTaxInfo());
-        newLine.setDiscount(true);
-        this.m_oTicket.insertLine(index + 1, newLine);                    
-        this.refreshTicket();
-        this.setSelectedIndex(index + 1);
-    }
-    
     private void removeTicketLine(int i){
         
         if (executeEventAndRefresh("ticket.removeline", new ScriptArg("index", i)) == null) {
@@ -1879,7 +1862,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
         m_jbtnLineDiscount.setRequestFocusEnabled(false);
-        m_jbtnLineDiscount.setEnabled(false); // TODO: line discount
         m_jbtnLineDiscount.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jbtnLineDiscountActionPerformed(evt);
@@ -2108,26 +2090,22 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         double discountRate = this.getInputValue() / 100.0;
 
         int index = m_ticketlines.getSelectedIndex();
-        if (index >= 0 && m_oTicket.getLine(index).getPrice() > 0.0) {
+        if (index >= 0) {
             TicketLineInfo line = m_oTicket.getLine(index);
-            
-            double discount = - line.getPrice() * discountRate;
-            // Round discount to 0.01
-            long cents = Math.round(discount * 100.0f);
-            discount = ((double)cents) / 100.0;
             if (discountRate > 0.005) {
-
-                this.addDiscountLine(line, discountRate);
-                
+                line.setDiscountRate(discountRate);
+                this.refreshTicket();
             } else {
                  // No rate
-                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.selectratefordiscount"));
+                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                         AppLocal.getIntString("message.selectratefordiscount"));
                  msg.show(this);
                  java.awt.Toolkit.getDefaultToolkit().beep();
             }
         } else {
             // No item or discount selected
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.selectlinefordiscount"));
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                    AppLocal.getIntString("message.selectlinefordiscount"));
             msg.show(this);
             java.awt.Toolkit.getDefaultToolkit().beep();
         }

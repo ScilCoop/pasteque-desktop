@@ -45,6 +45,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     private int m_iLine;
     private double multiply;
     private double price;
+    private double discountRate;
     private TaxInfo tax;
     private Properties attributes;
     private String productid;
@@ -118,7 +119,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         o.put("quantity", this.multiply);
         o.put("price", this.price);
         o.put("taxId", this.tax.getId());
-        o.put("discountRate", 0.0); // TODO: add discount rate
+        o.put("discountRate", this.discountRate);
         return o;
     }
 
@@ -143,6 +144,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         this.multiply = o.getDouble("quantity");
         this.price = o.getDouble("price");
         this.tax = dlSales.getTax(o.getString("taxId"));
+        this.discountRate = o.getDouble("discountRate");
     }
 
     public void writeValues(DataWrite dp) throws BasicException {
@@ -193,6 +195,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         l.multiply = multiply;
         l.price = price;
         l.tax = tax;
+        l.discountRate = this.discountRate;
         l.attributes = (Properties) attributes.clone();
         l.subproduct = this.subproduct;
         return l;
@@ -267,8 +270,16 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         multiply = dValue;
     }
 
+    public double getDiscountRate() {
+        return this.discountRate;
+    }
+    public void setDiscountRate(double rate) {
+        this.discountRate = rate;
+    }
+
+    /** Get price with discount */
     public double getPrice() {
-        return price;
+        return price * (1.0 - this.discountRate);
     }
 
     public void setPrice(double dValue) {
@@ -276,7 +287,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     }
 
     public double getPriceTax() {
-        return price * (1.0 + getTaxRate());
+        return price * (1.0 - this.discountRate) * (1.0 + getTaxRate());
     }
 
     public void setPriceTax(double dValue) {
@@ -311,16 +322,25 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return tax == null ? 0.0 : tax.getRate();
     }
 
+    /** Get price with quantity and discount */
     public double getSubValue() {
-        return price * multiply;
+        return price * (1.0 - this.discountRate) * multiply;
     }
-
+    /** Get price with quantity (without discount) */
+    public double getFullSubValue() {
+        return this.price * this.multiply;
+    }
+    /** Get tax amount with discount */
     public double getTax() {
-        return price * multiply * getTaxRate();
+        return price * (1.0 - this.discountRate) * multiply * getTaxRate();
     }
-
+    /** Get price with quantity, taxes and discount */
     public double getValue() {
-        return price * multiply * (1.0 + getTaxRate());
+        return price * (1.0 - this.discountRate) * multiply * (1.0 + getTaxRate());
+    }
+    /** Get price with quantity and taxes (without discount) */
+    public double getFullValue() {
+        return this.price * this.multiply * (1.0 + this.getTaxRate());
     }
 
     public boolean isSubproduct() {
@@ -358,7 +378,19 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return Formats.CURRENCY.formatValue(getSubValue());
     }
 
+    public String printFullSubValue() {
+        return Formats.CURRENCY.formatValue(this.getFullSubValue());
+    }
+
     public String printValue() {
         return Formats.CURRENCY.formatValue(getValue());
+    }
+
+    public String printFullValue() {
+        return Formats.CURRENCY.formatValue(this.getFullValue());
+    }
+
+    public String printDiscountRate() {
+        return Formats.PERCENT.formatValue(this.discountRate);
     }
 }

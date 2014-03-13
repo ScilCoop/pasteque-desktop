@@ -513,6 +513,7 @@ public class TicketInfo implements SerializableRead {
         return sum * (1 - this.discountRate);
     }
 
+    /** Get price before discount */
     public double getFullTotal() {
         double sum = 0.0;
         for (TicketLineInfo line : m_aLines) {
@@ -521,8 +522,8 @@ public class TicketInfo implements SerializableRead {
         return sum;
     }
 
+    /** Get total with discount */
     public double getTotal() {
-        
         return (getSubTotal() + getTax());
     }
 
