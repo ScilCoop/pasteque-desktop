@@ -470,19 +470,17 @@ public class TicketInfo implements SerializableRead {
 
         for (Iterator<TicketLineInfo> i = m_aLines.iterator(); i.hasNext();) {
             oLine = i.next();
-            if (!oLine.isDiscount()) {
-                if (oLine.isProductScale()) {
-                    if (oLine.getPrice() >= 0) {
-                        dArticles += 1;
-                    } else {
-                        dArticles -= 1;
-                    }
+            if (oLine.isProductScale()) {
+                if (oLine.getPrice() >= 0) {
+                    dArticles += 1;
                 } else {
-                    if (oLine.getPrice() >= 0) {
-                        dArticles += oLine.getMultiply();
-                    } else {
-                        dArticles -= oLine.getMultiply();
-                    }
+                    dArticles -= 1;
+                }
+            } else {
+                if (oLine.getPrice() >= 0) {
+                    dArticles += oLine.getMultiply();
+                } else {
+                    dArticles -= oLine.getMultiply();
                 }
             }
         }

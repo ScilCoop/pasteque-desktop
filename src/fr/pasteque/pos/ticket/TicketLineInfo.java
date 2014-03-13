@@ -209,15 +209,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return productid;
     }
     
-    public boolean isDiscount() {
-        String strDisc = attributes.getProperty("discount");
-        return strDisc != null && strDisc.equals("true");
-    }
-    
-    public void setDiscount(boolean discount) {
-        attributes.setProperty("discount", discount ? "true" : "false");
-    }
-
     public String getProductName() {
         return attributes.getProperty("product.name");
     }
@@ -276,16 +267,26 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public void setDiscountRate(double rate) {
         this.discountRate = rate;
     }
+    public boolean hasDiscount() {
+        return this.discountRate > 0.0;
+    }
 
+    /** Get price without discount */
+    public double getFullPrice() {
+        return this.price;
+    }
     /** Get price with discount */
     public double getPrice() {
-        return price * (1.0 - this.discountRate);
+        return this.price * (1.0 - this.discountRate);
     }
 
     public void setPrice(double dValue) {
         price = dValue;
     }
 
+    public double getFullPriceTax() {
+        return price * (1.0 + getTaxRate());
+    }
     public double getPriceTax() {
         return price * (1.0 - this.discountRate) * (1.0 + getTaxRate());
     }
@@ -330,6 +331,9 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public double getFullSubValue() {
         return this.price * this.multiply;
     }
+    public double getFullTax() {
+        return price * multiply * getTaxRate();
+    }
     /** Get tax amount with discount */
     public double getTax() {
         return price * (1.0 - this.discountRate) * multiply * getTaxRate();
@@ -358,14 +362,23 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return Formats.DOUBLE.formatValue(multiply);
     }
 
+    public String printFullPrice() {
+        return Formats.CURRENCY.formatValue(this.getFullPrice());
+    }
     public String printPrice() {
         return Formats.CURRENCY.formatValue(getPrice());
     }
 
+    public String printFullPriceTax() {
+        return Formats.CURRENCY.formatValue(this.getFullPriceTax());
+    }
     public String printPriceTax() {
         return Formats.CURRENCY.formatValue(getPriceTax());
     }
 
+    public String printFullTax() {
+        return Formats.CURRENCY.formatValue(this.getFullTax());
+    }
     public String printTax() {
         return Formats.CURRENCY.formatValue(getTax());
     }
@@ -374,20 +387,18 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return Formats.PERCENT.formatValue(getTaxRate());
     }
 
+    public String printFullSubValue() {
+        return Formats.CURRENCY.formatValue(this.getFullSubValue());
+    }
     public String printSubValue() {
         return Formats.CURRENCY.formatValue(getSubValue());
     }
 
-    public String printFullSubValue() {
-        return Formats.CURRENCY.formatValue(this.getFullSubValue());
-    }
-
-    public String printValue() {
-        return Formats.CURRENCY.formatValue(getValue());
-    }
-
     public String printFullValue() {
         return Formats.CURRENCY.formatValue(this.getFullValue());
+    }
+    public String printValue() {
+        return Formats.CURRENCY.formatValue(getValue());
     }
 
     public String printDiscountRate() {
