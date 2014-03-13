@@ -89,6 +89,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
     public TicketLineInfo(TicketLineInfo line) {
         init(line.productid, line.attsetinstid, line.multiply, line.price, line.tax, (Properties) line.attributes.clone());
         this.subproduct = line.isSubproduct();
+        this.discountRate = line.discountRate;
     }
 
     private void init(String productid, String attsetinstid, double dMultiply, double dPrice, TaxInfo tax, Properties attributes) {
