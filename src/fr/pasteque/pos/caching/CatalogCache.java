@@ -272,7 +272,7 @@ public class CatalogCache {
             }
             productByBarcode.clearParameters();
             productByBarcode.setString(1, code);
-            ResultSet rs = product.executeQuery();
+            ResultSet rs = productByBarcode.executeQuery();
             List<ProductInfoExt> prds = readProductResult(rs);
             if (prds.size() > 0) {
                 return prds.get(0);

@@ -1742,7 +1742,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 0;
-        cstr.gridheight = 2;
+        cstr.gridheight = 3;
         cstr.weightx = 1.0;
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.BOTH;
@@ -1922,6 +1922,57 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weighty = 1.0;
         mainZone.add(ticketZone, cstr);
+        // Barcode and manual input zone
+        JPanel barcodeZone = new JPanel();
+        barcodeZone.setLayout(new GridBagLayout());
+        m_jPrice.setBackground(java.awt.Color.white);
+        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        m_jPrice.setOpaque(true);
+        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
+        m_jPrice.setRequestFocusEnabled(false);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridwidth = 2;
+        cstr.insets = new Insets(btnspacing, btnspacing, btnspacing, btnspacing);
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        barcodeZone.add(m_jPrice, cstr);
+        m_jPor.setBackground(java.awt.Color.white);
+        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        m_jPor.setOpaque(true);
+        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
+        m_jPor.setRequestFocusEnabled(false);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 2;
+        cstr.gridy = 0;
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.insets = new java.awt.Insets(btnspacing, 0, btnspacing, 0);
+        barcodeZone.add(m_jPor, cstr);
+        m_jEnter.setFocusPainted(false);
+        m_jEnter.setFocusable(false);
+        m_jEnter.setRequestFocusEnabled(false);
+        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jEnterActionPerformed(evt);
+            }
+        });
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 3;
+        cstr.gridy = 0;
+        cstr.insets = new java.awt.Insets(btnspacing, btnspacing,
+                btnspacing, btnspacing);
+        barcodeZone.add(m_jEnter, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        mainZone.add(barcodeZone, cstr);
         // Numpad zone
         JPanel numpadZone = new JPanel();
         numpadZone.setLayout(new GridBagLayout());
@@ -1932,7 +1983,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         mainZone.add(m_jNumberKeys, cstr);
         // Add main zone container
         cstr = new GridBagConstraints();
@@ -1948,59 +1999,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
 
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
-
-
-        // jPanel9: barcode entry line under keyboard
-        jPanel9.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        jPanel9.setLayout(new java.awt.GridBagLayout());
-
-        m_jPrice.setBackground(java.awt.Color.white);
-        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPrice.setOpaque(true);
-        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
-        m_jPrice.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        jPanel9.add(m_jPrice, gridBagConstraints);
-
-        m_jPor.setBackground(java.awt.Color.white);
-        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPor.setOpaque(true);
-        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
-        m_jPor.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel9.add(m_jPor, gridBagConstraints);
-
-        m_jEnter.setFocusPainted(false);
-        m_jEnter.setFocusable(false);
-        m_jEnter.setRequestFocusEnabled(false);
-        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jEnterActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel9.add(m_jEnter, gridBagConstraints);
 
         m_jTax.setFocusable(false);
         m_jTax.setRequestFocusEnabled(false);
