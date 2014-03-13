@@ -167,8 +167,16 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
             if (this.selectedCustomer != null) {
                 customerId = this.selectedCustomer.getId();
             }
-            List<TicketInfo> tkts = this.dlSales.searchTickets(tktId, tktType,
+            List<TicketInfo> tkts = null;
+            if (tktId != null) {
+                // Search only by number and ignore other filters
+                tkts = this.dlSales.searchTickets(tktId, tktType, null,
+                        null, null, null, null);
+            } else {
+                // Regular search
+                tkts = this.dlSales.searchTickets(tktId, tktType,
                     null, start, stop, customerId, userId);
+            }
             jListTickets.setModel(new MyListData(tkts));
             if (jListTickets.getModel().getSize() > 0) {
                 jListTickets.setSelectedIndex(0);
