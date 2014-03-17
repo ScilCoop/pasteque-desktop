@@ -199,7 +199,9 @@
   
     <target name="dist.bin" depends="init.dist,build" description="Generate the bin zip file.">
         <mkdir dir="${dest.dist}" />
-        <zip zipfile="${dest.dist}/${name}_${version}_bin.zip" basedir="${dest.bin}" />
+        <zip zipfile="${dest.dist}/${name}-desktop-${version}.zip">
+            <zipfileset dir="${dest.bin}" prefix="${name}-desktop-${version}" />
+        </zip>
     </target>
 
     <target name="dist.src" depends="init.dist" description="Generate the src zip file.">
@@ -241,7 +243,9 @@
         </copy>
 
         <mkdir dir="${dest.dist}" />
-        <zip zipfile="${dest.dist}/${name}_${version}_src.zip" basedir="${basedir}/build/zip" />
+        <zip zipfile="${dest.dist}/${name}-desktop-${version}_src.zip">
+            <zipfileset dir="${basedir}/build/zip" prefix="${name}-desktop-${version}_src"/>
+        </zip>
         <delete dir="${basedir}/build/zip" />
     </target>
 
