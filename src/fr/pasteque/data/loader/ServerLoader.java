@@ -59,13 +59,13 @@ public class ServerLoader {
     }
 
     private void preformatBinUrl() {
-        if (!this.url.startsWith("http")) {
-            this.url = "http://" + this.url;
+        if (!this.binUrl.startsWith("http")) {
+            this.binUrl = "http://" + this.binUrl;
         }
-        if (!this.url.endsWith("/")) {
-            this.url += "/";
+        if (!this.binUrl.endsWith("/")) {
+            this.binUrl += "/";
         }
-        this.url += "dbImg.php";
+        this.binUrl += "index.php";
     }
 
     /** Create from AppConfig */
@@ -81,6 +81,8 @@ public class ServerLoader {
         }
         this.url = url;
         this.preformatUrl();
+        this.binUrl = binUrl;
+        this.preformatBinUrl();
         this.user = user;
         this.password = password;
     }
@@ -111,6 +113,9 @@ public class ServerLoader {
 
     private Map<String, String> binParams(String model, String id) {
         Map<String, String> ret = new HashMap<String, String>();
+        ret.put("user", this.user);
+        ret.put("password", this.password);
+        ret.put("p", "img");
         ret.put("w", model);
         ret.put("id", id);
         return ret;

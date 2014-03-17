@@ -74,6 +74,8 @@ import org.json.JSONObject;
 public class DataLogicSales extends BeanFactoryDataSingle {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DatalogicSales");
+    private static final String TYPE_CAT = "category";
+    private static final String TYPE_PRD = "product";
 
     protected Session s;
 
@@ -135,6 +137,16 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return productsRow;
     }
 
+    private byte[] loadImage(String type, String id) {
+        try {
+            ServerLoader loader = new ServerLoader();
+            return loader.readBinary(type, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public boolean preloadCategories() {
         try {
             logger.log(Level.INFO, "Preloading categories");
@@ -147,6 +159,16 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     JSONObject o = a.getJSONObject(i);
                     CategoryInfo cat = new CategoryInfo(o);
                     categories.add(cat);
+                    try {
+                        if (o.getBoolean("hasImage")) {
+                            byte[] img = this.loadImage(TYPE_CAT, cat.getID());
+                            CatalogCache.storeCategoryImage(cat.getID(), img);
+                        }
+                    } catch (BasicException e) {
+                        logger.log(Level.WARNING,
+                                "Unable to get category image for "
+                                + cat.getID(), e);
+                    }
                 }
                 CatalogCache.refreshCategories(categories);
                 return true;
@@ -170,6 +192,17 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                     JSONObject o = a.getJSONObject(i);
                     ProductInfoExt prd = new ProductInfoExt(o);
                     products.add(prd);
+                    try {
+                        if (o.getBoolean("hasImage")) {
+                            byte[] img = this.loadImage(TYPE_PRD, prd.getID());
+                            CatalogCache.storeProductImage(prd.getID(), img);
+                        }
+                    } catch (BasicException e) {
+                        logger.log(Level.WARNING,
+                                "Unable to get product image for "
+                                + prd.getID(), e);
+                    }
+
                 }
                 CatalogCache.refreshProducts(products);
                 return true;
@@ -216,47 +249,50 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return CatalogCache.getCategories();
     }
 
-
-    //Subgrupos de una composición
-    public final List<SubgroupInfo> getSubgroups(String composition) throws BasicException  {
-        return new PreparedSentence(s
-            , "SELECT ID, NAME, IMAGE, DISPORDER FROM SUBGROUPS WHERE COMPOSITION = ? ORDER BY DISPORDER, NAME"
-            , SerializerWriteString.INSTANCE
-            , new SerializerReadClass(SubgroupInfo.class)).list(composition);
-    }
-
-    //Producto de un subgrupo de una composicion
-    public final List<ProductInfoExt> getSubgroupCatalog(Integer subgroup) throws BasicException  {
-            return new PreparedSentence(s
-            , "SELECT P.ID, P.REFERENCE, P.CODE, P.NAME, P.ISCOM, P.ISSCALE, "
-            + "P.PRICEBUY, P.PRICESELL, P.TAXCAT, P.CATEGORY, "
-            + "P.ATTRIBUTESET_ID, P.IMAGE, P.ATTRIBUTES, P.DISCOUNTENABLED, "
-            + "P.DISCOUNTRATE "
-            + "FROM SUBGROUPS S INNER JOIN SUBGROUPS_PROD SP ON S.ID = SP.SUBGROUP "
-            + "LEFT OUTER JOIN PRODUCTS P ON SP.PRODUCT = P.ID "
-            + "WHERE S.ID = ? "
-            + "ORDER BY P.NAME"
-            , SerializerWriteString.INSTANCE
-            , ProductInfoExt.getSerializerRead()).list(subgroup.toString());
-    }
-
-    public final List<CategoryInfo> getCategoryComposition() throws BasicException {
+    public boolean preloadCompositions() {
         try {
+            logger.log(Level.INFO, "Preloading compositions");
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CategoriesAPI", "get",
-                    "id", "0");
+            ServerLoader.Response r = loader.read("CompositionsAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                List<CategoryInfo> list = new ArrayList<CategoryInfo>();
-                list.add(new CategoryInfo(o));
-                return list;
+                JSONArray a = r.getArrayContent();
+                Map<String, List<SubgroupInfo>> compos = new HashMap<String, List<SubgroupInfo>>();
+                Map<Integer, List<String>> groups = new HashMap<Integer, List<String>>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    String prdId = o.getString("id");
+                    compos.put(prdId, new ArrayList<SubgroupInfo>());
+                    JSONArray grps = o.getJSONArray("groups");
+                    for (int j = 0; j < grps.length(); j++) {
+                        JSONObject oGrp = grps.getJSONObject(j);
+                        SubgroupInfo subgrp = new SubgroupInfo(oGrp);
+                        compos.get(prdId).add(subgrp);
+                        groups.put(subgrp.getID(), new ArrayList<String>());
+                        JSONArray choices = oGrp.getJSONArray("choices");
+                        for (int k = 0; k < choices.length(); k++) {
+                            JSONObject oPrd = choices.getJSONObject(k);
+                            groups.get(subgrp.getID()).add(oPrd.getString("productId"));
+                        }
+                    }
+                }
+                CatalogCache.refreshSubgroups(compos);
+                CatalogCache.refreshSubgroupProds(groups);
+                return true;
             } else {
-                return null;
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
+            return false;
         }
+    }
+    public final List<SubgroupInfo> getSubgroups(String composition)
+        throws BasicException  {
+        return CatalogCache.getSubgroups(composition);
+    }
+    public final List<ProductInfoExt> getSubgroupCatalog(Integer subgroup)
+        throws BasicException  {
+        return CatalogCache.getSubgroupProducts(subgroup);
     }
 
     /** Get products from a category ID. Products must be preloaded. */

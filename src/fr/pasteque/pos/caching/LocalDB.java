@@ -111,6 +111,14 @@ public class LocalDB {
             stmt.execute("CREATE TABLE tariffAreaPrices ("
                     + "areaId INTEGER(255), prdId VARCHAR(255), price DOUBLE, "
                     + "PRIMARY KEY (areaId, prdId))");
+            stmt.execute("CREATE TABLE subgroups ("
+                    + "id INTEGER(255), compositionId VARCHAR(255), "
+                    + "dispOrder INTEGER(255), data BINARY (500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE subgroupProds ("
+                    + "groupId INTEGER(255), prdId VARCHAR(255), "
+                    + "dispOrder INTEGER(255), "
+                    + "PRIMARY KEY (groupId, prdId))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }

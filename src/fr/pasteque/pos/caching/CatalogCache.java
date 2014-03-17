@@ -20,21 +20,26 @@
 package fr.pasteque.pos.caching;
 
 import fr.pasteque.basic.BasicException;
+import fr.pasteque.data.loader.ImageUtils;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.forms.AppConfig;
-import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.CategoryInfo;
+import fr.pasteque.pos.ticket.ProductInfoExt;
+import fr.pasteque.pos.ticket.SubgroupInfo;
 
-import java.io.File;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.sql.PreparedStatement;
@@ -44,6 +49,8 @@ import java.sql.SQLException;
 public class CatalogCache {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.caching.CatalogCache");
+    private static final String CAT_IMG_DIR = "catImgs";
+    private static final String PRD_IMG_DIR = "prdImgs";
 
     private static PreparedStatement category;
     private static PreparedStatement categories;
@@ -52,6 +59,8 @@ public class CatalogCache {
     private static PreparedStatement productsByCat;
     private static PreparedStatement productsSearch;
     private static PreparedStatement productByBarcode;
+    private static PreparedStatement subgroups;
+    private static PreparedStatement subgroupProds;
 
     private CatalogCache() {}
 
@@ -69,6 +78,11 @@ public class CatalogCache {
                 + "WHERE LOWER(ref) LIKE ? AND LOWER(label) LIKE ?");
         productByBarcode = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE barcode = ?");
+        subgroups = LocalDB.prepare("SELECT data FROM subgroups "
+                + "WHERE compositionId = ?");
+        subgroupProds = LocalDB.prepare("SELECT data FROM subgroupProds "
+                + "LEFT JOIN products ON subgroupProds.prdId = products.id "
+                + "WHERE groupId = ?");
     }
 
     private static List<ProductInfoExt> readProductResult(ResultSet rs)
@@ -80,6 +94,29 @@ public class CatalogCache {
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
                 ObjectInputStream os = new ObjectInputStream(bis);
                 ProductInfoExt prd = (ProductInfoExt) os.readObject();
+                // Check for image
+                try {
+                    String path = AppConfig.loadedInstance.getDataDir()
+                            + "/" + PRD_IMG_DIR + "/" + prd.getID();
+                    File f = new File(path);
+                    if (f.exists()) {
+                        FileInputStream fis = new FileInputStream(f);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+                                byte[] buff = new byte[2048];
+                        int read = fis.read(buff);
+                        while (read != -1) {
+                            bos.write(buff, 0, read);
+                            read = fis.read(buff);
+                        }
+                        byte[] imgData = bos.toByteArray();
+                        prd.setImage(ImageUtils.readImage(imgData));
+                    }
+                } catch (IOException e) {
+                    // Ignore image and continue
+                    logger.log(Level.WARNING,
+                            "Unable to read category image for " + prd.getID(),
+                            e);
+                }
                 prds.add(prd);
             }
             return prds;
@@ -101,9 +138,54 @@ public class CatalogCache {
                 ByteArrayInputStream bis = new ByteArrayInputStream(data);
                 ObjectInputStream os = new ObjectInputStream(bis);
                 CategoryInfo cat = (CategoryInfo) os.readObject();
+                // Check for image
+                try {
+                    String path = AppConfig.loadedInstance.getDataDir()
+                            + "/" + CAT_IMG_DIR + "/" + cat.getID();
+                    File f = new File(path);
+                    if (f.exists()) {
+                        FileInputStream fis = new FileInputStream(f);
+                        ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+                                byte[] buff = new byte[2048];
+                        int read = fis.read(buff);
+                        while (read != -1) {
+                            bos.write(buff, 0, read);
+                            read = fis.read(buff);
+                        }
+                        byte[] imgData = bos.toByteArray();
+                        cat.setImage(ImageUtils.readImage(imgData));
+                    }
+                } catch (IOException e) {
+                    // Ignore image and continue
+                    logger.log(Level.WARNING,
+                            "Unable to read category image for " + cat.getID(),
+                            e);
+                }
                 categories.add(cat);
             }
             return categories;
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
+        } catch (ClassNotFoundException e) {
+            // Should never happen
+            throw new BasicException(e);
+        }
+    }
+
+    private static List<SubgroupInfo> readSubgroupResult(ResultSet rs)
+        throws BasicException {
+        try {
+            List<SubgroupInfo> subgroups = new ArrayList<SubgroupInfo>();
+            while (rs.next()) {
+                byte[] data = rs.getBytes("data");
+                ByteArrayInputStream bis = new ByteArrayInputStream(data);
+                ObjectInputStream os = new ObjectInputStream(bis);
+                SubgroupInfo grp = (SubgroupInfo) os.readObject();
+                subgroups.add(grp);
+            }
+            return subgroups;
         } catch (SQLException e) {
             throw new BasicException(e);
         } catch (IOException e) {
@@ -166,6 +248,104 @@ public class CatalogCache {
             }
         } catch (SQLException e) {
             throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    /** Clear and replace subgroups. */
+    public static void refreshSubgroups(Map<String, List<SubgroupInfo>> groups)
+        throws BasicException {
+        try {
+            LocalDB.execute("TRUNCATE TABLE subgroups");
+            PreparedStatement stmt = LocalDB.prepare("INSERT INTO subgroups "
+                    + "(id, compositionId, dispOrder, data) "
+                    + "VALUES (?, ?, ?, ?)");
+            for (String cmpId : groups.keySet()) {
+                for (SubgroupInfo grp : groups.get(cmpId)) {
+                    stmt.setInt(1, grp.getID());
+                    stmt.setString(2, cmpId);
+                    stmt.setInt(3, grp.getDispOrder());
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
+                    ObjectOutputStream os = new ObjectOutputStream(bos);
+                    os.writeObject(grp);
+                    stmt.setBytes(4, bos.toByteArray());
+                    os.close();
+                    stmt.execute();
+                }
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    /** Clear and replace subgroups. */
+    public static void refreshSubgroupProds(Map<Integer, List<String>> prds)
+        throws BasicException {
+        try {
+            LocalDB.execute("TRUNCATE TABLE subgroupProds");
+            PreparedStatement stmt = LocalDB.prepare("INSERT INTO subgroupProds "
+                    + "(groupId, prdId, dispOrder) "
+                    + "VALUES (?, ?, ?)");
+            int dispOrder = 1;
+            for (Integer grpId : prds.keySet()) {
+                for (String prdId : prds.get(grpId)) {
+                    stmt.setInt(1, grpId);
+                    stmt.setString(2, prdId);
+                    stmt.setInt(3, dispOrder);
+                    dispOrder++;
+                    stmt.execute();
+                }
+            }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static void storeCategoryImage(String catId, byte[] image) throws BasicException {
+        try {
+            String path = AppConfig.loadedInstance.getDataDir()
+                    + "/" + CAT_IMG_DIR;
+            File dir = new File(path);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File img = new File(dir, catId);
+            if (img.exists()) {
+                img.delete();
+            }
+            if (image == null) {
+                return;
+            }
+            img.createNewFile();
+            FileOutputStream fos = new FileOutputStream(img);
+            fos.write(image);
+            fos.close();
+        } catch (IOException e) {
+            throw new BasicException(e);
+        }
+    }
+    public static void storeProductImage(String prdId, byte[] image) throws BasicException {
+        try {
+            String path = AppConfig.loadedInstance.getDataDir()
+                    + "/" + PRD_IMG_DIR;
+            File dir = new File(path);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+            File img = new File(dir, prdId);
+            if (img.exists()) {
+                img.delete();
+            }
+            if (image == null) {
+                return;
+            }
+            img.createNewFile();
+            FileOutputStream fos = new FileOutputStream(img);
+            fos.write(image);
+            fos.close();
         } catch (IOException e) {
             throw new BasicException(e);
         }
@@ -308,4 +488,33 @@ public class CatalogCache {
         }
     }
 
+    public static List<SubgroupInfo> getSubgroups(String compositionId)
+        throws BasicException {
+        try {
+            if (subgroups == null) {
+                init();
+            }
+            subgroups.clearParameters();
+            subgroups.setString(1, compositionId);
+            ResultSet rs = subgroups.executeQuery();
+            return readSubgroupResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
+
+    public static List<ProductInfoExt> getSubgroupProducts(int groupId)
+        throws BasicException {
+        try {
+            if (subgroupProds == null) {
+                init();
+            }
+            subgroupProds.clearParameters();
+            subgroupProds.setInt(1, groupId);
+            ResultSet rs = subgroupProds.executeQuery();
+            return readProductResult(rs);
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        }
+    }
 }

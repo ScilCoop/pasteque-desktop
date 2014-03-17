@@ -28,6 +28,7 @@ import java.awt.*;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.JMessageDialog;
 import fr.pasteque.data.gui.MessageInf;
+import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.pos.catalog.*;
 import fr.pasteque.pos.ticket.SubgroupInfo;
 import fr.pasteque.pos.ticket.ProductInfoExt;
@@ -80,8 +81,8 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         m_jscrollsubgr.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
 
 //TODO Cambiar imagenes por defecto si hay otras. Cambiar tb en SubgroupEditor
-        tnbcat = new ThumbNailBuilder(32, 32, "fr.pasteque.images/folder_yellow.png");           
-        tnbbutton = new ThumbNailBuilder(width, height, "fr.pasteque.images/package.png");
+        tnbcat = new ThumbNailBuilder(32, 32, "category_default.png");
+        tnbbutton = new ThumbNailBuilder(width, height, "product_default.png");
     }
     
     public Component getComponent() {
@@ -442,7 +443,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         jPanel3.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        m_jCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr.pasteque.images/button_cancel.png")));
+        m_jCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
         m_jCancel.setFocusPainted(false);
         m_jCancel.setFocusable(false);
         m_jCancel.setMargin(new java.awt.Insets(8, 14, 8, 14));
@@ -475,7 +476,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         jPanel5.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        m_btnBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fr.pasteque.images/3uparrow.png")));
+    m_btnBack.setIcon(ImageLoader.readImageIcon("up_twice.png"));
         m_btnBack.setFocusPainted(false);
         m_btnBack.setFocusable(false);
         m_btnBack.setMargin(new java.awt.Insets(8, 14, 8, 14));

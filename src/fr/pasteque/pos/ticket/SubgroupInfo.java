@@ -20,20 +20,18 @@
 package fr.pasteque.pos.ticket;
 
 import java.awt.image.*;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.DataWrite;
-import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.ImageUtils;
+
+import java.io.Serializable;
+import org.json.JSONObject;
 
 /**
  *
  * @author  Luis Ig. Bacas Riveiro	lbacas@opensistemas.com
  * @author  Pablo J. Urbano Santos	purbano@opensistemas.com
  */
-public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed {
+public class SubgroupInfo implements Serializable {
 
     private Integer m_sID;
     private String m_sName;
@@ -42,53 +40,19 @@ public class SubgroupInfo implements SerializableRead, SerializableWrite, IKeyed
     
     /** Constructor por defecto
      */
-    
     public SubgroupInfo() {
         m_sID = null;
         m_sName = null;
         m_Image = null;
         dispOrder = 0;
     }
-    
-    /**
-     * Devuelve el identificador del objeto
-     * @return  id
-     */
-    public Object getKey() {
-        return m_sID;
+
+    public SubgroupInfo(JSONObject o) {
+        this.m_sID = o.getInt("id");
+        this.m_sName = o.getString("label");
+        this.dispOrder = o.getInt("dispOrder");
     }
-    
-    /**
-     * Lee los parámetros del objeto del DataRead
-     * @param dr DataRead del que lee los datos
-     * @throws fr.pasteque.basic.BasicException
-     * @see DataRead
-     */
-    public void readValues(DataRead dr) throws BasicException {
-        m_sID = dr.getInt(1);
-        m_sName = dr.getString(2);
-        m_Image = ImageUtils.readImage(dr.getBytes(3));
-        Integer order = dr.getInt(4);
-        if (order == null) {
-            this.dispOrder = 0;
-        } else {
-            this.dispOrder = order.intValue();
-        }
-    }
-    
-    /**
-     * Crea un DataWrite a partir de los parámetros del objeto
-     * @param dp DataWrite en el que escribe los datos
-     * @throws fr.pasteque.basic.BasicException
-     * @see DataWrite
-     */
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setInt(1, m_sID);
-        dp.setString(2, m_sName);
-        dp.setBytes(3, ImageUtils.writeImage(m_Image));
-        dp.setInt(4, this.dispOrder);
-    }
-    
+
     public void setID(Integer sID) {
         m_sID = sID;
     }
