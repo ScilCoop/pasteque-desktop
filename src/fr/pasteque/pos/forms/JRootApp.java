@@ -127,9 +127,9 @@ public class JRootApp extends JPanel implements AppView {
         }
         if (cashReg == null) {
             // Unknown cash register
-            // TODO: i18n
             JMessageDialog.showMessage(this,
-                    new MessageInf(MessageInf.SGN_DANGER, "Unknown cash"));
+                    new MessageInf(MessageInf.SGN_DANGER,
+                            AppLocal.getIntString("Message.UnknownCash")));
             return false;
         }
 
