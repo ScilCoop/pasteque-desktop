@@ -97,7 +97,7 @@ public class ServerLoader {
     private Map<String, String> params(String api, String action,
             String... params) {
         Map<String, String> ret = new HashMap<String, String>();
-        ret.put("user", this.user);
+        ret.put("login", this.user);
         ret.put("password", this.password);
         ret.put("action", action);
         ret.put("p", api);
@@ -113,7 +113,7 @@ public class ServerLoader {
 
     private Map<String, String> binParams(String model, String id) {
         Map<String, String> ret = new HashMap<String, String>();
-        ret.put("user", this.user);
+        ret.put("login", this.user);
         ret.put("password", this.password);
         ret.put("p", "img");
         ret.put("w", model);
