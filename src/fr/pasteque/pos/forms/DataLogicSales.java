@@ -77,65 +77,11 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     private static final String TYPE_CAT = "category";
     private static final String TYPE_PRD = "product";
 
-    protected Session s;
-
-    protected Datas[] auxiliarDatas;
-    protected Datas[] stockdiaryDatas;
-    // protected Datas[] productcatDatas;
-    protected Datas[] paymenttabledatas;
-    protected Datas[] stockdatas;
-    protected Datas[] compositionDatas;
-    protected Datas[] compositionPrdDatas;
-    protected Datas[] subgroupDatas;
-    protected Datas[] subgroup_prodDatas;
-    protected Datas[] tariffareaDatas;
-    protected Datas[] tariffprodDatas;
-    protected Datas[] currencyData;
-
-    protected Row productsRow;
-
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {
-        stockdiaryDatas = new Datas[] {Datas.STRING, Datas.TIMESTAMP, Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE};
-        paymenttabledatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.TIMESTAMP, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.STRING, Datas.INT};
-        stockdatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.DOUBLE, Datas.DOUBLE};
-        auxiliarDatas = new Datas[] {Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING};
-        tariffareaDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.INT};
-        tariffprodDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.DOUBLE};
-        compositionDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.BOOLEAN, Datas.BOOLEAN, Datas.DOUBLE, Datas.DOUBLE, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.BOOLEAN, Datas.INT, Datas.BYTES};
-        subgroupDatas = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.IMAGE, Datas.INT};
-        subgroup_prodDatas = new Datas[] {Datas.INT, Datas.STRING};
-        currencyData = new Datas[] {Datas.INT, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.STRING, Datas.DOUBLE, Datas.BOOLEAN};
-
-        productsRow = new Row(
-                new Field("ID", Datas.STRING, Formats.STRING),
-                new Field(AppLocal.getIntString("label.prodref"), Datas.STRING, Formats.STRING, true, true, true),
-                new Field(AppLocal.getIntString("label.prodbarcode"), Datas.STRING, Formats.STRING, false, true, true),
-                new Field(AppLocal.getIntString("label.prodname"), Datas.STRING, Formats.STRING, true, true, true),
-                new Field("ISCOM", Datas.BOOLEAN, Formats.BOOLEAN),
-                new Field("ISSCALE", Datas.BOOLEAN, Formats.BOOLEAN),
-                new Field(AppLocal.getIntString("label.prodpricebuy"), Datas.DOUBLE, Formats.CURRENCY, false, true, true),
-                new Field(AppLocal.getIntString("label.prodpricesell"), Datas.DOUBLE, Formats.CURRENCY, false, true, true),
-                new Field(AppLocal.getIntString("label.prodcategory"), Datas.STRING, Formats.STRING, false, false, true),
-                new Field(AppLocal.getIntString("label.taxcategory"), Datas.STRING, Formats.STRING, false, false, true),
-                new Field(AppLocal.getIntString("label.attributeset"), Datas.STRING, Formats.STRING, false, false, true),
-                new Field("IMAGE", Datas.IMAGE, Formats.NULL),
-                new Field("STOCKCOST", Datas.DOUBLE, Formats.CURRENCY),
-                new Field("STOCKVOLUME", Datas.DOUBLE, Formats.DOUBLE),
-                new Field("ISCATALOG", Datas.BOOLEAN, Formats.BOOLEAN),
-                new Field("CATORDER", Datas.INT, Formats.INT),
-                new Field("PROPERTIES", Datas.BYTES, Formats.NULL),
-                new Field("DISCOUNTENABLED", Datas.BOOLEAN, Formats.BOOLEAN),
-                new Field("DISCOUNTRATE", Datas.DOUBLE, Formats.DOUBLE));
     }
 
-    public void init(Session s){
-        this.s = s;
-    }
-
-    public final Row getProductsRow() {
-        return productsRow;
-    }
+    public void init(Session s){}
 
     private byte[] loadImage(String type, String id) {
         try {
@@ -316,61 +262,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             SerializerWriteString.INSTANCE,
             ProductInfoExt.getSerializerRead()).list(id);*/
     }
-  
-    /** Get search all products query */
-    public final SentenceList getProductList() {
-        return new StaticSentence(s,
-            new QBFBuilder(
-                "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-                + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
-                + "FROM PRODUCTS "
-                + "WHERE ?(QBF_FILTER) AND CATEGORY != '0' "
-                + "ORDER BY REFERENCE",
-                new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
-                    "CODE"}),
-            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING,
-                Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.DOUBLE,
-                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-            ProductInfoExt.getSerializerRead());
-    }
-    
-    /** Get search products query of regular products */
-    public SentenceList getProductListNormal() {
-        return new StaticSentence(s,
-            new QBFBuilder(
-                "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-                + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
-                + "FROM PRODUCTS "
-                + "WHERE ISCOM = " + s.DB.FALSE() + " AND ?(QBF_FILTER) "
-                + "AND CATEGORY != '0' "
-                + "ORDER BY REFERENCE",
-                new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
-                    "CODE"}),
-            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING,
-                Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.DOUBLE,
-                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-            ProductInfoExt.getSerializerRead());
-    }
-    
-    /** Get search products query of auxilliar products */
-    public SentenceList getProductListAuxiliar() {
-         return new StaticSentence(s,
-            new QBFBuilder(
-                "SELECT ID, REFERENCE, CODE, NAME, ISCOM, ISSCALE, PRICEBUY, "
-                + "PRICESELL, TAXCAT, CATEGORY, ATTRIBUTESET_ID, IMAGE, "
-                + "ATTRIBUTES, DISCOUNTENABLED, DISCOUNTRATE "
-                + "FROM PRODUCTS WHERE ISCOM = " + s.DB.TRUE()
-                + " AND ?(QBF_FILTER) AND CATEGORY != '0' "
-                + "ORDER BY REFERENCE",
-                new String[] {"NAME", "PRICEBUY", "PRICESELL", "CATEGORY",
-                    "CODE"}),
-            new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING,
-                Datas.OBJECT, Datas.DOUBLE, Datas.OBJECT, Datas.DOUBLE,
-                Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING}),
-            ProductInfoExt.getSerializerRead());
-    }
 
     /** Get the list of tickets from opened cash sessions. */
     public List<TicketInfo> getSessionTickets() throws BasicException {
@@ -472,12 +363,14 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     }
 
     public final SentenceList getAttributeSetList() {
-        return new StaticSentence(s
+        return null;
+        // TODO: reenable attributes
+        /*return new StaticSentence(s
             , "SELECT ID, NAME FROM ATTRIBUTESET ORDER BY NAME"
             , null
             , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
                 return new AttributeSetInfo(dr.getString(1), dr.getString(2));
-            }});
+                }});*/
     }
 
 
@@ -544,47 +437,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    public final TicketInfo loadTicket(final int tickettype, final int ticketid) throws BasicException {
-        TicketInfo ticket = (TicketInfo) new PreparedSentence(s,
-                "SELECT T.ID, T.TICKETTYPE, T.TICKETID, R.DATENEW, R.MONEY, "
-                + "R.ATTRIBUTES, P.ID, P.NAME, T.CUSTOMER, T.CUSTCOUNT "
-                + "FROM RECEIPTS R JOIN TICKETS T ON R.ID = T.ID "
-                + "LEFT OUTER JOIN PEOPLE P ON T.PERSON = P.ID "
-                + "WHERE T.TICKETTYPE = ? AND T.TICKETID = ?",
-                SerializerWriteParams.INSTANCE,
-                new SerializerReadClass(TicketInfo.class))
-                .find(new DataParams() { public void writeValues() throws BasicException {
-                    setInt(1, tickettype);
-                    setInt(2, ticketid);
-                }});
-        if (ticket != null) {
-
-            String customerid = ticket.getCustomerId();
-            DataLogicCustomers dlCustomers = new DataLogicCustomers();
-            ticket.setCustomer(customerid == null
-                    ? null
-                    : dlCustomers.getCustomer(customerid));
-
-            ticket.setLines(new PreparedSentence(s
-                , "SELECT L.TICKET, L.LINE, L.PRODUCT, L.ATTRIBUTESETINSTANCE_ID, L.UNITS, L.PRICE, T.ID, T.NAME, T.CATEGORY, T.VALIDFROM, T.CUSTCATEGORY, T.PARENTID, T.RATE, T.RATECASCADE, T.RATEORDER, L.ATTRIBUTES " +
-                  "FROM TICKETLINES L, TAXES T WHERE L.TAXID = T.ID AND L.TICKET = ? ORDER BY L.LINE"
-                , SerializerWriteString.INSTANCE
-                , new SerializerReadClass(TicketLineInfo.class)).list(ticket.getId()));
-            ticket.setPayments(new PreparedSentence(s
-                , "SELECT PAYMENT, CURRENCY, TOTALCURRENCY, TRANSID FROM PAYMENTS WHERE RECEIPT = ?"
-                , SerializerWriteString.INSTANCE
-                , new SerializerRead() {
-                        public Object readValues(DataRead dr) throws BasicException {
-                            String name = dr.getString(1);
-                            double amount = dr.getDouble(3).doubleValue();
-                            String transactionID = dr.getString(4);
-                            CurrencyInfo currency = getCurrency(dr.getInt(2).intValue());
-                            return new PaymentInfoTicket(amount, currency, name, transactionID);
-                        }
-                 }).list(ticket.getId()));
-        }
-        return ticket;
-    }
 
     /** Save or edit ticket */
     public final void saveTicket(final TicketInfo ticket,

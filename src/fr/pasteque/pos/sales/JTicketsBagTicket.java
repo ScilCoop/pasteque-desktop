@@ -36,6 +36,7 @@ import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
 import fr.pasteque.pos.scripting.ScriptFactory;
 import fr.pasteque.pos.forms.DataLogicSystem;
+import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.panels.JTicketsFinder;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
@@ -138,14 +139,19 @@ public class JTicketsBagTicket extends JTicketsBag {
     protected JComponent getNullComponent() {
         return this;
     }
-      
-    private void readTicket(int iTicketid, int iTickettype) {
-        
+
+    /** Read ticket from ticket id in input */
+    private void readTicket(int tktType) {
         try {
-            TicketInfo ticket = (iTicketid==-1) 
-                ? m_dlSales.loadTicket(iTickettype,  m_jTicketEditor.getValueInteger())
-                : m_dlSales.loadTicket(iTickettype, iTicketid) ;
-            this.readTicket(ticket);
+            int tktId = m_jTicketEditor.getValueInteger();
+            DataLogicSales dlSales = new DataLogicSales();
+            java.util.List<TicketInfo> tkts = dlSales.searchTickets(tktId,
+                    tktType, null, null, null, null, null);
+            if (tkts.size() > 0) {
+                this.readTicket(tkts.get(0));
+            } else {
+                this.readTicket(null);
+            }
         } catch (BasicException e) {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotloadticket"), e);
             msg.show(this);
@@ -377,11 +383,11 @@ public class JTicketsBagTicket extends JTicketsBag {
     }
 
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {
-        readTicket(-1, jrbSales.isSelected() ? 0 : 1);
+        readTicket(jrbSales.isSelected() ? 0 : 1);
     }
 
     private void m_jKeysActionPerformed(java.awt.event.ActionEvent evt) {
-        readTicket(-1, jrbSales.isSelected() ? 0 : 1);
+        readTicket(jrbSales.isSelected() ? 0 : 1);
     }
 
     private void searchBtnActionPerformed(java.awt.event.ActionEvent evt) {
