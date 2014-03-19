@@ -308,32 +308,28 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
     
     public void loadTickets() {
 
-        Set<String> atickets = new HashSet<String>();
-        
+        Map<String, SharedTicketInfo> sharedTickets = new HashMap<String, SharedTicketInfo>();
         try {
             java.util.List<SharedTicketInfo> l = dlReceipts.getSharedTicketList();
+            // Put all tickets in the map indexed by id
             for (SharedTicketInfo ticket : l) {
-                atickets.add(ticket.getId());
+                sharedTickets.put(ticket.getId(), ticket);
+            }
+            for (Place table : this.getAllPlaces()) {
+                boolean occupied = sharedTickets.containsKey(table.getId());
+                int custCount = 0;
+                if (occupied) {
+                    TicketInfo ticket = sharedTickets.get(table.getId()).getTicket();
+                    if (ticket.getCustomersCount() != null) {
+                        custCount = ticket.getCustomersCount();
+                    }
+                }
+                table.setPeople(occupied, custCount);
             }
         } catch (BasicException e) {
             new MessageInf(e).show(this);
         }
 
-        for (Place table : this.getAllPlaces()) {
-            boolean occupied = atickets.contains(table.getId());
-            int custCount = 0;
-            if (occupied) {
-                try {
-                    TicketInfo ticket = dlReceipts.getSharedTicket(table.getId());
-                    if (ticket.getCustomersCount() != null) {
-                        custCount = ticket.getCustomersCount();
-                    }
-                } catch (BasicException e) {
-                    e.printStackTrace();
-                }
-            }
-            table.setPeople(occupied, custCount);
-        }
     }
     
     private void printState() {

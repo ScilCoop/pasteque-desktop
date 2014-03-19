@@ -20,7 +20,11 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
+import fr.pasteque.pos.ticket.TicketInfo;
+import java.io.IOException;
+import javax.xml.bind.DatatypeConverter;
 import org.json.JSONObject;
+
 
 /**
  *
@@ -31,14 +35,19 @@ public class SharedTicketInfo {
     private static final long serialVersionUID = 7640633837719L;
     private String id;
     private String name;
+    private TicketInfo ticket;
     
     /** Creates a new instance of SharedTicketInfo */
     public SharedTicketInfo() {
     }
 
-    public SharedTicketInfo(JSONObject o) {
+    public SharedTicketInfo(JSONObject o) throws IOException {
         this.id = o.getString("id");
         this.name = o.getString("label");
+        String strdata = o.getString("data");
+        byte[] data = DatatypeConverter.parseBase64Binary(strdata);
+        TicketInfo tkt = new TicketInfo(data);
+        this.ticket = tkt;
     }
     
     public String getId() {
@@ -47,5 +56,9 @@ public class SharedTicketInfo {
     
     public String getName() {
         return name;
-    }  
+    }
+
+    public TicketInfo getTicket() {
+        return this.ticket;
+    }
 }
