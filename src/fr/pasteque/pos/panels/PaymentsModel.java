@@ -62,19 +62,13 @@ public class PaymentsModel {
 
     private PaymentsModel() {
     }    
-        
-    public static PaymentsModel loadInstance(AppView app) throws BasicException {
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        
+
+    public static PaymentsModel loadInstance(CashSession session) throws BasicException {
+        DataLogicSales dlSales = new DataLogicSales();
         PaymentsModel p = new PaymentsModel();
         currencies = dlSales.getCurrenciesList();
-        
-        // Cash session info
-        CashSession cash = app.getActiveCashSession();
-        p.cashSession = cash;
-        // Load z ticket
-        ZTicket z = dlSales.getZTicket(cash.getId());
-        
+        p.cashSession = session;
+        ZTicket z = dlSales.getZTicket(session.getId());
         // Get number of payments and total amount
         p.m_iPayments = z.getPaymentCount();
         p.m_dPaymentsTotal = 0.0;
@@ -86,12 +80,10 @@ public class PaymentsModel {
                     curr, payment.getCurrencyAmount());
             p.m_lpayments.add(l);
         }
-        
         // Sales
         p.m_iSales = z.getTicketCount();
         p.m_dSalesBase = z.getConsolidatedSales();
         p.custCount = z.getCustomersCount();
-
         // Sales by categories
         p.catSales = new ArrayList<CategoryLine>();
         for (ZTicket.Category cat : z.getCategories()) {
@@ -101,7 +93,6 @@ public class PaymentsModel {
             CategoryLine l = new CategoryLine(name, cat.getAmount());
             p.catSales.add(l);
         }
-        
         // Taxes amount
         p.m_lsales = new ArrayList<SalesLine>();
         p.m_dSalesTaxes = 0.0;
@@ -122,7 +113,6 @@ public class PaymentsModel {
                     tax.getAmount());
             p.m_lsales.add(l);
         }
-
         // Count expected cash
         if (p.hasFunds()) {
             double expectedTotal = 0.0;
@@ -142,8 +132,12 @@ public class PaymentsModel {
             }
             p.expectedCash = expectedTotal;
         }
-
         return p;
+    }
+
+    public static PaymentsModel loadInstance(AppView app) throws BasicException {
+        CashSession cash = app.getActiveCashSession();
+        return loadInstance(cash);
     }
 
     public int getPayments() {

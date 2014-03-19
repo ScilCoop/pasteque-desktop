@@ -436,6 +436,38 @@ public class DataLogicSystem {
         }
     }
 
+    public List<CashSession> searchCashSession(String host, Date start,
+            Date stop) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            String startParam = null;
+            String stopParam = null;
+            if (start != null) {
+                startParam = String.valueOf(DateUtils.toSecTimestamp(start));
+            }
+            if (stop != null) {
+                stopParam = String.valueOf(DateUtils.toSecTimestamp(stop));
+            }
+            ServerLoader.Response r = loader.read("CashesAPI", "search",
+                    "host", host, "dateStart", startParam,
+                    "dateStop", stopParam);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<CashSession> sess = new LinkedList<CashSession>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    sess.add(new CashSession(o));
+                }
+                return sess;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
     public CashSession getCashSessionById(String id) throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
