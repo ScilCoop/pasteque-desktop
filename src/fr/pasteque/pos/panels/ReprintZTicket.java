@@ -52,6 +52,7 @@ import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -65,6 +66,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp {
@@ -102,7 +104,7 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
     }
 
     public String getTitle() {
-        return AppLocal.getIntString("Menu.ZTickets");
+        return AppLocal.getIntString("Menu.ReprintZTicket");
     }
     
     public boolean requiresOpenedCash() {
@@ -198,6 +200,7 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
 
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
+        int btnSpacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
 
         this.setLayout(new GridBagLayout());
         GridBagConstraints c = null;
@@ -239,12 +242,15 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
         this.ticketPanel = new JPanel();
         this.ticketPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         this.ticketPanel.setLayout(new java.awt.BorderLayout());
+        JScrollPane ticketListScroll = new JScrollPane();
+        ticketListScroll.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         this.ticketList = new javax.swing.JList();
         this.ticketList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 jListTicketsValueChanged(evt);
             }
         });
+        ticketListScroll.setViewportView(this.ticketList);
 
         // Input zone
         JPanel inputPanel = new JPanel();
@@ -253,37 +259,46 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 0;
+        c.anchor = GridBagConstraints.LINE_START;
+        c.insets = new Insets(btnSpacing, btnSpacing, btnSpacing, btnSpacing);
         inputPanel.add(startLbl, c);
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 0;
         c.weightx = 0.5;
+        c.insets = new Insets(btnSpacing, 0, btnSpacing, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(startDate, c);
         c = new GridBagConstraints();
         c.gridx = 2;
         c.gridy = 0;
+        c.insets = new Insets(btnSpacing, btnSpacing, btnSpacing, btnSpacing);
         inputPanel.add(startBtn, c);
         // End date
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 1;
+        c.anchor = GridBagConstraints.LINE_START;
+        c.insets = new Insets(0, btnSpacing, btnSpacing, btnSpacing);
         inputPanel.add(endLbl, c);
         c = new GridBagConstraints();
         c.gridx = 1;
         c.gridy = 1;
         c.weightx = 0.5;
+        c.insets = new Insets(0, 0, btnSpacing, 0);
         c.fill = GridBagConstraints.HORIZONTAL;
         inputPanel.add(endDate, c);
         c = new GridBagConstraints();
         c.gridx = 2;
         c.gridy = 1;
+        c.insets = new Insets(0, btnSpacing, btnSpacing, btnSpacing);
         inputPanel.add(endBtn, c);
         // Search
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 3;
+        c.insets = new Insets(0, btnSpacing, btnSpacing, btnSpacing);
         inputPanel.add(run, c);
         // Add all
         c = new GridBagConstraints();
@@ -300,7 +315,7 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
         c.gridheight = 2;
         c.fill = GridBagConstraints.BOTH;
         c.weightx = 1;
-        this.add(this.ticketList, c);
+        this.add(ticketListScroll, c);
 
         // Third column: ticket preview
         c = new GridBagConstraints();
