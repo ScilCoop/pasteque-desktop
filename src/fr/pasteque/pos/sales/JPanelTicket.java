@@ -82,6 +82,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.print.PrintService;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -96,7 +98,9 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
  *
  * @author adrianromero
  */
-public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFactoryApp, TicketsEditor {
+public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFactoryApp, TicketsEditor, DataLogicCustomers.CustomerListener {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.sales.JPanelTicket");
 
     protected JTicketLines m_ticketlines;
 
@@ -1250,7 +1254,11 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                             try {
                                 dlSales.saveTicket(ticket,
                                         m_App.getInventoryLocation(),
-                                        m_App.getActiveCashSession().getId());                       
+                                        m_App.getActiveCashSession().getId());
+                                // Refresh customer if any
+                                if (ticket.getCustomer() != null) {
+                                    dlCustomers.updateCustomer(ticket.getCustomer().getId(), null);
+                                }
                             } catch (BasicException eData) {
                                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.nosaveticket"), eData);
                                 msg.show(this);
@@ -1597,6 +1605,19 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 }
             }
         }  
+    }
+
+    public void customerLoaded(CustomerInfoExt customer) {
+        if (m_oTicket != null && m_oTicket.getCustomer() != null
+                && customer != null
+                && m_oTicket.getCustomer().getId().equals(customer.getId())) {
+            // Loading went well and the customer is still the one on the ticket
+            logger.log(Level.INFO, "Customer refreshed from server.");
+            m_oTicket.setCustomer(customer);
+        } else {
+            logger.log(Level.INFO,
+                    "Customer refresh failed or customer changed.");
+        }
     }
 
     private void initComponents() {
@@ -2198,6 +2219,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // Reset discount profile and rate
             this.m_oTicket.setDiscountProfileId(null);
             this.m_oTicket.setDiscountRate(0.0);
+        }
+        if (customer != null) {
+            // Refresh customer from server
+            dlCustomers.updateCustomer(customer.getId(), this);
         }
         refreshTicket();
     }

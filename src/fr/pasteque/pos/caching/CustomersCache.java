@@ -45,6 +45,7 @@ public class CustomersCache {
     private static PreparedStatement customerCard;
     private static PreparedStatement ranking;
     private static PreparedStatement search;
+    private static PreparedStatement update;
 
     private CustomersCache() {}
 
@@ -60,6 +61,7 @@ public class CustomersCache {
         search = LocalDB.prepare("SELECT data FROM customers "
                 + "WHERE LOWER(number) LIKE LOWER(?) "
                 + "AND LOWER(key) LIKE LOWER(?) AND LOWER(name) LIKE LOWER(?)");
+        update = LocalDB.prepare("UPDATE customers SET data = ? WHERE id = ?");
     }
 
     private static List<CustomerInfoExt> readCustomerResult(ResultSet rs)
@@ -105,6 +107,27 @@ public class CustomersCache {
                 os.close();
                 stmt.execute();
             }
+        } catch (SQLException e) {
+            throw new BasicException(e);
+        } catch (IOException e) {
+            throw new BasicException(e);
+        }
+    }
+    /** Update a customer */
+    public static void refreshCustomer(CustomerInfoExt cust)
+        throws BasicException {
+        try {
+            if (update == null) {
+                init();
+            }
+            update.clearParameters();
+            update.setString(2, cust.getId());
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
+            ObjectOutputStream os = new ObjectOutputStream(bos);
+            os.writeObject(cust);
+            update.setBytes(1, bos.toByteArray());
+            os.close();
+            update.execute();
         } catch (SQLException e) {
             throw new BasicException(e);
         } catch (IOException e) {

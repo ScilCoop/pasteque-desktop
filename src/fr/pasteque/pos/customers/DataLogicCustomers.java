@@ -132,8 +132,45 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return CustomersCache.getCustomers();
     }
 
+    /** Get customer from local cache */
     public CustomerInfoExt getCustomer(String id) throws BasicException {
         return CustomersCache.getCustomer(id);
+    }
+    /** Load a customer from server, update it in cache and return it.
+     * This is an asynchronous call.
+     */
+    public void updateCustomer(final String id,
+            final CustomerListener callback) {
+        Thread t = new Thread() {
+                public void run() {
+                    try {
+                        logger.log(Level.INFO, "Refreshing customer");
+                        ServerLoader loader = new ServerLoader();
+                        ServerLoader.Response r = loader.read("CustomersAPI",
+                                "get", "id", id);
+                        if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                            List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
+                            JSONObject o = r.getObjContent();
+                            CustomerInfoExt customer = new CustomerInfoExt(o);
+                            CustomersCache.refreshCustomer(customer);
+                            if (callback != null) {
+                                callback.customerLoaded(customer);
+                            }
+                        } else {
+                            logger.log(Level.WARNING,
+                                    "Unable to load customer: "
+                                    + r.getStatus());
+                        }
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING,
+                                "Unable to update customer", e);
+                        if (callback != null) {
+                            callback.customerLoaded(null);
+                        }
+                    }
+                }
+            };
+        t.start();
     }
 
     public CustomerInfoExt getCustomerByCard(String card)
@@ -266,4 +303,8 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return null;
     }
 
+    public interface CustomerListener {
+        /** Callback for asynchronous customer refresh */
+        public void customerLoaded(CustomerInfoExt customer);
+    }
 }
