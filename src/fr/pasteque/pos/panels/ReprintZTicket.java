@@ -57,6 +57,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.swing.DefaultListCellRenderer;
@@ -89,6 +90,9 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
                 new DataLogicSystem());
         this.ticketPanel.add(this.ticketPrinter.getDevicePrinter("1").getPrinterComponent(), BorderLayout.CENTER);
         this.printBtn.setEnabled(false);
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, -7);
+        this.startDate.setText(Formats.TIMESTAMP.formatValue(c.getTime()));
     }
 
     public void init(AppView app) throws BeanFactoryException {
@@ -124,6 +128,10 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
             DataLogicSystem dlSys = new DataLogicSystem();
             Date start = (Date) Formats.TIMESTAMP.parseValue(this.startDate.getText());
             Date stop = (Date) Formats.TIMESTAMP.parseValue(this.endDate.getText());
+            if (start == null && stop == null) {
+                // Quick and dirty way to avoid crash
+                return;
+            }
             List<CashSession> tkts = null;
             tkts = dlSys.searchCashSession(null, start, stop);
             this.ticketList.setModel(new MyListData(tkts));
