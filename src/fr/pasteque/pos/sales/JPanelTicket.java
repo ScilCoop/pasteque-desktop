@@ -77,11 +77,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.print.PrintService;
@@ -142,6 +145,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected DataLogicSystem dlSystem;
     protected DataLogicSales dlSales;
     protected DataLogicCustomers dlCustomers;
+    protected Timer clockTimer;
 
     private JPaymentSelect paymentdialogreceipt;
     private JPaymentSelect paymentdialogrefund;
@@ -302,17 +306,46 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jNumberKeys.setEqualsEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Total"));
         m_jbtnconfig.setPermissions(m_App.getAppUserView().getUser());  
                
-        m_ticketsbag.activate();        
+        m_ticketsbag.activate();
+
+        // Start clock
+        this.updateClock();
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MINUTE, 1);
+        c.set(Calendar.SECOND, 0);
+        this.clockTimer = new Timer();
+        this.clockTimer.schedule(new TimerTask(){
+                public void run() {
+                    updateClock();
+                }
+            }, c.getTime(), 60000);
     }
     
     public boolean deactivate() {
-
+        this.clockTimer.cancel();
+        this.clockTimer = null;
         return m_ticketsbag.deactivate();
     }
     
     protected abstract JTicketsBag getJTicketsBag();
     protected abstract Component getSouthComponent();
     protected abstract void resetSouthComponent();
+
+    protected void updateClock() {
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minutes = c.get(Calendar.MINUTE);
+        String strHour = String.valueOf(hour);
+        if (strHour.length() == 1) {
+            strHour = "0" + strHour;
+        }
+        String strMinute = String.valueOf(minutes);
+        if (strMinute.length() == 1) {
+            strMinute = "0" + strMinute;
+        }
+        this.clock.setText(AppLocal.getIntString("Clock.Format",
+                        strHour, strMinute));
+    }
      
     public void setActiveTicket(TicketInfo oTicket, Object oTicketExt) {
        
@@ -1674,24 +1707,24 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         brandHeader.setLayout(new GridBagLayout());
         ImageIcon brand = ImageLoader.readImageIcon("logo_flat.png");
         JLabel brandLabel = new JLabel(brand);
-        JLabel screenTitle = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TicketInput"));
-        JLabel date = WidgetsBuilder.createLabel("This is NOW!!");
+        this.clock = WidgetsBuilder.createLabel("00:00");
+        this.messageBox = WidgetsBuilder.createTextField();
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         brandHeader.add(brandLabel, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
-        cstr.anchor = GridBagConstraints.LINE_START;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        //brandHeader.add(screenTitle, cstr);
+        cstr.insets = new Insets(5, 20, 5, 20);
+        brandHeader.add(this.messageBox, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
-        //brandHeader.add(date, cstr);
+        brandHeader.add(this.clock, cstr);
         cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.gridy = 0;
         cstr.insets = new Insets(5, 5, 5, 5);
+        cstr.fill = GridBagConstraints.HORIZONTAL;
         m_jPanContainer.add(brandHeader, cstr);
 
         // Ticket info/buttons
@@ -2301,4 +2334,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jbtnLineDiscount;
     private javax.swing.JPanel m_jInputContainer;
     private javax.swing.JComboBox m_jTariff;
+    private javax.swing.JLabel clock;
+    private javax.swing.JTextField messageBox;
 }
