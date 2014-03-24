@@ -1910,7 +1910,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineEditBtns.add(jEditAttributes, cstr);
+        // disabled until come back
+        //lineEditBtns.add(jEditAttributes, cstr);
         // Line discount button
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
