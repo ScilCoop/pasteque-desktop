@@ -22,8 +22,8 @@ package fr.pasteque.beans;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import gnu.gettext.GettextResource;
 
 /**
  *
@@ -64,15 +64,14 @@ public class LocaleResources {
             return null;
         } else  {            
             for (ResourceBundle r : m_resources) {
-                try {
-                    return r.getString(sKey);
-                } catch (MissingResourceException e) {
-                    // Next
+                String msg = GettextResource.gettext(r, sKey);
+                if (!msg.equals(sKey)) {
+                    return msg; // else check for next bundle
                 }
             }
             
             // MissingResourceException in all ResourceBundle
-            return "** " + sKey + " **";
+            return sKey;
         }
     }
 
@@ -81,25 +80,20 @@ public class LocaleResources {
         if (sKey == null) {
             return null;
         } else  {
+            String msg = sKey;
             for (ResourceBundle r : m_resources) {
-                try {
-                    return MessageFormat.format(r.getString(sKey), sValues);
-                } catch (MissingResourceException e) {
-                    // Next
+                msg = GettextResource.gettext(r, sKey);
+                if (!msg.equals(sKey)) {
+                    return MessageFormat.format(msg, sValues);
                 }
             }
-            
             // MissingResourceException in all ResourceBundle
-            StringBuffer sreturn = new StringBuffer();
-            sreturn.append("** ");
-            sreturn.append(sKey);            
-            for (Object value : sValues) {
-                sreturn.append(" < ");
-                sreturn.append(value.toString());
+            try {
+                return MessageFormat.format(msg, sValues);
+            } catch (IllegalArgumentException e) {
+                return msg;
             }
-            sreturn.append("** ");
-            
-            return sreturn.toString();
         }
     }
+
 }
