@@ -82,6 +82,7 @@ public class CoinCountButton {
 
     public void reset() {
         this.input.reset();
+        this.count = 0;
     }
 
     public int getCount() {
@@ -107,6 +108,10 @@ public class CoinCountButton {
     private class RecalculateAmount implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             CoinCountButton btn = CoinCountButton.this;
+            if (btn.input.getText().equals("")) {
+                // Cleared: reset
+                btn.count = 0;
+            }
             if (btn.listener != null) {
                 btn.listener.countUpdated();
             }
