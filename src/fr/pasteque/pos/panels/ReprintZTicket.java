@@ -44,6 +44,7 @@ import fr.pasteque.pos.printer.TicketPrinterException;
 import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
 import fr.pasteque.pos.scripting.ScriptFactory;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.ticket.ZTicket;
 import fr.pasteque.pos.util.ThumbNailBuilder;
@@ -178,8 +179,16 @@ public class ReprintZTicket extends JPanel implements JPanelView, BeanFactoryApp
             super.getListCellRendererComponent(list, null, index, isSelected,
                     cellHasFocus);
             CashSession session = (CashSession) value;
+            DataLogicSystem dlSys = new DataLogicSystem();
+            CashRegisterInfo cashReg = null;
+            try {
+                cashReg = dlSys.getCashRegister(session.getCashRegisterId());
+            } catch (BasicException e) {
+                e.printStackTrace();
+                cashReg = new CashRegisterInfo("???", "0", 0);
+            }
             String sHtml = "<tr><td>"
-                    + session.getHost() + "<br /> [" + session.getSequence() + "]"
+                    + cashReg.getLabel() + "<br /> [" + session.getSequence() + "]"
                     + "</td>"
                     + "<td>"
                     + Formats.TIMESTAMP.formatValue(session.getOpenDate())

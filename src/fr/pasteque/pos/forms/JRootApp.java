@@ -69,6 +69,7 @@ public class JRootApp extends JPanel implements AppView {
     
     private Properties m_propsdb = null;
     private CashSession activeCashSession;
+    private CashRegisterInfo cashRegister;
     
     private String m_sInventoryLocation;
     
@@ -117,15 +118,14 @@ public class JRootApp extends JPanel implements AppView {
         }     
         
         // Load host properties
-        CashRegisterInfo cashReg = null;
         try {
-            cashReg = m_dlSystem.getCashRegister(m_props.getHost());
+            this.cashRegister = m_dlSystem.getCashRegister(m_props.getHost());
         } catch (BasicException e) {
             JMessageDialog.showMessage(this,
                     new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
             return false;
         }
-        if (cashReg == null) {
+        if (this.cashRegister == null) {
             // Unknown cash register
             JMessageDialog.showMessage(this,
                     new MessageInf(MessageInf.SGN_DANGER,
@@ -135,7 +135,7 @@ public class JRootApp extends JPanel implements AppView {
 
         // Load cash session
         try {
-            CashSession cashSess = m_dlSystem.getCashSession(cashReg.getLabel());
+            CashSession cashSess = m_dlSystem.getCashSession(this.cashRegister.getId());
             if (cashSess == null) {
                 // New cash session
                 this.newActiveCash();
@@ -150,7 +150,7 @@ public class JRootApp extends JPanel implements AppView {
         }  
         
         // Load location
-        m_sInventoryLocation = cashReg.getLocationId();
+        m_sInventoryLocation = this.cashRegister.getLocationId();
         if (m_sInventoryLocation == null) {
             // Not set, use default
             m_sInventoryLocation = "0";
@@ -211,9 +211,6 @@ public class JRootApp extends JPanel implements AppView {
             e.printStackTrace();
         }
 
-        // Show Hostname, Warehouse and URL in taskbar
-        m_jHost.setText("<html>" + cashReg.getLabel() + " - " + sWareHouse);
-        
         this.showLogin();
 
         return true;
@@ -258,6 +255,9 @@ public class JRootApp extends JPanel implements AppView {
         return null;
     }
 
+    public CashRegisterInfo getCashRegister() {
+        return this.cashRegister;
+    }
     public String getInventoryLocation() {
         return m_sInventoryLocation;
     }
@@ -283,8 +283,8 @@ public class JRootApp extends JPanel implements AppView {
     }
 
     public void newActiveCash() {
-        this.activeCashSession = new CashSession(null, m_props.getHost(), 0,
-                null, null, null, null);
+        this.activeCashSession = new CashSession(null,
+                this.cashRegister.getId(), 0, null, null, null, null);
     }
 
     public AppProperties getProperties() {
@@ -590,7 +590,6 @@ public class JRootApp extends JPanel implements AppView {
         m_txtKeys = new javax.swing.JTextField();
         m_jPanelDown = new javax.swing.JPanel();
         panelTask = new javax.swing.JPanel();
-        m_jHost = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
         setPreferredSize(new java.awt.Dimension(1024, 768));
@@ -746,7 +745,6 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton m_jClose;
-    private javax.swing.JLabel m_jHost;
     private javax.swing.JLabel m_jLblTitle;
     private javax.swing.JPanel m_jLogonName;
     private javax.swing.JPanel m_jPanelContainer;

@@ -446,8 +446,7 @@ public class DataLogicSales extends BeanFactoryDataSingle {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
             r = loader.write("TicketsAPI", "save",
-                    "ticket", ticket.toJSON().toString(), "cashId", cashId,
-                    "locationId", locationId);
+                    "ticket", ticket.toJSON().toString(), "cashId", cashId);
             if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 throw new BasicException("Bad server response");
             }

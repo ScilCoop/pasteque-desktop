@@ -1281,7 +1281,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         ticket.setUser(m_App.getAppUserView().getUser().getUserInfo()); // El usuario que lo cobra
                         ticket.setActiveCash(m_App.getActiveCashIndex());
                         ticket.setDate(new Date()); // Le pongo la fecha de cobro
-
+                        ticket.setTicketId(m_App.getCashRegister().getNextTicketId());
                         if (executeEvent(ticket, ticketext, "ticket.save") == null) {
                             // Save the receipt and assign a receipt number
                             try {
@@ -1304,6 +1304,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                                     ? "Printer.Ticket"
                                     : "Printer.Ticket2", ticket, ticketext);
                             resultok = true;
+
+                            // Increment next ticket id
+                            m_App.getCashRegister().incrementNextTicketId();
                         }
                     }
                 }

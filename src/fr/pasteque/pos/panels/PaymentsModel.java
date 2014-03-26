@@ -26,9 +26,11 @@ import fr.pasteque.data.loader.*;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.ticket.CashMove;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -42,6 +44,7 @@ import fr.pasteque.pos.util.StringUtils;
 public class PaymentsModel {
 
     private CashSession cashSession;
+    private CashRegisterInfo cashRegister;
     private Integer m_iPayments;
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
@@ -65,9 +68,11 @@ public class PaymentsModel {
 
     public static PaymentsModel loadInstance(CashSession session) throws BasicException {
         DataLogicSales dlSales = new DataLogicSales();
+        DataLogicSystem dlSys = new DataLogicSystem();
         PaymentsModel p = new PaymentsModel();
         currencies = dlSales.getCurrenciesList();
         p.cashSession = session;
+        p.cashRegister = dlSys.getCashRegister(session.getCashRegisterId());
         ZTicket z = dlSales.getZTicket(session.getId());
         // Get number of payments and total amount
         p.m_iPayments = z.getPaymentCount();
@@ -153,7 +158,7 @@ public class PaymentsModel {
         return m_dPaymentsTotal.doubleValue();
     }
     public String getHost() {
-        return this.cashSession.getHost();
+        return this.cashRegister.getLabel();
     }
     public int getSequence() {
         return this.cashSession.getSequence();
@@ -183,7 +188,7 @@ public class PaymentsModel {
     }
 
     public String printHost() {
-        return StringUtils.encodeXML(this.cashSession.getHost());
+        return StringUtils.encodeXML(this.cashRegister.getLabel());
     }
     public String printSequence() {
         return Formats.INT.formatValue(this.cashSession.getSequence());

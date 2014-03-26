@@ -495,6 +495,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
             ticket.setUser(app.getAppUserView().getUser().getUserInfo());
             ticket.setActiveCash(app.getActiveCashIndex());
+            ticket.setTicketId(app.getCashRegister().getNextTicketId());
             ticket.setDate(new Date());
             ticket.setCustomer(customerext);
 
@@ -513,6 +514,8 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
                     ? "Printer.CustomerPaid"
                     : "Printer.CustomerPaid2",
                     ticket, customerext);
+
+            app.getCashRegister().incrementNextTicketId();
         }
         editorcard.reset();
         editorcard.activate();

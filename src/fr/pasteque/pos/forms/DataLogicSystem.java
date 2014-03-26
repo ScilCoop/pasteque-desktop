@@ -394,6 +394,25 @@ public class DataLogicSystem {
         return p;
     }
 
+    public final CashRegisterInfo getCashRegister(int id) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashRegistersAPI", "get",
+                    "id", String.valueOf(id));
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                }
+                return new CashRegisterInfo(o);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
     public final CashRegisterInfo getCashRegister(String host)
         throws BasicException {
         try {
@@ -415,11 +434,11 @@ public class DataLogicSystem {
         }
     }
 
-    public CashSession getCashSession(String host) throws BasicException {
+    public CashSession getCashSession(int cashRegId) throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("CashesAPI", "get",
-                    "host", host);
+                    "cashRegisterId", String.valueOf(cashRegId));
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
                 if (o == null) {

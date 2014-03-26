@@ -139,6 +139,7 @@ public class TicketInfo implements SerializableRead {
             o.put("customerId", JSONObject.NULL);
         }
         o.put("type", this.tickettype);
+        o.put("ticketId", this.m_iTicketId);
         if (this.customersCount != null) {
             o.put("custCount", this.customersCount);
         } else {

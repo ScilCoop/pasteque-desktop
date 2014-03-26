@@ -26,17 +26,26 @@ import org.json.JSONObject;
 /** Model for Cash register config. */
 public class CashRegisterInfo {
 
+    private int id;
     private String label;
     private String locationId;
+    private int nextTicketId;
 
-    public CashRegisterInfo(String label, String locationId) {
+    public CashRegisterInfo(String label, String locationId, int nextTicketId) {
         this.label = label;
         this.locationId = locationId;
+        this.nextTicketId = nextTicketId;
     }
 
     public CashRegisterInfo(JSONObject o) {
+        this.id = o.getInt("id");
         this.label = o.getString("label");
         this.locationId = o.getString("locationId");
+        this.nextTicketId = o.getInt("nextTicketId");
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getLabel() {
@@ -47,4 +56,11 @@ public class CashRegisterInfo {
         return this.locationId;
     }
 
+    public int getNextTicketId() {
+        return this.nextTicketId;
+    }
+
+    public void incrementNextTicketId() {
+        this.nextTicketId++;
+    }
 }

@@ -24,6 +24,7 @@ import fr.pasteque.data.loader.Session;
 import fr.pasteque.pos.printer.*;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 
 /**
@@ -43,6 +44,7 @@ public interface AppView {
     public void newActiveCash();
     public void setActiveCash(CashSession cashSess);
     public CashSession getActiveCashSession();
+    public CashRegisterInfo getCashRegister();
     public String getActiveCashIndex();
     public int getActiveCashSequence();
     public Date getActiveCashDateStart();

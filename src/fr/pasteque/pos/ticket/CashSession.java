@@ -29,17 +29,17 @@ import org.json.JSONObject;
 public class CashSession {
 
     private String id;
-    private String host;
+    private int cashRegisterId;
     private int sequence;
     private Date openDate;
     private Date closeDate;
     private Double openCash;
     private Double closeCash;
 
-    public CashSession(String id, String host, int sequence, Date openDate,
-            Date closeDate, Double openCash, Double closeCash) {
+    public CashSession(String id, int cashRegisterId, int sequence,
+            Date openDate, Date closeDate, Double openCash, Double closeCash) {
         this.id = id;
-        this.host = host;
+        this.cashRegisterId = cashRegisterId;
         this.sequence = sequence;
         this.openDate = openDate;
         this.closeDate = closeDate;
@@ -49,7 +49,7 @@ public class CashSession {
 
     public CashSession(JSONObject o) {
         this.id = o.getString("id");
-        this.host = o.getString("host");
+        this.cashRegisterId = o.getInt("cashRegisterId");
         this.sequence = o.getInt("sequence");
         if (!o.isNull("openDate")) {
             this.openDate = DateUtils.readSecTimestamp(o.getLong("openDate"));
@@ -68,7 +68,7 @@ public class CashSession {
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
         o.put("id", this.id);
-        o.put("host", this.host);
+        o.put("cashRegisterId", this.cashRegisterId);
         o.put("sequence", this.sequence);
         if (this.openDate == null) {
             o.put("openDate", JSONObject.NULL);
@@ -97,8 +97,8 @@ public class CashSession {
         return this.id;
     }
 
-    public String getHost() {
-        return this.host;
+    public int getCashRegisterId() {
+        return this.cashRegisterId;
     }
 
     public int getSequence() {
