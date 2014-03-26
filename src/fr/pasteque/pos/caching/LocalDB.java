@@ -87,7 +87,8 @@ public class LocalDB {
                     + "dispOrder INTEGER(255), data BINARY(5000000), "
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE categories ("
-                    + "id VARCHAR(255), parentId VARCHAR(255), "
+                    + "id VARCHAR(255), label VARCHAR(255), "
+                    + "parentId VARCHAR(255), "
                     + "dispOrder INTEGER(255), data BINARY(5000000), "
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE taxCats ("

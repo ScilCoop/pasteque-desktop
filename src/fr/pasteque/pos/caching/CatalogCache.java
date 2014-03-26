@@ -69,11 +69,11 @@ public class CatalogCache {
                 + "WHERE id = ?");
         categories = LocalDB.prepare("SELECT data FROM categories");
         subCategories = LocalDB.prepare("SELECT data FROM categories "
-                + "WHERE parentId = ? ORDER BY dispOrder");
+                + "WHERE parentId = ? ORDER BY dispOrder, label");
         product = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE id = ?");
         productsByCat = LocalDB.prepare("SELECT data FROM products "
-                + "WHERE categoryId = ? ORDER BY dispOrder");
+                + "WHERE categoryId = ? ORDER BY dispOrder, label");
         productsSearch = LocalDB.prepare("SELECT data FROM products "
                 + "WHERE LOWER(ref) LIKE ? AND LOWER(label) LIKE ?");
         productByBarcode = LocalDB.prepare("SELECT data FROM products "
@@ -203,19 +203,19 @@ public class CatalogCache {
         try {
             LocalDB.execute("TRUNCATE TABLE categories");
             PreparedStatement stmt = LocalDB.prepare("INSERT INTO categories "
-                    + "(id, parentId, dispOrder, data) VALUES (?, ?, ?, ?)");
-            int order = 0;
+                    + "(id, label, parentId, dispOrder, data) "
+                    + "VALUES (?, ?, ?, ?, ?)");
             for (CategoryInfo cat : categories) {
                 stmt.setString(1, cat.getID());
-                stmt.setString(2, cat.getParentId());
-                stmt.setInt(3, order);
+                stmt.setString(2, cat.getName());
+                stmt.setString(3, cat.getParentId());
+                stmt.setInt(4, cat.getDispOrder());
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
                 ObjectOutputStream os = new ObjectOutputStream(bos);
                 os.writeObject(cat);
-                stmt.setBytes(4, bos.toByteArray());
+                stmt.setBytes(5, bos.toByteArray());
                 os.close();
                 stmt.execute();
-                order++;
             }
         } catch (SQLException e) {
             throw new BasicException(e);
