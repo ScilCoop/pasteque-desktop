@@ -25,6 +25,7 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.CashRegistersCache;
 import fr.pasteque.pos.caching.ResourcesCache;
 import fr.pasteque.pos.caching.RolesCache;
 import fr.pasteque.pos.caching.UsersCache;
@@ -394,24 +395,34 @@ public class DataLogicSystem {
         return p;
     }
 
-    public final CashRegisterInfo getCashRegister(int id) throws BasicException {
+
+    public boolean preloadCashRegisters() {
         try {
+            logger.log(Level.INFO, "Preloading cash registers");
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("CashRegistersAPI", "get",
-                    "id", String.valueOf(id));
+            ServerLoader.Response r = loader.read("CashRegistersAPI", "getAll");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                JSONObject o = r.getObjContent();
-                if (o == null) {
-                    return null;
+                JSONArray a = r.getArrayContent();
+                List<CashRegisterInfo> crs = new LinkedList<CashRegisterInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CashRegisterInfo cr = new CashRegisterInfo(o);
+                    crs.add(cr);
                 }
-                return new CashRegisterInfo(o);
+                CashRegistersCache.refreshCashRegisters(crs);
+                return true;
             } else {
-                return null;
+                return false;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
+            return false;
         }
+    }
+
+
+    public final CashRegisterInfo getCashRegister(int id) throws BasicException {
+        return CashRegistersCache.getCashRegister(id);
     }
     public final CashRegisterInfo getCashRegister(String host)
         throws BasicException {

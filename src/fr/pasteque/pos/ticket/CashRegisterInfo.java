@@ -21,10 +21,11 @@
 
 package fr.pasteque.pos.ticket;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /** Model for Cash register config. */
-public class CashRegisterInfo {
+public class CashRegisterInfo implements Serializable {
 
     private int id;
     private String label;

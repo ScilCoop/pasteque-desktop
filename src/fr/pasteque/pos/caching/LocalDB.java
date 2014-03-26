@@ -78,6 +78,9 @@ public class LocalDB {
             // Create the database
             stmt.execute("CREATE TABLE meta (version INTEGER)");
             stmt.execute("INSERT INTO meta (version) VALUES (" + VERSION + ")");
+            stmt.execute("CREATE TABLE cashRegisters ("
+                    + "id INTEGER(255), data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE products ("
                     + "id VARCHAR(255), ref VARCHAR(255), label VARCHAR(255), "
                     + "barcode VARCHAR(255), categoryId VARCHAR(255), "

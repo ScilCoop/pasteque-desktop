@@ -200,6 +200,7 @@ public class JRootApp extends JPanel implements AppView {
             m_dlSales.preloadTariffAreas();
             m_dlSales.preloadCompositions();
             dlCust.preloadCustomers();
+            m_dlSystem.preloadCashRegisters();
         } catch (SQLException e) {
             e.printStackTrace();
         }
