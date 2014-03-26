@@ -136,6 +136,10 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 List<ProductInfoExt> products = new ArrayList<ProductInfoExt>();
                 for (int i = 0; i < a.length(); i++) {
                     JSONObject o = a.getJSONObject(i);
+                    if (!o.getBoolean("visible")) {
+                        // Don't add products not sold
+                        continue;
+                    }
                     ProductInfoExt prd = new ProductInfoExt(o);
                     products.add(prd);
                     try {
