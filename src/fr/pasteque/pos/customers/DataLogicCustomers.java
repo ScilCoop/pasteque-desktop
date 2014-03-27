@@ -20,9 +20,6 @@
 package fr.pasteque.pos.customers;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataParams;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ServerLoader;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.caching.CustomersCache;

@@ -29,7 +29,6 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.ImageUtils;
 import fr.pasteque.pos.util.ThumbNailBuilder;

@@ -26,8 +26,6 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import fr.pasteque.pos.payment.PaymentInfo;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
@@ -45,7 +43,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketInfo implements SerializableRead {
+public class TicketInfo {
 
     private static final long serialVersionUID = 2765650092387265178L;
 
@@ -217,29 +215,6 @@ public class TicketInfo implements SerializableRead {
         in.close();
         m_User = null;
         m_sActiveCash = null;
-
-        payments = new ArrayList<PaymentInfo>();
-        taxes = null;
-    }
-
-    public void readValues(DataRead dr) throws BasicException {
-        // Check DataLogicSales to map fields on dr indexes
-        m_sId = dr.getString(1);
-        tickettype = dr.getInt(2).intValue();
-        m_iTicketId = dr.getInt(3).intValue();
-        m_dDate = dr.getTimestamp(4);
-        m_sActiveCash = dr.getString(5);
-        try {
-            byte[] img = dr.getBytes(6);
-            if (img != null) {
-                attributes.loadFromXML(new ByteArrayInputStream(img));
-            }
-        } catch (IOException e) {
-        }
-        m_User = new UserInfo(dr.getString(7), dr.getString(8));
-        m_Customer = new CustomerInfoExt(dr.getString(9));
-        this.customersCount = dr.getInt(10);
-        m_aLines = new ArrayList<TicketLineInfo>();
 
         payments = new ArrayList<PaymentInfo>();
         taxes = null;

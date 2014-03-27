@@ -30,7 +30,6 @@ import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.sales.*;
 import fr.pasteque.pos.forms.*; 
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SerializerReadClass;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.loader.ServerLoader;

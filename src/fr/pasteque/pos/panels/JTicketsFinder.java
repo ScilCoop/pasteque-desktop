@@ -21,10 +21,8 @@ package fr.pasteque.pos.panels;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.beans.JCalendarDialog;
 import fr.pasteque.data.gui.ComboBoxValModel;
-import fr.pasteque.data.gui.ListQBFModelNumber;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.QBFCompareEnum;
 import fr.pasteque.data.user.EditorCreator;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.customers.CustomerInfoExt;
@@ -53,7 +51,7 @@ import javax.swing.JFrame;
  *
  * @author  Mikel irurita
  */
-public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator {
+public class JTicketsFinder extends javax.swing.JDialog {
 
     private AppView app;
     private ComboBoxValModel m_CategoryModel;
@@ -189,7 +187,6 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
                     AppLocal.getIntString("label.refunds"), AppLocal.getIntString("label.all")};
         jComboBoxTicket.setModel(new DefaultComboBoxModel(values));
         
-        jcboMoney.setModel(ListQBFModelNumber.getMandatoryNumber());
         
         m_CategoryModel = new ComboBoxValModel(); 
         
@@ -217,10 +214,6 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         
         jcboUser.setSelectedItem(null);
         
-        jcboMoney.setSelectedItem( ((ListQBFModelNumber)jcboMoney.getModel()).getElementAt(0) );
-        jcboMoney.revalidate();
-        jcboMoney.repaint();
-                
         jtxtMoney.reset();
 
         jTxtStartDate.setText(Formats.TIMESTAMP.formatValue(this.app.getActiveCashDateStart()));        
@@ -228,70 +221,7 @@ public class JTicketsFinder extends javax.swing.JDialog implements EditorCreator
         
         jtxtCustomer.setText(null);
         
-    }
-    
-    @Override
-    public Object createValue() throws BasicException {
-        
-        Object[] afilter = new Object[14];
-        
-        // Ticket ID
-        if (jtxtTicketID.getText() == null || jtxtTicketID.getText().equals("")) {
-            afilter[0] = QBFCompareEnum.COMP_NONE;
-            afilter[1] = null;
-        } else {
-            afilter[0] = QBFCompareEnum.COMP_EQUALS;
-            afilter[1] = jtxtTicketID.getValueInteger();
-        }
-        
-        // Sale and refund checkbox        
-        if (jComboBoxTicket.getSelectedIndex() == 2) {
-            afilter[2] = QBFCompareEnum.COMP_DISTINCT;
-            afilter[3] = 2;
-        } else if (jComboBoxTicket.getSelectedIndex() == 0) {
-            afilter[2] = QBFCompareEnum.COMP_EQUALS;
-            afilter[3] = 0;
-        } else if (jComboBoxTicket.getSelectedIndex() == 1) {
-            afilter[2] = QBFCompareEnum.COMP_EQUALS;
-            afilter[3] = 1;
-        }
-        
-        // Receipt money
-        afilter[5] = jtxtMoney.getDoubleValue();
-        afilter[4] = afilter[5] == null ? QBFCompareEnum.COMP_NONE : jcboMoney.getSelectedItem();
-        
-        // Date range
-        Object startdate = Formats.TIMESTAMP.parseValue(jTxtStartDate.getText());
-        Object enddate = Formats.TIMESTAMP.parseValue(jTxtEndDate.getText());
-        
-        afilter[6] = (startdate == null) ? QBFCompareEnum.COMP_NONE : QBFCompareEnum.COMP_GREATEROREQUALS;
-        afilter[7] = startdate;
-        afilter[8] = (enddate == null) ? QBFCompareEnum.COMP_NONE : QBFCompareEnum.COMP_LESS;
-        afilter[9] = enddate;
-
-        
-        
-        //User
-        if (jcboUser.getSelectedItem() == null) {
-            afilter[10] = QBFCompareEnum.COMP_NONE;
-            afilter[11] = null; 
-        } else {
-            afilter[10] = QBFCompareEnum.COMP_EQUALS;
-            afilter[11] = ((TaxCategoryInfo)jcboUser.getSelectedItem()).getName(); 
-        }
-        
-        //Customer
-        if (jtxtCustomer.getText() == null || jtxtCustomer.getText().equals("")) {
-            afilter[12] = QBFCompareEnum.COMP_NONE;
-            afilter[13] = null;
-        } else {
-            afilter[12] = QBFCompareEnum.COMP_RE;
-            afilter[13] = "%" + jtxtCustomer.getText() + "%";
-        }
-        
-        return afilter;
-
-    } 
+    }    
 
     private static Window getWindow(Component parent) {
         if (parent == null) {

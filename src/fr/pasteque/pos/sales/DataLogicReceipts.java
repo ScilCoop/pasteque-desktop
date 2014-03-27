@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.DatatypeConverter;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ServerLoader;
 import fr.pasteque.pos.ticket.TicketInfo;
 import org.json.JSONObject;

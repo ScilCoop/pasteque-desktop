@@ -19,11 +19,9 @@
 package fr.pasteque.pos.ticket;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
 import java.awt.image.*;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.ImageUtils;
-import fr.pasteque.data.loader.SerializerRead;
 import java.io.Serializable;
 import org.json.JSONObject;
 
@@ -32,7 +30,7 @@ import org.json.JSONObject;
  * @author  Adrian
  * @version 
  */
-public class CategoryInfo implements Serializable, IKeyed {
+public class CategoryInfo implements Serializable {
 
     private static final long serialVersionUID = 8612449444103L;
     private String m_sID;
@@ -58,10 +56,6 @@ public class CategoryInfo implements Serializable, IKeyed {
             this.dispOrder = o.getInt("dispOrder");
         }
         this.m_Image = null;
-    }
-
-    public Object getKey() {
-        return m_sID;
     }
 
     public void setID(String sID) {
@@ -100,9 +94,4 @@ public class CategoryInfo implements Serializable, IKeyed {
         return m_sName;
     }
 
-    public static SerializerRead getSerializerRead() {
-        return new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-            return new CategoryInfo(dr.getString(1), dr.getString(2), ImageUtils.readImage(dr.getBytes(3)));
-        }};
-    }
 }

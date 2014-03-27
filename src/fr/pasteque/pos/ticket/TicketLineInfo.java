@@ -23,11 +23,7 @@ package fr.pasteque.pos.ticket;
 
 import java.io.*;
 import fr.pasteque.pos.util.StringUtils;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.DataWrite;
 import fr.pasteque.format.Formats;
-import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.DataLogicSales;
@@ -38,7 +34,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketLineInfo implements SerializableWrite, SerializableRead, Serializable {
+public class TicketLineInfo implements Serializable {
 
     private static final long serialVersionUID = 6608012948284450199L;
     private String m_sTicket;
@@ -146,45 +142,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         this.price = o.getDouble("price");
         this.tax = dlSales.getTax(o.getString("taxId"));
         this.discountRate = o.getDouble("discountRate");
-    }
-
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, m_sTicket);
-        dp.setInt(2, new Integer(m_iLine));
-        dp.setString(3, productid);
-        dp.setString(4, attsetinstid);
-
-        dp.setDouble(5, new Double(multiply));
-        dp.setDouble(6, new Double(price));
-
-        dp.setString(7, tax.getId());
-        try {
-            ByteArrayOutputStream o = new ByteArrayOutputStream();
-            attributes.storeToXML(o, AppLocal.APP_NAME, "UTF-8");
-            dp.setBytes(8, o.toByteArray());
-        } catch (IOException e) {
-            dp.setBytes(8, null);
-        }
-    }
-
-    public void readValues(DataRead dr) throws BasicException {
-        m_sTicket = dr.getString(1);
-        m_iLine = dr.getInt(2).intValue();
-        productid = dr.getString(3);
-        attsetinstid = dr.getString(4);
-
-        multiply = dr.getDouble(5);
-        price = dr.getDouble(6);
-
-        tax = new TaxInfo(dr.getString(7), dr.getString(8), dr.getString(9), dr.getTimestamp(10), dr.getString(11), dr.getString(12), dr.getDouble(13), dr.getBoolean(14), dr.getInt(15));
-        attributes = new Properties();
-        try {
-            byte[] img = dr.getBytes(16);
-            if (img != null) {
-                attributes.loadFromXML(new ByteArrayInputStream(img));
-            }
-        } catch (IOException e) {
-        }
     }
 
     public TicketLineInfo copyTicketLine() {

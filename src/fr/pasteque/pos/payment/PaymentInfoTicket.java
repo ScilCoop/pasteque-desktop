@@ -20,8 +20,6 @@
 package fr.pasteque.pos.payment;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;

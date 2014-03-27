@@ -22,13 +22,7 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SerializerRead;
-import fr.pasteque.data.loader.SerializerReadString;
-import fr.pasteque.data.loader.SerializerWriteBasic;
-import fr.pasteque.data.loader.SerializerWriteString;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
 import fr.pasteque.pos.widgets.JEditorKeys;

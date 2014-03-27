@@ -25,7 +25,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import fr.pasteque.data.gui.NullIcon;
-import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.basic.BasicException;
 import org.json.JSONObject;
