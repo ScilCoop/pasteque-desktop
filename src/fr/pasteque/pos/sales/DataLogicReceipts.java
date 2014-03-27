@@ -21,9 +21,12 @@ package fr.pasteque.pos.sales;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ServerLoader;
+import fr.pasteque.pos.caching.TicketsCache;
 import fr.pasteque.pos.ticket.TicketInfo;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -33,7 +36,9 @@ import org.json.JSONArray;
  * @author adrianromero
  */
 public class DataLogicReceipts {
-    
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.sales.DataLogicReceipts");
+
     /** Creates a new instance of DataLogicReceipts */
     public DataLogicReceipts() {
     }
@@ -54,13 +59,28 @@ public class DataLogicReceipts {
                 String strdata = o.getString("data");
                 byte[] data = DatatypeConverter.parseBase64Binary(strdata);
                 TicketInfo tkt = new TicketInfo(data);
+                // Ticket read from server, cache it
+                SharedTicketInfo stkt = new SharedTicketInfo(o.getString("id"),
+                        tkt);
+                try {
+                    TicketsCache.saveTicket(stkt);
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
                 return tkt;
             } else {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
+            logger.log(Level.WARNING, "Failed to load shared ticket " + id
+                    + " from server: " + e.getMessage());
+            // Unable to read it from server, try reading from cache
+            SharedTicketInfo stkt = TicketsCache.getTicket(id);
+            if (stkt != null) {
+                return stkt.getTicket();
+            } else {
+                return null;
+            }
         }
     } 
     
@@ -76,17 +96,32 @@ public class DataLogicReceipts {
                     SharedTicketInfo stkt = new SharedTicketInfo(o);
                     tkts.add(stkt);
                 }
+                // All tickets read from server, cache them
+                try {
+                    TicketsCache.refreshTickets(tkts);
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
                 return tkts;
             } else {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new BasicException(e);
+            logger.log(Level.WARNING, "Failed to load shared tickets "
+                    + "from server: " + e.getMessage());
+            // Failed to load from server, try loading from cache
+            tkts = TicketsCache.getAllTickets();
+            return tkts;
         }
     }
     
     public final void updateSharedTicket(final String id, final TicketInfo ticket) throws BasicException {
+        try {
+            SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
+            TicketsCache.saveTicket(stkt);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
@@ -102,16 +137,28 @@ public class DataLogicReceipts {
                 throw new BasicException("Bad server response");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Unable to save shared ticket " + id
+                    + ": " + e.getMessage());
             throw new BasicException(e);
         }
     }
     
     public final void insertSharedTicket(final String id, final TicketInfo ticket) throws BasicException {
+        try {
+            SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
+            TicketsCache.saveTicket(stkt);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
         this.updateSharedTicket(id, ticket);
     }
     
     public final void deleteSharedTicket(final String id) throws BasicException {
+        try {
+            TicketsCache.deleteTicket(id);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;

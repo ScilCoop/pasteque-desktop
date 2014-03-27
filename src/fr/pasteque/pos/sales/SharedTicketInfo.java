@@ -21,7 +21,9 @@ package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.ticket.TicketInfo;
+
 import java.io.IOException;
+import java.io.Serializable;
 import javax.xml.bind.DatatypeConverter;
 import org.json.JSONObject;
 
@@ -30,7 +32,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class SharedTicketInfo {
+public class SharedTicketInfo implements Serializable {
     
     private static final long serialVersionUID = 7640633837719L;
     private String id;
@@ -38,7 +40,10 @@ public class SharedTicketInfo {
     private TicketInfo ticket;
     
     /** Creates a new instance of SharedTicketInfo */
-    public SharedTicketInfo() {
+    public SharedTicketInfo(String id, TicketInfo ticket) {
+        this.id = id;
+        this.name = ticket.getName();
+        this.ticket = ticket;
     }
 
     public SharedTicketInfo(JSONObject o) throws IOException {

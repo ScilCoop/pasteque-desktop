@@ -43,7 +43,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketInfo {
+public class TicketInfo implements Serializable {
 
     private static final long serialVersionUID = 2765650092387265178L;
 

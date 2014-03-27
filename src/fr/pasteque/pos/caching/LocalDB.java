@@ -123,6 +123,9 @@ public class LocalDB {
                     + "groupId INTEGER(255), prdId VARCHAR(255), "
                     + "dispOrder INTEGER(255), "
                     + "PRIMARY KEY (groupId, prdId))");
+            stmt.execute("CREATE TABLE sharedTickets ("
+                    + "id VARCHAR(255), data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }
