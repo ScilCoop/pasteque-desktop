@@ -1712,6 +1712,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         JLabel brandLabel = new JLabel(brand);
         this.clock = WidgetsBuilder.createLabel("00:00");
         this.messageBox = WidgetsBuilder.createTextField();
+        this.messageBox.setRequestFocusEnabled(false);
+        this.messageBox.setFocusable(false);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         brandHeader.add(brandLabel, cstr);
