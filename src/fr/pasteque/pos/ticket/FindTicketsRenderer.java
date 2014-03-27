@@ -37,13 +37,13 @@ public class FindTicketsRenderer extends DefaultListCellRenderer {
     
     private Icon icoTicketNormal;
     private Icon icoTicketRefund;
+    private Icon icoTicketDebt;
 
-    public static final int RECEIPT_NORMAL = 0;
-    
     /** Creates a new instance of ProductRenderer */
     public FindTicketsRenderer() {
         this.icoTicketNormal = ImageLoader.readImageIcon("tkt_type_pay.png");
         this.icoTicketRefund = ImageLoader.readImageIcon("tkt_type_refund.png");
+        this.icoTicketDebt = ImageLoader.readImageIcon("tkt_type_debtrecov.png");
     }
 
     @Override
@@ -59,7 +59,7 @@ public class FindTicketsRenderer extends DefaultListCellRenderer {
         }
         int ticketId = tkt.getTicketId();
         Date date = tkt.getDate();
-        double total = tkt.getTotal();
+        double total = tkt.getTotalPaid();
         String name = tkt.getUser().getName();
         String sHtml = "<tr><td width=\"30\">"+ "["+ ticketId +"]" +"</td>" +
                 "<td width=\"100\">"+ Formats.TIMESTAMP.formatValue(date) +"</td>" +
@@ -68,10 +68,16 @@ public class FindTicketsRenderer extends DefaultListCellRenderer {
                 "<td width=\"100\">"+ Formats.STRING.formatValue(name) +"</td></tr>";
 
         setText("<html><table>" + sHtml +"</table></html>");
-        if (ticketType == RECEIPT_NORMAL) {
+        switch (ticketType) {
+        case TicketInfo.RECEIPT_NORMAL:
             setIcon(icoTicketNormal);
-        } else {
+            break;
+        case TicketInfo.RECEIPT_REFUND:
             setIcon(icoTicketRefund);
+            break;
+        case TicketInfo.RECEIPT_PAYMENT:
+            setIcon(icoTicketDebt);
+            break;
         }
         
         return this;

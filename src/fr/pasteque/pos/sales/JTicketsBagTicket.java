@@ -194,8 +194,14 @@ public class JTicketsBagTicket extends JTicketsBag {
             
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                String resource;
+                if (m_ticket.getTicketType() == TicketInfo.RECEIPT_PAYMENT) {
+                    resource = "Printer.CustomerPaid";
+                } else {
+                    resource = "Printer.TicketPreview";
+                }
                 script.put("ticket", m_ticket);
-                m_TTP.printTicket(script.eval(m_dlSystem.getResourceAsXML("Printer.TicketPreview")).toString());
+                m_TTP.printTicket(script.eval(m_dlSystem.getResourceAsXML(resource)).toString());
             } catch (ScriptException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(this);
