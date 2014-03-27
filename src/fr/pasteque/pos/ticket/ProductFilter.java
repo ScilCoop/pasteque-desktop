@@ -31,7 +31,6 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.ListQBFModelNumber;
 import fr.pasteque.data.gui.ComboBoxValModel;
 import fr.pasteque.data.loader.Datas;
-import fr.pasteque.data.loader.SentenceList;
 import fr.pasteque.data.loader.SerializerWriteBasic;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.reports.ReportEditorCreator;
@@ -48,7 +47,7 @@ public class ProductFilter extends javax.swing.JPanel implements ReportEditorCre
     
     public void init(AppView app) {
          
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
+        DataLogicSales dlSales = new DataLogicSales();
        
         // El modelo de categorias
         m_CategoryModel = new ComboBoxValModel();          

@@ -30,7 +30,6 @@ import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.sales.*;
 import fr.pasteque.pos.forms.*; 
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.SerializerReadClass;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
@@ -63,7 +62,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
         
         super(app, panelticket);
         
-        dlReceipts = (DataLogicReceipts) app.getBean("fr.pasteque.pos.sales.DataLogicReceipts");
+        dlReceipts = new DataLogicReceipts();
         dlSales = new DataLogicSales();
         
         m_restaurantmap = new JTicketsBagRestaurant(app, this);

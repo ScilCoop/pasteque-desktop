@@ -24,7 +24,6 @@ package fr.pasteque.pos.panels;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.SerializerWriteBasic;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.format.Formats;

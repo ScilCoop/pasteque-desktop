@@ -20,7 +20,6 @@
 package fr.pasteque.pos.forms;
 
 import java.util.Date;
-import fr.pasteque.data.loader.Session;
 import fr.pasteque.pos.printer.*;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
@@ -37,7 +36,6 @@ public interface AppView {
     public DeviceTicket getDeviceTicket();
     public DeviceScanner getDeviceScanner();
       
-    public Session getSession();
     public AppProperties getProperties();
     public Object getBean(String beanfactory) throws BeanFactoryException;
 

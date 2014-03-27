@@ -23,24 +23,10 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.DataParams;
 import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.Datas;
-import fr.pasteque.data.loader.PreparedSentence;
-import fr.pasteque.data.loader.QBFBuilder;
-import fr.pasteque.data.loader.SentenceExec;
-import fr.pasteque.data.loader.SentenceExecTransaction;
-import fr.pasteque.data.loader.SentenceList;
-import fr.pasteque.data.loader.SerializerRead;
-import fr.pasteque.data.loader.SerializerReadBasic;
-import fr.pasteque.data.loader.SerializerWriteBasic;
-import fr.pasteque.data.loader.SerializerWriteBasicExt;
-import fr.pasteque.data.loader.SerializerWriteParams;
 import fr.pasteque.data.loader.ServerLoader;
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.data.loader.StaticSentence;
-import fr.pasteque.data.loader.TableDefinition;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.caching.CustomersCache;
 import fr.pasteque.pos.forms.AppLocal;
-import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,17 +40,13 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class DataLogicCustomers extends BeanFactoryDataSingle {
+public class DataLogicCustomers {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.customers.DataLogicCustomers");
     
     // TODO: use local database for caching
     private static List<DiscountProfile> discProfileCache;
     
-    public void init(Session s){
-        DataLogicCustomers.discProfileCache = null;
-    }
-
     /** Load customers list from server */
     private List<CustomerInfoExt> loadCustomers() throws BasicException {
         try {
@@ -204,19 +186,19 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return 0;
     }
 
-    public final SentenceList getReservationsList() {
-        /*        return new PreparedSentence(s
+    /*public final SentenceList getReservationsList() {
+                return new PreparedSentence(s
             , "SELECT R.ID, R.CREATED, R.DATENEW, C.CUSTOMER, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, COALESCE(CUSTOMERS.NAME, R.TITLE),  R.CHAIRS, R.ISDONE, R.DESCRIPTION " +
               "FROM RESERVATIONS R LEFT OUTER JOIN RESERVATION_CUSTOMERS C ON R.ID = C.ID LEFT OUTER JOIN CUSTOMERS ON C.CUSTOMER = CUSTOMERS.ID " +
               "WHERE R.DATENEW >= ? AND R.DATENEW < ?"
             , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.TIMESTAMP})
-            , new SerializerReadBasic(customerdatas));*/
+            , new SerializerReadBasic(customerdatas));
         // TODO: enable reservation list
         return null;
     }
     
     public final SentenceExec getReservationsUpdate() {
-        /*return new SentenceExecTransaction(s) {
+        return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -231,13 +213,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "UPDATE RESERVATIONS SET ID = ?, CREATED = ?, DATENEW = ?, TITLE = ?, CHAIRS = ?, ISDONE = ?, DESCRIPTION = ? WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0, 1, 2, 6, 7, 8, 9, 0})).exec(params);
             }
-            };*/
+            };
         // TODO: enable reservation update
         return null;
     }
     
     public final SentenceExec getReservationsDelete() {
-        /*        return new SentenceExecTransaction(s) {
+                return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -247,13 +229,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "DELETE FROM RESERVATIONS WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0})).exec(params);
             }
-            };*/
+            };
         // TODO: enable reservation delete
         return null;
     }
     
     public final SentenceExec getReservationsInsert() {
-        /*        return new SentenceExecTransaction(s) {
+                return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 int i = new PreparedSentence(s
@@ -267,10 +249,10 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                 }
                 return i;
             }
-            };*/
+            };
         // TODO: enable reservation create
         return null;
-    }
+    }*/
 
     private static void loadDiscountProfiles() throws BasicException {
          try {

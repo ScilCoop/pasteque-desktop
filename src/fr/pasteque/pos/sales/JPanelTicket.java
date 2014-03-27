@@ -40,7 +40,6 @@ import fr.pasteque.pos.payment.JPaymentSelect;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.ListKeyed;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SentenceList;
 import fr.pasteque.pos.catalog.CatalogSelector;
 import fr.pasteque.pos.catalog.JCatalogSubgroups;
 import fr.pasteque.pos.customers.CustomerInfoExt;
@@ -2291,7 +2290,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } else {
             try {
                 TicketLineInfo line = m_oTicket.getLine(i);
-                JProductAttEdit attedit = JProductAttEdit.getAttributesEditor(this, m_App.getSession());
+                JProductAttEdit attedit = JProductAttEdit.getAttributesEditor(this);
                 attedit.editAttributes(line.getProductAttSetId(), line.getProductAttSetInstId());
                 attedit.setVisible(true);
                 if (attedit.isOK()) {

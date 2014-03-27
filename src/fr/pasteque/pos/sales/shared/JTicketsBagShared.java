@@ -43,7 +43,7 @@ public class JTicketsBagShared extends JTicketsBag {
         
         super(app, panelticket);
         
-        dlReceipts = (DataLogicReceipts) app.getBean("fr.pasteque.pos.sales.DataLogicReceipts");
+        dlReceipts = new DataLogicReceipts();
         
         initComponents();
     }

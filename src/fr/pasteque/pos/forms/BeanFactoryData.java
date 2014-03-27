@@ -39,7 +39,7 @@ public class BeanFactoryData implements BeanFactoryApp {
             if (sfactoryname.endsWith("Create")) {
                 sfactoryname = sfactoryname.substring(0, sfactoryname.length() - 6);
             }
-            bf = (BeanFactoryApp) Class.forName(sfactoryname + app.getSession().DB.getName()).newInstance();
+            bf = (BeanFactoryApp) Class.forName(sfactoryname).newInstance();
             bf.init(app);                     
         } catch (Exception ex) {
             throw new BeanFactoryException(ex);

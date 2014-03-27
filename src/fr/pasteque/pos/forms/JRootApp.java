@@ -40,10 +40,7 @@ import fr.pasteque.beans.*;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.gui.JMessageDialog;
-import fr.pasteque.data.loader.BatchSentence;
-import fr.pasteque.data.loader.BatchSentenceResource;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.Session;
 import fr.pasteque.pos.caching.LocalDB;
 import fr.pasteque.pos.caching.ResourcesCache;
 import fr.pasteque.pos.customers.DataLogicCustomers;
@@ -107,7 +104,7 @@ public class JRootApp extends JPanel implements AppView {
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
         m_dlSystem = new DataLogicSystem();
-        DataLogicCustomers dlCust = (DataLogicCustomers) getBean("fr.pasteque.pos.customers.DataLogicCustomers");
+        DataLogicCustomers dlCust = new DataLogicCustomers();
         
         // Check database compatibility
         String sDBVersion = readDataBaseVersion();
@@ -251,11 +248,6 @@ public class JRootApp extends JPanel implements AppView {
         return m_Scanner;
     }
     
-    public Session getSession() {
-        // TODO: remove from Interface
-        return null;
-    }
-
     public CashRegisterInfo getCashRegister() {
         return this.cashRegister;
     }

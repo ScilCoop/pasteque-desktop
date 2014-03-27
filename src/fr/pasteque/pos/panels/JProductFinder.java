@@ -29,8 +29,6 @@ import java.awt.*;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.user.ListProvider;
-import fr.pasteque.data.user.ListProviderCreator;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;

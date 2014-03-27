@@ -49,7 +49,6 @@ import javax.swing.ListSelectionModel;
 import java.util.Date;
 import java.util.UUID;
 import javax.swing.table.*;
-import fr.pasteque.data.loader.StaticSentence;
 import fr.pasteque.data.loader.SerializerWriteBasic;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;

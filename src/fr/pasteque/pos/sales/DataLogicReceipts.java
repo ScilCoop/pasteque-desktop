@@ -25,8 +25,6 @@ import javax.xml.bind.DatatypeConverter;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ServerLoader;
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 import fr.pasteque.pos.ticket.TicketInfo;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -35,16 +33,13 @@ import org.json.JSONArray;
  *
  * @author adrianromero
  */
-public class DataLogicReceipts extends BeanFactoryDataSingle {
-    
-    private Session s;
+public class DataLogicReceipts {
     
     /** Creates a new instance of DataLogicReceipts */
     public DataLogicReceipts() {
     }
     
-    public void init(Session s){
-        this.s = s;
+    public void init(){
     }
      
     public final TicketInfo getSharedTicket(String id) throws BasicException {

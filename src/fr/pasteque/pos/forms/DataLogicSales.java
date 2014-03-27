@@ -40,8 +40,6 @@ import java.util.logging.Logger;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.model.Field;
-import fr.pasteque.data.model.Row;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.caching.CatalogCache;
 import fr.pasteque.pos.caching.CurrenciesCache;
@@ -71,7 +69,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class DataLogicSales extends BeanFactoryDataSingle {
+public class DataLogicSales {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DatalogicSales");
     private static final String TYPE_CAT = "category";
@@ -80,8 +78,6 @@ public class DataLogicSales extends BeanFactoryDataSingle {
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {
     }
-
-    public void init(Session s){}
 
     private byte[] loadImage(String type, String id) {
         try {
@@ -366,16 +362,16 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         return TaxesCache.getTaxCats();
     }
 
-    public final SentenceList getAttributeSetList() {
+    /*public final SentenceList getAttributeSetList() {
         return null;
         // TODO: reenable attributes
-        /*return new StaticSentence(s
+        return new StaticSentence(s
             , "SELECT ID, NAME FROM ATTRIBUTESET ORDER BY NAME"
             , null
             , new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
                 return new AttributeSetInfo(dr.getString(1), dr.getString(2));
-                }});*/
-    }
+                }});
+                }*/
 
 
     public boolean preloadCurrencies() {
@@ -460,9 +456,9 @@ public class DataLogicSales extends BeanFactoryDataSingle {
         }
     }
 
-    public final void deleteTicket(final TicketInfo ticket, final String location) throws BasicException {
+    /*public final void deleteTicket(final TicketInfo ticket, final String location) throws BasicException {
 
-        /*Transaction t = new Transaction(s) {
+        Transaction t = new Transaction(s) {
             public Object transact() throws BasicException {
 
                 // update the inventory
@@ -520,8 +516,8 @@ public class DataLogicSales extends BeanFactoryDataSingle {
                 return null;
             }
         };
-        t.execute();*/
-    }
+        t.execute();
+        }*/
 
     public boolean preloadTariffAreas() {
         try {

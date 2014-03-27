@@ -21,8 +21,6 @@
 
 package fr.pasteque.pos.config;
 
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.pos.forms.AppViewConnection;
 import fr.pasteque.pos.forms.BeanFactory;
 import fr.pasteque.pos.forms.DataLogicSystem;
 
@@ -42,7 +40,6 @@ import javax.swing.UIManager;
 public class JFrmConfig extends javax.swing.JFrame {
     
     private JPanelConfiguration config;
-    private Session session;
     
     /** Creates new form JFrmConfig */
     public JFrmConfig(AppProperties props) {
@@ -76,10 +73,6 @@ public class JFrmConfig extends javax.swing.JFrame {
     private class MyFrameListener extends WindowAdapter{
         
         public void windowClosing(WindowEvent evt) {
-            if (session != null) {
-                session.close();
-                session = null;
-            }
             if (config.deactivate()) {
                 dispose();
             }

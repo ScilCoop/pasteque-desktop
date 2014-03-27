@@ -26,8 +26,6 @@ import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.loader.QBFCompareEnum;
 import fr.pasteque.data.user.EditorCreator;
-import fr.pasteque.data.user.ListProvider;
-import fr.pasteque.data.user.ListProviderCreator;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.JEditorString;
