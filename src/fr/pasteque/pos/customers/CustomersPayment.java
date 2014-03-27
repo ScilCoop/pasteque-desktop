@@ -51,7 +51,7 @@ import javax.swing.JOptionPane;
  *
  * @author  adrianromero
  */
-public class CustomersPayment extends javax.swing.JPanel implements JPanelView, BeanFactoryApp {
+public class CustomersPayment extends javax.swing.JPanel implements JPanelView, BeanFactoryApp, DataLogicCustomers.CustomerListener {
 
     private AppView app;
     private DataLogicCustomers dlcustomers;
@@ -227,6 +227,13 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     
     public boolean requiresOpenedCash() {
         return true;
+    }
+
+    public void customerLoaded(CustomerInfoExt customer) {
+        if (customer.getId().equals(this.customerext.getId())) {
+            this.customerext = customer;
+            this.editCustomer(customerext);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -508,7 +515,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
             }
 
             // reload customer
-            editCustomer(customerext);
+            dlcustomers.updateCustomer(ticket.getCustomer().getId(), this);
 
             printTicket(paymentdialog.isPrintSelected()
                     ? "Printer.CustomerPaid"
