@@ -595,7 +595,7 @@ public class JTicketsBagRestaurantMap extends JTicketsBag {
                 m_jbtnReservationsActionPerformed(evt);
             }
         });
-        jPanel2.add(m_jbtnReservations);
+        //jPanel2.add(m_jbtnReservations);
 
         m_jbtnRefresh.setIcon(ImageLoader.readImageIcon("reload.png"));
         m_jbtnRefresh.setText(AppLocal.getIntString("button.reloadticket"));
