@@ -41,6 +41,7 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.gui.JMessageDialog;
 import fr.pasteque.data.loader.ImageLoader;
+import fr.pasteque.pos.caching.CallQueue;
 import fr.pasteque.pos.caching.LocalDB;
 import fr.pasteque.pos.caching.ResourcesCache;
 import fr.pasteque.pos.customers.DataLogicCustomers;
@@ -60,7 +61,7 @@ import java.util.regex.Matcher;
  * @author adrianromero
  */
 public class JRootApp extends JPanel implements AppView {
- 
+
     private AppProperties m_props;
     private DataLogicSystem m_dlSystem;
     
@@ -138,6 +139,9 @@ public class JRootApp extends JPanel implements AppView {
                 this.newActiveCash();
             } else {
                 this.setActiveCash(cashSess);
+                if (cashSess.getId() != null) {
+                    CallQueue.setup(cashSess.getId());
+                }
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos

@@ -21,7 +21,9 @@ package fr.pasteque.pos.payment;
 
 import fr.pasteque.pos.admin.CurrencyInfo;
 
-public class PaymentInfoFree extends PaymentInfo {
+import java.io.Serializable;
+
+public class PaymentInfoFree extends PaymentInfo implements Serializable {
     
     private double m_dTotal;
    

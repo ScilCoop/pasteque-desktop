@@ -41,6 +41,7 @@ import fr.pasteque.data.loader.*;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import fr.pasteque.pos.caching.CallQueue;
 import fr.pasteque.pos.caching.CatalogCache;
 import fr.pasteque.pos.caching.CurrenciesCache;
 import fr.pasteque.pos.caching.TariffAreasCache;
@@ -440,6 +441,11 @@ public class DataLogicSales {
     public final void saveTicket(final TicketInfo ticket,
             final String locationId,
             final String cashId) throws BasicException {
+        if (CallQueue.isOffline()) {
+            // Don't try to send and wait for recovery
+            CallQueue.queueTicketSave(ticket);
+            return;
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
@@ -449,7 +455,10 @@ public class DataLogicSales {
                 throw new BasicException("Bad server response");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Unable to save, queue it
+            logger.log(Level.WARNING, "Unable to save ticket: "
+                    + e.getMessage());
+            CallQueue.queueTicketSave(ticket);
             throw new BasicException(e);
         }
     }

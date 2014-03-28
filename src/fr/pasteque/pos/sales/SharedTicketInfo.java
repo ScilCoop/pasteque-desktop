@@ -54,6 +54,16 @@ public class SharedTicketInfo implements Serializable {
         TicketInfo tkt = new TicketInfo(data);
         this.ticket = tkt;
     }
+
+    public JSONObject toJSON() throws IOException {
+        JSONObject tkt = new JSONObject();
+        tkt.put("id", id);
+        tkt.put("label", ticket.getName());
+        byte[] data = ticket.serialize();
+        String strData = DatatypeConverter.printBase64Binary(data);
+        tkt.put("data", strData);
+        return tkt;
+    }
     
     public String getId() {
         return id;

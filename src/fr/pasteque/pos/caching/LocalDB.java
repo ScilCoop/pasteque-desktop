@@ -126,6 +126,13 @@ public class LocalDB {
             stmt.execute("CREATE TABLE sharedTickets ("
                     + "id VARCHAR(255), data BINARY(500000), "
                     + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE sharedTicketQueue ("
+                    + "id VARCHAR(255), operation INTEGER(255), "
+                    + "data BINARY(500000), "
+                    + "PRIMARY KEY (id))");
+            stmt.execute("CREATE TABLE ticketQueue ("
+                    + "ticketId INTEGER(255), data BINARY(500000), "
+                    + "PRIMARY KEY (ticketId))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
     }

@@ -21,8 +21,10 @@ package fr.pasteque.pos.payment;
 
 import fr.pasteque.pos.admin.CurrencyInfo;
 
+import java.io.Serializable;
+
 /** Generic payment model */
-public class PaymentInfoGeneric extends PaymentInfo {
+public class PaymentInfoGeneric extends PaymentInfo implements Serializable {
     
     private double m_dTotal;
     private String code;

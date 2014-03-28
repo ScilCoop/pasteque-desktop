@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ServerLoader;
+import fr.pasteque.pos.caching.CallQueue;
 import fr.pasteque.pos.caching.TicketsCache;
 import fr.pasteque.pos.ticket.TicketInfo;
 import org.json.JSONObject;
@@ -47,6 +48,15 @@ public class DataLogicReceipts {
     }
      
     public final TicketInfo getSharedTicket(String id) throws BasicException {
+        if (CallQueue.isOffline()) {
+            // Read from cache until recovery
+            SharedTicketInfo stkt = TicketsCache.getTicket(id);
+            if (stkt != null) {
+                return stkt.getTicket();
+            } else {
+                return null;
+            }
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("TicketsAPI", "getShared",
@@ -86,6 +96,11 @@ public class DataLogicReceipts {
     
     public final List<SharedTicketInfo> getSharedTicketList() throws BasicException {
         List<SharedTicketInfo> tkts = new ArrayList<SharedTicketInfo>();
+        if (CallQueue.isOffline()) {
+            // Read from cache until recovery
+            tkts = TicketsCache.getAllTickets();
+            return tkts;
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("TicketsAPI", "getAllShared");
@@ -116,11 +131,16 @@ public class DataLogicReceipts {
     }
     
     public final void updateSharedTicket(final String id, final TicketInfo ticket) throws BasicException {
+        SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
         try {
-            SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
             TicketsCache.saveTicket(stkt);
         } catch (BasicException e) {
             e.printStackTrace();
+        }
+        if (CallQueue.isOffline()) {
+            // Enqueue until recovery
+            CallQueue.queueSharedTicketSave(id, stkt);
+            return;
         }
         try {
             ServerLoader loader = new ServerLoader();
@@ -137,8 +157,10 @@ public class DataLogicReceipts {
                 throw new BasicException("Bad server response");
             }
         } catch (Exception e) {
+            // Update failed, add to queue
             logger.log(Level.WARNING, "Unable to save shared ticket " + id
                     + ": " + e.getMessage());
+            CallQueue.queueSharedTicketSave(id, stkt);
             throw new BasicException(e);
         }
     }
@@ -159,6 +181,11 @@ public class DataLogicReceipts {
         } catch (BasicException e) {
             e.printStackTrace();
         }
+        if (CallQueue.isOffline()) {
+            // Enqueue until recovery
+            CallQueue.queueDeleteSharedTicket(id);
+            return;
+        }
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
@@ -167,7 +194,10 @@ public class DataLogicReceipts {
                 throw new BasicException("Bad server response");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            // Delete failed, queue call
+            logger.log(Level.WARNING, "Unable to delete shared ticket: "
+                    + e.getMessage());
+            CallQueue.queueDeleteSharedTicket(id);
             throw new BasicException(e);
         }
     }    

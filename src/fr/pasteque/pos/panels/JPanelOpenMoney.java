@@ -25,6 +25,7 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.CallQueue;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.AppLocal;
@@ -285,6 +286,7 @@ implements JPanelView, CoinCountButton.Listener {
         try {
             cashSess = this.dlSystem.saveCashSession(cashSess);
             this.appView.setActiveCash(cashSess);
+            CallQueue.setup(cashSess.getId());
         } catch (BasicException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE,
                         AppLocal.getIntString("message.cannotopencash"), e);

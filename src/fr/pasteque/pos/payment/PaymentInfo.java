@@ -23,12 +23,14 @@ import fr.pasteque.basic.BasicException;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;
+
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /** Generic PaymentInfo as stored in database.
  * Use subclasses when creating a new PaymentInfo.
  */
-public abstract class PaymentInfo {
+public abstract class PaymentInfo implements Serializable {
 
     protected CurrencyInfo currency;
     

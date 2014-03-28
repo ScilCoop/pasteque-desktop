@@ -19,7 +19,9 @@
 
 package fr.pasteque.pos.payment;
 
-public class PaymentInfoMagcardRefund extends PaymentInfoMagcard {
+import java.io.Serializable;
+
+public class PaymentInfoMagcardRefund extends PaymentInfoMagcard implements Serializable {
     
     /** Creates a new instance of PaymentInfoMagcardRefund */
     public PaymentInfoMagcardRefund(String sHolderName, String sCardNumber, String sExpirationDate, String track1, String track2, String track3, String sTransactionID, double dTotal) {
