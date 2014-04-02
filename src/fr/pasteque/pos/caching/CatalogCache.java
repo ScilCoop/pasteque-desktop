@@ -209,7 +209,11 @@ public class CatalogCache {
                 stmt.setString(1, cat.getID());
                 stmt.setString(2, cat.getName());
                 stmt.setString(3, cat.getParentId());
-                stmt.setInt(4, cat.getDispOrder());
+                int dispOrder = 0;
+                if (cat.getDispOrder() != null) {
+                    dispOrder = cat.getDispOrder();
+                }
+                stmt.setInt(4, dispOrder);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(5120);
                 ObjectOutputStream os = new ObjectOutputStream(bos);
                 os.writeObject(cat);
