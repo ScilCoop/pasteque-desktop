@@ -1721,7 +1721,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
         cstr.insets = new Insets(5, 20, 5, 20);
-        brandHeader.add(this.messageBox, cstr);
+        brandHeader.add(new JLabel(), cstr);
+        //brandHeader.add(this.messageBox, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         brandHeader.add(this.clock, cstr);
