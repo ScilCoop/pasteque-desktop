@@ -126,17 +126,19 @@ public class TicketLineInfo implements Serializable {
         DataLogicSales dlSales = new DataLogicSales();
         ProductInfoExt product = dlSales.getProductInfo(this.productid);
         this.attributes = new Properties();
-        attributes.setProperty("product.name", product.getName());
-        attributes.setProperty("product.com",
-                product.isCom() ? "true" : "false");
-        attributes.setProperty("product.scale",
-                product.isScale() ? "true" : "false");
-        // TODO: attributes
-        attributes.setProperty("product.taxcategoryid",
-                product.getTaxCategoryID());
-        if (product.getCategoryID() != null) {
-            attributes.setProperty("product.categoryid",
-                    product.getCategoryID());
+        if (product != null) {
+            attributes.setProperty("product.name", product.getName());
+            attributes.setProperty("product.com",
+                    product.isCom() ? "true" : "false");
+            attributes.setProperty("product.scale",
+                    product.isScale() ? "true" : "false");
+            // TODO: attributes
+            attributes.setProperty("product.taxcategoryid",
+                    product.getTaxCategoryID());
+            if (product.getCategoryID() != null) {
+                attributes.setProperty("product.categoryid",
+                        product.getCategoryID());
+            }
         }
         this.multiply = o.getDouble("quantity");
         this.price = o.getDouble("price");
