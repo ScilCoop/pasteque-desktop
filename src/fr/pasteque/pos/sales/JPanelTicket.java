@@ -1649,6 +1649,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             // Loading went well and the customer is still the one on the ticket
             logger.log(Level.INFO, "Customer refreshed from server.");
             m_oTicket.setCustomer(customer);
+            // Refresh message box
+            this.messageBox.setText(AppLocal.getIntString("MsgBox.CustomerInfo", customer.getName(), customer.printPrepaid(), customer.printCurDebt()));
         } else {
             logger.log(Level.INFO,
                     "Customer refresh failed or customer changed.");
@@ -1721,8 +1723,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
         cstr.insets = new Insets(5, 20, 5, 20);
-        brandHeader.add(new JLabel(), cstr);
-        //brandHeader.add(this.messageBox, cstr);
+        brandHeader.add(this.messageBox, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         brandHeader.add(this.clock, cstr);
@@ -2260,6 +2261,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             this.m_oTicket.setDiscountRate(0.0);
         }
         if (customer != null) {
+            // Show prepaid and debt in message box
+            this.messageBox.setText(AppLocal.getIntString("MsgBox.CustomerInfo", customer.getName(), customer.printPrepaid(), customer.printCurDebt()));
             // Refresh customer from server
             dlCustomers.updateCustomer(customer.getId(), this);
         }

@@ -236,6 +236,11 @@ public class CustomerInfoExt extends CustomerInfo {
         this.prepaid += amount;
     }
 
+    public String printPrepaid() {
+        return Formats.CURRENCY.formatValue(RoundUtils.getValue(getPrepaid()));
+    }
+
+
     public String getFirstname() {
         return firstname;
     }
