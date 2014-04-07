@@ -145,6 +145,11 @@ public class AppConfig implements AppProperties {
         this.loadDefault();
         return this.configfile.delete();
     }
+    public boolean canRestore() {
+        File restore = new File(this.configfile.getAbsolutePath() + ".restore");
+        File defaultRestore = this.getDefaultRestoreConfig();
+        return restore.exists() || defaultRestore.exists();
+    }
     public void restore() throws IOException {
         File restore = new File(this.configfile.getAbsolutePath() + ".restore");
         File currentConfig = this.configfile;
