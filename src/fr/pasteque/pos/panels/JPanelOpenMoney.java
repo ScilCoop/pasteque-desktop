@@ -32,6 +32,8 @@ import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.forms.JPanelView;
 import fr.pasteque.pos.forms.JPrincipalApp;
+import fr.pasteque.pos.printer.TicketParser;
+import fr.pasteque.pos.printer.TicketPrinterException;
 import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
 import fr.pasteque.pos.scripting.ScriptFactory;
@@ -68,6 +70,8 @@ implements JPanelView, CoinCountButton.Listener {
     private JEditorKeys keypad;
     private JLabel totalAmount;
     private double total;
+    private PaymentsModel m_PaymentsToOpen;
+    private TicketParser m_TTP;
 
     public JPanelOpenMoney(AppView appView, JPrincipalApp principalApp,
             String targetTask) {
@@ -80,6 +84,7 @@ implements JPanelView, CoinCountButton.Listener {
         AppConfig cfg = AppConfig.loadedInstance;
         boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
         boolean canOpen = this.principalApp.getUser().hasPermission("button.openmoney");
+        m_TTP = new TicketParser(this.appView.getDeviceTicket(), this.dlSystem);
         if (showCount && canOpen) {
             String code = this.dlSystem.getResourceAsXML("payment.cash");
             if (code != null) {
@@ -108,6 +113,7 @@ implements JPanelView, CoinCountButton.Listener {
     }
     
     public void activate() throws BasicException {
+        this.m_PaymentsToOpen = PaymentsModel.loadOpenInstance(this.appView);
         this.updateAmount();
         // Open drawer if allowed to open and counting
         AppConfig cfg = AppConfig.loadedInstance;
@@ -292,6 +298,35 @@ implements JPanelView, CoinCountButton.Listener {
                         AppLocal.getIntString("message.cannotopencash"), e);
                 msg.show(this);
                 return;
+        }
+        // Prepere paymentsToOpen
+        AppConfig cfg = AppConfig.loadedInstance;
+        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
+        if (showCount) {
+            for (CoinCountButton ccb : this.coinButtons) {
+                this.m_PaymentsToOpen.setCoinCount(ccb.getValue(),
+                        ccb.getCount());
+            }
+        }
+
+        // Print ticket
+        String sresource = this.dlSystem.getResourceAsXML("Printer.OpenCash");
+        if (sresource == null) {
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"));
+            msg.show(this);
+        } else {
+            // Put objects references and run resource script
+            try {
+                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                script.put("payments", m_PaymentsToOpen);
+                m_TTP.printTicket(script.eval(sresource).toString());
+            } catch (ScriptException e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                msg.show(this);
+            } catch (TicketPrinterException e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                msg.show(this);
+            }
         }
         // Go to original task
         this.principalApp.showTask(this.targetTask);

@@ -68,6 +68,19 @@ public class PaymentsModel {
         this.coinCount = new HashMap<Double, Integer>();
     }    
 
+    public static PaymentsModel loadOpenInstance(CashSession session) throws BasicException {
+        DataLogicSales dlSales = new DataLogicSales();
+        DataLogicSystem dlSys = new DataLogicSystem();
+        PaymentsModel p = new PaymentsModel();
+        currencies = dlSales.getCurrenciesList();
+        p.cashSession = session;
+        p.cashRegister = dlSys.getCashRegister(session.getCashRegisterId());
+        p.m_lpayments = new ArrayList<PaymentsLine>();
+        p.catSales = new ArrayList<CategoryLine>();
+        p.m_lsales = new ArrayList<SalesLine>();
+        return p;
+    }
+
     public static PaymentsModel loadInstance(CashSession session) throws BasicException {
         DataLogicSales dlSales = new DataLogicSales();
         DataLogicSystem dlSys = new DataLogicSystem();
@@ -142,6 +155,10 @@ public class PaymentsModel {
         return p;
     }
 
+    public static PaymentsModel loadOpenInstance(AppView app) throws BasicException {
+        CashSession cash = app.getActiveCashSession();
+        return loadOpenInstance(cash);
+    }
     public static PaymentsModel loadInstance(AppView app) throws BasicException {
         CashSession cash = app.getActiveCashSession();
         return loadInstance(cash);
