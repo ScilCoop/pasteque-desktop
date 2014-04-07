@@ -85,6 +85,11 @@ public class CoinCountButton {
         this.count = 0;
     }
 
+    /** Get unit value */
+    public double getValue() {
+        return this.amount;
+    }
+
     public int getCount() {
         try {
             return this.input.getValueInteger();
@@ -93,6 +98,7 @@ public class CoinCountButton {
         }
     }
 
+    /** Get total amount */
     public double getAmount() {
         return this.getCount() * this.amount;
     }

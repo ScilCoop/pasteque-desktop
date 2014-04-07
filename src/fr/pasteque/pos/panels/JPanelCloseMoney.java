@@ -290,6 +290,11 @@ public class JPanelCloseMoney extends JPanel
 
         // Prepare report and print
         m_PaymentsToClose.setDateEnd(dNow);
+        if (showCount) {
+            for (CoinCountButton ccb : this.coinButtons) {
+                m_PaymentsToClose.setCoinCount(ccb.getValue(), ccb.getCount());
+            }
+        }
         printPayments("Printer.CloseCash");
 
         // Show confirmation message

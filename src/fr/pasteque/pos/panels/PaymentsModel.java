@@ -49,6 +49,7 @@ public class PaymentsModel {
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
     private List<CategoryLine> catSales;
+    private Map<Double, Integer> coinCount;
     private static List<CurrencyInfo> currencies;
 
     private final static String[] PAYMENTHEADERS = {"Label.Payment", "label.totalcash"};
@@ -64,6 +65,7 @@ public class PaymentsModel {
     private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
 
     private PaymentsModel() {
+        this.coinCount = new HashMap<Double, Integer>();
     }    
 
     public static PaymentsModel loadInstance(CashSession session) throws BasicException {
@@ -183,6 +185,16 @@ public class PaymentsModel {
         return this.cashSession.getOpenCash() != null
                 || this.cashSession.getCloseCash() != null;
     }
+    public void setCoinCount(Double amount, int count) {
+        this.coinCount.put(amount, count);
+    }
+    public List<Double> getCountedCoins() {
+        Set keys = this.coinCount.keySet();
+        List<Double> coins = new ArrayList<Double>();
+        coins.addAll(keys);
+        Collections.sort(coins);
+        return coins;
+    }
     public Double getExpectedCash() {
         return this.expectedCash;
     }
@@ -219,6 +231,15 @@ public class PaymentsModel {
         } else {
             return "";
         }
+    }
+    public String printCoinValue(double val) {
+        return Formats.CURRENCY.formatValue(val);
+    }
+    public String printCoinCount(double val) {
+        return Formats.INT.formatValue(this.coinCount.get(val));
+    }
+    public String printCoinTotal(double coinVal) {
+        return Formats.CURRENCY.formatValue(coinVal * this.coinCount.get(coinVal));
     }
 
     public String printPayments() {
