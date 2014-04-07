@@ -57,6 +57,8 @@ import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.payment.JPaymentSelectReceipt;
 import fr.pasteque.pos.payment.JPaymentSelectRefund;
+import fr.pasteque.pos.payment.PaymentInfo;
+import fr.pasteque.pos.payment.PaymentInfoCash;
 import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurant;
 import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurantMap;
 import fr.pasteque.pos.ticket.ProductInfoExt;
@@ -362,6 +364,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         refreshTicket();
         this.updateTariffCombo();
+        this.messageBox.setText("");
     }
     
     public TicketInfo getActiveTicket() {
@@ -1303,6 +1306,18 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                                     ? "Printer.Ticket"
                                     : "Printer.Ticket2", ticket, ticketext);
                             resultok = true;
+
+                            // Update message box
+                            boolean msgBoxUpdated = false;
+                            for (PaymentInfo p : paymentdialog.getSelectedPayments()) {
+                                if (p instanceof PaymentInfoCash) {
+                                    this.messageBox.setText(AppLocal.getIntString("MsgBox.LastChange", ((PaymentInfoCash)p).printChange()));
+                                    msgBoxUpdated = true;
+                                }
+                            }
+                            if (!msgBoxUpdated) {
+                                this.messageBox.setText("");
+                            }
 
                             // Increment next ticket id
                             m_App.getCashRegister().incrementNextTicketId();
