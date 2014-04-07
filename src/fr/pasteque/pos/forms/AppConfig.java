@@ -75,12 +75,10 @@ public class AppConfig implements AppProperties {
     }
 
     private File getDefaultConfig() {
-        return new File(new File(System.getProperty("user.home")),
-                "." + AppLocal.APP_ID + ".properties");
+        return new File(DEFAULT_DIR + "/config.properties");
     }
     private File getDefaultRestoreConfig() {
-        return new File(new File(System.getProperty("user.home")),
-                "." + AppLocal.APP_ID + ".properties.restore");
+        return new File(DEFAULT_DIR + "/config.properties.restore");
     }
 
     public String getProperty(String sKey) {
