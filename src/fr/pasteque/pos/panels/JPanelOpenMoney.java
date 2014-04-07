@@ -304,8 +304,10 @@ implements JPanelView, CoinCountButton.Listener {
         boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
         if (showCount) {
             for (CoinCountButton ccb : this.coinButtons) {
-                this.m_PaymentsToOpen.setCoinCount(ccb.getValue(),
-                        ccb.getCount());
+                if (ccb.getCount() > 0) {
+                    this.m_PaymentsToOpen.setCoinCount(ccb.getValue(),
+                            ccb.getCount());
+                }
             }
         }
 
