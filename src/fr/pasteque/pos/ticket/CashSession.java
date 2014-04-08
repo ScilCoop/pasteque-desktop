@@ -35,9 +35,11 @@ public class CashSession {
     private Date closeDate;
     private Double openCash;
     private Double closeCash;
+    private Double expectedCash;
 
     public CashSession(String id, int cashRegisterId, int sequence,
-            Date openDate, Date closeDate, Double openCash, Double closeCash) {
+            Date openDate, Date closeDate, Double openCash, Double closeCash,
+            Double expectedCash) {
         this.id = id;
         this.cashRegisterId = cashRegisterId;
         this.sequence = sequence;
@@ -45,6 +47,7 @@ public class CashSession {
         this.closeDate = closeDate;
         this.openCash = openCash;
         this.closeCash = closeCash;
+        this.expectedCash = expectedCash;
     }
 
     public CashSession(JSONObject o) {
@@ -62,6 +65,9 @@ public class CashSession {
         }
         if (!o.isNull("closeCash")) {
             this.closeCash = o.getDouble("closeCash");
+        }
+        if (!o.isNull("expectedCash")) {
+            this.expectedCash = o.getDouble("expectedCash");
         }
     }
 
@@ -89,6 +95,11 @@ public class CashSession {
             o.put("closeCash", JSONObject.NULL);
         } else {
             o.put("closeCash", this.closeCash);
+        }
+        if (this.expectedCash == null) {
+            o.put("expectedCash", JSONObject.NULL);
+        } else {
+            o.put("expectedCash", this.expectedCash);
         }
         return o;
     }
@@ -148,5 +159,13 @@ public class CashSession {
 
     public void setCloseCash(Double amount) {
         this.closeCash = amount;
+    }
+
+    public Double getExpectedCash() {
+        return this.expectedCash;
+    }
+
+    public void setExpectedCash(Double amount) {
+        this.expectedCash = amount;
     }
 }

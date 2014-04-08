@@ -276,6 +276,7 @@ public class JPanelCloseMoney extends JPanel
         boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
         if (showCount) {
             cashSess.setCloseCash(this.total);
+            cashSess.setExpectedCash(this.m_PaymentsToClose.getExpectedCash());
         }
         try {
             // Close cash in database

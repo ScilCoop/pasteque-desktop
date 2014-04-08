@@ -281,7 +281,7 @@ public class JRootApp extends JPanel implements AppView {
 
     public void newActiveCash() {
         this.activeCashSession = new CashSession(null,
-                this.cashRegister.getId(), 0, null, null, null, null);
+                this.cashRegister.getId(), 0, null, null, null, null, null);
     }
 
     public AppProperties getProperties() {
