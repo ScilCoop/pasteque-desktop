@@ -1779,6 +1779,20 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridy = 0;
         cstr.insets = new Insets(0, btnspacing, 0, btnspacing);
         ticketHeader.add(btnCustomer, cstr);
+        // Ticket discount
+        btnTicketDiscount = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_discount.png"), AppLocal.getIntString("Button.btnTicketDiscount.toolTip"));
+        btnTicketDiscount.setFocusPainted(false);
+        btnTicketDiscount.setFocusable(false);
+        btnTicketDiscount.setRequestFocusEnabled(false);
+        btnTicketDiscount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTicketDiscountActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        cstr.insets = new Insets(0, 0, 0, btnspacing);
+        ticketHeader.add(btnTicketDiscount, cstr);
         // Split button
         btnSplit = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_split.png"),AppLocal.getIntString("Button.btnSplit.toolTip"));
         btnSplit.setFocusPainted(false);
@@ -2159,6 +2173,23 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
+    private void btnTicketDiscountActionPerformed(ActionEvent evt) {
+        DiscountProfilePicker finder = DiscountProfilePicker.getDiscountProfilePicker(this);
+        finder.setVisible(true);
+
+        DiscountProfile profile = finder.getSelectedProfile();
+        if (profile != null) {
+            // Set discount profile and rate to ticket
+            this.m_oTicket.setDiscountRate(profile.getRate());
+            this.m_oTicket.setDiscountProfileId(profile.getId());
+        } else {
+            // Reset discount profile and rate
+            this.m_oTicket.setDiscountProfileId(null);
+            this.m_oTicket.setDiscountRate(0.0);
+        }
+        refreshTicket();
+    }
+
     private void m_jbtnLineDiscountActionPerformed(java.awt.event.ActionEvent evt) {
         double discountRate = this.getInputValue() / 100.0;
 
@@ -2356,6 +2387,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jUp;
     private javax.swing.JToggleButton m_jaddtax;
     private javax.swing.JButton m_jbtnLineDiscount;
+    private javax.swing.JButton btnTicketDiscount;
     private javax.swing.JPanel m_jInputContainer;
     private javax.swing.JComboBox m_jTariff;
     private javax.swing.JLabel clock;

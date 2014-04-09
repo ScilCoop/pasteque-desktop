@@ -270,6 +270,13 @@ public class DataLogicCustomers {
          }
     }
 
+    public List<DiscountProfile> getDiscountProfiles() throws BasicException {
+        if (DataLogicCustomers.discProfileCache == null) {
+            DataLogicCustomers.loadDiscountProfiles();
+        }
+        return DataLogicCustomers.discProfileCache;
+    }
+
     public DiscountProfile getDiscountProfile(int id) throws BasicException {
         if (DataLogicCustomers.discProfileCache == null) {
             DataLogicCustomers.loadDiscountProfiles();

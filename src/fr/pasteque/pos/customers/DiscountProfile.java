@@ -27,6 +27,10 @@ public class DiscountProfile {
     private String name;
     private double rate;
 
+    public DiscountProfile(double rate) {
+        this.rate = rate;
+    }
+
     public DiscountProfile(JSONObject o) {
         if (!o.isNull("id")) {
             this.id = o.getInt("id");
