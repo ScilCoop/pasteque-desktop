@@ -463,68 +463,20 @@ public class DataLogicSales {
         }
     }
 
-    /*public final void deleteTicket(final TicketInfo ticket, final String location) throws BasicException {
-
-        Transaction t = new Transaction(s) {
-            public Object transact() throws BasicException {
-
-                // update the inventory
-                Date d = new Date();
-                for (int i = 0; i < ticket.getLinesCount(); i++) {
-                    if (ticket.getLine(i).getProductID() != null)  {
-                        // Hay que actualizar el stock si el hay producto
-                        getStockDiaryInsert().exec( new Object[] {
-                            UUID.randomUUID().toString(),
-                            d,
-                            ticket.getLine(i).getMultiply() >= 0.0
-                                ? MovementReason.IN_REFUND.getKey()
-                                : MovementReason.OUT_SALE.getKey(),
-                            location,
-                            ticket.getLine(i).getProductID(),
-                            ticket.getLine(i).getProductAttSetInstId(),
-                            new Double(ticket.getLine(i).getMultiply()),
-                            new Double(ticket.getLine(i).getPrice())
-                        });
-                    }
-                }
-
-                // update customer debts
-                for (PaymentInfo p : ticket.getPayments()) {
-                    if ("debt".equals(p.getName()) || "debtpaid".equals(p.getName())) {
-
-                        // udate customer fields...
-                        ticket.getCustomer().updateCurDebt(-p.getTotal(), ticket.getDate());
-
-                         // save customer fields...
-                        getDebtUpdate().exec(new DataParams() { public void writeValues() throws BasicException {
-                            setDouble(1, ticket.getCustomer().getCurdebt());
-                            setTimestamp(2, ticket.getCustomer().getCurdate());
-                            setString(3, ticket.getCustomer().getId());
-                        }});
-                    }
-                }
-
-                // and delete the receipt
-                new StaticSentence(s
-                    , "DELETE FROM TAXLINES WHERE RECEIPT = ?"
-                    , SerializerWriteString.INSTANCE).exec(ticket.getId());
-                new StaticSentence(s
-                    , "DELETE FROM PAYMENTS WHERE RECEIPT = ?"
-                    , SerializerWriteString.INSTANCE).exec(ticket.getId());
-                new StaticSentence(s
-                    , "DELETE FROM TICKETLINES WHERE TICKET = ?"
-                    , SerializerWriteString.INSTANCE).exec(ticket.getId());
-                new StaticSentence(s
-                    , "DELETE FROM TICKETS WHERE ID = ?"
-                    , SerializerWriteString.INSTANCE).exec(ticket.getId());
-                new StaticSentence(s
-                    , "DELETE FROM RECEIPTS WHERE ID = ?"
-                    , SerializerWriteString.INSTANCE).exec(ticket.getId());
-                return null;
+    public void deleteTicket(TicketInfo ticket) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r;
+            r = loader.write("TicketsAPI", "delete",
+                    "id", ticket.getId());
+            if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                throw new BasicException("Bad server response");
             }
-        };
-        t.execute();
-        }*/
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
 
     public boolean preloadTariffAreas() {
         try {

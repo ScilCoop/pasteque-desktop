@@ -114,6 +114,15 @@ public class JTicketsBagTicket extends JTicketsBag {
     }
 
     public void deleteTicket() {
+        if (m_ticketCopy != null) {
+            try {
+                m_dlSales.deleteTicket(m_ticketCopy);
+            } catch (BasicException e) {
+                MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE,
+                        AppLocal.getIntString("message.nosaveticket"), e);
+                msg.show(this);
+            }
+        }
         m_ticket = null;
         m_ticketCopy = null;
         resetToTicket(); 
