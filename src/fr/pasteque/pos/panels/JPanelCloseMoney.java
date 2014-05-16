@@ -179,8 +179,8 @@ public class JPanelCloseMoney extends JPanel
         if (code != null) {
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
-                script.eval(code);
-            } catch (ScriptException e) {
+                this.m_TTP.printTicket(script.eval(code).toString());
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
