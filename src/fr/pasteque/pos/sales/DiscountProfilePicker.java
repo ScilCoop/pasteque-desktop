@@ -31,6 +31,7 @@ import fr.pasteque.pos.widgets.JEditorDouble;
 import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -111,8 +112,10 @@ public class DiscountProfilePicker extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle(AppLocal.getIntString("Form.DiscountProfile"));
 
-        java.awt.Container container = this.getContentPane();
+        this.getContentPane().setLayout(new BorderLayout());
+        JPanel container = new JPanel();
         container.setLayout(new GridBagLayout());
+        this.getContentPane().add(container, BorderLayout.CENTER);
         GridBagConstraints cstr;
 
         this.rateField = new JEditorDouble();
@@ -120,10 +123,12 @@ public class DiscountProfilePicker extends javax.swing.JDialog {
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 0;
+        cstr.insets = new Insets(btnSpacing, btnSpacing, btnSpacing, 0);
         container.add(rateLabel, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 0;
+        cstr.weightx = 1;
         cstr.insets = new Insets(btnSpacing, btnSpacing,
                 btnSpacing, btnSpacing);
         cstr.fill = GridBagConstraints.HORIZONTAL;
@@ -135,6 +140,7 @@ public class DiscountProfilePicker extends javax.swing.JDialog {
         cstr.gridx = 2;
         cstr.gridy = 0;
         cstr.gridheight = 2;
+        cstr.anchor = GridBagConstraints.CENTER;
         container.add(m_jKeys, cstr);
 
         this.catalogContainer = new JPanel();
@@ -143,6 +149,9 @@ public class DiscountProfilePicker extends javax.swing.JDialog {
         cstr.gridx = 0;
         cstr.gridy = 1;
         cstr.gridwidth = 2;
+        cstr.weightx = 1;
+        cstr.weighty = 1;
+        cstr.insets = new Insets(0, btnSpacing, btnSpacing, btnSpacing);
         cstr.fill = GridBagConstraints.BOTH;
         container.add(this.catalogContainer, cstr);
 
