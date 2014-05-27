@@ -1961,6 +1961,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jPanTotals.add(m_jLblTotalEuros3, gridBagConstraints);
 
         // Tariff area
+        m_jTariff.setFocusable(false);
+        m_jTariff.setRequestFocusEnabled(false);
         m_jTariff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jTariffActionPerformed(evt);
