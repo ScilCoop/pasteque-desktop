@@ -165,8 +165,16 @@ public class JPanelCloseMoney extends JPanel
     }   
     
     public boolean deactivate() {
-        // se me debe permitir cancelar el deactivate   
+        // Reset count
+        this.resetCashCount();
         return true;
+    }
+
+    private void resetCashCount() {
+        this.total = 0.0;
+        for (CoinCountButton btn : this.coinButtons) {
+            btn.reset();
+        }
     }
 
     private void showCashCount() {

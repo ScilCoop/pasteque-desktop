@@ -132,7 +132,15 @@ implements JPanelView, CoinCountButton.Listener {
     }
 
     public boolean deactivate() {
+        this.resetCashCount();
         return true;
+    }
+
+    private void resetCashCount() {
+        this.total = 0.0;
+        for (CoinCountButton btn : this.coinButtons) {
+            btn.reset();
+        }
     }
 
     public class ScriptCash {
