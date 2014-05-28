@@ -755,6 +755,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         enableComponents(this.lineBtnsContainer, !value);
         enableComponents(m_jOptions, !value);
         enableComponents(m_jPanEntries, !value);
+        if (!value) {
+            m_jKeyFactory.requestFocusInWindow();
+        }
     }
 
     private void enableComponents(Container cont, boolean value) {
