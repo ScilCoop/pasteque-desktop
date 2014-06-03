@@ -26,6 +26,7 @@ import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
 import fr.pasteque.pos.widgets.JEditorKeys;
+import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -252,8 +253,11 @@ public class JProductAttEdit extends javax.swing.JDialog {
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jButtonOK = new javax.swing.JButton();
-        m_jButtonCancel = new javax.swing.JButton();
+        m_jButtonOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
+                AppLocal.getIntString("Button.OK"), WidgetsBuilder.SIZE_MEDIUM);
+        m_jButtonCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_MEDIUM);
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jKeys = new JEditorKeys();
@@ -267,11 +271,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        m_jButtonOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
-        m_jButtonOK.setText(AppLocal.getIntString("Button.OK")); // NOI18N
         m_jButtonOK.setFocusPainted(false);
         m_jButtonOK.setFocusable(false);
-        m_jButtonOK.setMargin(new java.awt.Insets(8, 16, 8, 16));
         m_jButtonOK.setRequestFocusEnabled(false);
         m_jButtonOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -280,11 +281,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
         });
         jPanel1.add(m_jButtonOK);
 
-        m_jButtonCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
-        m_jButtonCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         m_jButtonCancel.setFocusPainted(false);
         m_jButtonCancel.setFocusable(false);
-        m_jButtonCancel.setMargin(new java.awt.Insets(8, 16, 8, 16));
         m_jButtonCancel.setRequestFocusEnabled(false);
         m_jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

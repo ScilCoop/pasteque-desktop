@@ -23,6 +23,7 @@ package fr.pasteque.pos.sales;
 
 import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.JEditorString;
+import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.Component;
 
 /**
@@ -73,7 +74,7 @@ public class JProductAttEditItem extends javax.swing.JPanel implements JProductA
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        jLabel1 = WidgetsBuilder.createLabel();
         jValue = new JEditorString();
 
         jLabel1.setText("jLabel1");

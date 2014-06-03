@@ -713,17 +713,65 @@ public class JRootApp extends JPanel implements AppView {
         c.insets = new Insets(5, 5, 5, 5);
         about.add(aboutLabel, c);
 
+        String contact = AppLocal.getIntString("Label.AboutContact");
+        JLabel contactLabel = WidgetsBuilder.createSmallLabel(contact);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.weighty = 0.5;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 5, 5, 5);
+        about.add(contactLabel, c);
+
         String licence = "<html>" + AppLocal.getIntString("Licence") + "</html>";
         JLabel licenceLabel = WidgetsBuilder.createSmallLabel(licence);
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 2;
         c.gridwidth = 2;
         c.weightx = 1;
         c.weighty = 0.7;
         c.fill = GridBagConstraints.BOTH;
         c.insets = new Insets(5, 5, 5, 5);
         about.add(licenceLabel, c);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        JButton site = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_web.png")),
+                AppLocal.getIntString("Button.AboutSite"),
+                WidgetsBuilder.SIZE_MEDIUM);
+        site.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new java.net.URI(AppLocal.getIntString("Button.AboutSiteURL")));
+                    } catch (Exception e) {
+                        /* TODO: error handling */
+                    }
+                } else {
+                    /* TODO: error handling */
+                }
+            }
+        });
+        buttonsPanel.add(site);
+        JButton close = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_MEDIUM);
+        close.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                about.dispose();
+            }
+        });
+        buttonsPanel.add(close);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        about.add(buttonsPanel, c);
 
         about.setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
         about.setLocationRelativeTo(null);

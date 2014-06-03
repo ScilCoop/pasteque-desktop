@@ -754,6 +754,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         this.lineBtnsContainer.setEnabled(!value);
         enableComponents(this.lineBtnsContainer, !value);
         enableComponents(m_jPanEntries, !value);
+        if (!value) {
+            m_jKeyFactory.requestFocusInWindow();
+        }
     }
 
     private void enableComponents(Container cont, boolean value) {
@@ -1839,6 +1842,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         JPanel ticketZone = new JPanel();
         ticketZone.setLayout(new GridBagLayout());
         // Tariff area
+        m_jTariff.setFocusable(false);
+        m_jTariff.setRequestFocusEnabled(false);
         m_jTariff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jTariffActionPerformed(evt);
