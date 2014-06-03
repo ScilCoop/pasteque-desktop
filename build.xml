@@ -32,7 +32,7 @@
     <property name="app.name" value="Pasteque"/>
     <property name="app.website" value="http://pasteque-logiciel.fr"/>
     <!-- project version -->
-    <property name="version" value="2.0_alpha8"/>
+    <property name="version" value="2.1_prealpha"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
