@@ -739,7 +739,7 @@ public class JRootApp extends JPanel implements AppView {
 
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
-        JButton site = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_web.png")),
+        JButton site = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_web.png"),
                 AppLocal.getIntString("Button.AboutSite"),
                 WidgetsBuilder.SIZE_MEDIUM);
         site.addActionListener(new java.awt.event.ActionListener() {
@@ -756,7 +756,7 @@ public class JRootApp extends JPanel implements AppView {
             }
         });
         buttonsPanel.add(site);
-        JButton close = WidgetsBuilder.createButton(new javax.swing.ImageIcon(getClass().getResource("/com/openbravo/images/button_cancel.png")),
+        JButton close = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
                 AppLocal.getIntString("Button.Cancel"),
                 WidgetsBuilder.SIZE_MEDIUM);
         close.addActionListener(new java.awt.event.ActionListener() {
