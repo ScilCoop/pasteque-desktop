@@ -21,10 +21,12 @@ package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.ticket.TicketInfo;
+import fr.pasteque.pos.ticket.TicketLineInfo;
 
 import java.io.IOException;
 import java.io.Serializable;
 import javax.xml.bind.DatatypeConverter;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 
@@ -46,23 +48,42 @@ public class SharedTicketInfo implements Serializable {
         this.ticket = ticket;
     }
 
-    public SharedTicketInfo(JSONObject o) throws IOException {
+    public SharedTicketInfo(JSONObject o) throws BasicException {
         this.id = o.getString("id");
         this.name = o.getString("label");
-        String strdata = o.getString("data");
-        byte[] data = DatatypeConverter.parseBase64Binary(strdata);
-        TicketInfo tkt = new TicketInfo(data);
+        TicketInfo tkt = TicketInfo.sharedTicketInfo(o);
         this.ticket = tkt;
     }
 
-    public JSONObject toJSON() throws IOException {
-        JSONObject tkt = new JSONObject();
-        tkt.put("id", id);
-        tkt.put("label", ticket.getName());
-        byte[] data = ticket.serialize();
-        String strData = DatatypeConverter.printBase64Binary(data);
-        tkt.put("data", strData);
-        return tkt;
+    public JSONObject toJSON() {
+        JSONObject o = new JSONObject();
+        o.put("id", id);
+        o.put("label", ticket.getName());
+        if (this.ticket.getCustomerId() != null) {
+            o.put("customerId", this.ticket.getCustomerId());
+        } else {
+            o.put("customerId", JSONObject.NULL);
+        }
+        if (this.ticket.getTariffArea() != null) {
+            o.put("tariffAreaId", this.ticket.getTariffArea());
+        } else {
+            o.put("tariffAreaId", JSONObject.NULL);
+        }
+        if (this.ticket.getDiscountProfileId() != null) {
+            o.put("discountProfileId", this.ticket.getDiscountProfileId());
+        } else {
+            o.put("discountProfileId", JSONObject.NULL);
+        }
+        o.put("discountRate", this.ticket.getDiscountRate());
+
+        JSONArray lines = new JSONArray();
+        int i = 0;
+        for (TicketLineInfo l : this.ticket.getLines()) {
+            JSONObject line = l.toJSON();
+            lines.put(line);
+        }
+        o.put("lines", lines);
+        return o;
     }
     
     public String getId() {

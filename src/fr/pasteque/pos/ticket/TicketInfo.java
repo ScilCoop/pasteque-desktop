@@ -86,6 +86,65 @@ public class TicketInfo implements Serializable {
         m_sResponse = null;
     }
 
+    public static TicketInfo sharedTicketInfo(JSONObject o) throws BasicException {
+        TicketInfo tkt = new TicketInfo();
+        if (!o.isNull("tariffAreaId")) {
+            tkt.tariffAreaId = o.getInt("tariffAreaId");
+        }
+        if (!o.isNull("customerId")) {
+            String custId = o.getString("customerId");
+            DataLogicCustomers dlCust = new DataLogicCustomers();
+            tkt.m_Customer = dlCust.getCustomer(custId);
+        }
+        if (!o.isNull("custCount")) {
+            tkt.customersCount = o.getInt("custCount");
+        }
+        if (!o.isNull("discountProfileId")) {
+            tkt.discountProfileId = o.getInt("discountProfileId");
+        }
+        tkt.discountRate = o.getDouble("discountRate");
+        JSONArray jsLines = o.getJSONArray("lines");
+        for (int i = 0; i < jsLines.length(); i++) {
+            JSONObject jsLine = jsLines.getJSONObject(i);
+            tkt.m_aLines.add(new TicketLineInfo(jsLine));
+        }
+        return tkt;
+    }
+    public JSONObject toSharedJSON() {
+        JSONObject o = new JSONObject();
+        o.put("label", this.getName());
+        if (this.m_Customer != null) {
+            o.put("customerId", this.m_Customer.getId());
+        } else {
+            o.put("customerId", JSONObject.NULL);
+        }
+        if (this.customersCount != null) {
+            o.put("custCount", this.customersCount);
+        } else {
+            o.put("custCount", JSONObject.NULL);
+        }
+        if (this.tariffAreaId != null) {
+            o.put("tariffAreaId", this.tariffAreaId);
+        } else {
+            o.put("tariffAreaId", JSONObject.NULL);
+        }
+        if (this.discountProfileId != null) {
+            o.put("discountProfileId", this.discountProfileId);
+        } else {
+            o.put("discountProfileId", JSONObject.NULL);
+        }
+        o.put("discountRate", this.discountRate);
+
+        JSONArray lines = new JSONArray();
+        int i = 0;
+        for (TicketLineInfo l : this.m_aLines) {
+            JSONObject line = l.toJSON();
+            lines.put(line);
+        }
+        o.put("lines", lines);
+        return o;
+    }
+
     public TicketInfo(JSONObject o) throws BasicException {
         this.m_sId = o.getString("id");
         this.m_iTicketId = o.getInt("ticketId");
