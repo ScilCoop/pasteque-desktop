@@ -339,7 +339,7 @@ public class PaymentsModel {
         private Double taxBase;
         private Double m_SalesTaxes;
 
-        public SalesLine(String taxName, double rate, double base,
+        public SalesLine(String taxName, double rate, double taxBase,
                 double amount) {
             this.m_SalesTaxName = taxName;
             this.taxRate = rate;
