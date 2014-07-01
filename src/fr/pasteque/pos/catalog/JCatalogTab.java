@@ -39,7 +39,7 @@ public class JCatalogTab extends javax.swing.JPanel {
         flowpanel = new JFlowPanel();
         JScrollPane scroll = new JScrollPane(flowpanel);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         scroll.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         
         add(scroll, BorderLayout.CENTER);

@@ -389,7 +389,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         m_jscrollcat = new javax.swing.JScrollPane();
         m_jListCategories = new javax.swing.JList();
         jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         m_jUp = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_up.png"), AppLocal.getIntString("Button.m_jUpCatalog.toolTip"));
         m_jDown = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_down.png"), AppLocal.getIntString("Button.m_jDownCatalog.toolTip"));
         m_jSubCategories = new javax.swing.JPanel();
@@ -408,9 +407,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
 
         m_jRootCategories.setLayout(new java.awt.BorderLayout());
 
-        m_jscrollcat.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        m_jscrollcat.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-
+       
         m_jListCategories.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         m_jListCategories.setFocusable(false);
         m_jListCategories.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -418,16 +415,17 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 m_jListCategoriesValueChanged(evt);
             }
         });
-        m_jscrollcat.setViewportView(m_jListCategories);
-
-        m_jRootCategories.add(m_jscrollcat, java.awt.BorderLayout.CENTER);
-
-        jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
-        jPanel3.setLayout(new java.awt.GridLayout(0, 1, 0, 5));
-
+      
+        jPanel2.setLayout(new java.awt.GridLayout(1,2));
+        
+        m_jscrollcat.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        
+       
         if (cfg == null || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
+        	
+
+       	   m_jscrollcat.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+            
             m_jUp.setIcon(ImageLoader.readImageIcon("button_up.png"));
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
@@ -438,7 +436,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                     m_jUpActionPerformed(evt);
                 }
             });
-            jPanel3.add(m_jUp);
+            jPanel2.add(m_jUp);
 
             m_jDown.setIcon(ImageLoader.readImageIcon("button_down.png"));
             m_jDown.setFocusPainted(false);
@@ -450,12 +448,18 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                     m_jDownActionPerformed(evt);
                 }
             });
-            jPanel3.add(m_jDown);
+            jPanel2.add(m_jDown, BorderLayout.EAST);
 
-            jPanel2.add(jPanel3, java.awt.BorderLayout.NORTH);
+        } else {
+        	 m_jscrollcat.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
         }
+            
+        m_jscrollcat.setViewportView(m_jListCategories);
+
+        m_jRootCategories.add(m_jscrollcat, java.awt.BorderLayout.CENTER);
+
         
-        m_jRootCategories.add(jPanel2, java.awt.BorderLayout.LINE_END);
+        m_jRootCategories.add(jPanel2, java.awt.BorderLayout.SOUTH);
 
         m_jCategories.add(m_jRootCategories, "rootcategories");
 
@@ -495,10 +499,13 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         add(m_jCategories, java.awt.BorderLayout.LINE_START);
 
         m_jProducts.setLayout(new java.awt.CardLayout());
-        add(m_jProducts, java.awt.BorderLayout.CENTER);
-    }// </editor-fold>//GEN-END:initComponents
 
-    private void m_jDownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jDownActionPerformed
+        //TODO remove scrollbar for product when not needed;
+        
+        add(m_jProducts, java.awt.BorderLayout.CENTER);
+    }
+
+    private void m_jDownActionPerformed(java.awt.event.ActionEvent evt) {
 
         int i = m_jListCategories.getSelectionModel().getMaxSelectionIndex();
         if (i < 0){
@@ -515,9 +522,8 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
             m_jListCategories.getSelectionModel().setSelectionInterval(i, i);
         }        
         
-    }//GEN-LAST:event_m_jDownActionPerformed
-
-    private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jUpActionPerformed
+    }
+    private void m_jUpActionPerformed(java.awt.event.ActionEvent evt) {
 
         int i = m_jListCategories.getSelectionModel().getMinSelectionIndex();
         if (i < 0){
@@ -535,7 +541,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
         }        
         
         
-    }//GEN-LAST:event_m_jUpActionPerformed
+    }
 
     private void m_jListCategoriesValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_m_jListCategoriesValueChanged
 
@@ -559,7 +565,6 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JButton m_jBack1;
@@ -570,6 +575,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
     private javax.swing.JPanel m_jRootCategories;
     private javax.swing.JPanel m_jSubCategories;
     private javax.swing.JButton m_jUp;
+    /** Categories Panel*/
     private javax.swing.JScrollPane m_jscrollcat;
     private javax.swing.JLabel m_lblIndicator;
     // End of variables declaration//GEN-END:variables
