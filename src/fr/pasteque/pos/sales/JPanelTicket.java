@@ -40,11 +40,11 @@ import fr.pasteque.pos.payment.JPaymentSelect;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.ListKeyed;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SentenceList;
 import fr.pasteque.pos.catalog.CatalogSelector;
 import fr.pasteque.pos.catalog.JCatalogSubgroups;
 import fr.pasteque.pos.customers.CustomerInfoExt;
 import fr.pasteque.pos.customers.DataLogicCustomers;
+import fr.pasteque.pos.customers.DiscountProfile;
 import fr.pasteque.pos.customers.JCustomerFinder;
 import fr.pasteque.pos.scripting.ScriptEngine;
 import fr.pasteque.pos.scripting.ScriptException;
@@ -57,6 +57,10 @@ import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.inventory.TaxCategoryInfo;
 import fr.pasteque.pos.payment.JPaymentSelectReceipt;
 import fr.pasteque.pos.payment.JPaymentSelectRefund;
+import fr.pasteque.pos.payment.PaymentInfo;
+import fr.pasteque.pos.payment.PaymentInfoCash;
+import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurant;
+import fr.pasteque.pos.sales.restaurant.JTicketsBagRestaurantMap;
 import fr.pasteque.pos.ticket.ProductInfoExt;
 import fr.pasteque.pos.ticket.TariffInfo;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -74,11 +78,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.print.PrintService;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -93,7 +102,9 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
  *
  * @author adrianromero
  */
-public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFactoryApp, TicketsEditor {
+public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFactoryApp, TicketsEditor, DataLogicCustomers.CustomerListener {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.sales.JPanelTicket");
 
     protected JTicketLines m_ticketlines;
 
@@ -135,6 +146,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     protected DataLogicSystem dlSystem;
     protected DataLogicSales dlSales;
     protected DataLogicCustomers dlCustomers;
+    protected Timer clockTimer;
 
     private JPaymentSelect paymentdialogreceipt;
     private JPaymentSelect paymentdialogrefund;
@@ -177,9 +189,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     public void init(AppView app) throws BeanFactoryException {
         m_App = app;
-        this.dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
-        this.dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        this.dlCustomers = (DataLogicCustomers) m_App.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
+        this.dlSystem = new DataLogicSystem();
+        this.dlSales = new DataLogicSales();
+        this.dlCustomers = new DataLogicCustomers();
 
         m_ticketsbag = getJTicketsBag();
         m_jPanelBag.add(m_ticketsbag.getBagComponent(), BorderLayout.LINE_START);
@@ -276,16 +288,16 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         // Initialize tariff area combobox
         m_TariffList = this.dlSales.getTariffAreaList();
-        TariffInfo defaultArea = new TariffInfo("-1",
+        TariffInfo defaultArea = new TariffInfo(-1,
                 AppLocal.getIntString("Label.DefaultTariffArea"));
         m_TariffList.add(0, defaultArea);
         m_TariffModel = new ComboBoxValModel(m_TariffList);
         m_jTariff.setModel(m_TariffModel);
         if (m_TariffList.size() > 1) {
             this.updateTariffCombo();
-            m_jTariffPanel.setVisible(true);
+            m_jTariff.setVisible(true);
         } else {
-            m_jTariffPanel.setVisible(false);
+            m_jTariff.setVisible(false);
         }
 
         // Authorization for buttons
@@ -295,17 +307,46 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jNumberKeys.setEqualsEnabled(m_App.getAppUserView().getUser().hasPermission("sales.Total"));
         m_jbtnconfig.setPermissions(m_App.getAppUserView().getUser());  
                
-        m_ticketsbag.activate();        
+        m_ticketsbag.activate();
+
+        // Start clock
+        this.updateClock();
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MINUTE, 1);
+        c.set(Calendar.SECOND, 0);
+        this.clockTimer = new Timer();
+        this.clockTimer.schedule(new TimerTask(){
+                public void run() {
+                    updateClock();
+                }
+            }, c.getTime(), 60000);
     }
     
     public boolean deactivate() {
-
+        this.clockTimer.cancel();
+        this.clockTimer = null;
         return m_ticketsbag.deactivate();
     }
     
     protected abstract JTicketsBag getJTicketsBag();
     protected abstract Component getSouthComponent();
     protected abstract void resetSouthComponent();
+
+    protected void updateClock() {
+        Calendar c = Calendar.getInstance();
+        int hour = c.get(Calendar.HOUR_OF_DAY);
+        int minutes = c.get(Calendar.MINUTE);
+        String strHour = String.valueOf(hour);
+        if (strHour.length() == 1) {
+            strHour = "0" + strHour;
+        }
+        String strMinute = String.valueOf(minutes);
+        if (strMinute.length() == 1) {
+            strMinute = "0" + strMinute;
+        }
+        this.clock.setText(AppLocal.getIntString("Clock.Format",
+                        strHour, strMinute));
+    }
      
     public void setActiveTicket(TicketInfo oTicket, Object oTicketExt) {
        
@@ -323,6 +364,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         
         refreshTicket();
         this.updateTariffCombo();
+        this.messageBox.setText("");
     }
     
     public TicketInfo getActiveTicket() {
@@ -362,9 +404,9 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             m_jTicketId.setText(null);            
             m_ticketlines.clearTicketLines();
            
-            m_jSubtotalEuros.setText(null);
-            m_jTaxesEuros.setText(null);
+            this.subtotalLabel.setText(null);
             m_jTotalEuros.setText(null); 
+            this.discountLabel.setText(null);
         
             eraseAutomator();
             
@@ -407,6 +449,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     m_jKeyFactory.requestFocus();
                 }
             });
+
+            // Show customers count if not set in restaurant mode
+            if (this.m_ticketsbag instanceof JTicketsBagRestaurantMap) {
+                if (this.m_oTicket.getCustomersCount() == null) {
+                    if (!AppConfig.loadedInstance.getProperty("ui.autodisplaycustcount").equals("0")) {
+                    ((JTicketsBagRestaurant)this.m_ticketsbag.getBagComponent()).custCountBtnActionPerformed(null);
+                    }
+                }
+            }
         }
     }
 
@@ -435,7 +486,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void switchTariffArea(TariffInfo area) {
         if (m_oTicket != null) {
-            if (area.getID().equals("-1")) {
+            if (area.getID() == -1) {
                 m_oTicket.setTariffArea(null);
             } else {
                 m_oTicket.setTariffArea(new Integer(area.getID()));
@@ -446,13 +497,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
     private void printPartialTotals(){
         if (m_oTicket == null) {
-            m_jSubtotalEuros.setText(null);
-            m_jTaxesEuros.setText(null);
+            this.subtotalLabel.setText(null);
             m_jTotalEuros.setText(null);
+            this.discountLabel.setText(null);
         } else {
-            m_jSubtotalEuros.setText(m_oTicket.printSubTotal());
-            m_jTaxesEuros.setText(m_oTicket.printTax());
+            this.subtotalLabel.setText(AppLocal.getIntString("label.subtotalLine", m_oTicket.printSubTotal(), m_oTicket.printTax()));
             m_jTotalEuros.setText(m_oTicket.printTotal());
+            if (m_oTicket.getDiscountRate() > 0.0) {
+                this.discountLabel.setText(AppLocal.getIntString("label.totalDiscount", m_oTicket.printDiscountRate(), m_oTicket.printFullTotal()));
+            } else {
+                this.discountLabel.setText(null);
+            }
         }
     }
     
@@ -482,8 +537,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (oProduct.isDiscountEnabled()) {
             double rate = oProduct.getDiscountRate();
             if (rate > 0.005) {
-                // Add discount line
-                this.addDiscountLine(line, oProduct.getDiscountRate());
+                line.setDiscountRate(rate);
             }
         }
     }
@@ -492,20 +546,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Update price from tariff area if needed
         if (m_oTicket.getTariffArea() != null) {
             // TODO: don't update price of composition product (which price is 0)
-            List<ProductInfoExt> prods = null;
-            // Get prices list
+            // Get tariff area price
             try {
-                prods = dlSales.getTariffProds(String.valueOf(m_oTicket.getTariffArea()));
-            } catch (BasicException ex) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.errorchangetariff"), ex);
-                msg.show(JPanelTicket.this);
-            }
-            if (prods != null) {
-                for (ProductInfoExt p : prods) {
-                    if (p.getID().equals(oLine.getProductID())) {
-                        oLine.setPrice(p.getPriceSell());
-                    }
+                Double price = this.dlSales.getTariffAreaPrice(m_oTicket.getTariffArea(), oLine.getProductID());
+                if (price != null) {
+                    oLine.setPrice(price);
                 }
+            } catch (BasicException e) {
+                e.printStackTrace();
             }
         }
         if (executeEventAndRefresh("ticket.addline", new ScriptArg("line", oLine)) == null) {
@@ -545,22 +593,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
-    /** Add a discount line related to an other one */
-    private void addDiscountLine(TicketLineInfo line, double discountRate) {
-        int index = this.m_ticketlines.getSelectedIndex();
-        String sdiscount = Formats.PERCENT.formatValue(discountRate);
-        TicketLineInfo newLine = new TicketLineInfo(
-                AppLocal.getIntString("label.discount") + " " + sdiscount,
-                line.getProductTaxCategoryID(),
-                line.getMultiply(),
-                -line.getPrice () * discountRate,
-                line.getTaxInfo());
-        newLine.setDiscount(true);
-        this.m_oTicket.insertLine(index + 1, newLine);                    
-        this.refreshTicket();
-        this.setSelectedIndex(index + 1);
-    }
-    
     private void removeTicketLine(int i){
         
         if (executeEventAndRefresh("ticket.removeline", new ScriptArg("index", i)) == null) {
@@ -721,8 +753,10 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void setSubgroupMode(boolean value) {
         this.lineBtnsContainer.setEnabled(!value);
         enableComponents(this.lineBtnsContainer, !value);
-        enableComponents(m_jOptions, !value);
         enableComponents(m_jPanEntries, !value);
+        if (!value) {
+            m_jKeyFactory.requestFocusInWindow();
+        }
     }
 
     private void enableComponents(Container cont, boolean value) {
@@ -797,7 +831,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 if (sCode.startsWith("c")) {
                     // barcode of a customers card
                     try {
-                        CustomerInfoExt newcustomer = dlSales.findCustomerExt(sCode);
+                        CustomerInfoExt newcustomer = this.dlCustomers.getCustomerByCard(sCode);
                         if (newcustomer == null) {
                             Toolkit.getDefaultToolkit().beep();
                             new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.nocustomer")).show(this);
@@ -1252,13 +1286,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                         ticket.setUser(m_App.getAppUserView().getUser().getUserInfo()); // El usuario que lo cobra
                         ticket.setActiveCash(m_App.getActiveCashIndex());
                         ticket.setDate(new Date()); // Le pongo la fecha de cobro
-
+                        ticket.setTicketId(m_App.getCashRegister().getNextTicketId());
                         if (executeEvent(ticket, ticketext, "ticket.save") == null) {
                             // Save the receipt and assign a receipt number
                             try {
                                 dlSales.saveTicket(ticket,
                                         m_App.getInventoryLocation(),
-                                        m_App.getActiveCashSession().getId());                       
+                                        m_App.getActiveCashSession().getId());
+                                // Refresh customer if any
+                                if (ticket.getCustomer() != null) {
+                                    dlCustomers.updateCustomer(ticket.getCustomer().getId(), null);
+                                }
                             } catch (BasicException eData) {
                                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.nosaveticket"), eData);
                                 msg.show(this);
@@ -1271,6 +1309,21 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                                     ? "Printer.Ticket"
                                     : "Printer.Ticket2", ticket, ticketext);
                             resultok = true;
+
+                            // Update message box
+                            boolean msgBoxUpdated = false;
+                            for (PaymentInfo p : paymentdialog.getSelectedPayments()) {
+                                if (p instanceof PaymentInfoCash) {
+                                    this.messageBox.setText(AppLocal.getIntString("MsgBox.LastChange", ((PaymentInfoCash)p).printChange()));
+                                    msgBoxUpdated = true;
+                                }
+                            }
+                            if (!msgBoxUpdated) {
+                                this.messageBox.setText("");
+                            }
+
+                            // Increment next ticket id
+                            m_App.getCashRegister().incrementNextTicketId();
                         }
                     }
                 }
@@ -1607,6 +1660,21 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }  
     }
 
+    public void customerLoaded(CustomerInfoExt customer) {
+        if (m_oTicket != null && m_oTicket.getCustomer() != null
+                && customer != null
+                && m_oTicket.getCustomer().getId().equals(customer.getId())) {
+            // Loading went well and the customer is still the one on the ticket
+            logger.log(Level.INFO, "Customer refreshed from server.");
+            m_oTicket.setCustomer(customer);
+            // Refresh message box
+            this.messageBox.setText(AppLocal.getIntString("MsgBox.CustomerInfo", customer.getName(), customer.printPrepaid(), customer.printCurDebt()));
+        } else {
+            logger.log(Level.INFO,
+                    "Customer refresh failed or customer changed.");
+        }
+    }
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
@@ -1626,11 +1694,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_line_attr.png"), AppLocal.getIntString("Button.jEditAttributes.toolTip"));
         m_jPanTotals = new JPanel();
         m_jTotalEuros = WidgetsBuilder.createImportantLabel();
-        m_jLblTotalEuros1 = WidgetsBuilder.createImportantLabel(AppLocal.getIntString("label.totalcash"));
-        m_jSubtotalEuros = WidgetsBuilder.createLabel();
-        m_jTaxesEuros = WidgetsBuilder.createLabel();
-        m_jLblTotalEuros2 = WidgetsBuilder.createLabel();
-        m_jLblTotalEuros3 = WidgetsBuilder.createLabel();
+        this.discountLabel = WidgetsBuilder.createLabel();
+        this.subtotalLabel = WidgetsBuilder.createSmallLabel(AppLocal.getIntString("label.subtotalLine"));
         m_jPanEntries = new JPanel();
         m_jNumberKeys = new JNumberKeys();
         jPanel9 = new JPanel();
@@ -1642,7 +1707,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jKeyFactory = new JTextField();
         catcontainer = new JPanel();
         m_jInputContainer = new JPanel();
-        m_jTariffPanel = new JPanel();
         m_jTariff = WidgetsBuilder.createComboBox();
         JLabel tariffLbl = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TariffArea"));
 
@@ -1665,24 +1729,26 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         brandHeader.setLayout(new GridBagLayout());
         ImageIcon brand = ImageLoader.readImageIcon("logo_flat.png");
         JLabel brandLabel = new JLabel(brand);
-        JLabel screenTitle = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.TicketInput"));
-        JLabel date = WidgetsBuilder.createLabel("This is NOW!!");
+        this.clock = WidgetsBuilder.createLabel("00:00");
+        this.messageBox = WidgetsBuilder.createTextField();
+        this.messageBox.setRequestFocusEnabled(false);
+        this.messageBox.setFocusable(false);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         brandHeader.add(brandLabel, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
-        cstr.anchor = GridBagConstraints.LINE_START;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        brandHeader.add(screenTitle, cstr);
+        cstr.insets = new Insets(5, 20, 5, 20);
+        brandHeader.add(this.messageBox, cstr);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
-        brandHeader.add(date, cstr);
+        brandHeader.add(this.clock, cstr);
         cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.gridy = 0;
         cstr.insets = new Insets(5, 5, 5, 5);
+        cstr.fill = GridBagConstraints.HORIZONTAL;
         m_jPanContainer.add(brandHeader, cstr);
 
         // Ticket info/buttons
@@ -1699,6 +1765,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         m_jTicketId.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.NONE;
         ticketHeader.add(m_jTicketId, cstr);
         // Customer button
         btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"), AppLocal.getIntString("Button.btnCustomer.toolTip"));
@@ -1712,7 +1780,22 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
+        cstr.insets = new Insets(0, btnspacing, 0, btnspacing);
         ticketHeader.add(btnCustomer, cstr);
+        // Ticket discount
+        btnTicketDiscount = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_discount.png"), AppLocal.getIntString("Button.btnTicketDiscount.toolTip"));
+        btnTicketDiscount.setFocusPainted(false);
+        btnTicketDiscount.setFocusable(false);
+        btnTicketDiscount.setRequestFocusEnabled(false);
+        btnTicketDiscount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTicketDiscountActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        cstr.insets = new Insets(0, 0, 0, btnspacing);
+        ticketHeader.add(btnTicketDiscount, cstr);
         // Split button
         btnSplit = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_split.png"),AppLocal.getIntString("Button.btnSplit.toolTip"));
         btnSplit.setFocusPainted(false);
@@ -1750,20 +1833,36 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 0;
-        cstr.gridheight = 2;
-        cstr.weightx = 0.7;
+        cstr.gridheight = 3;
+        cstr.weightx = 1.0;
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.BOTH;
         mainZone.add(catcontainer, cstr);
         // Ticket zone
         JPanel ticketZone = new JPanel();
         ticketZone.setLayout(new GridBagLayout());
+        // Tariff area
+        m_jTariff.setFocusable(false);
+        m_jTariff.setRequestFocusEnabled(false);
+        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jTariffActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridwidth = 2;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.insets = new Insets(btnspacing, btnspacing,
+                btnspacing, btnspacing);
+        ticketZone.add(m_jTariff, cstr);
         // Ticket lines
         m_ticketlines = new JTicketLines();
         m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
         cstr.fill = GridBagConstraints.BOTH;
         cstr.weightx = 1.0;
         cstr.weighty = 1.0;
@@ -1842,6 +1941,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         jEditAttributes.setFocusPainted(false);
         jEditAttributes.setFocusable(false);
         jEditAttributes.setRequestFocusEnabled(false);
+        jEditAttributes.setEnabled(false); // TODO: set attributes
         jEditAttributes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jEditAttributesActionPerformed(BUTTON_PERFORMED);
@@ -1850,7 +1950,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
-        lineEditBtns.add(jEditAttributes, cstr);
+        // disabled until come back
+        //lineEditBtns.add(jEditAttributes, cstr);
         // Line discount button
         m_jbtnLineDiscount.setFocusPainted(false);
         m_jbtnLineDiscount.setFocusable(false);
@@ -1867,56 +1968,44 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Add line edit container
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 0;
+        cstr.gridy = 1;
+        cstr.weighty = 1.0;
+        cstr.fill = GridBagConstraints.VERTICAL;
         ticketZone.add(lineEditBtns, cstr);
         // Total zone
         JPanel totalZone = new JPanel();
         totalZone.setLayout(new GridBagLayout());
+        // Discount
+        this.discountLabel.setRequestFocusEnabled(false);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        totalZone.add(this.discountLabel, cstr);
         // Total
         m_jTotalEuros.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridx = 2;
+        cstr.gridx = 1;
         cstr.gridy = 0;
-        cstr.gridheight = 2;
-        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_END;
         cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        //cstr.fill = GridBagConstraints.HORIZONTAL;
         totalZone.add(m_jTotalEuros, cstr);
-        // Subtotal (label and amount)
-        m_jSubtotalEuros.setRequestFocusEnabled(false);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
-        cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
-        totalZone.add(m_jSubtotalEuros, cstr);
-        m_jLblTotalEuros3.setText(AppLocal.getIntString("label.subtotalcash"));
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
-        totalZone.add(m_jLblTotalEuros3, cstr);
-        // Taxes (label and amount)
-        m_jTaxesEuros.setRequestFocusEnabled(false);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 1;
-        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
-        cstr.weightx = 1.0;
-        cstr.insets = new java.awt.Insets(5, 5, 0, 5);
-        totalZone.add(m_jTaxesEuros, cstr);
-        m_jLblTotalEuros2.setText(AppLocal.getIntString("label.taxcash"));
+        // Subtotal and total (label and amount)
+        this.subtotalLabel.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 1;
-        cstr.insets = new java.awt.Insets(5, 0, 0, 0);
-        totalZone.add(m_jLblTotalEuros2, cstr);
+        cstr.gridwidth = 2;
+        cstr.weightx = 1.0;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_END;
+        cstr.insets = new java.awt.Insets(5, 5, 5, 5);
+        totalZone.add(this.subtotalLabel, cstr);
         // Add total zone
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         cstr.gridwidth = 2;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         ticketZone.add(totalZone, cstr);
@@ -1924,9 +2013,60 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridy = 0;
         cstr.gridx = 1;
-        cstr.weightx = 0.3;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
+        cstr.fill = GridBagConstraints.BOTH;
+        cstr.weighty = 1.0;
         mainZone.add(ticketZone, cstr);
+        // Barcode and manual input zone
+        JPanel barcodeZone = new JPanel();
+        barcodeZone.setLayout(new GridBagLayout());
+        m_jPrice.setBackground(java.awt.Color.white);
+        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        m_jPrice.setOpaque(true);
+        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
+        m_jPrice.setRequestFocusEnabled(false);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridwidth = 2;
+        cstr.insets = new Insets(btnspacing, btnspacing, btnspacing, btnspacing);
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        barcodeZone.add(m_jPrice, cstr);
+        m_jPor.setBackground(java.awt.Color.white);
+        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+        m_jPor.setOpaque(true);
+        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
+        m_jPor.setRequestFocusEnabled(false);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 2;
+        cstr.gridy = 0;
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.insets = new java.awt.Insets(btnspacing, 0, btnspacing, 0);
+        barcodeZone.add(m_jPor, cstr);
+        m_jEnter.setFocusPainted(false);
+        m_jEnter.setFocusable(false);
+        m_jEnter.setRequestFocusEnabled(false);
+        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jEnterActionPerformed(evt);
+            }
+        });
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 3;
+        cstr.gridy = 0;
+        cstr.insets = new java.awt.Insets(btnspacing, btnspacing,
+                btnspacing, btnspacing);
+        barcodeZone.add(m_jEnter, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        cstr.fill = GridBagConstraints.HORIZONTAL;
+        mainZone.add(barcodeZone, cstr);
         // Numpad zone
         JPanel numpadZone = new JPanel();
         numpadZone.setLayout(new GridBagLayout());
@@ -1937,7 +2077,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         });
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
-        cstr.gridy = 1;
+        cstr.gridy = 2;
         mainZone.add(m_jNumberKeys, cstr);
         // Add main zone container
         cstr = new GridBagConstraints();
@@ -1952,83 +2092,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jPanTotals.setLayout(new java.awt.GridBagLayout());
 
-        // Tariff area
-        m_jTariff.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jTariffActionPerformed(evt);
-            }
-        });
-        m_jTariffPanel.setLayout(new java.awt.GridBagLayout());
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.insets = new Insets(0, 5, 0, 5);
-        m_jTariffPanel.add(tariffLbl, cstr);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
-        m_jTariffPanel.add(m_jTariff, cstr);
-
-        cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.anchor = GridBagConstraints.WEST;
-        m_jInputContainer.add(m_jTariffPanel, cstr);
-
         m_jPanEntries.setLayout(new javax.swing.BoxLayout(m_jPanEntries, javax.swing.BoxLayout.Y_AXIS));
-
-
-        // jPanel9: barcode entry line under keyboard
-        jPanel9.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        jPanel9.setLayout(new java.awt.GridBagLayout());
-
-        m_jPrice.setBackground(java.awt.Color.white);
-        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPrice.setOpaque(true);
-        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
-        m_jPrice.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        jPanel9.add(m_jPrice, gridBagConstraints);
-
-        m_jPor.setBackground(java.awt.Color.white);
-        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPor.setOpaque(true);
-        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
-        m_jPor.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel9.add(m_jPor, gridBagConstraints);
-
-        m_jEnter.setFocusPainted(false);
-        m_jEnter.setFocusable(false);
-        m_jEnter.setRequestFocusEnabled(false);
-        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jEnterActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        jPanel9.add(m_jEnter, gridBagConstraints);
 
         m_jTax.setFocusable(false);
         m_jTax.setRequestFocusEnabled(false);
@@ -2114,30 +2178,43 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         }
     }
 
+    private void btnTicketDiscountActionPerformed(ActionEvent evt) {
+        DiscountProfilePicker finder = DiscountProfilePicker.getDiscountProfilePicker(this);
+        finder.setVisible(true);
+
+        DiscountProfile profile = finder.getSelectedProfile();
+        if (profile != null) {
+            // Set discount profile and rate to ticket
+            this.m_oTicket.setDiscountRate(profile.getRate());
+            this.m_oTicket.setDiscountProfileId(profile.getId());
+        } else {
+            // Reset discount profile and rate
+            this.m_oTicket.setDiscountProfileId(null);
+            this.m_oTicket.setDiscountRate(0.0);
+        }
+        refreshTicket();
+    }
+
     private void m_jbtnLineDiscountActionPerformed(java.awt.event.ActionEvent evt) {
         double discountRate = this.getInputValue() / 100.0;
 
         int index = m_ticketlines.getSelectedIndex();
-        if (index >= 0 && m_oTicket.getLine(index).getPrice() > 0.0) {
+        if (index >= 0) {
             TicketLineInfo line = m_oTicket.getLine(index);
-            
-            double discount = - line.getPrice() * discountRate;
-            // Round discount to 0.01
-            long cents = Math.round(discount * 100.0f);
-            discount = ((double)cents) / 100.0;
             if (discountRate > 0.005) {
-
-                this.addDiscountLine(line, discountRate);
-                
+                line.setDiscountRate(discountRate);
+                this.refreshTicket();
             } else {
                  // No rate
-                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.selectratefordiscount"));
+                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                         AppLocal.getIntString("message.selectratefordiscount"));
                  msg.show(this);
                  java.awt.Toolkit.getDefaultToolkit().beep();
             }
         } else {
             // No item or discount selected
-            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.selectlinefordiscount"));
+            MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                    AppLocal.getIntString("message.selectlinefordiscount"));
             msg.show(this);
             java.awt.Toolkit.getDefaultToolkit().beep();
         }
@@ -2218,10 +2295,29 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         finder.search(m_oTicket.getCustomer());
         finder.setVisible(true);
 
+        CustomerInfoExt customer = finder.getSelectedCustomer();
         this.m_oTicket.setCustomer(finder.getSelectedCustomer());
-
+        if (customer != null && customer.getDiscountProfileId() != null) {
+            // Set discount profile and rate to ticket
+            try {
+                DiscountProfile profile = dlCustomers.getDiscountProfile(customer.getDiscountProfileId());
+                this.m_oTicket.setDiscountRate(profile.getRate());
+                this.m_oTicket.setDiscountProfileId(profile.getId());
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Reset discount profile and rate
+            this.m_oTicket.setDiscountProfileId(null);
+            this.m_oTicket.setDiscountRate(0.0);
+        }
+        if (customer != null) {
+            // Show prepaid and debt in message box
+            this.messageBox.setText(AppLocal.getIntString("MsgBox.CustomerInfo", customer.getName(), customer.printPrepaid(), customer.printCurDebt()));
+            // Refresh customer from server
+            dlCustomers.updateCustomer(customer.getId(), this);
+        }
         refreshTicket();
-
     }
 
     private void btnSplitActionPerformed(java.awt.event.ActionEvent evt) {
@@ -2249,7 +2345,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         } else {
             try {
                 TicketLineInfo line = m_oTicket.getLine(i);
-                JProductAttEdit attedit = JProductAttEdit.getAttributesEditor(this, m_App.getSession());
+                JProductAttEdit attedit = JProductAttEdit.getAttributesEditor(this);
                 attedit.editAttributes(line.getProductAttSetId(), line.getProductAttSetInstId());
                 attedit.setVisible(true);
                 if (attedit.isOK()) {
@@ -2274,7 +2370,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton jEditAttributes;
     private javax.swing.JPanel lineBtnsContainer;
     private javax.swing.JPanel jPanel9;
-    private javax.swing.JPanel m_jOptions;
     private javax.swing.JPanel m_jButtons;
     private javax.swing.JPanel m_jButtonsExt;
     private javax.swing.JButton m_jDelete;
@@ -2282,9 +2377,6 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JButton m_jEditLine;
     private javax.swing.JButton m_jEnter;
     private javax.swing.JTextField m_jKeyFactory;
-    private javax.swing.JLabel m_jLblTotalEuros1;
-    private javax.swing.JLabel m_jLblTotalEuros2;
-    private javax.swing.JLabel m_jLblTotalEuros3;
     private javax.swing.JButton m_jList;
     private JNumberKeys m_jNumberKeys;
     private javax.swing.JPanel m_jPanEntries;
@@ -2292,15 +2384,17 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private javax.swing.JPanel m_jPanelBag;
     private javax.swing.JLabel m_jPor;
     private javax.swing.JLabel m_jPrice;
-    private javax.swing.JLabel m_jSubtotalEuros;
     private javax.swing.JComboBox m_jTax;
-    private javax.swing.JLabel m_jTaxesEuros;
     private javax.swing.JLabel m_jTicketId;
     private javax.swing.JLabel m_jTotalEuros;
+    private javax.swing.JLabel subtotalLabel;
+    private javax.swing.JLabel discountLabel;
     private javax.swing.JButton m_jUp;
     private javax.swing.JToggleButton m_jaddtax;
     private javax.swing.JButton m_jbtnLineDiscount;
+    private javax.swing.JButton btnTicketDiscount;
     private javax.swing.JPanel m_jInputContainer;
     private javax.swing.JComboBox m_jTariff;
-    private javax.swing.JPanel m_jTariffPanel;
+    private javax.swing.JLabel clock;
+    private javax.swing.JTextField messageBox;
 }

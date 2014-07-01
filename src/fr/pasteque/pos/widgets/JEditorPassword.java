@@ -35,7 +35,7 @@ public class JEditorPassword extends JEditorText {
     }
         
     protected int getStartMode() {
-        return MODE_Abc1;
+        return MODE_123;
     }
     
     protected String getTextEdit() {
@@ -45,7 +45,7 @@ public class JEditorPassword extends JEditorText {
         s.append(getEcho(m_svalue));
         if (m_cLastChar != '\u0000') {
             s.append("<font color=\"#a0a0a0\">");
-            s.append(ECHO_CHAR);
+            s.append(getKeyChar());
             s.append("</font>");
         }
         s.append("<font color=\"#a0a0a0\">_</font>");

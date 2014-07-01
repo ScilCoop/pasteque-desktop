@@ -23,13 +23,10 @@ package fr.pasteque.pos.ticket;
 
 import java.io.*;
 import fr.pasteque.pos.util.StringUtils;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.DataWrite;
 import fr.pasteque.format.Formats;
-import fr.pasteque.data.loader.SerializableWrite;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.pos.forms.AppLocal;
+import fr.pasteque.pos.forms.DataLogicSales;
 import java.util.Properties;
 import org.json.JSONObject;
 
@@ -37,34 +34,19 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketLineInfo implements SerializableWrite, SerializableRead, Serializable {
+public class TicketLineInfo implements Serializable {
 
     private static final long serialVersionUID = 6608012948284450199L;
     private String m_sTicket;
     private int m_iLine;
     private double multiply;
     private double price;
+    private double discountRate;
     private TaxInfo tax;
     private Properties attributes;
     private String productid;
     private String attsetinstid;
     private boolean subproduct;
-
-    /** Creates new TicketLineInfo */
-    public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax, Properties props) {
-        init(productid, null, dMultiply, dPrice, tax, props);
-    }
-
-    public TicketLineInfo(String productid, double dMultiply, double dPrice, TaxInfo tax) {
-        init(productid, null, dMultiply, dPrice, tax, new Properties());
-    }
-
-    public TicketLineInfo(String productid, String productname, String producttaxcategory, double dMultiply, double dPrice, TaxInfo tax) {
-        Properties props = new Properties();
-        props.setProperty("product.name", productname);
-        props.setProperty("product.taxcategoryid", producttaxcategory);
-        init(productid, null, dMultiply, dPrice, tax, props);
-    }
 
     public TicketLineInfo(String productname, String producttaxcategory, double dMultiply, double dPrice, TaxInfo tax) {
 
@@ -74,7 +56,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         init(null, null, dMultiply, dPrice, tax, props);
     }
 
-    public TicketLineInfo() {
+    private TicketLineInfo() {
         init(null, null, 0.0, 0.0, null, new Properties());
     }
 
@@ -100,13 +82,10 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         init(pid, null, dMultiply, dPrice, tax, attributes);
     }
 
-    public TicketLineInfo(ProductInfoExt oProduct, double dPrice, TaxInfo tax, Properties attributes) {
-        this(oProduct, 1.0, dPrice, tax, attributes);
-    }
-
     public TicketLineInfo(TicketLineInfo line) {
         init(line.productid, line.attsetinstid, line.multiply, line.price, line.tax, (Properties) line.attributes.clone());
         this.subproduct = line.isSubproduct();
+        this.discountRate = line.discountRate;
     }
 
     private void init(String productid, String attsetinstid, double dMultiply, double dPrice, TaxInfo tax, Properties attributes) {
@@ -131,55 +110,40 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        JSONObject prd = new JSONObject();
-        prd.put("id", this.productid);
-        prd.put("label", this.getProductName());
-        prd.put("price", this.price);
-        prd.put("taxId", this.getProductTaxCategoryID());
-        prd.put("taxRate", this.getTaxRate());
-        prd.put("scaled", this.isProductScale());
-        o.put("product", prd);
+        o.put("dispOrder", this.m_iLine);
+        o.put("productId", this.productid);
+        o.put("attributes", JSONObject.NULL); // TODO: add attributes
         o.put("quantity", this.multiply);
+        o.put("price", this.price);
+        o.put("taxId", this.tax.getId());
+        o.put("discountRate", this.discountRate);
         return o;
     }
 
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, m_sTicket);
-        dp.setInt(2, new Integer(m_iLine));
-        dp.setString(3, productid);
-        dp.setString(4, attsetinstid);
-
-        dp.setDouble(5, new Double(multiply));
-        dp.setDouble(6, new Double(price));
-
-        dp.setString(7, tax.getId());
-        try {
-            ByteArrayOutputStream o = new ByteArrayOutputStream();
-            attributes.storeToXML(o, AppLocal.APP_NAME, "UTF-8");
-            dp.setBytes(8, o.toByteArray());
-        } catch (IOException e) {
-            dp.setBytes(8, null);
-        }
-    }
-
-    public void readValues(DataRead dr) throws BasicException {
-        m_sTicket = dr.getString(1);
-        m_iLine = dr.getInt(2).intValue();
-        productid = dr.getString(3);
-        attsetinstid = dr.getString(4);
-
-        multiply = dr.getDouble(5);
-        price = dr.getDouble(6);
-
-        tax = new TaxInfo(dr.getString(7), dr.getString(8), dr.getString(9), dr.getTimestamp(10), dr.getString(11), dr.getString(12), dr.getDouble(13), dr.getBoolean(14), dr.getInt(15));
-        attributes = new Properties();
-        try {
-            byte[] img = dr.getBytes(16);
-            if (img != null) {
-                attributes.loadFromXML(new ByteArrayInputStream(img));
+    public TicketLineInfo(JSONObject o) throws BasicException {
+        this.m_iLine = o.getInt("dispOrder");
+        this.productid = o.getString("productId");
+        DataLogicSales dlSales = new DataLogicSales();
+        ProductInfoExt product = dlSales.getProductInfo(this.productid);
+        this.attributes = new Properties();
+        if (product != null) {
+            attributes.setProperty("product.name", product.getName());
+            attributes.setProperty("product.com",
+                    product.isCom() ? "true" : "false");
+            attributes.setProperty("product.scale",
+                    product.isScale() ? "true" : "false");
+            // TODO: attributes
+            attributes.setProperty("product.taxcategoryid",
+                    product.getTaxCategoryID());
+            if (product.getCategoryID() != null) {
+                attributes.setProperty("product.categoryid",
+                        product.getCategoryID());
             }
-        } catch (IOException e) {
         }
+        this.multiply = o.getDouble("quantity");
+        this.price = o.getDouble("price");
+        this.tax = dlSales.getTax(o.getString("taxId"));
+        this.discountRate = o.getDouble("discountRate");
     }
 
     public TicketLineInfo copyTicketLine() {
@@ -191,6 +155,7 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         l.multiply = multiply;
         l.price = price;
         l.tax = tax;
+        l.discountRate = this.discountRate;
         l.attributes = (Properties) attributes.clone();
         l.subproduct = this.subproduct;
         return l;
@@ -204,15 +169,6 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return productid;
     }
     
-    public boolean isDiscount() {
-        String strDisc = attributes.getProperty("discount");
-        return strDisc != null && strDisc.equals("true");
-    }
-    
-    public void setDiscount(boolean discount) {
-        attributes.setProperty("discount", discount ? "true" : "false");
-    }
-
     public String getProductName() {
         return attributes.getProperty("product.name");
     }
@@ -265,16 +221,34 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         multiply = dValue;
     }
 
+    public double getDiscountRate() {
+        return this.discountRate;
+    }
+    public void setDiscountRate(double rate) {
+        this.discountRate = rate;
+    }
+    public boolean hasDiscount() {
+        return this.discountRate > 0.0;
+    }
+
+    /** Get price without discount */
+    public double getFullPrice() {
+        return this.price;
+    }
+    /** Get price with discount */
     public double getPrice() {
-        return price;
+        return this.price * (1.0 - this.discountRate);
     }
 
     public void setPrice(double dValue) {
         price = dValue;
     }
 
-    public double getPriceTax() {
+    public double getFullPriceTax() {
         return price * (1.0 + getTaxRate());
+    }
+    public double getPriceTax() {
+        return price * (1.0 - this.discountRate) * (1.0 + getTaxRate());
     }
 
     public void setPriceTax(double dValue) {
@@ -309,16 +283,28 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return tax == null ? 0.0 : tax.getRate();
     }
 
+    /** Get price with quantity and discount */
     public double getSubValue() {
-        return price * multiply;
+        return price * (1.0 - this.discountRate) * multiply;
     }
-
-    public double getTax() {
+    /** Get price with quantity (without discount) */
+    public double getFullSubValue() {
+        return this.price * this.multiply;
+    }
+    public double getFullTax() {
         return price * multiply * getTaxRate();
     }
-
+    /** Get tax amount with discount */
+    public double getTax() {
+        return price * (1.0 - this.discountRate) * multiply * getTaxRate();
+    }
+    /** Get price with quantity, taxes and discount */
     public double getValue() {
-        return price * multiply * (1.0 + getTaxRate());
+        return price * (1.0 - this.discountRate) * multiply * (1.0 + getTaxRate());
+    }
+    /** Get price with quantity and taxes (without discount) */
+    public double getFullValue() {
+        return this.price * this.multiply * (1.0 + this.getTaxRate());
     }
 
     public boolean isSubproduct() {
@@ -336,14 +322,23 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return Formats.DOUBLE.formatValue(multiply);
     }
 
+    public String printFullPrice() {
+        return Formats.CURRENCY.formatValue(this.getFullPrice());
+    }
     public String printPrice() {
         return Formats.CURRENCY.formatValue(getPrice());
     }
 
+    public String printFullPriceTax() {
+        return Formats.CURRENCY.formatValue(this.getFullPriceTax());
+    }
     public String printPriceTax() {
         return Formats.CURRENCY.formatValue(getPriceTax());
     }
 
+    public String printFullTax() {
+        return Formats.CURRENCY.formatValue(this.getFullTax());
+    }
     public String printTax() {
         return Formats.CURRENCY.formatValue(getTax());
     }
@@ -352,11 +347,21 @@ public class TicketLineInfo implements SerializableWrite, SerializableRead, Seri
         return Formats.PERCENT.formatValue(getTaxRate());
     }
 
+    public String printFullSubValue() {
+        return Formats.CURRENCY.formatValue(this.getFullSubValue());
+    }
     public String printSubValue() {
         return Formats.CURRENCY.formatValue(getSubValue());
     }
 
+    public String printFullValue() {
+        return Formats.CURRENCY.formatValue(this.getFullValue());
+    }
     public String printValue() {
         return Formats.CURRENCY.formatValue(getValue());
+    }
+
+    public String printDiscountRate() {
+        return Formats.PERCENT.formatValue(this.discountRate);
     }
 }

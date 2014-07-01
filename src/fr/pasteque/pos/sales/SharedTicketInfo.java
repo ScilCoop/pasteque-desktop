@@ -20,32 +20,49 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.DataWrite;
-import fr.pasteque.data.loader.SerializableRead;
-import fr.pasteque.data.loader.SerializableWrite;
+import fr.pasteque.pos.ticket.TicketInfo;
+
+import java.io.IOException;
+import java.io.Serializable;
+import javax.xml.bind.DatatypeConverter;
+import org.json.JSONObject;
+
 
 /**
  *
  * @author adrianromero
  */
-public class SharedTicketInfo implements SerializableRead, SerializableWrite {
+public class SharedTicketInfo implements Serializable {
     
     private static final long serialVersionUID = 7640633837719L;
     private String id;
     private String name;
+    private TicketInfo ticket;
     
     /** Creates a new instance of SharedTicketInfo */
-    public SharedTicketInfo() {
+    public SharedTicketInfo(String id, TicketInfo ticket) {
+        this.id = id;
+        this.name = ticket.getName();
+        this.ticket = ticket;
     }
-    
-    public void readValues(DataRead dr) throws BasicException {
-        id = dr.getString(1);
-        name = dr.getString(2);
-    }   
-    public void writeValues(DataWrite dp) throws BasicException {
-        dp.setString(1, id);
-        dp.setString(2, name);
+
+    public SharedTicketInfo(JSONObject o) throws IOException {
+        this.id = o.getString("id");
+        this.name = o.getString("label");
+        String strdata = o.getString("data");
+        byte[] data = DatatypeConverter.parseBase64Binary(strdata);
+        TicketInfo tkt = new TicketInfo(data);
+        this.ticket = tkt;
+    }
+
+    public JSONObject toJSON() throws IOException {
+        JSONObject tkt = new JSONObject();
+        tkt.put("id", id);
+        tkt.put("label", ticket.getName());
+        byte[] data = ticket.serialize();
+        String strData = DatatypeConverter.printBase64Binary(data);
+        tkt.put("data", strData);
+        return tkt;
     }
     
     public String getId() {
@@ -54,5 +71,9 @@ public class SharedTicketInfo implements SerializableRead, SerializableWrite {
     
     public String getName() {
         return name;
-    }  
+    }
+
+    public TicketInfo getTicket() {
+        return this.ticket;
+    }
 }

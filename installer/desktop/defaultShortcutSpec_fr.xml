@@ -38,10 +38,10 @@ Quelques paramètres pour les raccourcis
     Raccourci du désinstallateur de l'application
     -->
     <shortcut
-        name="Pastèque-Désinstallateur"
-        target="$INSTALL_PATH\bin\Pasteque-uninstaller.jar"
+        name="Pastèque Désinstaller"
+        target="$INSTALL_PATH\bin\uninstaller.jar"
         description="Désinstaller Pastèque"
-        iconFile="$INSTALL_PATH\pasteque_launcher.ico"
+        iconFile="$INSTALL_PATH\pasteque_uninstall.ico"
         programGroup="yes"
         desktop="no"
         applications="no"

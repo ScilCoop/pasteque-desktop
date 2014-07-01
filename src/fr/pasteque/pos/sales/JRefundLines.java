@@ -76,6 +76,16 @@ public class JRefundLines extends javax.swing.JPanel {
         JButton m_jbtnAddOne = WidgetsBuilder.createButton(null, AppLocal.getIntString("button.refundone"), WidgetsBuilder.SIZE_MEDIUM);
         JButton m_jbtnAddLine = WidgetsBuilder.createButton(null, AppLocal.getIntString("button.refundline"), WidgetsBuilder.SIZE_MEDIUM);
         JButton m_jbtnAddAll = WidgetsBuilder.createButton(null, AppLocal.getIntString("button.refundall"), WidgetsBuilder.SIZE_MEDIUM);
+        m_jbtnAddOne.setFocusPainted(false);
+        m_jbtnAddOne.setFocusable(false);
+        m_jbtnAddOne.setRequestFocusEnabled(false);
+        m_jbtnAddLine.setFocusPainted(false);
+        m_jbtnAddLine.setFocusable(false);
+        m_jbtnAddLine.setRequestFocusEnabled(false);
+        m_jbtnAddAll.setFocusPainted(false);
+        m_jbtnAddAll.setFocusable(false);
+        m_jbtnAddAll.setRequestFocusEnabled(false);
+
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 0;

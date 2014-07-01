@@ -20,29 +20,16 @@
 package fr.pasteque.pos.customers;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataParams;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.Datas;
-import fr.pasteque.data.loader.PreparedSentence;
-import fr.pasteque.data.loader.QBFBuilder;
-import fr.pasteque.data.loader.SentenceExec;
-import fr.pasteque.data.loader.SentenceExecTransaction;
-import fr.pasteque.data.loader.SentenceList;
-import fr.pasteque.data.loader.SerializerRead;
-import fr.pasteque.data.loader.SerializerReadBasic;
-import fr.pasteque.data.loader.SerializerWriteBasic;
-import fr.pasteque.data.loader.SerializerWriteBasicExt;
-import fr.pasteque.data.loader.SerializerWriteParams;
 import fr.pasteque.data.loader.ServerLoader;
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.data.loader.StaticSentence;
-import fr.pasteque.data.loader.TableDefinition;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.CustomersCache;
 import fr.pasteque.pos.forms.AppLocal;
-import fr.pasteque.pos.forms.BeanFactoryDataSingle;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -50,113 +37,138 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class DataLogicCustomers extends BeanFactoryDataSingle {
+public class DataLogicCustomers {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.customers.DataLogicCustomers");
     
     // TODO: use local database for caching
-    private static List<CustomerInfoExt> cache;
+    private static List<DiscountProfile> discProfileCache;
     
-    public void init(Session s){
-        DataLogicCustomers.cache = null; // Reset cache
+    /** Load customers list from server */
+    private List<CustomerInfoExt> loadCustomers() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CustomerInfoExt customer = new CustomerInfoExt(o);
+                    data.add(customer);
+                }
+                return data;
+            }
+        } catch (Exception e) {
+            throw new BasicException(e);
+        }
+        return null;
     }
-    
-    private static void loadCustomers() throws BasicException {
-         try {
-             ServerLoader loader = new ServerLoader();
-             ServerLoader.Response r = loader.read("CustomersAPI", "getAll");
-             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                 DataLogicCustomers.cache = new ArrayList<CustomerInfoExt>();
-                 JSONArray a = r.getArrayContent();
-                 for (int i = 0; i < a.length(); i++) {
-                     JSONObject o = a.getJSONObject(i);
-                     CustomerInfoExt customer = new CustomerInfoExt(o);
-                     DataLogicCustomers.cache.add(customer);
-                 }
-             }
-         } catch (Exception e) {
-             throw new BasicException(e);
-         }
+    private List<String> loadTopCustomers() throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CustomersAPI", "getTop");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<String> data = new ArrayList<String>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    data.add(a.getString(i));
+                }
+                return data;
+            }
+        } catch (Exception e) {
+            throw new BasicException(e);
+        }
+        return null;
+    }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadCustomers() {
+        try {
+            logger.log(Level.INFO, "Preloading customers");
+            List<CustomerInfoExt> data = this.loadCustomers();
+            List<String> topIds = this.loadTopCustomers();
+            if (data == null) {
+                return false;
+            }
+            try {
+                CustomersCache.refreshCustomers(data);
+                CustomersCache.refreshRanking(topIds);
+            } catch (BasicException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     /** Get all customers */
     public List<CustomerInfoExt> getCustomerList() throws BasicException {
-        if (DataLogicCustomers.cache == null) {
-            DataLogicCustomers.loadCustomers();
-        }
-        return DataLogicCustomers.cache;
+        return CustomersCache.getCustomers();
+    }
+
+    /** Get customer from local cache */
+    public CustomerInfoExt getCustomer(String id) throws BasicException {
+        return CustomersCache.getCustomer(id);
+    }
+    /** Load a customer from server, update it in cache and return it.
+     * This is an asynchronous call.
+     */
+    public void updateCustomer(final String id,
+            final CustomerListener callback) {
+        Thread t = new Thread() {
+                public void run() {
+                    try {
+                        logger.log(Level.INFO, "Refreshing customer");
+                        ServerLoader loader = new ServerLoader();
+                        ServerLoader.Response r = loader.read("CustomersAPI",
+                                "get", "id", id);
+                        if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                            List<CustomerInfoExt> data = new ArrayList<CustomerInfoExt>();
+                            JSONObject o = r.getObjContent();
+                            CustomerInfoExt customer = new CustomerInfoExt(o);
+                            CustomersCache.refreshCustomer(customer);
+                            if (callback != null) {
+                                callback.customerLoaded(customer);
+                            }
+                        } else {
+                            logger.log(Level.WARNING,
+                                    "Unable to load customer: "
+                                    + r.getStatus());
+                        }
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING,
+                                "Unable to update customer", e);
+                        if (callback != null) {
+                            callback.customerLoaded(null);
+                        }
+                    }
+                }
+            };
+        t.start();
+    }
+
+    public CustomerInfoExt getCustomerByCard(String card)
+        throws BasicException {
+        return CustomersCache.getCustomerByCard(card);
     }
 
     /** Search customers, use null as argument to disable filter */
     public List<CustomerInfoExt> searchCustomers(String number,
             String searchkey, String name) throws BasicException {
-        if (DataLogicCustomers.cache == null) {
-            DataLogicCustomers.loadCustomers();
-        }
-        List<CustomerInfoExt> results = new ArrayList<CustomerInfoExt>();
-        for (CustomerInfoExt c : DataLogicCustomers.cache) {
-            boolean matches = true;
-            if (number != null) {
-                String custNum = c.getTaxid();
-                if (custNum != null) {
-                    custNum = custNum.toLowerCase();
-                    if (!custNum.contains(number.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches && searchkey != null) {
-                String custSK = c.getSearchkey();
-                if (custSK != null) {
-                    custSK = custSK.toLowerCase();
-                    if (!custSK.contains(searchkey.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches && name != null) {
-                String custName = c.getName();
-                if (custName != null) {
-                    custName = custName.toLowerCase();
-                    if (!custName.contains(name.toLowerCase())) {
-                        matches = false;
-                    }
-                } else {
-                    matches = false;
-                }
-            }
-            if (matches) {
-                results.add(c);
-            }
-        }
-        return results;
+        return CustomersCache.searchCustomers(number, searchkey, name);
     }
 
 
     /** Gets the TOP 10 customer's list by number of tickets
      * with their id
      */
-    public SentenceList getTop10CustomerList() {
-        /*        return new StaticSentence(s
-            , new QBFBuilder("SELECT CUSTOMERS.ID, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, CUSTOMERS.NAME, " + 
-            " Count( TICKETS.CUSTOMER ) AS Top10 FROM CUSTOMERS " +
-            " LEFT JOIN TICKETS ON TICKETS.CUSTOMER = CUSTOMERS.ID " +
-            " WHERE VISIBLE = " + s.DB.TRUE() + " AND ?(QBF_FILTER) " +
-            " GROUP BY CUSTOMERS.ID ORDER BY Top10 DESC, NAME ASC LIMIT 10 ", new String[] {"TAXID", "SEARCHKEY", "NAME"})
-            , new SerializerWriteBasic(new Datas[] {Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING, Datas.OBJECT, Datas.STRING})
-            , new SerializerRead() {
-                    public Object readValues(DataRead dr) throws BasicException {
-                        CustomerInfo c = new CustomerInfo(dr.getString(1));
-                        c.setTaxid(dr.getString(2));
-                        c.setSearchkey(dr.getString(3));
-                        c.setName(dr.getString(4));
-                        return c;
-                    }
-                    });*/
-        // TODO: reenable top 10 customers list
-        return null;
+    public List<CustomerInfoExt> getTop10CustomerList() throws BasicException {
+        return CustomersCache.getTopCustomers();
     }
        
     public int updateCustomerExt(final CustomerInfoExt customer) throws BasicException {
@@ -171,19 +183,19 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
         return 0;
     }
 
-    public final SentenceList getReservationsList() {
-        /*        return new PreparedSentence(s
+    /*public final SentenceList getReservationsList() {
+                return new PreparedSentence(s
             , "SELECT R.ID, R.CREATED, R.DATENEW, C.CUSTOMER, CUSTOMERS.TAXID, CUSTOMERS.SEARCHKEY, COALESCE(CUSTOMERS.NAME, R.TITLE),  R.CHAIRS, R.ISDONE, R.DESCRIPTION " +
               "FROM RESERVATIONS R LEFT OUTER JOIN RESERVATION_CUSTOMERS C ON R.ID = C.ID LEFT OUTER JOIN CUSTOMERS ON C.CUSTOMER = CUSTOMERS.ID " +
               "WHERE R.DATENEW >= ? AND R.DATENEW < ?"
             , new SerializerWriteBasic(new Datas[] {Datas.TIMESTAMP, Datas.TIMESTAMP})
-            , new SerializerReadBasic(customerdatas));*/
+            , new SerializerReadBasic(customerdatas));
         // TODO: enable reservation list
         return null;
     }
     
     public final SentenceExec getReservationsUpdate() {
-        /*return new SentenceExecTransaction(s) {
+        return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -198,13 +210,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "UPDATE RESERVATIONS SET ID = ?, CREATED = ?, DATENEW = ?, TITLE = ?, CHAIRS = ?, ISDONE = ?, DESCRIPTION = ? WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0, 1, 2, 6, 7, 8, 9, 0})).exec(params);
             }
-            };*/
+            };
         // TODO: enable reservation update
         return null;
     }
     
     public final SentenceExec getReservationsDelete() {
-        /*        return new SentenceExecTransaction(s) {
+                return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 new PreparedSentence(s
@@ -214,13 +226,13 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                     , "DELETE FROM RESERVATIONS WHERE ID = ?"
                     , new SerializerWriteBasicExt(customerdatas, new int[]{0})).exec(params);
             }
-            };*/
+            };
         // TODO: enable reservation delete
         return null;
     }
     
     public final SentenceExec getReservationsInsert() {
-        /*        return new SentenceExecTransaction(s) {
+                return new SentenceExecTransaction(s) {
             public int execInTransaction(Object params) throws BasicException {  
     
                 int i = new PreparedSentence(s
@@ -234,9 +246,51 @@ public class DataLogicCustomers extends BeanFactoryDataSingle {
                 }
                 return i;
             }
-            };*/
+            };
         // TODO: enable reservation create
         return null;
+    }*/
+
+    private static void loadDiscountProfiles() throws BasicException {
+         try {
+             ServerLoader loader = new ServerLoader();
+             ServerLoader.Response r = loader.read("DiscountProfilesAPI",
+                     "getAll");
+             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                 DataLogicCustomers.discProfileCache = new ArrayList<DiscountProfile>();
+                 JSONArray a = r.getArrayContent();
+                 for (int i = 0; i < a.length(); i++) {
+                     JSONObject o = a.getJSONObject(i);
+                     DiscountProfile prof = new DiscountProfile(o);
+                     DataLogicCustomers.discProfileCache.add(prof);
+                 }
+             }
+         } catch (Exception e) {
+             throw new BasicException(e);
+         }
     }
-    
+
+    public List<DiscountProfile> getDiscountProfiles() throws BasicException {
+        if (DataLogicCustomers.discProfileCache == null) {
+            DataLogicCustomers.loadDiscountProfiles();
+        }
+        return DataLogicCustomers.discProfileCache;
+    }
+
+    public DiscountProfile getDiscountProfile(int id) throws BasicException {
+        if (DataLogicCustomers.discProfileCache == null) {
+            DataLogicCustomers.loadDiscountProfiles();
+        }
+        for (DiscountProfile p : DataLogicCustomers.discProfileCache) {
+            if (id == p.getId()) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    public interface CustomerListener {
+        /** Callback for asynchronous customer refresh */
+        public void customerLoaded(CustomerInfoExt customer);
+    }
 }

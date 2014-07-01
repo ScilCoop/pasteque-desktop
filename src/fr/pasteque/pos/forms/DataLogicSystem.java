@@ -21,23 +21,29 @@
 
 package fr.pasteque.pos.forms;
 
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
-import javax.imageio.ImageIO;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.*;
 import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
+import fr.pasteque.pos.caching.CashRegistersCache;
+import fr.pasteque.pos.caching.ResourcesCache;
+import fr.pasteque.pos.caching.RolesCache;
+import fr.pasteque.pos.caching.UsersCache;
 import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.util.ThumbNailBuilder;
+
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.xml.bind.DatatypeConverter;
@@ -48,30 +54,12 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class DataLogicSystem extends BeanFactoryDataSingle {
-    
-    protected SerializerRead peopleread;
-    
-    private SentenceExec m_changepassword;    
-    private SentenceFind m_locationfind;
-    
-    private SentenceExec m_resourcebytesinsert;
-    private SentenceExec m_resourcebytesupdate;
+public class DataLogicSystem {
 
-    protected SentenceExec m_insertcash;
-    
-    private Map<String, byte[]> resourcescache;
-    
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DataLogicSystem");
+
     /** Creates a new instance of DataLogicSystem */
-    public DataLogicSystem() {            
-    }
-    
-    public void init(Session s){
-        m_changepassword = new StaticSentence(s
-                , "UPDATE PEOPLE SET APPPASSWORD = ? WHERE ID = ?"
-                ,new SerializerWriteBasic(new Datas[] {Datas.STRING, Datas.STRING}));
-
-        resetResourcesCache();        
+    public DataLogicSystem() {
     }
 
     public final String findDbVersion() throws BasicException {
@@ -103,11 +91,14 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             throw new BasicException(e);
         }
     }
-    public final List<AppUser> listPeople() throws BasicException {
+
+    /** Get users from server */
+    private List<AppUser> loadUsers() throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("UsersAPI", "getAll");
-            final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32, "default_user.png");
+            final ThumbNailBuilder tnb = new ThumbNailBuilder(32, 32,
+                    "default_user.png");
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONArray a = r.getArrayContent();
                 List<AppUser> users = new LinkedList<AppUser>();
@@ -140,10 +131,52 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw new BasicException(e);
         }
     }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadUsers() {
+        try {
+            logger.log(Level.INFO, "Preloading users");
+            List<AppUser> data = this.loadUsers();
+            if (data == null) {
+                return false;
+            }
+            try {
+                UsersCache.save(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /** Get all users */
+    public final List<AppUser> listPeople() throws BasicException {
+        List<AppUser> data = null;
+        try {
+            data = UsersCache.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            data = this.loadUsers();
+            if (data != null) {
+                try {
+                    UsersCache.save(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return data;
+    }
+    /** Get visible users */
     public final List listPeopleVisible() throws BasicException {
         List<AppUser> allUsers = this.listPeople();
         List<AppUser> visUsers = new LinkedList<AppUser>();
@@ -153,7 +186,17 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         }
         return visUsers;
-    }      
+    }
+    public final AppUser getPeople(String id) throws BasicException {
+        List<AppUser> allUsers = this.listPeople();
+        for (AppUser user : allUsers) {
+            if (user.getId() != null && user.getId().equals(id)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    /** Get user by card. Return null if nothing is found. */
     public final AppUser findPeopleByCard(String card) throws BasicException {
         List<AppUser> allUsers = this.listPeople();
         for (AppUser user : allUsers) {
@@ -162,60 +205,158 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             }
         }
         return null;
-    }   
-    
-    public final String findRolePermissions(String sRole) throws BasicException {
+    }
+
+    private final Map<String, String> loadRoles() throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("RolesAPI", "get",
-                    "id", sRole);
+            ServerLoader.Response r = loader.read("RolesAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                Map<String, String> roles = new HashMap<String, String>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    roles.put(o.getString("id"), o.getString("permissions"));
+                }
+                return roles;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new BasicException(e);
+        }
+    }
+    public boolean preloadRoles() {
+        try {
+            logger.log(Level.INFO, "Preloading roles");
+            Map<String, String> data = this.loadRoles();
+            if (data == null) {
+                return false;
+            }
+            try {
+                RolesCache.save(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public final String findRolePermissions(String sRole)
+        throws BasicException {
+        Map<String, String> data = null;
+        try {
+            data = RolesCache.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            data = this.loadRoles();
+            if (data != null) {
+                try {
+                    RolesCache.save(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (data != null) {
+            return data.get(sRole);
+        } else {
+            return null;
+        }
+    }
+
+    public final boolean changePassword(String userId, String oldPwd,
+            String newPwd) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.write("UsersAPI", "updPwd",
+                    "id", userId, "oldPwd", oldPwd, "newPwd", newPwd);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                boolean ok = r.getResponse().getBoolean("content");
+                return ok;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /** Load resource from server */
+    private final byte[] loadResource(String name) throws BasicException {
+        ServerLoader loader = new ServerLoader();
+        byte[] resource;
+        // Check resource from server
+        try {
+            ServerLoader.Response r = loader.read("ResourcesAPI", "get",
+                    "label", name);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
-                return o.getString("permissions");
+                String strRes = o.getString("content");
+                if (o.getInt("type") == 0) {
+                    resource = strRes.getBytes();
+                } else {
+                    resource = DatatypeConverter.parseBase64Binary(strRes);
+                }
             } else {
                 return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            throw new BasicException(e);
-        }
-    }
-    
-    public final void execChangePassword(Object[] userdata) throws BasicException {
-        m_changepassword.exec(userdata);
-    }
-    
-    public final void resetResourcesCache() {
-        resourcescache = new HashMap<String, byte[]>();      
-    }
-    
-    private final byte[] getResource(String name) {
-        ServerLoader loader = new ServerLoader();
-        byte[] resource;
-        resource = resourcescache.get(name);
-        if (resource == null) {
-            // Check resource from server
-            try {
-                ServerLoader.Response r = loader.read("ResourcesAPI", "get",
-                        "label", name);
-                if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
-                    JSONObject o = r.getObjContent();
-                    String strRes = o.getString("content");
-                    if (o.getInt("type") == 0) {
-                        resource = strRes.getBytes();
-                    } else {
-                        resource = DatatypeConverter.parseBase64Binary(strRes);
-                    }
-                    resourcescache.put(name, resource);
-                } else {
-                    return null;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                resource = null;
-            }
+            resource = null;
         }
         return resource;
+    }
+    /** Preload and update cache if possible. Return true if succes. False
+     * otherwise and cache is not modified.
+     */
+    public boolean preloadResource(String name) {
+        try {
+            logger.log(Level.INFO, "Preloading resource " + name);
+            byte[] data = this.loadResource(name);
+            if (data == null) {
+                return false;
+            }
+            try {
+                ResourcesCache.save(name, data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return false;
+            }
+            return true;
+        } catch (BasicException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    private byte[] getResource(String name) {
+        byte[] data = null;
+        try {
+            data = ResourcesCache.load(name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (data == null) {
+            try {
+                data = this.loadResource(name);
+                if (data != null) {
+                    try {
+                        ResourcesCache.save(name, data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        }
+        return data;
     }
 
     public final byte[] getResourceAsBinary(String sName) {
@@ -228,7 +369,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
 
     public final String getResourceAsXML(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
-    }    
+    }
 
     public final BufferedImage getResourceAsImage(String sName) {
         try {
@@ -241,7 +382,7 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
     }
 
     public final Properties getResourceAsProperties(String sName) {
-        
+
         Properties p = new Properties();
         try {
             byte[] img = getResourceAsBinary(sName);
@@ -254,6 +395,35 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         return p;
     }
 
+
+    public boolean preloadCashRegisters() {
+        try {
+            logger.log(Level.INFO, "Preloading cash registers");
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashRegistersAPI", "getAll");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                List<CashRegisterInfo> crs = new LinkedList<CashRegisterInfo>();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    CashRegisterInfo cr = new CashRegisterInfo(o);
+                    crs.add(cr);
+                }
+                CashRegistersCache.refreshCashRegisters(crs);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    public final CashRegisterInfo getCashRegister(int id) throws BasicException {
+        return CashRegistersCache.getCashRegister(id);
+    }
     public final CashRegisterInfo getCashRegister(String host)
         throws BasicException {
         try {
@@ -275,11 +445,64 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
         }
     }
 
-    public CashSession getCashSession(String host) throws BasicException {
+    public CashSession getCashSession(int cashRegId) throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r = loader.read("CashesAPI", "get",
-                    "host", host);
+                    "cashRegisterId", String.valueOf(cashRegId));
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                } else {
+                    return new CashSession(o);
+                }
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
+    public List<CashSession> searchCashSession(String host, Date start,
+            Date stop) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            String startParam = null;
+            String stopParam = null;
+            if (start != null) {
+                startParam = String.valueOf(DateUtils.toSecTimestamp(start));
+            }
+            if (stop != null) {
+                stopParam = String.valueOf(DateUtils.toSecTimestamp(stop));
+            }
+            ServerLoader.Response r = loader.read("CashesAPI", "search",
+                    "host", host, "dateStart", startParam,
+                    "dateStop", stopParam);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                List<CashSession> sess = new LinkedList<CashSession>();
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    sess.add(new CashSession(o));
+                }
+                return sess;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new BasicException(e);
+        }
+    }
+
+    public CashSession getCashSessionById(String id) throws BasicException {
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("CashesAPI", "get",
+                    "id", id);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
                 if (o == null) {
@@ -319,13 +542,14 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             e.printStackTrace();
             throw new BasicException(e);
         }
-    } 
-    
-    public final String findLocationName(String iLocation) throws BasicException {
+    }
+
+    public final String findLocationName(String locationId)
+        throws BasicException {
         try {
             ServerLoader loader = new ServerLoader();
-            ServerLoader.Response r = loader.read("RolesAPI", "get",
-                    "id", iLocation);
+            ServerLoader.Response r = loader.read("LocationsAPI", "get",
+                    "id", locationId);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
                 return o.getString("label");
@@ -336,5 +560,5 @@ public class DataLogicSystem extends BeanFactoryDataSingle {
             e.printStackTrace();
             throw new BasicException(e);
         }
-    }    
+    }
 }

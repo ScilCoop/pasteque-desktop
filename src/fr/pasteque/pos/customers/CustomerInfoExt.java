@@ -32,6 +32,7 @@ import org.json.JSONObject;
 public class CustomerInfoExt extends CustomerInfo {
     
     protected String taxcustomerid;
+    protected Integer discountProfileId;
     protected String notes;
     protected boolean visible;
     protected String card;
@@ -74,6 +75,9 @@ public class CustomerInfoExt extends CustomerInfo {
         if (!o.isNull("custTaxId")) {
             this.taxcustomerid = o.getString("custTaxId");
         }
+        if (!o.isNull("discountProfileId")) {
+            this.discountProfileId = o.getInt("discountProfileId");
+        }
         if (!o.isNull("notes")) {
             this.notes = o.getString("notes");
         }
@@ -86,6 +90,9 @@ public class CustomerInfoExt extends CustomerInfo {
         }
         if (!o.isNull("debtDate")) {
             this.curdate = DateUtils.readSecTimestamp(o.getLong("debtDate"));
+        }
+        if (!o.isNull("currDebt")) {
+            this.curdebt = o.getDouble("currDebt");
         }
         this.prepaid = o.getDouble("prepaid");
         if (!o.isNull("firstName")) {
@@ -132,6 +139,13 @@ public class CustomerInfoExt extends CustomerInfo {
     
     public void setTaxCustomerID(String taxcustomerid) {
         this.taxcustomerid = taxcustomerid;
+    }
+
+    public Integer getDiscountProfileId() {
+        return this.discountProfileId;
+    }
+    public void setDiscountProfileId(Integer id) {
+        this.discountProfileId = id;
     }
     
     public String getNotes() {
@@ -221,6 +235,11 @@ public class CustomerInfoExt extends CustomerInfo {
     public void updatePrepaid(double amount) {
         this.prepaid += amount;
     }
+
+    public String printPrepaid() {
+        return Formats.CURRENCY.formatValue(RoundUtils.getValue(getPrepaid()));
+    }
+
 
     public String getFirstname() {
         return firstname;

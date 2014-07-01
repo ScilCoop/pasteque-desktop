@@ -25,12 +25,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.SwingConstants;
 import fr.pasteque.data.gui.NullIcon;
-import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.basic.BasicException;
+import org.json.JSONObject;
 
-public class Place implements SerializableRead, java.io.Serializable {
+public class Place implements java.io.Serializable {
     
     private static final long serialVersionUID = 8652254694281L;
     private static final Icon ICO_OCU = ImageLoader.readImageIcon("tkt_place_filled.png");
@@ -45,16 +44,12 @@ public class Place implements SerializableRead, java.io.Serializable {
     private boolean m_bPeople;
     private JButton m_btn;
         
-    /** Creates a new instance of TablePlace */
-    public Place() {
-    }        
-    
-    public void readValues(DataRead dr) throws BasicException {
-        m_sId = dr.getString(1);
-        m_sName = dr.getString(2);
-        m_ix = dr.getInt(3).intValue();
-        m_iy = dr.getInt(4).intValue();
-        m_sfloor = dr.getString(5);
+    public Place(JSONObject o) {
+        this.m_sId = o.getString("id");
+        this.m_sName = o.getString("label");
+        this.m_ix = o.getInt("x");
+        this.m_iy = o.getInt("y");
+        this.m_sfloor = o.getString("floorId");
         
         m_bPeople = false;
         m_btn = new JButton();
@@ -63,7 +58,7 @@ public class Place implements SerializableRead, java.io.Serializable {
         m_btn.setFocusable(false);
         m_btn.setRequestFocusEnabled(false);
         m_btn.setHorizontalTextPosition(SwingConstants.CENTER);
-        m_btn.setVerticalTextPosition(SwingConstants.BOTTOM);            
+        m_btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         m_btn.setIcon(ICO_FRE);
         m_btn.setText(m_sName);
     }
@@ -83,14 +78,23 @@ public class Place implements SerializableRead, java.io.Serializable {
     public boolean hasPeople() {
         return m_bPeople;
     }   
-    public void setPeople(boolean bValue) {
+    public void setPeople(boolean bValue, int custCount) {
         m_bPeople = bValue;
-        m_btn.setIcon(bValue ? ICO_OCU : ICO_FRE); 
-    }     
+        m_btn.setIcon(bValue ? ICO_OCU : ICO_FRE);
+        if (custCount > 0) {
+            m_btn.setText(m_sName + " (" + custCount + ")");
+            m_btn.setPreferredSize(null);
+            m_btn.revalidate();
+        } else {
+            m_btn.setText(m_sName);
+            m_btn.setPreferredSize(null);
+            m_btn.revalidate();
+        }
+    }
     public void setButtonBounds() {
         Dimension d = m_btn.getPreferredSize();
-        m_btn.setBounds(m_ix - d.width / 2, m_iy - d.height / 2, d.width, d.height); 
+        d.setSize(d.getWidth() + 30, d.getHeight());
+        m_btn.setBounds(m_ix - d.width / 2, m_iy - d.height / 2,
+                d.width, d.height);
     }
-}    
-
-    
+}

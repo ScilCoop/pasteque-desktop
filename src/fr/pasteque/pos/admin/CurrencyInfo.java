@@ -20,13 +20,11 @@
 package fr.pasteque.pos.admin;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.IKeyed;
-import fr.pasteque.data.loader.SerializerRead;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
-public class CurrencyInfo implements IKeyed {
+public class CurrencyInfo implements Serializable {
     
     private static final long serialVersionUID = 4680364653429L;
     private Integer id;
@@ -54,26 +52,13 @@ public class CurrencyInfo implements IKeyed {
         this.active = o.getBoolean("isActive");
     }
 
-    public Object getKey() {
-        return this.id;
+    public double convertToMain(double amount) {
+        if (this.main) {
+            return amount;
+        } else {
+            return amount * this.rate;
+        }
     }
-
-    public static SerializerRead getSerializerRead() {
-        return new SerializerRead() {
-            public Object readValues(DataRead dr) throws BasicException {
-                CurrencyInfo curr = new CurrencyInfo();
-                curr.id = dr.getInt(1);
-                curr.name = dr.getString(2);
-                curr.symbol = dr.getString(3);
-                curr.decimal = dr.getString(4);
-                curr.thousands = dr.getString(5);
-                curr.format = dr.getString(6);
-                curr.rate = dr.getDouble(7);
-                curr.main = dr.getBoolean(8);
-                return curr;
-            }
-        };
-    } 
 
     public void setID(Integer id) {
         this.id = id;

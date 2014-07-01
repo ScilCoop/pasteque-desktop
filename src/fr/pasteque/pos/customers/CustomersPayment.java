@@ -51,7 +51,7 @@ import javax.swing.JOptionPane;
  *
  * @author  adrianromero
  */
-public class CustomersPayment extends javax.swing.JPanel implements JPanelView, BeanFactoryApp {
+public class CustomersPayment extends javax.swing.JPanel implements JPanelView, BeanFactoryApp, DataLogicCustomers.CustomerListener {
 
     private AppView app;
     private DataLogicCustomers dlcustomers;
@@ -78,9 +78,9 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     public void init(AppView app) throws BeanFactoryException {
 
         this.app = app;
-        dlcustomers = (DataLogicCustomers) app.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
-        dlsales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        dlsystem = (DataLogicSystem) app.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        dlcustomers = new DataLogicCustomers();
+        dlsales = new DataLogicSales();
+        dlsystem = new DataLogicSystem();
         ttp = new TicketParser(app.getDeviceTicket(), dlsystem);
     }
 
@@ -105,7 +105,11 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
     public boolean deactivate() {
         if (dirty.isDirty()) {
-            int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannasave"), AppLocal.getIntString("title.editor"), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            int res = JOptionPane.showConfirmDialog(this,
+                    AppLocal.getIntString("message.wannasave"),
+                    AppLocal.getIntString("title.editor"),
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
             if (res == JOptionPane.YES_OPTION) {
                 save();
                 return true;
@@ -166,7 +170,7 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     private void readCustomer() {
 
         try {
-            CustomerInfoExt customer = dlsales.findCustomerExt(editorcard.getText());
+            CustomerInfoExt customer = dlcustomers.getCustomerByCard(editorcard.getText());
             if (customer == null) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"));
                 msg.show(this);
@@ -210,10 +214,12 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
                 script.put("customer", customer);
                 ttp.printTicket(script.eval(resource).toString());
             } catch (ScriptException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                        AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(this);
             } catch (TicketPrinterException e) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotprintticket"), e);
+                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING,
+                        AppLocal.getIntString("message.cannotprintticket"), e);
                 msg.show(this);
             }
         }
@@ -221,6 +227,13 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
     
     public boolean requiresOpenedCash() {
         return true;
+    }
+
+    public void customerLoaded(CustomerInfoExt customer) {
+        if (customer.getId().equals(this.customerext.getId())) {
+            this.customerext = customer;
+            this.editCustomer(customerext);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -236,10 +249,12 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         jPanel6 = new javax.swing.JPanel();
         btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"),
                 AppLocal.getIntString("Button.m_jList.toolTip"));
-        btnSave = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"),
+        btnSave = WidgetsBuilder.createButton(ImageLoader.readImageIcon("save.png"),
                 AppLocal.getIntString("Button.save.toolTip"));
         jSeparator1 = new javax.swing.JSeparator();
-        btnPay = new javax.swing.JButton();
+        btnPay = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_generic.png"),
+                AppLocal.getIntString("button.pay"),
+                WidgetsBuilder.SIZE_MEDIUM);
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jKeys = new fr.pasteque.pos.widgets.JEditorKeys();
@@ -267,11 +282,6 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
         jPanel2.setLayout(new java.awt.BorderLayout());
 
-        //btnCustomer.setIcon(ImageLoader.readImageIcon("tkt_assign_customer.png"));
-        btnCustomer.setFocusPainted(false);
-        btnCustomer.setFocusable(false);
-        btnCustomer.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        btnCustomer.setRequestFocusEnabled(false);
         btnCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCustomerActionPerformed(evt);
@@ -279,11 +289,6 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         });
         jPanel6.add(btnCustomer);
 
-        //btnSave.setIcon(ImageLoader.readImageIcon("save.png"));
-        btnSave.setFocusPainted(false);
-        btnSave.setFocusable(false);
-        btnSave.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        btnSave.setRequestFocusEnabled(false);
         btnSave.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnSaveActionPerformed(evt);
@@ -292,12 +297,6 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         jPanel6.add(btnSave);
         jPanel6.add(jSeparator1);
 
-        btnPay.setIcon(ImageLoader.readImageIcon("button_generic.png"));
-        btnPay.setText(AppLocal.getIntString("button.pay")); // NOI18N
-        btnPay.setFocusPainted(false);
-        btnPay.setFocusable(false);
-        btnPay.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        btnPay.setRequestFocusEnabled(false);
         btnPay.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPayActionPerformed(evt);
@@ -324,11 +323,6 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         jPanel5.setLayout(new java.awt.GridBagLayout());
         jPanel5.add(editorcard, new java.awt.GridBagConstraints());
 
-        //jButton1.setIcon(ImageLoader.readImageIcon("button_ok.png"));
-        jButton1.setFocusPainted(false);
-        jButton1.setFocusable(false);
-        jButton1.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        jButton1.setRequestFocusEnabled(false);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -463,11 +457,10 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
 
         add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
         readCustomer();
-        
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
 
     private void m_jKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jKeysActionPerformed
 
@@ -475,30 +468,17 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
         
     }//GEN-LAST:event_m_jKeysActionPerformed
 
-    private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
-
+    private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {
         JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlcustomers);
         finder.search(null);
         finder.setVisible(true);
-        CustomerInfo customer = finder.getSelectedCustomer();
+        CustomerInfoExt customer = finder.getSelectedCustomer();
         if (customer != null) {
-            try {
-                CustomerInfoExt c = dlsales.loadCustomerExt(customer.getId());
-                if (c == null) {
-                    MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"));
-                    msg.show(this);
-                } else {
-                    editCustomer(c);
-                }
-            } catch (BasicException ex) {
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), ex);
-                msg.show(this);
-            }
-        }  
+            editCustomer(customer);
+        }
         editorcard.reset();
         editorcard.activate();
-                
-}//GEN-LAST:event_btnCustomerActionPerformed
+    }
 
     private void btnPayActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPayActionPerformed
 
@@ -510,19 +490,19 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
             TicketInfo ticket = new TicketInfo();
             ticket.setTicketType(TicketInfo.RECEIPT_PAYMENT);
 
+            // Get all payments and add the reverse operation in debtpaid
+            // for a neutral result
             List<PaymentInfo> payments = paymentdialog.getSelectedPayments();
-
             double total = 0.0;
             for (PaymentInfo p : payments) {
                 total += p.getTotal();
             }
-
             payments.add(new PaymentInfoTicket(-total, null, "debtpaid"));
-
             ticket.setPayments(payments);
 
             ticket.setUser(app.getAppUserView().getUser().getUserInfo());
             ticket.setActiveCash(app.getActiveCashIndex());
+            ticket.setTicketId(app.getCashRegister().getNextTicketId());
             ticket.setDate(new Date());
             ticket.setCustomer(customerext);
 
@@ -534,33 +514,19 @@ public class CustomersPayment extends javax.swing.JPanel implements JPanelView, 
                 msg.show(this);
             }
 
-
             // reload customer
-            CustomerInfoExt c;
-            try {
-                c = dlsales.loadCustomerExt(customerext.getId());
-                if (c == null) {
-                    MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"));
-                    msg.show(this);
-                } else {
-                    editCustomer(c);
-                }
-            } catch (BasicException ex) {
-                c = null;
-                MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotfindcustomer"), ex);
-                msg.show(this);
-            }
+            dlcustomers.updateCustomer(ticket.getCustomer().getId(), this);
 
             printTicket(paymentdialog.isPrintSelected()
                     ? "Printer.CustomerPaid"
                     : "Printer.CustomerPaid2",
-                    ticket, c);
+                    ticket, customerext);
+
+            app.getCashRegister().incrementNextTicketId();
         }
-        
         editorcard.reset();
         editorcard.activate();
-        
-}//GEN-LAST:event_btnPayActionPerformed
+    }
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
 

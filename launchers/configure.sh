@@ -27,6 +27,7 @@ CP=$DIRNAME/pasteque.jar
 
 CP=$CP:$DIRNAME/locales/
 CP=$CP:$DIRNAME/lib/substance.jar
+CP=$CP:$DIRNAME/lib/libintl.jar
 
 
 java -cp $CP -Djava.util.logging.config.file=$DIRNAME/logging.properties -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel fr.pasteque.pos.config.JFrmConfig

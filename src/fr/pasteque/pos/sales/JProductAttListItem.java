@@ -20,6 +20,7 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.data.gui.ComboBoxValModel;
+import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.Component;
 import java.util.List;
 
@@ -76,8 +77,8 @@ public class JProductAttListItem extends javax.swing.JPanel implements JProductA
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
-        jValues = new javax.swing.JComboBox();
+        jLabel1 = WidgetsBuilder.createLabel();
+        jValues = WidgetsBuilder.createComboBox();
 
         jLabel1.setText("jLabel1");
 

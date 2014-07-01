@@ -59,13 +59,13 @@ public class ServerLoader {
     }
 
     private void preformatBinUrl() {
-        if (!this.url.startsWith("http")) {
-            this.url = "http://" + this.url;
+        if (!this.binUrl.startsWith("http")) {
+            this.binUrl = "http://" + this.binUrl;
         }
-        if (!this.url.endsWith("/")) {
-            this.url += "/";
+        if (!this.binUrl.endsWith("/")) {
+            this.binUrl += "/";
         }
-        this.url += "dbImg.php";
+        this.binUrl += "index.php";
     }
 
     /** Create from AppConfig */
@@ -81,6 +81,8 @@ public class ServerLoader {
         }
         this.url = url;
         this.preformatUrl();
+        this.binUrl = binUrl;
+        this.preformatBinUrl();
         this.user = user;
         this.password = password;
     }
@@ -95,20 +97,25 @@ public class ServerLoader {
     private Map<String, String> params(String api, String action,
             String... params) {
         Map<String, String> ret = new HashMap<String, String>();
-        ret.put("user", this.user);
+        ret.put("login", this.user);
         ret.put("password", this.password);
         ret.put("action", action);
         ret.put("p", api);
         for (int i = 0; i < params.length; i+= 2) {
-            String key = params[i];
-            String value = params[i + 1];
-            ret.put(key, value);
+            if (params[i + 1] != null) {
+                String key = params[i];
+                String value = params[i + 1];
+                ret.put(key, value);
+            }
         }
         return ret;
     }
 
     private Map<String, String> binParams(String model, String id) {
         Map<String, String> ret = new HashMap<String, String>();
+        ret.put("login", this.user);
+        ret.put("password", this.password);
+        ret.put("p", "img");
         ret.put("w", model);
         ret.put("id", id);
         return ret;

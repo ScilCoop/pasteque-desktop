@@ -53,20 +53,20 @@ public class WidgetsBuilder {
     }
     
     public static JButton createButton(ImageIcon icon, int size) {
-    	JButton btn = new JButton();
-    	btn.setIcon(icon);
-    	WidgetsBuilder.adaptSize(btn, size);
-    	return btn;
+        JButton btn = new JButton();
+        btn.setIcon(icon);
+        WidgetsBuilder.adaptSize(btn, size);
+        return btn;
     }
-    
+
     public static JButton createButton(ImageIcon icon, String text, int size) {
-    	JButton btn = new JButton();
-    	btn.setText(text);
-    	btn.setIcon(icon);
-    	WidgetsBuilder.adaptSize(btn, SIZE_MEDIUM);
-    	return btn;
+        JButton btn = new JButton();
+        btn.setText(text);
+        btn.setIcon(icon);
+        WidgetsBuilder.adaptSize(btn, size);
+        return btn;
     }
-    
+
     /**Creates a button with icon and tooltiptext
      * @param icon  Button's icon
      * @param tooltiptext  Button's tooltiptext

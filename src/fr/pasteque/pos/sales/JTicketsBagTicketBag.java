@@ -24,6 +24,7 @@ import fr.pasteque.data.loader.ImageLoader;
 import java.awt.CardLayout;
 import javax.swing.JOptionPane;
 import fr.pasteque.pos.forms.AppLocal;
+import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagTicketBag extends javax.swing.JPanel {
     
@@ -57,21 +58,15 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
     private void initComponents() {
 
         jPanEdit = new javax.swing.JPanel();
-        m_jBtnDelete = new javax.swing.JButton();
-        m_jBtnCancel = new javax.swing.JButton();
+        m_jBtnDelete = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_delete.png"), AppLocal.getIntString("Button.DeleteTicket"), WidgetsBuilder.SIZE_MEDIUM);
+        m_jBtnCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"), AppLocal.getIntString("Button.Cancel"), WidgetsBuilder.SIZE_MEDIUM);
         jPanRefund = new javax.swing.JPanel();
-        m_jBtnCancel1 = new javax.swing.JButton();
+        m_jBtnCancel1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"), AppLocal.getIntString("Button.Cancel"), WidgetsBuilder.SIZE_MEDIUM);
 
         setLayout(new java.awt.CardLayout());
 
         jPanEdit.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jBtnDelete.setIcon(ImageLoader.readImageIcon("tkt_delete.png"));
-        m_jBtnDelete.setText(AppLocal.getIntString("Button.DeleteTicket")); // NOI18N
-        m_jBtnDelete.setFocusPainted(false);
-        m_jBtnDelete.setFocusable(false);
-        m_jBtnDelete.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jBtnDelete.setRequestFocusEnabled(false);
         m_jBtnDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jBtnDeleteActionPerformed(evt);
@@ -79,12 +74,6 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
         });
         jPanEdit.add(m_jBtnDelete);
 
-        m_jBtnCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
-        m_jBtnCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
-        m_jBtnCancel.setFocusPainted(false);
-        m_jBtnCancel.setFocusable(false);
-        m_jBtnCancel.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jBtnCancel.setRequestFocusEnabled(false);
         m_jBtnCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jBtnCancelActionPerformed(evt);
@@ -96,12 +85,6 @@ public class JTicketsBagTicketBag extends javax.swing.JPanel {
 
         jPanRefund.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        m_jBtnCancel1.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
-        m_jBtnCancel1.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
-        m_jBtnCancel1.setFocusPainted(false);
-        m_jBtnCancel1.setFocusable(false);
-        m_jBtnCancel1.setMargin(new java.awt.Insets(8, 14, 8, 14));
-        m_jBtnCancel1.setRequestFocusEnabled(false);
         m_jBtnCancel1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jBtnCancel1ActionPerformed(evt);

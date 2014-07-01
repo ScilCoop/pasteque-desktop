@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
+import java.sql.SQLException;
 import javax.swing.*;
 
 import fr.pasteque.pos.printer.*;
@@ -39,10 +40,11 @@ import fr.pasteque.beans.*;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.gui.JMessageDialog;
-import fr.pasteque.data.loader.BatchSentence;
-import fr.pasteque.data.loader.BatchSentenceResource;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.Session;
+import fr.pasteque.pos.caching.CallQueue;
+import fr.pasteque.pos.caching.LocalDB;
+import fr.pasteque.pos.caching.ResourcesCache;
+import fr.pasteque.pos.customers.DataLogicCustomers;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.scale.DeviceScale;
 import fr.pasteque.pos.scanpal2.DeviceScanner;
@@ -59,18 +61,15 @@ import java.util.regex.Matcher;
  * @author adrianromero
  */
 public class JRootApp extends JPanel implements AppView {
- 
+
     private AppProperties m_props;
     private DataLogicSystem m_dlSystem;
     
     private Properties m_propsdb = null;
-    private String m_sActiveCashIndex;
-    private int m_iActiveCashSequence;
-    private Date m_dActiveCashDateStart;
-    private Date m_dActiveCashDateEnd;
+    private CashSession activeCashSession;
+    private CashRegisterInfo cashRegister;
     
     private String m_sInventoryLocation;
-    public static Integer posId = null;
     
     private StringBuffer inputtext;
    
@@ -105,7 +104,8 @@ public class JRootApp extends JPanel implements AppView {
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
-        m_dlSystem = (DataLogicSystem) getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_dlSystem = new DataLogicSystem();
+        DataLogicCustomers dlCust = new DataLogicCustomers();
         
         // Check database compatibility
         String sDBVersion = readDataBaseVersion();
@@ -116,31 +116,32 @@ public class JRootApp extends JPanel implements AppView {
         }     
         
         // Load host properties
-        CashRegisterInfo cashReg = null;
         try {
-            cashReg = m_dlSystem.getCashRegister(m_props.getHost());
+            this.cashRegister = m_dlSystem.getCashRegister(m_props.getHost());
         } catch (BasicException e) {
             JMessageDialog.showMessage(this,
                     new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
             return false;
         }
-        if (cashReg == null) {
+        if (this.cashRegister == null) {
             // Unknown cash register
-            // TODO: i18n
             JMessageDialog.showMessage(this,
-                    new MessageInf(MessageInf.SGN_DANGER, "Unknown cash"));
+                    new MessageInf(MessageInf.SGN_DANGER,
+                            AppLocal.getIntString("Message.UnknownCash")));
             return false;
         }
 
         // Load cash session
         try {
-            CashSession cashSess = m_dlSystem.getCashSession(cashReg.getLabel());
+            CashSession cashSess = m_dlSystem.getCashSession(this.cashRegister.getId());
             if (cashSess == null) {
                 // New cash session
                 this.newActiveCash();
             } else {
-                this.setActiveCash(cashSess.getId(), cashSess.getSequence(),
-                        cashSess.getOpenDate(), cashSess.getCloseDate());
+                this.setActiveCash(cashSess);
+                if (cashSess.getId() != null) {
+                    CallQueue.setup(cashSess.getId());
+                }
             }
         } catch (BasicException e) {
             // Casco. Sin caja no hay pos
@@ -150,18 +151,12 @@ public class JRootApp extends JPanel implements AppView {
         }  
         
         // Load location
-        m_sInventoryLocation = cashReg.getLocationId();
+        m_sInventoryLocation = this.cashRegister.getLocationId();
         if (m_sInventoryLocation == null) {
             // Not set, use default
             m_sInventoryLocation = "0";
         }
         
-        // Get or assign POS
-        posId = cashReg.getPosId();
-        if (posId == null) {
-            posId = 1;
-        }
-
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
         
@@ -187,17 +182,37 @@ public class JRootApp extends JPanel implements AppView {
             sWareHouse = null; // no he encontrado el almacen principal
         }
 
+        DataLogicSales m_dlSales = new DataLogicSales();
+        // Preload caches
+        m_dlSystem.preloadUsers();
+        m_dlSystem.preloadRoles();
+        // Reload resources cache
+        java.util.List<String> cachedRes = ResourcesCache.list();
+        for (String res : cachedRes) {
+            m_dlSystem.preloadResource(res);
+        }
+        // Init local cache
+        try {
+            LocalDB.init();
+            m_dlSales.preloadCategories();
+            m_dlSales.preloadProducts();
+            m_dlSales.preloadTaxes();
+            m_dlSales.preloadCurrencies();
+            m_dlSales.preloadTariffAreas();
+            m_dlSales.preloadCompositions();
+            dlCust.preloadCustomers();
+            m_dlSystem.preloadCashRegisters();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         // Initialize currency format
-        DataLogicSales m_dlSales = (DataLogicSales) getBean("fr.pasteque.pos.forms.DataLogicSales");
         try {
             fr.pasteque.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
         } catch (BasicException e) {
             e.printStackTrace();
         }
 
-        // Show Hostname, Warehouse and URL in taskbar
-        m_jHost.setText("<html>" + cashReg.getLabel() + " - " + sWareHouse);
-        
         this.showLogin();
 
         return true;
@@ -237,54 +252,36 @@ public class JRootApp extends JPanel implements AppView {
         return m_Scanner;
     }
     
-    public Session getSession() {
-        // TODO: remove from Interface
-        return null;
+    public CashRegisterInfo getCashRegister() {
+        return this.cashRegister;
     }
-
     public String getInventoryLocation() {
         return m_sInventoryLocation;
     }
     public CashSession getActiveCashSession() {
-        return new CashSession(m_sActiveCashIndex, m_props.getHost(),
-                m_iActiveCashSequence,
-                m_dActiveCashDateStart, m_dActiveCashDateEnd);
+        return this.activeCashSession;
     }
     public String getActiveCashIndex() {
-        return m_sActiveCashIndex;
+        return this.activeCashSession.getId();
     }
     public int getActiveCashSequence() {
-        return m_iActiveCashSequence;
+        return this.activeCashSession.getSequence();
     }
     public Date getActiveCashDateStart() {
-        return m_dActiveCashDateStart;
-    }
-    public Date getActiveCashDateEnd(){
-        return m_dActiveCashDateEnd;
+        return this.activeCashSession.getOpenDate();
     }
     
     public boolean isCashOpened() {
-        return m_dActiveCashDateStart != null;
+        return this.activeCashSession.isOpened();
     }
     
-    public void setActiveCash(String sIndex, int iSeq, Date dStart, Date dEnd) {
-        m_sActiveCashIndex = sIndex;
-        m_iActiveCashSequence = iSeq;
-        m_dActiveCashDateStart = dStart;
-        m_dActiveCashDateEnd = dEnd;
-    }
     public void setActiveCash(CashSession cashSess) {
-        m_sActiveCashIndex = cashSess.getId();
-        m_iActiveCashSequence = cashSess.getSequence();
-        m_dActiveCashDateStart = cashSess.getOpenDate();
-        m_dActiveCashDateEnd = cashSess.getCloseDate();
+        this.activeCashSession = cashSess;
     }
 
     public void newActiveCash() {
-        m_sActiveCashIndex = null;
-        m_iActiveCashSequence = 0;
-        m_dActiveCashDateStart = null;
-        m_dActiveCashDateEnd = null;
+        this.activeCashSession = new CashSession(null,
+                this.cashRegister.getId(), 0, null, null, null, null, null);
     }
 
     public AppProperties getProperties() {
@@ -590,7 +587,6 @@ public class JRootApp extends JPanel implements AppView {
         m_txtKeys = new javax.swing.JTextField();
         m_jPanelDown = new javax.swing.JPanel();
         panelTask = new javax.swing.JPanel();
-        m_jHost = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
 
         setPreferredSize(new java.awt.Dimension(1024, 768));
@@ -717,17 +713,65 @@ public class JRootApp extends JPanel implements AppView {
         c.insets = new Insets(5, 5, 5, 5);
         about.add(aboutLabel, c);
 
+        String contact = AppLocal.getIntString("Label.AboutContact");
+        JLabel contactLabel = WidgetsBuilder.createSmallLabel(contact);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.weighty = 0.5;
+        c.fill = GridBagConstraints.BOTH;
+        c.insets = new Insets(5, 5, 5, 5);
+        about.add(contactLabel, c);
+
         String licence = "<html>" + AppLocal.getIntString("Licence") + "</html>";
         JLabel licenceLabel = WidgetsBuilder.createSmallLabel(licence);
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 2;
         c.gridwidth = 2;
         c.weightx = 1;
         c.weighty = 0.7;
         c.fill = GridBagConstraints.BOTH;
         c.insets = new Insets(5, 5, 5, 5);
         about.add(licenceLabel, c);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        JButton site = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_web.png"),
+                AppLocal.getIntString("Button.AboutSite"),
+                WidgetsBuilder.SIZE_MEDIUM);
+        site.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(new java.net.URI(AppLocal.getIntString("Button.AboutSiteURL")));
+                    } catch (Exception e) {
+                        /* TODO: error handling */
+                    }
+                } else {
+                    /* TODO: error handling */
+                }
+            }
+        });
+        buttonsPanel.add(site);
+        JButton close = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_MEDIUM);
+        close.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                about.dispose();
+            }
+        });
+        buttonsPanel.add(close);
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 3;
+        c.gridwidth = 2;
+        c.weightx = 1;
+        c.anchor = GridBagConstraints.LINE_END;
+        about.add(buttonsPanel, c);
 
         about.setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION);
         about.setLocationRelativeTo(null);
@@ -746,7 +790,6 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton m_jClose;
-    private javax.swing.JLabel m_jHost;
     private javax.swing.JLabel m_jLblTitle;
     private javax.swing.JPanel m_jLogonName;
     private javax.swing.JPanel m_jPanelContainer;

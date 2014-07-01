@@ -19,11 +19,18 @@
 
 package fr.pasteque.pos.payment;
 
+import fr.pasteque.basic.BasicException;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import fr.pasteque.pos.forms.DataLogicSales;
+
+import java.io.Serializable;
 import org.json.JSONObject;
 
-public abstract class PaymentInfo {
+/** Generic PaymentInfo as stored in database.
+ * Use subclasses when creating a new PaymentInfo.
+ */
+public abstract class PaymentInfo implements Serializable {
 
     protected CurrencyInfo currency;
     
@@ -38,15 +45,26 @@ public abstract class PaymentInfo {
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        o.put("amount", this.getTotal());
-        JSONObject mode = new JSONObject();
-        mode.put("code", this.getName());
-        o.put("mode", mode);
+        o.put("type", this.getName());
+        o.put("amount", this.currency.convertToMain(this.getTotal()));
+        o.put("currencyId", this.currency.getID());
+        o.put("currencyAmount", this.getTotal());
         return o;
+    }
+
+    public static PaymentInfo readJSON(JSONObject o) throws BasicException {
+        String type = o.getString("type");
+        double amount = o.getDouble("amount");
+        int currencyId = o.getInt("currencyId");
+        double currencyAmount = o.getDouble("currencyAmount");
+        DataLogicSales dlSales = new DataLogicSales();
+        return new PaymentInfoGeneric(type, currencyAmount,
+                dlSales.getCurrency(currencyId));
     }
 
     public String printTotal() {
         Formats.setAltCurrency(this.currency);
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
     }
+
 }

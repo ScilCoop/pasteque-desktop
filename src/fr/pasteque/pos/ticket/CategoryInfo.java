@@ -19,11 +19,10 @@
 package fr.pasteque.pos.ticket;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
 import java.awt.image.*;
 import fr.pasteque.data.loader.IKeyed;
 import fr.pasteque.data.loader.ImageUtils;
-import fr.pasteque.data.loader.SerializerRead;
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /**
@@ -31,11 +30,13 @@ import org.json.JSONObject;
  * @author  Adrian
  * @version 
  */
-public class CategoryInfo implements IKeyed {
+public class CategoryInfo implements Serializable {
 
     private static final long serialVersionUID = 8612449444103L;
     private String m_sID;
+    private String parentId;
     private String m_sName;
+    private Integer dispOrder;
     private BufferedImage m_Image;
 
     /** Creates new CategoryInfo */
@@ -48,11 +49,13 @@ public class CategoryInfo implements IKeyed {
     public CategoryInfo(JSONObject o) {
         this.m_sID = o.getString("id");
         this.m_sName = o.getString("label");
+        if (!o.isNull("parentId")) {
+            this.parentId = o.getString("parentId");
+        }
+        if (!o.isNull("dispOrder")) {
+            this.dispOrder = o.getInt("dispOrder");
+        }
         this.m_Image = null;
-    }
-
-    public Object getKey() {
-        return m_sID;
     }
 
     public void setID(String sID) {
@@ -71,6 +74,13 @@ public class CategoryInfo implements IKeyed {
         m_sName = sName;
     }
 
+    public String getParentId() {
+        return this.parentId;
+    }
+    public Integer getDispOrder() {
+        return this.dispOrder;
+    }
+
     public BufferedImage getImage() {
         return m_Image;
     }
@@ -84,9 +94,4 @@ public class CategoryInfo implements IKeyed {
         return m_sName;
     }
 
-    public static SerializerRead getSerializerRead() {
-        return new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-            return new CategoryInfo(dr.getString(1), dr.getString(2), ImageUtils.readImage(dr.getBytes(3)));
-        }};
-    }
 }

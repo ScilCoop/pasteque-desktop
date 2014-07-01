@@ -49,7 +49,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     private Date m_dCreated;
     private JTimePanel m_timereservation;
     private boolean m_bReceived;
-    private BrowsableEditableData m_bd;
+    //private BrowsableEditableData m_bd;
         
     private Date m_dcurrentday;
     
@@ -64,7 +64,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         
         m_restaurantmap = restaurantmap;
         
-        dlCustomers = (DataLogicCustomers) oApp.getBean("fr.pasteque.pos.customers.DataLogicCustomers");
+        dlCustomers = new DataLogicCustomers();
 
         m_dcurrentday = null;
         
@@ -102,7 +102,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         
         writeValueEOF();
         
-        ListProvider lpr = new ListProviderCreator(dlCustomers.getReservationsList(), new MyDateFilter());            
+        /*ListProvider lpr = new ListProviderCreator(dlCustomers.getReservationsList(), new MyDateFilter());            
         SaveProvider spr = new SaveProvider(dlCustomers.getReservationsUpdate(), dlCustomers.getReservationsInsert(), dlCustomers.getReservationsDelete());        
         
         m_bd = new BrowsableEditableData(lpr, spr, new CompareReservations(), this, m_Dirty);           
@@ -115,7 +115,7 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         m_jToolbar.add(new JLabelDirty(m_Dirty));
         m_jToolbar.add(new JCounter(m_bd));
         m_jToolbar.add(new JNavigator(m_bd));
-        m_jToolbar.add(new JSaver(m_bd));       
+        m_jToolbar.add(new JSaver(m_bd));*/
     }
     
     private class MyDateFilter implements EditorCreator {
@@ -132,13 +132,14 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
     }  
     
     public boolean deactivate() {
-        try {
+        return true;
+        /*try {
             return m_bd.actionClosingForm(this);
         } catch (BasicException eD) {
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.CannotMove"), eD);
             msg.show(this);
             return false;
-        }
+            }*/
     }
     
     public void writeValueEOF() {
@@ -268,13 +269,13 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
    
             Date doldcurrentday = m_dcurrentday;
             m_dcurrentday = dDate;
-            try {
+            /*try {
                 m_bd.actionLoad();
             } catch (BasicException eD) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, LocalRes.getIntString("message.noreload"), eD);
                 msg.show(this);
                 m_dcurrentday = doldcurrentday; // nos retractamos...
-            }
+                }*/
         }    
         
         // pinto la fecha del filtro...
@@ -450,13 +451,13 @@ public class JTicketsBagRestaurantRes extends javax.swing.JPanel implements Edit
         m_bReceived = true;
         m_Dirty.setDirty(true);
         
-        try {
+        /*try {
             m_bd.saveData();
             m_restaurantmap.viewTables(customer);                    
         } catch (BasicException eD) {
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, LocalRes.getIntString("message.nosaveticket"), eD);
             msg.show(this);
-        }       
+            }*/      
         
     }//GEN-LAST:event_m_jbtnReceiveActionPerformed
 

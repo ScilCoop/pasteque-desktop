@@ -21,8 +21,10 @@ package fr.pasteque.pos.ticket;
 
 import fr.pasteque.format.Formats;
 
+import java.io.Serializable;
 
-public class TicketTaxInfo {
+
+public class TicketTaxInfo implements Serializable {
     
     private TaxInfo tax;
     

@@ -26,12 +26,19 @@ import fr.pasteque.pos.forms.JRootApp;
 import fr.pasteque.pos.forms.AppView;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.forms.AppLocal;
+import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.text.ParseException;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -42,11 +49,8 @@ import javax.swing.ListSelectionModel;
 import java.util.Date;
 import java.util.UUID;
 import javax.swing.table.*;
-import fr.pasteque.data.loader.StaticSentence;
-import fr.pasteque.data.loader.SerializerWriteBasic;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.gui.TableRendererBasic;
 import fr.pasteque.pos.forms.BeanFactoryApp;
@@ -58,13 +62,17 @@ import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.printer.TicketParser;
 import fr.pasteque.pos.printer.TicketPrinterException;
 import fr.pasteque.pos.ticket.CashSession;
+import fr.pasteque.pos.util.ThumbNailBuilder;
+import fr.pasteque.pos.widgets.CoinCountButton;
+import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 /**
  *
  * @author adrianromero
  */
-public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryApp {
+public class JPanelCloseMoney extends JPanel
+    implements JPanelView, BeanFactoryApp, CoinCountButton.Listener {
     
     private AppView m_App;
     private DataLogicSystem m_dlSystem;
@@ -72,17 +80,24 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
     private PaymentsModel m_PaymentsToClose = null;   
     
     private TicketParser m_TTP;
-    
+
+    private JPanel coinCountBtnsContainer;
+    private List<CoinCountButton> coinButtons;
+    private JEditorKeys keypad;
+    private JLabel totalAmount;
+    private double total;
+    private JLabel expectedAmount;
+
     /** Creates new form JPanelCloseMoney */
     public JPanelCloseMoney() {
-        
-        initComponents();                   
+        initComponents();
     }
-    
+
     public void init(AppView app) throws BeanFactoryException {
         
-        m_App = app;        
-        m_dlSystem = (DataLogicSystem) m_App.getBean("fr.pasteque.pos.forms.DataLogicSystem");
+        m_App = app;
+        m_dlSystem = new DataLogicSystem();
+        // Init z ticket
         m_TTP = new TicketParser(m_App.getDeviceTicket(), m_dlSystem);
 
         m_jTicketTable.setDefaultRenderer(Object.class, new TableRendererBasic(
@@ -108,6 +123,24 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         this.categoriesTable.getTableHeader().setReorderingAllowed(false);         
         this.categoriesTable.setRowHeight(25);
         this.categoriesTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        // Init cash count
+        this.coinButtons = new ArrayList<CoinCountButton>();
+        AppConfig cfg = AppConfig.loadedInstance;
+        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
+        if (showCount) {
+            String code = this.m_dlSystem.getResourceAsXML("payment.cash");
+            if (code != null) {
+                try {
+                    ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.BEANSHELL);
+                    script.put("payment", new ScriptCash());
+                    script.eval(code);
+                } catch (ScriptException e) {
+                    MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotexecute"), e);
+                    msg.show(this);
+                }
+            }
+        }
     }
     
     public Object getBean() {
@@ -127,14 +160,44 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
     }
     
     public void activate() throws BasicException {
-        loadData();
+        this.loadData();
+        this.showZTicket();
     }   
     
     public boolean deactivate() {
-        // se me debe permitir cancelar el deactivate   
+        // Reset count
+        this.resetCashCount();
         return true;
-    }  
-    
+    }
+
+    private void resetCashCount() {
+        this.total = 0.0;
+        for (CoinCountButton btn : this.coinButtons) {
+            btn.reset();
+        }
+    }
+
+    private void showCashCount() {
+        CardLayout cl = (CardLayout) this.getLayout();
+        cl.show(this, "cashcount");
+        this.updateExpectedAmount();
+        this.updateAmount();
+        // Open drawer
+        String code = this.m_dlSystem.getResourceAsXML("Printer.OpenDrawer");
+        if (code != null) {
+            try {
+                ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
+                this.m_TTP.printTicket(script.eval(code).toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void showZTicket() {
+        CardLayout cl = (CardLayout) this.getLayout();
+        cl.show(this, "zticket");
+    }
+
     private void loadData() throws BasicException {
         
         // Reset
@@ -178,7 +241,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jTicketTable.setModel(m_PaymentsToClose.getPaymentsModel());
                 
         TableColumnModel jColumns = m_jTicketTable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(247);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
@@ -186,25 +249,43 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jsalestable.setModel(m_PaymentsToClose.getSalesModel());
         
         jColumns = m_jsalestable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(151);
         jColumns.getColumn(0).setResizable(false);
-        jColumns.getColumn(1).setPreferredWidth(100);
+        jColumns.getColumn(1).setPreferredWidth(98);
         jColumns.getColumn(1).setResizable(false);
+        jColumns.getColumn(2).setPreferredWidth(98);
+        jColumns.getColumn(2).setResizable(false);
 
         this.categoriesTable.setModel(m_PaymentsToClose.getCategoriesModel());
         
         jColumns = this.categoriesTable.getColumnModel();
-        jColumns.getColumn(0).setPreferredWidth(200);
+        jColumns.getColumn(0).setPreferredWidth(247);
         jColumns.getColumn(0).setResizable(false);
         jColumns.getColumn(1).setPreferredWidth(100);
         jColumns.getColumn(1).setResizable(false);
-        
+    }
+
+    /** Show confirm popup to close cash and close cash if confirmed */
+    private void confirmCloseCash() {
+        int res = JOptionPane.showConfirmDialog(this,
+                AppLocal.getIntString("message.wannaclosecash"),
+                AppLocal.getIntString("message.title"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (res == JOptionPane.YES_OPTION) {
+            this.closeCash();
+        }
     }
 
     private void closeCash() {
         Date dNow = new Date();
         CashSession cashSess = m_App.getActiveCashSession();
         cashSess.close(dNow);
+        AppConfig cfg = AppConfig.loadedInstance;
+        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
+        if (showCount) {
+            cashSess.setCloseCash(this.total);
+            cashSess.setExpectedCash(this.m_PaymentsToClose.getExpectedCash());
+        }
         try {
             // Close cash in database
             cashSess = m_dlSystem.saveCashSession(cashSess);
@@ -218,6 +299,14 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
 
         // Prepare report and print
         m_PaymentsToClose.setDateEnd(dNow);
+        if (showCount) {
+            for (CoinCountButton ccb : this.coinButtons) {
+                if (ccb.getCount() > 0) {
+                    m_PaymentsToClose.setCoinCount(ccb.getValue(),
+                            ccb.getCount());
+                }
+            }
+        }
         printPayments("Printer.CloseCash");
 
         // Show confirmation message
@@ -288,10 +377,84 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
             return javax.swing.SwingConstants.RIGHT;
         }         
     }
+
+    public class ScriptCash {
+        private int x, y;
+        private int btnSpacing;
+        private ThumbNailBuilder tnb;
+        public ScriptCash() {
+            AppConfig cfg = AppConfig.loadedInstance;
+            this.btnSpacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
+            this.tnb = new ThumbNailBuilder(64, 54, "cash.png");
+        }
+        public void addButton(String image, double amount) {
+            ImageIcon icon = new ImageIcon(this.tnb.getThumbNailText(m_dlSystem.getResourceAsImage(image), Formats.CURRENCY.formatValue(amount)));
+            JPanelCloseMoney parent = JPanelCloseMoney.this;
+            CoinCountButton btn = new CoinCountButton(icon, amount,
+                    parent.keypad, parent);
+            parent.coinButtons.add(btn);
+            GridBagConstraints cstr = new GridBagConstraints();
+            cstr.gridx = this.x;
+            cstr.gridy = this.y;
+            cstr.insets = new Insets(btnSpacing, btnSpacing, btnSpacing,
+                    btnSpacing);
+            parent.coinCountBtnsContainer.add(btn.getComponent(), cstr);
+            if (this.x == 3) {
+                this.x = 0;
+                this.y++;
+            } else {
+                this.x++;
+            }
+        }
+    }
+
+    public void coinAdded(double amount, int newCount) {
+        this.total += amount;
+        this.totalAmount.setText(Formats.CURRENCY.formatValue(this.total));
+        this.updateMatchingCount();
+    }
+    public void countUpdated() {
+        this.updateAmount();
+    }
+
+    public void updateAmount() {
+        if (this.totalAmount == null) {
+            return;
+        }
+        this.total = 0.0;
+        for (CoinCountButton btn : this.coinButtons) {
+            this.total += btn.getAmount();
+        }
+        this.totalAmount.setText(Formats.CURRENCY.formatValue(this.total));
+        this.updateMatchingCount();
+    }
+    public void updateExpectedAmount() {
+        this.expectedAmount.setText(this.m_PaymentsToClose.printExpectedCash());
+    }
+    /** Check if total and expected amount are equal
+     * and update UI accordingly
+     */
+    public void updateMatchingCount() {
+        if (this.total != this.m_PaymentsToClose.getExpectedCash()) {
+            this.totalAmount.setForeground(Color.RED);
+        } else {
+            this.totalAmount.setForeground(Color.BLACK);
+        }
+    }
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnSpacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
 
+        this.setLayout(new CardLayout());
+        JPanel zTicketContainer = new JPanel();
+        zTicketContainer.setLayout(new GridBagLayout());
+        JPanel cashCountContainer = new JPanel();
+        cashCountContainer.setLayout(new GridBagLayout());
+        this.add(zTicketContainer, "zticket");
+        this.add(cashCountContainer, "cashcount");
+
+        // z ticket
         m_jSequence = new javax.swing.JTextField();
         m_jMinDate = new javax.swing.JTextField();
         m_jMaxDate = new javax.swing.JTextField();
@@ -311,7 +474,6 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         m_jPrintCash = WidgetsBuilder.createButton(AppLocal.getIntString("Button.PrintCash"));
         GridBagConstraints cstr = null;
 
-        this.setLayout(new GridBagLayout());
         JPanel mainContainer = new JPanel();
         mainContainer.setLayout(new GridBagLayout());
         JScrollPane scroll = new JScrollPane();
@@ -413,7 +575,7 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr.fill = GridBagConstraints.HORIZONTAL;
         paymentsPanel.add(m_jCount, cstr);
 
-        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.Cash"));
+        JLabel cashLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.paymenttotal"));
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr. gridy = 1;
@@ -566,39 +728,136 @@ public class JPanelCloseMoney extends JPanel implements JPanelView, BeanFactoryA
         cstr.weightx = 1;
         cstr.weighty = 1;
         cstr.fill = GridBagConstraints.BOTH;
-        this.add(scroll, cstr);
+        zTicketContainer.add(scroll, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 3;
         cstr.weightx = 1;
-        add(new JPanel(), cstr);
+        zTicketContainer.add(new JPanel(), cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 1;
         cstr.gridy = 3;
         cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
-        add(m_jPrintCash, cstr);
+        zTicketContainer.add(m_jPrintCash, cstr);
         cstr = new GridBagConstraints();
         cstr.gridx = 2;
         cstr.gridy = 3;
         cstr.insets = new Insets(btnSpacing, 0, btnSpacing, btnSpacing);
-        add(m_jCloseCash, cstr);
+        zTicketContainer.add(m_jCloseCash, cstr);
+
+
+        // Cash count
+        this.coinCountBtnsContainer = new JPanel();
+        this.coinCountBtnsContainer.setLayout(new GridBagLayout());
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.weighty = 0.5;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        cashCountContainer.add(this.coinCountBtnsContainer, cstr);
+        // keypad and input
+        JPanel inputContainer = new JPanel();
+        inputContainer.setLayout(new GridBagLayout());
+        this.keypad = new JEditorKeys();
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 0;
+        cstr.gridwidth = 2;
+        cstr.insets = new Insets(btnSpacing, btnSpacing, btnSpacing,
+                btnSpacing);
+        inputContainer.add(this.keypad, cstr);
+        JLabel amountLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.openCashAmount"));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.gridwidth = 2;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
+        inputContainer.add(amountLabel, cstr);
+        this.totalAmount = WidgetsBuilder.createImportantLabel("");
+        WidgetsBuilder.inputStyle(totalAmount);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 2;
+        cstr.gridwidth = 2;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        cstr.anchor = GridBagConstraints.CENTER;
+        inputContainer.add(totalAmount, cstr);
+        JLabel expectedAmountLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.expectedCloseCashAmount"));
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 3;
+        cstr.gridwidth = 2;
+        cstr.anchor = GridBagConstraints.FIRST_LINE_START;
+        inputContainer.add(expectedAmountLabel, cstr);
+        this.expectedAmount = WidgetsBuilder.createImportantLabel("");
+        WidgetsBuilder.inputStyle(expectedAmount);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 4;
+        cstr.gridwidth = 2;
+        cstr.weightx = 1.0;
+        cstr.fill = GridBagConstraints.BOTH;
+        cstr.anchor = GridBagConstraints.CENTER;
+        inputContainer.add(expectedAmount, cstr);
+        JButton cancel = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("button_cancel.png"),
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_BIG);
+        cancel.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    countCancelActionPerformed(evt);
+                }
+            });
+        cstr = new GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 5;
+        cstr.insets = new Insets(btnSpacing, btnSpacing, btnSpacing,
+                btnSpacing);
+        inputContainer.add(cancel, cstr);
+        JButton closeCash = WidgetsBuilder.createButton(WidgetsBuilder.createIcon("open_cash.png"),
+                AppLocal.getIntString("Button.CloseCash"),
+                WidgetsBuilder.SIZE_BIG);
+        closeCash.addActionListener(new java.awt.event.ActionListener() {
+                public void actionPerformed(java.awt.event.ActionEvent evt) {
+                    countCloseCashActionPerformed(evt);
+                }
+            });
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 5;
+        cstr.insets = new Insets(btnSpacing, btnSpacing, btnSpacing,
+                btnSpacing);
+        inputContainer.add(closeCash, cstr);
+        cstr = new GridBagConstraints();
+        cstr.gridx = 1;
+        cstr.gridy = 1;
+        cstr.weightx = 0.5;
+        cstr.anchor = GridBagConstraints.CENTER;
+        cstr.insets = new Insets(0, btnSpacing, btnSpacing, btnSpacing);
+        cashCountContainer.add(inputContainer, cstr);
     }
 
-    private void m_jCloseCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jCloseCashActionPerformed
-        // TODO add your handling code here:
-        int res = JOptionPane.showConfirmDialog(this, AppLocal.getIntString("message.wannaclosecash"), AppLocal.getIntString("message.title"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (res == JOptionPane.YES_OPTION) {
-            this.closeCash();
-        }         
-    }//GEN-LAST:event_m_jCloseCashActionPerformed
+    private void m_jCloseCashActionPerformed(java.awt.event.ActionEvent evt) {
+        AppConfig cfg = AppConfig.loadedInstance;
+        boolean showCount = cfg.getProperty("ui.countmoney").equals("1");
+        if (showCount) {
+            this.showCashCount();
+        } else {
+            this.confirmCloseCash();
+        }
+    }
+    private void countCloseCashActionPerformed(ActionEvent evt) {
+        this.confirmCloseCash();
+    }
+    private void countCancelActionPerformed(ActionEvent evt) {
+        this.showZTicket();
+    }
 
-private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jPrintCashActionPerformed
-
-    // print report
-    printPayments("Printer.PartialCash");
-    
-}//GEN-LAST:event_m_jPrintCashActionPerformed
-    
+    private void m_jPrintCashActionPerformed(java.awt.event.ActionEvent evt) {
+        // print report
+        printPayments("Printer.PartialCash");
+    }
 
     private javax.swing.JTextField m_jCash;
     private javax.swing.JButton m_jCloseCash;

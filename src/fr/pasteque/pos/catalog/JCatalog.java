@@ -203,7 +203,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 }
                 
                 // Add products
-                java.util.List<ProductInfoExt> products = m_dlSales.getProductCatalog(catid, JRootApp.posId);
+                java.util.List<ProductInfoExt> products = m_dlSales.getProductCatalog(catid);
                 for (ProductInfoExt prod : products) {
                     jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
                 }

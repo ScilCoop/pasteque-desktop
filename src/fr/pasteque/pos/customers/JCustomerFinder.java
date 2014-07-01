@@ -24,10 +24,7 @@ package fr.pasteque.pos.customers;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.QBFCompareEnum;
 import fr.pasteque.data.user.EditorCreator;
-import fr.pasteque.data.user.ListProvider;
-import fr.pasteque.data.user.ListProviderCreator;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.JEditorString;
@@ -48,7 +45,7 @@ import javax.swing.JPanel;
  *
  * @author  adrianromero
  */
-public class JCustomerFinder extends javax.swing.JDialog implements EditorCreator {
+public class JCustomerFinder extends javax.swing.JDialog {
 
     private CustomerInfoExt selectedCustomer;
     private DataLogicCustomers dlc;
@@ -106,7 +103,6 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
     }
     
     public void search(CustomerInfo customer) {
-        
         if (customer == null || customer.getName() == null || customer.getName().equals("")) {
             // Default filter: show top 10
             m_jtxtTaxID.reset();
@@ -157,45 +153,15 @@ public class JCustomerFinder extends javax.swing.JDialog implements EditorCreato
      * of the customer's list by number of tickets with their id
      */
     public void automaticTop10ClientSearch(){
-        jListCustomers.setModel(new MyListData(new ArrayList<CustomerInfoExt>()));
+        try {
+            jListCustomers.setModel(new MyListData(this.dlc.getTop10CustomerList()));
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
         if (jListCustomers.getModel().getSize() > 0) {
             jListCustomers.setSelectedIndex(0);
         }
     }
-
-    public Object createValue() throws BasicException {
-        
-        Object[] afilter = new Object[6];
-        
-        // TaxID
-        if (m_jtxtTaxID.getText() == null || m_jtxtTaxID.getText().equals("")) {
-            afilter[0] = QBFCompareEnum.COMP_NONE;
-            afilter[1] = null;
-        } else {
-            afilter[0] = QBFCompareEnum.COMP_RE;
-            afilter[1] = "%" + m_jtxtTaxID.getText() + "%";
-        }
-        
-        // SearchKey
-        if (m_jtxtSearchKey.getText() == null || m_jtxtSearchKey.getText().equals("")) {
-            afilter[2] = QBFCompareEnum.COMP_NONE;
-            afilter[3] = null;
-        } else {
-            afilter[2] = QBFCompareEnum.COMP_RE;
-            afilter[3] = "%" + m_jtxtSearchKey.getText() + "%";
-        }
-        
-        // Name
-        if (m_jtxtName.getText() == null || m_jtxtName.getText().equals("")) {
-            afilter[4] = QBFCompareEnum.COMP_NONE;
-            afilter[5] = null;
-        } else {
-            afilter[4] = QBFCompareEnum.COMP_RE;
-            afilter[5] = "%" + m_jtxtName.getText() + "%";
-        }
-        
-        return afilter;
-    } 
 
     private static Window getWindow(Component parent) {
         if (parent == null) {

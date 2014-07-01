@@ -20,10 +20,9 @@
 package fr.pasteque.pos.payment;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
+import fr.pasteque.pos.forms.DataLogicSales;
 
 public class PaymentInfoTicket extends PaymentInfo {
     
@@ -38,7 +37,16 @@ public class PaymentInfoTicket extends PaymentInfo {
     public PaymentInfoTicket(double amount, CurrencyInfo currency, String sName) {
         m_sName = sName;
         this.amount = amount;
-        this.currency = currency;
+        if (currency == null) {
+            DataLogicSales dlSales = new DataLogicSales();
+            try {
+                this.currency = dlSales.getMainCurrency();
+            } catch (BasicException e) {
+                e.printStackTrace();
+            }
+        } else {
+            this.currency = currency;
+        }
     }
     
     public PaymentInfoTicket(double amount, CurrencyInfo currency, 

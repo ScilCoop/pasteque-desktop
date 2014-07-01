@@ -26,8 +26,11 @@ import fr.pasteque.data.loader.*;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.DataLogicSales;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
+import fr.pasteque.pos.ticket.CashMove;
+import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.ticket.CategoryInfo;
 import fr.pasteque.pos.ticket.TaxInfo;
@@ -40,15 +43,13 @@ import fr.pasteque.pos.util.StringUtils;
  */
 public class PaymentsModel {
 
-    private String m_sHost;
-    private int m_iSeq;
-    private Date m_dDateStart;
-    private Date m_dDateEnd;       
-            
+    private CashSession cashSession;
+    private CashRegisterInfo cashRegister;
     private Integer m_iPayments;
     private Double m_dPaymentsTotal;
     private java.util.List<PaymentsLine> m_lpayments;
     private List<CategoryLine> catSales;
+    private Map<Double, Integer> coinCount;
     private static List<CurrencyInfo> currencies;
 
     private final static String[] PAYMENTHEADERS = {"Label.Payment", "label.totalcash"};
@@ -58,28 +59,36 @@ public class PaymentsModel {
     private Double m_dSalesTaxes;
     private java.util.List<SalesLine> m_lsales;
     private Integer custCount;
+    private Double expectedCash;
     
-    private final static String[] SALEHEADERS = {"label.taxcash", "label.totalcash"};
+    private final static String[] SALEHEADERS = {"label.taxcash", "label.subtotalcash", "label.totalcash"};
     private final static String[] CATEGORYHEADERS = {"label.catname", "label.totalcash"};
 
     private PaymentsModel() {
+        this.coinCount = new HashMap<Double, Integer>();
     }    
-        
-    public static PaymentsModel loadInstance(AppView app) throws BasicException {
-        DataLogicSales dlSales = (DataLogicSales) app.getBean("fr.pasteque.pos.forms.DataLogicSales");
-        
+
+    public static PaymentsModel loadOpenInstance(CashSession session) throws BasicException {
+        DataLogicSales dlSales = new DataLogicSales();
+        DataLogicSystem dlSys = new DataLogicSystem();
         PaymentsModel p = new PaymentsModel();
         currencies = dlSales.getCurrenciesList();
-        
-        // Cash session info
-        CashSession cash = app.getActiveCashSession();
-        p.m_sHost = cash.getHost();
-        p.m_iSeq = cash.getSequence();
-        p.m_dDateStart = cash.getOpenDate();
-        p.m_dDateEnd = null;
-        // Load z ticket
-        ZTicket z = dlSales.getZTicket(cash.getId());
-        
+        p.cashSession = session;
+        p.cashRegister = dlSys.getCashRegister(session.getCashRegisterId());
+        p.m_lpayments = new ArrayList<PaymentsLine>();
+        p.catSales = new ArrayList<CategoryLine>();
+        p.m_lsales = new ArrayList<SalesLine>();
+        return p;
+    }
+
+    public static PaymentsModel loadInstance(CashSession session) throws BasicException {
+        DataLogicSales dlSales = new DataLogicSales();
+        DataLogicSystem dlSys = new DataLogicSystem();
+        PaymentsModel p = new PaymentsModel();
+        currencies = dlSales.getCurrenciesList();
+        p.cashSession = session;
+        p.cashRegister = dlSys.getCashRegister(session.getCashRegisterId());
+        ZTicket z = dlSales.getZTicket(session.getId());
         // Get number of payments and total amount
         p.m_iPayments = z.getPaymentCount();
         p.m_dPaymentsTotal = 0.0;
@@ -91,12 +100,10 @@ public class PaymentsModel {
                     curr, payment.getCurrencyAmount());
             p.m_lpayments.add(l);
         }
-        
         // Sales
         p.m_iSales = z.getTicketCount();
         p.m_dSalesBase = z.getConsolidatedSales();
         p.custCount = z.getCustomersCount();
-
         // Sales by categories
         p.catSales = new ArrayList<CategoryLine>();
         for (ZTicket.Category cat : z.getCategories()) {
@@ -106,7 +113,6 @@ public class PaymentsModel {
             CategoryLine l = new CategoryLine(name, cat.getAmount());
             p.catSales.add(l);
         }
-        
         // Taxes amount
         p.m_lsales = new ArrayList<SalesLine>();
         p.m_dSalesTaxes = 0.0;
@@ -127,8 +133,35 @@ public class PaymentsModel {
                     tax.getAmount());
             p.m_lsales.add(l);
         }
-
+        // Count expected cash
+        if (p.hasFunds()) {
+            double expectedTotal = 0.0;
+            // Get initial fund
+            if (p.cashSession.getOpenCash() != null) {
+                expectedTotal = p.cashSession.getOpenCash();
+            }
+            // Add cash payments and movements
+            for (PaymentsModel.PaymentsLine line : p.getPaymentLines()) {
+                if (line.getType().equals("cash")
+                        && line.getCurrency().isMain()) {
+                    expectedTotal += line.getValue();
+                } else if (line.getType().equals(CashMove.CASH_MOVE_OUT)
+                        || line.getType().equals(CashMove.CASH_MOVE_IN)) {
+                    expectedTotal += line.getValue();
+                }
+            }
+            p.expectedCash = expectedTotal;
+        }
         return p;
+    }
+
+    public static PaymentsModel loadOpenInstance(AppView app) throws BasicException {
+        CashSession cash = app.getActiveCashSession();
+        return loadOpenInstance(cash);
+    }
+    public static PaymentsModel loadInstance(AppView app) throws BasicException {
+        CashSession cash = app.getActiveCashSession();
+        return loadInstance(cash);
     }
 
     public int getPayments() {
@@ -144,34 +177,88 @@ public class PaymentsModel {
         return m_dPaymentsTotal.doubleValue();
     }
     public String getHost() {
-        return m_sHost;
+        return this.cashRegister.getLabel();
     }
     public int getSequence() {
-        return m_iSeq;
+        return this.cashSession.getSequence();
     }
     public Date getDateStart() {
-        return m_dDateStart;
+        return this.cashSession.getOpenDate();
     }
     public void setDateEnd(Date dValue) {
-        m_dDateEnd = dValue;
+        this.cashSession.close(dValue);
     }
     public Date getDateEnd() {
-        return m_dDateEnd;
+        return this.cashSession.getCloseDate();
     }
-    
+    public Double getOpenCash() {
+        return this.cashSession.getOpenCash();
+    }
+    public Double getCloseCash() {
+        return this.cashSession.getCloseCash();
+    }
+    /** Check if cash was counted at open and/or close */
+    public boolean hasFunds() {
+        return this.cashSession.getOpenCash() != null
+                || this.cashSession.getCloseCash() != null;
+    }
+    public void setCoinCount(Double amount, int count) {
+        this.coinCount.put(amount, count);
+    }
+    public List<Double> getCountedCoins() {
+        Set keys = this.coinCount.keySet();
+        List<Double> coins = new ArrayList<Double>();
+        coins.addAll(keys);
+        Collections.sort(coins);
+        return coins;
+    }
+    public Double getExpectedCash() {
+        return this.expectedCash;
+    }
+
     public String printHost() {
-        return StringUtils.encodeXML(m_sHost);
+        return StringUtils.encodeXML(this.cashRegister.getLabel());
     }
     public String printSequence() {
-        return Formats.INT.formatValue(m_iSeq);
+        return Formats.INT.formatValue(this.cashSession.getSequence());
     }
     public String printDateStart() {
-        return Formats.TIMESTAMP.formatValue(m_dDateStart);
+        return Formats.TIMESTAMP.formatValue(this.cashSession.getOpenDate());
     }
     public String printDateEnd() {
-        return Formats.TIMESTAMP.formatValue(m_dDateEnd);
+        return Formats.TIMESTAMP.formatValue(this.cashSession.getCloseDate());
     }  
-    
+    public String printOpenCash() {
+        if (this.cashSession.getOpenCash() != null) {
+            return Formats.CURRENCY.formatValue(this.cashSession.getOpenCash());
+        } else {
+            return "";
+        }
+    }
+    public String printCloseCash() {
+        if (this.cashSession.getCloseCash() != null) {
+            return Formats.CURRENCY.formatValue(this.cashSession.getCloseCash());
+        } else {
+            return "";
+        }
+    }
+    public String printExpectedCash() {
+        if (this.expectedCash != null) {
+            return Formats.CURRENCY.formatValue(this.expectedCash);
+        } else {
+            return "";
+        }
+    }
+    public String printCoinValue(double val) {
+        return Formats.CURRENCY.formatValue(val);
+    }
+    public String printCoinCount(double val) {
+        return Formats.INT.formatValue(this.coinCount.get(val));
+    }
+    public String printCoinTotal(double coinVal) {
+        return Formats.CURRENCY.formatValue(coinVal * this.coinCount.get(coinVal));
+    }
+
     public String printPayments() {
         return Formats.INT.formatValue(m_iPayments);
     }
@@ -300,7 +387,8 @@ public class PaymentsModel {
                 SalesLine l = m_lsales.get(row);
                 switch (column) {
                 case 0: return l.getTaxName();
-                case 1: return l.getTaxes();
+                case 1: return l.getTaxBase();
+                case 2: return l.getTaxes();
                 default: return null;
                 }
             }  

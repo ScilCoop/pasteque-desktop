@@ -51,7 +51,7 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
     
     /** Creates new form JPanelConfiguration */
     public JPanelConfiguration(AppView oApp) {
-        this(oApp.getProperties(), (DataLogicSystem) oApp.getBean("fr.pasteque.pos.forms.DataLogicSystem"));  
+        this(oApp.getProperties(), new DataLogicSystem());
     }
     
     public JPanelConfiguration(AppProperties props, DataLogicSystem dls) {
@@ -124,7 +124,8 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
     } 
     
     public void activate() throws BasicException {
-        loadProperties();        
+        loadProperties();
+        jbtnRestore.setEnabled(config.canRestore());
     }
     
     public boolean deactivate() {
@@ -162,12 +163,12 @@ public class JPanelConfiguration extends JPanel implements JPanelView {
         m_jConfigOptions = new javax.swing.JPanel();
         m_jConfigOptions.setLayout(new GridBagLayout());
         jbtnCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
-                                                 AppLocal.getIntString("Button.Restore"),
-                                                 WidgetsBuilder.SIZE_MEDIUM);
-        jbtnRestore = WidgetsBuilder.createButton(AppLocal.getIntString("Button.Factory"));
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_MEDIUM);
+        jbtnRestore = WidgetsBuilder.createButton(AppLocal.getIntString("Button.Restore"));
         jbtnSave = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
-                                               AppLocal.getIntString("Button.Save"),
-                                               WidgetsBuilder.SIZE_MEDIUM);
+                AppLocal.getIntString("Button.Save"),
+                WidgetsBuilder.SIZE_MEDIUM);
 
         jScrollPane1.setViewportView(m_jConfigOptions);
 

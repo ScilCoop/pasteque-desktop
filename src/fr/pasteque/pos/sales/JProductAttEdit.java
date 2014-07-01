@@ -22,21 +22,11 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.Datas;
 import fr.pasteque.data.loader.ImageLoader;
-import fr.pasteque.data.loader.PreparedSentence;
-import fr.pasteque.data.loader.SentenceExec;
-import fr.pasteque.data.loader.SentenceFind;
-import fr.pasteque.data.loader.SentenceList;
-import fr.pasteque.data.loader.SerializerRead;
-import fr.pasteque.data.loader.SerializerReadString;
-import fr.pasteque.data.loader.SerializerWriteBasic;
-import fr.pasteque.data.loader.SerializerWriteString;
-import fr.pasteque.data.loader.Session;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.inventory.AttributeSetInfo;
 import fr.pasteque.pos.widgets.JEditorKeys;
+import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
@@ -51,15 +41,6 @@ import javax.swing.SwingUtilities;
  * @author adrianromero
  */
 public class JProductAttEdit extends javax.swing.JDialog {
-
-    private SentenceFind attsetSent;
-    private SentenceList attvaluesSent;
-    private SentenceList attinstSent;
-    private SentenceList attinstSent2;
-    private SentenceFind attsetinstExistsSent;
-
-    private SentenceExec attsetSave;
-    private SentenceExec attinstSave;
 
     private List<JProductAttEditI> itemslist;
     private String attsetid;
@@ -78,10 +59,10 @@ public class JProductAttEdit extends javax.swing.JDialog {
         super(parent, modal);
     }
 
-    private void init(Session s) {
+    private void init() {
 
         initComponents();
-
+        /*
         attsetSave = new PreparedSentence(s,
                 "INSERT INTO ATTRIBUTESETINSTANCE (ID, ATTRIBUTESET_ID, DESCRIPTION) VALUES (?, ?, ?)",
                 new SerializerWriteBasic(Datas.STRING, Datas.STRING, Datas.STRING));
@@ -119,12 +100,12 @@ public class JProductAttEdit extends javax.swing.JDialog {
         attvaluesSent = new PreparedSentence(s, "SELECT VALUE FROM ATTRIBUTEVALUE WHERE ATTRIBUTE_ID = ?",
                 SerializerWriteString.INSTANCE,
                 SerializerReadString.INSTANCE);
-
+        */
         getRootPane().setDefaultButton(m_jButtonOK);
     }
 
 
-    public static JProductAttEdit getAttributesEditor(Component parent, Session s) {
+    public static JProductAttEdit getAttributesEditor(Component parent) {
 
         Window window = SwingUtilities.getWindowAncestor(parent);
 
@@ -134,7 +115,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
         } else {
             myMsg = new JProductAttEdit((Dialog) window, true);
         }
-        myMsg.init(s);
+        myMsg.init();
         myMsg.applyComponentOrientation(parent.getComponentOrientation());
         return myMsg;
     }
@@ -152,7 +133,7 @@ public class JProductAttEdit extends javax.swing.JDialog {
             this.ok = false;
 
             // get attsetinst values
-            AttributeSetInfo asi = (AttributeSetInfo) attsetSent.find(attsetid);
+            AttributeSetInfo asi = null;//(AttributeSetInfo) attsetSent.find(attsetid);
 
             if (asi == null) {
                 throw new BasicException(AppLocal.getIntString("message.cannotfindattributes"));
@@ -160,9 +141,9 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
             setTitle(asi.getName());
 
-            List<AttributeInstInfo> attinstinfo = attsetinstid == null
+            List<AttributeInstInfo> attinstinfo = null;/*attsetinstid == null
                     ? attinstSent.list(attsetid)
-                    : attinstSent2.list(attsetid, attsetinstid);
+                    : attinstSent2.list(attsetid, attsetinstid);*/
             if (attinstinfo.size() == 0) {
                 throw new BasicException(AppLocal.getIntString("message.cannotfindattributes"));
             }
@@ -172,8 +153,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
                 JProductAttEditI item;
 
-                List<String> values = attvaluesSent.list(aii.getAttid());
-                if (values.isEmpty()) {
+                List<String> values = null;//attvaluesSent.list(aii.getAttid());
+                if (values == null || values.isEmpty()) {
                     // Does not exist a list of values then a textfield
                     item = new JProductAttEditItem(aii.getAttid(),  aii.getAttname(), aii.getValue(), m_jKeys);
                 } else {
@@ -272,8 +253,11 @@ public class JProductAttEdit extends javax.swing.JDialog {
         jPanel5 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        m_jButtonOK = new javax.swing.JButton();
-        m_jButtonCancel = new javax.swing.JButton();
+        m_jButtonOK = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_ok.png"),
+                AppLocal.getIntString("Button.OK"), WidgetsBuilder.SIZE_MEDIUM);
+        m_jButtonCancel = WidgetsBuilder.createButton(ImageLoader.readImageIcon("button_cancel.png"),
+                AppLocal.getIntString("Button.Cancel"),
+                WidgetsBuilder.SIZE_MEDIUM);
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         m_jKeys = new JEditorKeys();
@@ -287,11 +271,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        m_jButtonOK.setIcon(ImageLoader.readImageIcon("button_ok.png"));
-        m_jButtonOK.setText(AppLocal.getIntString("Button.OK")); // NOI18N
         m_jButtonOK.setFocusPainted(false);
         m_jButtonOK.setFocusable(false);
-        m_jButtonOK.setMargin(new java.awt.Insets(8, 16, 8, 16));
         m_jButtonOK.setRequestFocusEnabled(false);
         m_jButtonOK.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -300,11 +281,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
         });
         jPanel1.add(m_jButtonOK);
 
-        m_jButtonCancel.setIcon(ImageLoader.readImageIcon("button_cancel.png"));
-        m_jButtonCancel.setText(AppLocal.getIntString("Button.Cancel")); // NOI18N
         m_jButtonCancel.setFocusPainted(false);
         m_jButtonCancel.setFocusable(false);
-        m_jButtonCancel.setMargin(new java.awt.Insets(8, 16, 8, 16));
         m_jButtonCancel.setRequestFocusEnabled(false);
         m_jButtonCancel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -345,14 +323,14 @@ public class JProductAttEdit extends javax.swing.JDialog {
 
 
 
-        String id;
+        String id = null;
 
         if (description.length() == 0) {
             // No values then id is null
             id = null;
         } else {
             // Some values then an instance should exists.
-            try {
+            /*try {
                 // Exist an attribute set instance with these values for the attributeset selected
                 id = (String) attsetinstExistsSent.find(attsetid, description.toString());
             } catch (BasicException ex) {
@@ -375,8 +353,8 @@ public class JProductAttEdit extends javax.swing.JDialog {
                 } catch (BasicException ex) {
                     // Logger.getLogger(JProductAttEdit.class.getName()).log(Level.SEVERE, null, ex);
                     return;
-                }
-            }
+                    }
+            }*/
         }
 
         ok = true;

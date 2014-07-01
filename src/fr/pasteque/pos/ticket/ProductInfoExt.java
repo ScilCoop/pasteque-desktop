@@ -22,11 +22,10 @@
 package fr.pasteque.pos.ticket;
 
 import java.awt.image.BufferedImage;
-import fr.pasteque.data.loader.DataRead;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.ImageUtils;
-import fr.pasteque.data.loader.SerializerRead;
 import fr.pasteque.format.Formats;
+import java.io.Serializable;
 import java.util.Properties;
 import org.json.JSONObject;
 
@@ -35,7 +34,7 @@ import org.json.JSONObject;
  * @author adrianromero
  *
  */
-public class ProductInfoExt {
+public class ProductInfoExt implements Serializable {
 
     private static final long serialVersionUID = 7587696873036L;
     private static final double NO_PRICE = -1.345d;
@@ -47,6 +46,7 @@ public class ProductInfoExt {
     protected boolean m_bCom;
     protected boolean m_bScale;
     protected String categoryid;
+    protected int dispOrder;
     protected String taxcategoryid;
     protected String attributesetid;
     protected double m_dPriceBuy;
@@ -92,6 +92,9 @@ public class ProductInfoExt {
         this.attributes = new Properties();
         this.discountEnabled = o.getBoolean("discountEnabled");
         this.discountRate = o.getDouble("discountRate");
+        if (!o.isNull("dispOrder")) {
+            this.dispOrder = o.getInt("dispOrder");
+        }
     }
 
     public final String getID() {
@@ -140,6 +143,10 @@ public class ProductInfoExt {
 
     public final void setScale(boolean bValue) {
         m_bScale = bValue;
+    }
+
+    public final int getDispOrder() {
+        return this.dispOrder;
     }
 
     public final String getCategoryID() {
@@ -225,33 +232,6 @@ public class ProductInfoExt {
     }
     public void setDiscountRate(double rate) {
         this.discountRate = rate;
-    }
-
-    public static SerializerRead getSerializerRead() {
-        return new SerializerRead() { public Object readValues(DataRead dr) throws BasicException {
-            ProductInfoExt product = new ProductInfoExt();
-            product.m_ID = dr.getString(1);
-            product.m_sRef = dr.getString(2);
-            product.m_sCode = dr.getString(3);
-            product.m_sName = dr.getString(4);
-            product.m_bCom = dr.getBoolean(5).booleanValue();
-            product.m_bScale = dr.getBoolean(6).booleanValue();
-            Double priceBuy = dr.getDouble(7);
-            if (priceBuy != null) {
-                product.m_dPriceBuy = dr.getDouble(7).doubleValue();
-            } else {
-                product.m_dPriceBuy = NO_PRICE;
-            }
-            product.m_dPriceSell = dr.getDouble(8).doubleValue();
-            product.taxcategoryid = dr.getString(9);
-            product.categoryid = dr.getString(10);
-            product.attributesetid = dr.getString(11);
-            product.m_Image = ImageUtils.readImage(dr.getBytes(12));
-            product.attributes = ImageUtils.readProperties(dr.getBytes(13));
-            product.discountEnabled = dr.getBoolean(14);
-            product.discountRate = dr.getDouble(15).doubleValue();
-            return product;
-        }};
     }
 
     @Override

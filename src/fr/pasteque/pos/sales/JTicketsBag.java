@@ -35,7 +35,7 @@ public abstract class JTicketsBag extends JPanel {
     public JTicketsBag(AppView oApp, TicketsEditor panelticket) {        
         m_App = oApp;     
         m_panelticket = panelticket;        
-        m_dlSales = (DataLogicSales) m_App.getBean("fr.pasteque.pos.forms.DataLogicSales");
+        m_dlSales = new DataLogicSales();
     }
     
     public abstract void activate();

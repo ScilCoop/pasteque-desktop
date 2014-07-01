@@ -37,10 +37,10 @@ Some settings for the shortcut panel
     Shortcut of the application uninstaller
     -->
     <shortcut
-        name="Pasteque-Uninstaller"
+        name="Pasteque uninstall"
         target="$INSTALL_PATH/bin/uninstall.sh"
         description="Uninstall Pasteque"
-        iconFile="$INSTALL_PATH/pasteque_launcher.png"
+        iconFile="$INSTALL_PATH/pasteque_uninstall.png"
         programGroup="yes"
         desktop="no"
         type="Application"

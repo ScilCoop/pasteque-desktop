@@ -21,25 +21,32 @@
 
 package fr.pasteque.pos.ticket;
 
+import java.io.Serializable;
 import org.json.JSONObject;
 
 /** Model for Cash register config. */
-public class CashRegisterInfo {
+public class CashRegisterInfo implements Serializable {
 
+    private int id;
     private String label;
     private String locationId;
-    private int posId;
+    private int nextTicketId;
 
-    public CashRegisterInfo(String label, String locationId, int posId) {
+    public CashRegisterInfo(String label, String locationId, int nextTicketId) {
         this.label = label;
         this.locationId = locationId;
-        this.posId = posId;
+        this.nextTicketId = nextTicketId;
     }
 
     public CashRegisterInfo(JSONObject o) {
+        this.id = o.getInt("id");
         this.label = o.getString("label");
         this.locationId = o.getString("locationId");
-        this.posId = o.getInt("posId");
+        this.nextTicketId = o.getInt("nextTicketId");
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     public String getLabel() {
@@ -50,7 +57,11 @@ public class CashRegisterInfo {
         return this.locationId;
     }
 
-    public int getPosId() {
-        return this.posId;
+    public int getNextTicketId() {
+        return this.nextTicketId;
+    }
+
+    public void incrementNextTicketId() {
+        this.nextTicketId++;
     }
 }

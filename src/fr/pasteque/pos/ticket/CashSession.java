@@ -29,23 +29,30 @@ import org.json.JSONObject;
 public class CashSession {
 
     private String id;
-    private String host;
+    private int cashRegisterId;
     private int sequence;
     private Date openDate;
     private Date closeDate;
+    private Double openCash;
+    private Double closeCash;
+    private Double expectedCash;
 
-    public CashSession(String id, String host, int sequence, Date openDate,
-            Date closeDate) {
+    public CashSession(String id, int cashRegisterId, int sequence,
+            Date openDate, Date closeDate, Double openCash, Double closeCash,
+            Double expectedCash) {
         this.id = id;
-        this.host = host;
+        this.cashRegisterId = cashRegisterId;
         this.sequence = sequence;
         this.openDate = openDate;
         this.closeDate = closeDate;
+        this.openCash = openCash;
+        this.closeCash = closeCash;
+        this.expectedCash = expectedCash;
     }
 
     public CashSession(JSONObject o) {
         this.id = o.getString("id");
-        this.host = o.getString("host");
+        this.cashRegisterId = o.getInt("cashRegisterId");
         this.sequence = o.getInt("sequence");
         if (!o.isNull("openDate")) {
             this.openDate = DateUtils.readSecTimestamp(o.getLong("openDate"));
@@ -53,13 +60,21 @@ public class CashSession {
         if (!o.isNull("closeDate")) {
             this.closeDate = DateUtils.readSecTimestamp(o.getLong("closeDate"));
         }
-
+        if (!o.isNull("openCash")) {
+            this.openCash = o.getDouble("openCash");
+        }
+        if (!o.isNull("closeCash")) {
+            this.closeCash = o.getDouble("closeCash");
+        }
+        if (!o.isNull("expectedCash")) {
+            this.expectedCash = o.getDouble("expectedCash");
+        }
     }
 
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
         o.put("id", this.id);
-        o.put("host", this.host);
+        o.put("cashRegisterId", this.cashRegisterId);
         o.put("sequence", this.sequence);
         if (this.openDate == null) {
             o.put("openDate", JSONObject.NULL);
@@ -71,6 +86,21 @@ public class CashSession {
         } else {
             o.put("closeDate", DateUtils.toSecTimestamp(this.closeDate));
         }
+        if (this.openCash == null) {
+            o.put("openCash", JSONObject.NULL);
+        } else {
+            o.put("openCash", this.openCash);
+        }
+        if (this.closeCash == null) {
+            o.put("closeCash", JSONObject.NULL);
+        } else {
+            o.put("closeCash", this.closeCash);
+        }
+        if (this.expectedCash == null) {
+            o.put("expectedCash", JSONObject.NULL);
+        } else {
+            o.put("expectedCash", this.expectedCash);
+        }
         return o;
     }
 
@@ -78,8 +108,8 @@ public class CashSession {
         return this.id;
     }
 
-    public String getHost() {
-        return this.host;
+    public int getCashRegisterId() {
+        return this.cashRegisterId;
     }
 
     public int getSequence() {
@@ -113,5 +143,29 @@ public class CashSession {
 
     public boolean isClosed() {
         return this.closeDate == null;
+    }
+
+    public Double getOpenCash() {
+        return this.openCash;
+    }
+
+    public void setOpenCash(Double amount) {
+        this.openCash = amount;
+    }
+
+    public Double getCloseCash() {
+        return this.closeCash;
+    }
+
+    public void setCloseCash(Double amount) {
+        this.closeCash = amount;
+    }
+
+    public Double getExpectedCash() {
+        return this.expectedCash;
+    }
+
+    public void setExpectedCash(Double amount) {
+        this.expectedCash = amount;
     }
 }

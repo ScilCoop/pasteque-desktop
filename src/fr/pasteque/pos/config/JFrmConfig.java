@@ -21,8 +21,6 @@
 
 package fr.pasteque.pos.config;
 
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.pos.forms.AppViewConnection;
 import fr.pasteque.pos.forms.BeanFactory;
 import fr.pasteque.pos.forms.DataLogicSystem;
 
@@ -42,7 +40,6 @@ import javax.swing.UIManager;
 public class JFrmConfig extends javax.swing.JFrame {
     
     private JPanelConfiguration config;
-    private Session session;
     
     /** Creates new form JFrmConfig */
     public JFrmConfig(AppProperties props) {
@@ -54,19 +51,11 @@ public class JFrmConfig extends javax.swing.JFrame {
         
         addWindowListener(new MyFrameListener()); 
         
-        String dlsBean = "fr.pasteque.pos.forms.DataLogicSystem";
-        DataLogicSystem dls = null;
+        DataLogicSystem dls = new DataLogicSystem();
         try {
-            this.session = AppViewConnection.createSession(props);
-            Class bfclass = Class.forName(dlsBean);
-            if (BeanFactory.class.isAssignableFrom(bfclass)) {
-                BeanFactory bf = (BeanFactory) bfclass.newInstance();
-                dls = (DataLogicSystem) bf.getBean();
-                dls.init(this.session);
-                String dbVersion = dls.findDbVersion();
-                if (!AppLocal.DB_VERSION.equals(dbVersion)) {
-                    dls = null;
-                }
+            String dbVersion = dls.findDbVersion();
+            if (!AppLocal.DB_VERSION.equals(dbVersion)) {
+                dls = null;
             }
         } catch (Exception e) {
             dls = null;
@@ -84,10 +73,6 @@ public class JFrmConfig extends javax.swing.JFrame {
     private class MyFrameListener extends WindowAdapter{
         
         public void windowClosing(WindowEvent evt) {
-            if (session != null) {
-                session.close();
-                session = null;
-            }
             if (config.deactivate()) {
                 dispose();
             }

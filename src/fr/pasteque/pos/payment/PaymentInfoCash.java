@@ -22,7 +22,9 @@ package fr.pasteque.pos.payment;
 import fr.pasteque.format.Formats;
 import fr.pasteque.pos.admin.CurrencyInfo;
 
-public class PaymentInfoCash extends PaymentInfo {
+import java.io.Serializable;
+
+public class PaymentInfoCash extends PaymentInfo implements Serializable {
     
     private double m_dPaid;
     private double m_dTotal;

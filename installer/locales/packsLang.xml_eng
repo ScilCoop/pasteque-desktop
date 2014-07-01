@@ -3,7 +3,4 @@
 <langpack>
     <str id="core.package" txt="Pasteque"/>
     <str id="core.package.description" txt="The Pasteque package provides the basic files to correctly run this application. This package is automatically installed."/>
-
-    <str id="documentation.package" txt="Pasteque's documentation"/>
-    <str id="documentation.package.description" txt="This pack contains the documentation of Pasteque. New users should install it in order to discover the full potential of this application."/>
 </langpack>

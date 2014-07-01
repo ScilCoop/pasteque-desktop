@@ -19,79 +19,186 @@
 
 package fr.pasteque.pos.sales;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.DatatypeConverter;
 import fr.pasteque.basic.BasicException;
-import fr.pasteque.data.loader.Datas;
-import fr.pasteque.data.loader.PreparedSentence;
-import fr.pasteque.data.loader.SerializerReadBasic;
-import fr.pasteque.data.loader.SerializerReadClass;
-import fr.pasteque.data.loader.SerializerWriteBasicExt;
-import fr.pasteque.data.loader.SerializerWriteString;
-import fr.pasteque.data.loader.Session;
-import fr.pasteque.data.loader.StaticSentence;
-import fr.pasteque.pos.forms.BeanFactoryDataSingle;
+import fr.pasteque.data.loader.ServerLoader;
+import fr.pasteque.pos.caching.CallQueue;
+import fr.pasteque.pos.caching.TicketsCache;
 import fr.pasteque.pos.ticket.TicketInfo;
+import org.json.JSONObject;
+import org.json.JSONArray;
 
 /**
  *
  * @author adrianromero
  */
-public class DataLogicReceipts extends BeanFactoryDataSingle {
-    
-    private Session s;
-    
+public class DataLogicReceipts {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.sales.DataLogicReceipts");
+
     /** Creates a new instance of DataLogicReceipts */
     public DataLogicReceipts() {
     }
     
-    public void init(Session s){
-        this.s = s;
+    public void init(){
     }
      
-    public final TicketInfo getSharedTicket(String Id) throws BasicException {
-        
-        if (Id == null) {
-            return null; 
-        } else {
-            Object[]record = (Object[]) new StaticSentence(s
-                    , "SELECT CONTENT FROM SHAREDTICKETS WHERE ID = ?"
-                    , SerializerWriteString.INSTANCE
-                    , new SerializerReadBasic(new Datas[] {Datas.SERIALIZABLE})).find(Id);
-            return record == null ? null : (TicketInfo) record[0];
+    public final TicketInfo getSharedTicket(String id) throws BasicException {
+        if (CallQueue.isOffline()) {
+            // Read from cache until recovery
+            SharedTicketInfo stkt = TicketsCache.getTicket(id);
+            if (stkt != null) {
+                return stkt.getTicket();
+            } else {
+                return null;
+            }
+        }
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TicketsAPI", "getShared",
+                    "id", id);
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONObject o = r.getObjContent();
+                if (o == null) {
+                    return null;
+                }
+                String strdata = o.getString("data");
+                byte[] data = DatatypeConverter.parseBase64Binary(strdata);
+                TicketInfo tkt = new TicketInfo(data);
+                // Ticket read from server, cache it
+                SharedTicketInfo stkt = new SharedTicketInfo(o.getString("id"),
+                        tkt);
+                try {
+                    TicketsCache.saveTicket(stkt);
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
+                return tkt;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed to load shared ticket " + id
+                    + " from server: " + e.getMessage());
+            // Unable to read it from server, try reading from cache
+            SharedTicketInfo stkt = TicketsCache.getTicket(id);
+            if (stkt != null) {
+                return stkt.getTicket();
+            } else {
+                return null;
+            }
         }
     } 
     
     public final List<SharedTicketInfo> getSharedTicketList() throws BasicException {
-        
-        return (List<SharedTicketInfo>) new StaticSentence(s
-                , "SELECT ID, NAME FROM SHAREDTICKETS ORDER BY ID"
-                , null
-                , new SerializerReadClass(SharedTicketInfo.class)).list();
+        List<SharedTicketInfo> tkts = new ArrayList<SharedTicketInfo>();
+        if (CallQueue.isOffline()) {
+            // Read from cache until recovery
+            tkts = TicketsCache.getAllTickets();
+            return tkts;
+        }
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r = loader.read("TicketsAPI", "getAllShared");
+            if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                JSONArray a = r.getArrayContent();
+                for (int i = 0; i < a.length(); i++) {
+                    JSONObject o = a.getJSONObject(i);
+                    SharedTicketInfo stkt = new SharedTicketInfo(o);
+                    tkts.add(stkt);
+                }
+                // All tickets read from server, cache them
+                try {
+                    TicketsCache.refreshTickets(tkts);
+                } catch (BasicException e) {
+                    e.printStackTrace();
+                }
+                return tkts;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            logger.log(Level.WARNING, "Failed to load shared tickets "
+                    + "from server: " + e.getMessage());
+            // Failed to load from server, try loading from cache
+            tkts = TicketsCache.getAllTickets();
+            return tkts;
+        }
     }
     
     public final void updateSharedTicket(final String id, final TicketInfo ticket) throws BasicException {
-         
-        Object[] values = new Object[] {id, ticket.getName(), ticket};
-        Datas[] datas = new Datas[] {Datas.STRING, Datas.STRING, Datas.SERIALIZABLE};
-        new PreparedSentence(s
-                , "UPDATE SHAREDTICKETS SET NAME = ?, CONTENT = ? WHERE ID = ?"
-                , new SerializerWriteBasicExt(datas, new int[] {1, 2, 0})).exec(values);
+        SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
+        try {
+            TicketsCache.saveTicket(stkt);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+        if (CallQueue.isOffline()) {
+            // Enqueue until recovery
+            CallQueue.queueSharedTicketSave(id, stkt);
+            return;
+        }
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r;
+            JSONObject tkt = new JSONObject();
+            tkt.put("id", id);
+            tkt.put("label", ticket.getName());
+            byte[] data = ticket.serialize();
+            String strData = DatatypeConverter.printBase64Binary(data);
+            tkt.put("data", strData);
+            r = loader.write("TicketsAPI", "share",
+                    "ticket", tkt.toString());
+            if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                throw new BasicException("Bad server response");
+            }
+        } catch (Exception e) {
+            // Update failed, add to queue
+            logger.log(Level.WARNING, "Unable to save shared ticket " + id
+                    + ": " + e.getMessage());
+            CallQueue.queueSharedTicketSave(id, stkt);
+            throw new BasicException(e);
+        }
     }
     
     public final void insertSharedTicket(final String id, final TicketInfo ticket) throws BasicException {
-        
-        Object[] values = new Object[] {id, ticket.getName(), ticket};
-        Datas[] datas = new Datas[] {Datas.STRING, Datas.STRING, Datas.SERIALIZABLE};
-        
-        new PreparedSentence(s
-            , "INSERT INTO SHAREDTICKETS (ID, NAME,CONTENT) VALUES (?, ?, ?)"
-            , new SerializerWriteBasicExt(datas, new int[] {0, 1, 2})).exec(values);
+        try {
+            SharedTicketInfo stkt = new SharedTicketInfo(id, ticket);
+            TicketsCache.saveTicket(stkt);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+        this.updateSharedTicket(id, ticket);
     }
     
     public final void deleteSharedTicket(final String id) throws BasicException {
-
-        new StaticSentence(s
-            , "DELETE FROM SHAREDTICKETS WHERE ID = ?"
-            , SerializerWriteString.INSTANCE).exec(id);      
+        try {
+            TicketsCache.deleteTicket(id);
+        } catch (BasicException e) {
+            e.printStackTrace();
+        }
+        if (CallQueue.isOffline()) {
+            // Enqueue until recovery
+            CallQueue.queueDeleteSharedTicket(id);
+            return;
+        }
+        try {
+            ServerLoader loader = new ServerLoader();
+            ServerLoader.Response r;
+            r = loader.write("TicketsAPI", "delShared", "id", id);
+            if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
+                throw new BasicException("Bad server response");
+            }
+        } catch (Exception e) {
+            // Delete failed, queue call
+            logger.log(Level.WARNING, "Unable to delete shared ticket: "
+                    + e.getMessage());
+            CallQueue.queueDeleteSharedTicket(id);
+            throw new BasicException(e);
+        }
     }    
 }

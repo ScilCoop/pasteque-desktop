@@ -40,6 +40,8 @@ public class AppConfig implements AppProperties {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.AppConfig");
 
+    private static final String DEFAULT_DIR = System.getProperty("user.home")
+            + "/." + AppLocal.APP_ID;
     public static AppConfig loadedInstance;
 
     private Properties m_propsconfig;
@@ -53,6 +55,10 @@ public class AppConfig implements AppProperties {
         }
     }
 
+    public String getDataDir() {
+        return DEFAULT_DIR;
+    }
+
     public AppConfig(File configfile) {
         this.init(configfile);
     }
@@ -62,15 +68,17 @@ public class AppConfig implements AppProperties {
         m_propsconfig = new Properties();
 
         logger.info("Reading configuration file: " + configfile.getAbsolutePath());
+        File dir = new File(this.getDataDir());
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
     }
 
     private File getDefaultConfig() {
-        return new File(new File(System.getProperty("user.home")),
-                "." + AppLocal.APP_ID + ".properties");
+        return new File(DEFAULT_DIR + "/config.properties");
     }
     private File getDefaultRestoreConfig() {
-        return new File(new File(System.getProperty("user.home")),
-                "." + AppLocal.APP_ID + ".properties.restore");
+        return new File(DEFAULT_DIR + "/config.properties.restore");
     }
 
     public String getProperty(String sKey) {
@@ -134,6 +142,11 @@ public class AppConfig implements AppProperties {
     public boolean delete() {
         this.loadDefault();
         return this.configfile.delete();
+    }
+    public boolean canRestore() {
+        File restore = new File(this.configfile.getAbsolutePath() + ".restore");
+        File defaultRestore = this.getDefaultRestoreConfig();
+        return restore.exists() || defaultRestore.exists();
     }
     public void restore() throws IOException {
         File restore = new File(this.configfile.getAbsolutePath() + ".restore");
@@ -202,14 +215,16 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.fontsize", "12");
         DEFAULT_VALUES.put("ui.fontsizebig", "14");
         DEFAULT_VALUES.put("ui.fontsizesmall", "10");
-        DEFAULT_VALUES.put("ui.showupdownbuttons", "1");
+        DEFAULT_VALUES.put("ui.showupdownbuttons", "0");
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
         DEFAULT_VALUES.put("prices.roundto", "0");
-        DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/pasteque");
-        DEFAULT_VALUES.put("db.user", "pt_demo");
+        DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/"
+                + AppLocal.DB_VERSION);
+        DEFAULT_VALUES.put("db.user", "demo");
         DEFAULT_VALUES.put("db.password", "demo");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
+        DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
     }
 
     /** Load "default file", which values are expanded or overriden by the
@@ -236,9 +251,9 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("machine.printer.2", "Not defined");
         m_propsconfig.setProperty("machine.printer.3", "Not defined");
         m_propsconfig.setProperty("machine.display", "screen");
-        m_propsconfig.setProperty("machine.scale", "Not defined");
+        m_propsconfig.setProperty("machine.scale", "screen");
         m_propsconfig.setProperty("machine.screenmode", "window"); // fullscreen / window
-        m_propsconfig.setProperty("machine.screentype", "standard");
+        m_propsconfig.setProperty("machine.screentype", "touchscreen");
         m_propsconfig.setProperty("machine.ticketsbag", "standard");
         m_propsconfig.setProperty("machine.scanner", "Not defined");
 
@@ -268,7 +283,8 @@ public class AppConfig implements AppProperties {
 
         // UI stuff
         m_propsconfig.setProperty("machine.screendensity", "72"); // In pixel per inch
-        m_propsconfig.setProperty("ui.autohidemenu", "0");
+        m_propsconfig.setProperty("ui.autohidemenu", "1");
+        m_propsconfig.setProperty("ui.countmoney", "1");
 
     }
 }

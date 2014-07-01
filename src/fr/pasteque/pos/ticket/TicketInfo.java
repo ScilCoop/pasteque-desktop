@@ -26,12 +26,14 @@ import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import fr.pasteque.pos.payment.PaymentInfo;
-import fr.pasteque.data.loader.DataRead;
-import fr.pasteque.data.loader.SerializableRead;
+import fr.pasteque.format.DateUtils;
 import fr.pasteque.format.Formats;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.loader.LocalRes;
 import fr.pasteque.pos.customers.CustomerInfoExt;
+import fr.pasteque.pos.customers.DataLogicCustomers;
+import fr.pasteque.pos.forms.AppUser;
+import fr.pasteque.pos.forms.DataLogicSystem;
 import fr.pasteque.pos.payment.PaymentInfoMagcard;
 import fr.pasteque.pos.util.StringUtils;
 import org.json.JSONArray;
@@ -41,7 +43,7 @@ import org.json.JSONObject;
  *
  * @author adrianromero
  */
-public class TicketInfo implements SerializableRead, Externalizable {
+public class TicketInfo implements Serializable {
 
     private static final long serialVersionUID = 2765650092387265178L;
 
@@ -65,10 +67,11 @@ public class TicketInfo implements SerializableRead, Externalizable {
     private String m_sResponse;
     private Integer customersCount;
     private Integer tariffAreaId;
+    private Integer discountProfileId;
+    private double discountRate;
 
     /** Creates new TicketModel */
     public TicketInfo() {
-        m_sId = UUID.randomUUID().toString();
         tickettype = RECEIPT_NORMAL;
         m_iTicketId = 0; // incrementamos
         m_dDate = new Date();
@@ -83,25 +86,95 @@ public class TicketInfo implements SerializableRead, Externalizable {
         m_sResponse = null;
     }
 
+    public TicketInfo(JSONObject o) throws BasicException {
+        this.m_sId = o.getString("id");
+        this.m_iTicketId = o.getInt("ticketId");
+        this.m_dDate = DateUtils.readSecTimestamp(o.getLong("date"));
+        this.m_sActiveCash = o.getString("cashId");
+        DataLogicSystem dlSystem = new DataLogicSystem();
+        AppUser user = dlSystem.getPeople(o.getString("userId"));
+        this.m_User = new UserInfo(user.getId(), user.getName());
+        if (!o.isNull("customerId")) {
+            DataLogicCustomers dlCust = new DataLogicCustomers();
+            this.m_Customer = dlCust.getCustomer(o.getString("customerId"));
+        }
+        this.tickettype = o.getInt("type");
+        if (!o.isNull("custCount")) {
+            this.customersCount = o.getInt("custCount");
+        }
+        if (!o.isNull("tariffAreaId")) {
+            this.tariffAreaId = o.getInt("tariffAreaId");
+        }
+        if (!o.isNull("discountProfileId")) {
+            this.discountProfileId = o.getInt("discountProfileId");
+        }
+        this.discountRate = o.getDouble("discountRate");
+        this.m_aLines = new ArrayList<TicketLineInfo>();
+        JSONArray jsLines = o.getJSONArray("lines");
+        for (int i = 0; i < jsLines.length(); i++) {
+            JSONObject jsLine = jsLines.getJSONObject(i);
+            this.m_aLines.add(new TicketLineInfo(jsLine));
+        }
+        this.payments = new ArrayList<PaymentInfo>();
+        JSONArray jsPayments = o.getJSONArray("payments");
+        for (int i = 0; i < jsPayments.length(); i++) {
+            JSONObject jsPay = jsPayments.getJSONObject(i);
+            this.payments.add(PaymentInfo.readJSON(jsPay));
+        }
+        this.attributes = new Properties();
+    }
+
     public JSONObject toJSON() {
         JSONObject o = new JSONObject();
-        o.put("id", this.m_sId);
-        o.put("label", JSONObject.NULL); // TODO: support for ticket label
-        if (this.m_Customer != null) {
-            o.put("customer", this.m_Customer.getId());
-        } else {
-            o.put("customer", JSONObject.NULL);
+        if (this.m_sId != null) {
+            o.put("id", this.m_sId);
         }
+        o.put("date", DateUtils.toSecTimestamp(this.m_dDate));
+        o.put("userId", m_User.getId());
+        if (this.m_Customer != null) {
+            o.put("customerId", this.m_Customer.getId());
+        } else {
+            o.put("customerId", JSONObject.NULL);
+        }
+        o.put("type", this.tickettype);
+        o.put("ticketId", this.m_iTicketId);
+        if (this.customersCount != null) {
+            o.put("custCount", this.customersCount);
+        } else {
+            o.put("custCount", JSONObject.NULL);
+        }
+        if (this.tariffAreaId != null) {
+            o.put("tariffAreaId", this.tariffAreaId);
+        } else {
+            o.put("tariffAreaId", JSONObject.NULL);
+        }
+        if (this.discountProfileId != null) {
+            o.put("discountProfileId", this.discountProfileId);
+        } else {
+            o.put("discountProfileId", JSONObject.NULL);
+        }
+        o.put("discountRate", this.discountRate);
         JSONArray lines = new JSONArray();
         for (TicketLineInfo l : this.m_aLines) {
+            JSONObject jsLine = l.toJSON();
+            if (this.m_sId != null) {
+                jsLine.put("ticketId", this.m_sId);
+            }
             lines.put(l.toJSON());
         }
         o.put("lines", lines);
+        JSONArray payments = new JSONArray();
+        for (PaymentInfo p : this.payments) {
+            payments.put(p.toJSON());
+        }
+        o.put("payments", payments);
         return o;
     }
 
-    public void writeExternal(ObjectOutput out) throws IOException {
-        // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
+    /** Serialize as shared ticket */
+    public byte[] serialize() throws IOException {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(2048);
+        ObjectOutputStream out = new ObjectOutputStream(bos);
         out.writeObject(m_sId);
         out.writeInt(tickettype);
         out.writeInt(m_iTicketId);
@@ -110,18 +183,36 @@ public class TicketInfo implements SerializableRead, Externalizable {
         out.writeObject(attributes);
         out.writeObject(m_aLines);
         out.writeObject(this.customersCount);
+        out.writeObject(this.tariffAreaId);
+        out.writeObject(this.discountProfileId);
+        out.writeDouble(this.discountRate);
+        out.flush();
+        byte[] data = bos.toByteArray();
+        out.close();
+        return data;
     }
 
-    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-        // esto es solo para serializar tickets que no estan en la bolsa de tickets pendientes
-        m_sId = (String) in.readObject();
-        tickettype = in.readInt();
-        m_iTicketId = in.readInt();
-        m_Customer = (CustomerInfoExt) in.readObject();
-        m_dDate = (Date) in.readObject();
-        attributes = (Properties) in.readObject();
-        m_aLines = (List<TicketLineInfo>) in.readObject();
-        this.customersCount = (Integer) in.readObject();
+    /** Deserialize as shared ticket */
+    public TicketInfo(byte[] data) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(data);
+        ObjectInputStream in = new ObjectInputStream(bis);
+        try {
+            m_sId = (String) in.readObject();
+            tickettype = in.readInt();
+            m_iTicketId = in.readInt();
+            m_Customer = (CustomerInfoExt) in.readObject();
+            m_dDate = (Date) in.readObject();
+            attributes = (Properties) in.readObject();
+            m_aLines = (List<TicketLineInfo>) in.readObject();
+            this.customersCount = (Integer) in.readObject();
+            this.tariffAreaId = (Integer) in.readObject();
+            this.discountProfileId = (Integer) in.readObject();
+            this.discountRate = in.readDouble();
+        } catch (ClassNotFoundException cnfe) {
+            // Should never happen
+            cnfe.printStackTrace();
+        }
+        in.close();
         m_User = null;
         m_sActiveCash = null;
 
@@ -129,32 +220,11 @@ public class TicketInfo implements SerializableRead, Externalizable {
         taxes = null;
     }
 
-    public void readValues(DataRead dr) throws BasicException {
-        // Check DataLogicSales to map fields on dr indexes
-        m_sId = dr.getString(1);
-        tickettype = dr.getInt(2).intValue();
-        m_iTicketId = dr.getInt(3).intValue();
-        m_dDate = dr.getTimestamp(4);
-        m_sActiveCash = dr.getString(5);
-        try {
-            byte[] img = dr.getBytes(6);
-            if (img != null) {
-                attributes.loadFromXML(new ByteArrayInputStream(img));
-            }
-        } catch (IOException e) {
-        }
-        m_User = new UserInfo(dr.getString(7), dr.getString(8));
-        m_Customer = new CustomerInfoExt(dr.getString(9));
-        this.customersCount = dr.getInt(10);
-        m_aLines = new ArrayList<TicketLineInfo>();
-
-        payments = new ArrayList<PaymentInfo>();
-        taxes = null;
-    }
-
     public TicketInfo copyTicket() {
         TicketInfo t = new TicketInfo();
-
+        if (this.m_sId != null) {
+            t.m_sId = new String(this.m_sId);
+        }
         t.tickettype = tickettype;
         t.m_iTicketId = m_iTicketId;
         t.m_dDate = m_dDate;
@@ -175,9 +245,14 @@ public class TicketInfo implements SerializableRead, Externalizable {
         for (PaymentInfo p : payments) {
             t.payments.add(p.copyPayment());
         }
-
+        if (this.tariffAreaId != null) {
+            t.tariffAreaId = new Integer(this.tariffAreaId);
+        }
+        if (this.discountProfileId != null) {
+            t.discountProfileId = new Integer(this.discountProfileId);
+        }
+        t.discountRate = this.discountRate;
         // taxes are not copied, must be calculated again.
-
         return t;
     }
 
@@ -316,6 +391,20 @@ public class TicketInfo implements SerializableRead, Externalizable {
         this.tariffAreaId = value;
     }
 
+    public Integer getDiscountProfileId() {
+        return this.discountProfileId;
+    }
+    public void setDiscountProfileId(Integer id) {
+        this.discountProfileId = id;
+    }
+
+    public double getDiscountRate() {
+        return this.discountRate;
+    }
+    public void setDiscountRate(double discountRate) {
+        this.discountRate = discountRate;
+    }
+
     public TicketLineInfo getLine(int index) {
         return m_aLines.get(index);
     }
@@ -357,19 +446,17 @@ public class TicketInfo implements SerializableRead, Externalizable {
 
         for (Iterator<TicketLineInfo> i = m_aLines.iterator(); i.hasNext();) {
             oLine = i.next();
-            if (!oLine.isDiscount()) {
-                if (oLine.isProductScale()) {
-                    if (oLine.getPrice() >= 0) {
-                        dArticles += 1;
-                    } else {
-                        dArticles -= 1;
-                    }
+            if (oLine.isProductScale()) {
+                if (oLine.getPrice() >= 0) {
+                    dArticles += 1;
                 } else {
-                    if (oLine.getPrice() >= 0) {
-                        dArticles += oLine.getMultiply();
-                    } else {
-                        dArticles -= oLine.getMultiply();
-                    }
+                    dArticles -= 1;
+                }
+            } else {
+                if (oLine.getPrice() >= 0) {
+                    dArticles += oLine.getMultiply();
+                } else {
+                    dArticles -= oLine.getMultiply();
                 }
             }
         }
@@ -382,7 +469,7 @@ public class TicketInfo implements SerializableRead, Externalizable {
         for (TicketLineInfo line : m_aLines) {
             sum += line.getSubValue();
         }
-        return sum;
+        return sum * (1 - this.discountRate);
     }
 
     public double getTax() {
@@ -397,12 +484,25 @@ public class TicketInfo implements SerializableRead, Externalizable {
                 sum += line.getTax();
             }
         }
+        return sum * (1 - this.discountRate);
+    }
+
+    /** Get price before discount */
+    public double getFullTotal() {
+        double sum = 0.0;
+        for (TicketLineInfo line : m_aLines) {
+            sum += line.getValue();
+        }
         return sum;
     }
 
+    /** Get total with discount */
     public double getTotal() {
-        
-        return getSubTotal() + getTax();
+        return (getSubTotal() + getTax());
+    }
+
+    public double getDiscountAmount() {
+        return (getSubTotal() + getTax()) * this.discountRate;
     }
 
     public double getTotalPaid() {
@@ -517,6 +617,9 @@ public class TicketInfo implements SerializableRead, Externalizable {
         return Formats.CURRENCY.formatValue(new Double(getTax()));
     }
 
+    public String printFullTotal() {
+        return Formats.CURRENCY.formatValue(new Double(this.getFullTotal()));
+    }
     public String printTotal() {
         return Formats.CURRENCY.formatValue(new Double(getTotal()));
     }
@@ -531,5 +634,13 @@ public class TicketInfo implements SerializableRead, Externalizable {
         } else {
             return "";
         }
+    }
+
+    public String printDiscountRate() {
+        return Formats.PERCENT.formatValue(this.discountRate);
+    }
+
+    public String printDiscountAmount() {
+        return Formats.CURRENCY.formatValue(new Double(this.getDiscountAmount()));
     }
 }
