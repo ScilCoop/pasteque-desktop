@@ -77,6 +77,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         jcbShowTitlebar.addActionListener(dirty);
         jcbShowFooterbar.addActionListener(dirty);
         jcbAutoHideMenu.addActionListener(dirty);
+        jcbShowBarcode.addActionListener(dirty);
 
         jcboMachineDisplay.addActionListener(dirty);
         jcboConnDisplay.addActionListener(dirty);
@@ -328,6 +329,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         jcboMarginType.setSelectedItem(config.getProperty("ui.margintype"));
 
         jcbAutoHideMenu.setSelected(!config.getProperty("ui.autohidemenu").equals("0"));
+        jcbShowBarcode.setSelected(!config.getProperty("ui.showbarcode").equals("0"));
 
         StringParser p = new StringParser(config.getProperty("machine.printer"));
         String sparam = unifySerialInterface(p.nextToken(':'));
@@ -440,6 +442,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         config.setProperty("ui.showtitlebar", checkboxValue(jcbShowTitlebar));
         config.setProperty("ui.showfooterbar", checkboxValue(jcbShowFooterbar));
         config.setProperty("ui.autohidemenu", checkboxValue(jcbAutoHideMenu));
+        config.setProperty("ui.showbarcode", checkboxValue(jcbShowBarcode));
         
         String sMachinePrinter = comboValue(jcboMachinePrinter.getSelectedItem());
         if ("epson".equals(sMachinePrinter) || "tmu220".equals(sMachinePrinter) || "star".equals(sMachinePrinter) || "ithaca".equals(sMachinePrinter) || "surepos".equals(sMachinePrinter)) {
@@ -595,6 +598,7 @@ public class JPanelConfigGeneral extends PanelConfig {
         this.jcbShowTitlebar = this.addCheckBoxParam("label.showtitlebar");
         this.jcbShowFooterbar = this.addCheckBoxParam("label.showfooterbar");
         this.jcbAutoHideMenu = this.addCheckBoxParam("label.autohidemenu");
+        this.jcbShowBarcode = this.addCheckBoxParam("label.showBarcode");
         this.jcboTicketsBag = this.addComboBoxParam("Label.Ticketsbag");
         this.jcboMarginType = this.addComboBoxParam("Label.MarginType");
         this.jcboMachineDisplay = this.addComboBoxParam("Label.MachineDisplay");
@@ -1053,6 +1057,7 @@ public class JPanelConfigGeneral extends PanelConfig {
     private javax.swing.JCheckBox jcbShowTitlebar;
     private javax.swing.JCheckBox jcbShowFooterbar;
     private javax.swing.JTextField jtxtScreenDensity;
+    private javax.swing.JCheckBox jcbShowBarcode;
     private javax.swing.JCheckBox jcbAutoHideMenu;
     private javax.swing.JComboBox jcboMarginType;
     private javax.swing.JCheckBox jcbAutoPrint;

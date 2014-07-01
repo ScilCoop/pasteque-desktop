@@ -1042,8 +1042,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     Toolkit.getDefaultToolkit().beep();
                 }
 
-                // Scale button pressed and a number typed as a price
-            } else if (entered == keySection
+               // Scale button pressed and a number typed as a price
+            } /*else if (entered == keySection
                     && m_PriceActualState != N_NOTHING && m_PriceActualState != N_ZERO && m_PriceActualState != N_DECIMALZERO
                     && m_QuantityActualState == N_NOTHING) {
                 if (m_App.getDeviceScale().existsScale() && m_App.getAppUserView().getUser().hasPermission("sales.EditLines")) {
@@ -1089,7 +1089,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                     // No existe la balanza;
                     Toolkit.getDefaultToolkit().beep();
                 }
-            }
+            }*/
         }
     }
 
@@ -1678,8 +1678,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
-        
-        java.awt.GridBagConstraints gridBagConstraints;
+ 
 
         JPanel m_jPanContainer = new JPanel(); // The main container
         m_jButtonsExt = new JPanel();
@@ -1723,6 +1722,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Input
         // Footer
 
+        ///////////////
         // Brand header
         ///////////////
         JPanel brandHeader = new JPanel();
@@ -1751,25 +1751,26 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.fill = GridBagConstraints.HORIZONTAL;
         m_jPanContainer.add(brandHeader, cstr);
 
+        //////////////////////
         // Ticket info/buttons
         //////////////////////
         JPanel ticketHeader = new JPanel();
         ticketHeader.setLayout(new GridBagLayout());
         // Ticket id
         m_jTicketId = WidgetsBuilder.createLabel();
-        m_jTicketId.setBackground(java.awt.Color.white);
         m_jTicketId.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        m_jTicketId.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jTicketId.setOpaque(true);
+        
+        //m_jTicketId.setOpaque(true);
+        m_jTicketId.setFont(new Font(Font.DIALOG, Font.BOLD , 25));
         m_jTicketId.setPreferredSize(new java.awt.Dimension(160, 25));
         m_jTicketId.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridy = 0;
         cstr.weightx = 1.0;
-        cstr.fill = GridBagConstraints.NONE;
+        cstr.gridy=0;
         ticketHeader.add(m_jTicketId, cstr);
         // Customer button
-        btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"), AppLocal.getIntString("Button.btnCustomer.toolTip"));
+        btnCustomer = WidgetsBuilder.createButtonTooltip(ImageLoader.readImageIcon("tkt_assign_customer.png"), 
+        		AppLocal.getIntString("Button.btnCustomer.toolTip"),WidgetsBuilder.SIZE_BIG);
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setRequestFocusEnabled(false);
@@ -1779,25 +1780,15 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             }
         });
         cstr = new GridBagConstraints();
-        cstr.gridy = 0;
+        cstr.gridx = 1;
+        cstr.gridy=0;
         cstr.insets = new Insets(0, btnspacing, 0, btnspacing);
         ticketHeader.add(btnCustomer, cstr);
-        // Ticket discount
-        btnTicketDiscount = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_discount.png"), AppLocal.getIntString("Button.btnTicketDiscount.toolTip"));
-        btnTicketDiscount.setFocusPainted(false);
-        btnTicketDiscount.setFocusable(false);
-        btnTicketDiscount.setRequestFocusEnabled(false);
-        btnTicketDiscount.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnTicketDiscountActionPerformed(evt);
-            }
-        });
-        cstr = new GridBagConstraints();
-        cstr.gridy = 0;
-        cstr.insets = new Insets(0, 0, 0, btnspacing);
-        ticketHeader.add(btnTicketDiscount, cstr);
+
         // Split button
-        btnSplit = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_split.png"),AppLocal.getIntString("Button.btnSplit.toolTip"));
+        btnSplit = WidgetsBuilder.createButtonTooltip(ImageLoader.readImageIcon("tkt_split.png"),
+        		AppLocal.getIntString("Button.btnSplit.toolTip"),WidgetsBuilder.SIZE_BIG);
+        btnSplit.setMargin(new Insets(0,0,0,5));
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
         btnSplit.setRequestFocusEnabled(false);
@@ -1806,28 +1797,28 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
                 btnSplitActionPerformed(evt);
             }
         });
-        cstr = new GridBagConstraints();
-        cstr.gridy = 0;
+        cstr.gridx++;
         ticketHeader.add(btnSplit, cstr);
         // Ticket bag extra buttons
-        cstr = new GridBagConstraints();
-        cstr.gridy = 0;
+        cstr.gridx++;
         ticketHeader.add(m_jPanelBag, cstr);
         // Script extra buttons
-        cstr = new GridBagConstraints();
-        cstr.gridy = 0;
+        cstr.gridx++;
         ticketHeader.add(m_jButtonsExt, cstr);
         // Add container
         cstr = new GridBagConstraints();
-        cstr.gridx = 0;
+        cstr.gridy = 1;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         m_jPanContainer.add(ticketHeader, cstr);        
         
+        ////////////
         // Main zone
         ////////////
         JPanel mainZone = new JPanel();
         mainZone.setLayout(new GridBagLayout());
+        
         // Catalog
+        //////////
         catcontainer.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         catcontainer.setLayout(new java.awt.BorderLayout());
         cstr = new GridBagConstraints();
@@ -1838,9 +1829,12 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.BOTH;
         mainZone.add(catcontainer, cstr);
+        
         // Ticket zone
+        //////////////
         JPanel ticketZone = new JPanel();
         ticketZone.setLayout(new GridBagLayout());
+        
         // Tariff area
         m_jTariff.setFocusable(false);
         m_jTariff.setRequestFocusEnabled(false);
@@ -1857,6 +1851,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.insets = new Insets(btnspacing, btnspacing,
                 btnspacing, btnspacing);
         ticketZone.add(m_jTariff, cstr);
+        
         // Ticket lines
         m_ticketlines = new JTicketLines();
         m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -1871,8 +1866,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         JPanel lineEditBtns = new JPanel();
         lineEditBtns.setLayout(new GridBagLayout());
         // Up/down buttons
-        if (cfg == null
-                || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
+        //if (cfg == null
+        // //       || cfg.getProperty("ui.showupdownbuttons").equals("1")) {
             m_jUp.setFocusPainted(false);
             m_jUp.setFocusable(false);
             m_jUp.setRequestFocusEnabled(false);
@@ -1897,7 +1892,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
             cstr.gridx = 0;
             cstr.insets = new Insets(0, 0, btnspacing, btnspacing);
             lineEditBtns.add(m_jDown, cstr);
-        }
+     //   }
         // Delete line
         m_jDelete.setFocusPainted(false);
         m_jDelete.setFocusable(false);
@@ -1972,22 +1967,40 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.weighty = 1.0;
         cstr.fill = GridBagConstraints.VERTICAL;
         ticketZone.add(lineEditBtns, cstr);
+        
         // Total zone
+        /////////////
         JPanel totalZone = new JPanel();
         totalZone.setLayout(new GridBagLayout());
+        // Ticket discount
+        btnTicketDiscount = WidgetsBuilder.createButtonTooltip(ImageLoader.readImageIcon("tkt_discount.png"),
+        		AppLocal.getIntString("Button.btnTicketDiscount.toolTip"),WidgetsBuilder.SIZE_BIG);
+        btnTicketDiscount.setFocusPainted(false);
+        btnTicketDiscount.setFocusable(false);
+        btnTicketDiscount.setRequestFocusEnabled(false);
+        btnTicketDiscount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTicketDiscountActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridheight = 3;
+        cstr.insets = new Insets(0, 0, 0, btnspacing);
+        cstr.fill = GridBagConstraints.BOTH;
+        totalZone.add(btnTicketDiscount, cstr);
         // Discount
         this.discountLabel.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
+        cstr.gridx = 2;
+        cstr.gridy = 2;
         cstr.anchor = GridBagConstraints.CENTER;
         cstr.fill = GridBagConstraints.HORIZONTAL;
         totalZone.add(this.discountLabel, cstr);
         // Total
         m_jTotalEuros.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 0;
+        cstr.gridx = 2;
+        cstr.gridy = 1;
         cstr.anchor = GridBagConstraints.FIRST_LINE_END;
         cstr.weightx = 1.0;
         //cstr.fill = GridBagConstraints.HORIZONTAL;
@@ -1995,8 +2008,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Subtotal and total (label and amount)
         this.subtotalLabel.setRequestFocusEnabled(false);
         cstr = new GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 1;
+        cstr.gridx = 1;
+        cstr.gridy = 0;
         cstr.gridwidth = 2;
         cstr.weightx = 1.0;
         cstr.anchor = GridBagConstraints.FIRST_LINE_END;
@@ -2017,56 +2030,59 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.weighty = 1.0;
         mainZone.add(ticketZone, cstr);
         // Barcode and manual input zone
-        JPanel barcodeZone = new JPanel();
-        barcodeZone.setLayout(new GridBagLayout());
-        m_jPrice.setBackground(java.awt.Color.white);
-        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPrice.setOpaque(true);
-        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
-        m_jPrice.setRequestFocusEnabled(false);
-        cstr = new java.awt.GridBagConstraints();
-        cstr.gridx = 0;
-        cstr.gridy = 0;
-        cstr.gridwidth = 2;
-        cstr.insets = new Insets(btnspacing, btnspacing, btnspacing, btnspacing);
-        cstr.fill = java.awt.GridBagConstraints.BOTH;
-        cstr.weightx = 1.0;
-        cstr.weighty = 1.0;
-        barcodeZone.add(m_jPrice, cstr);
-        m_jPor.setBackground(java.awt.Color.white);
-        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
-        m_jPor.setOpaque(true);
-        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
-        m_jPor.setRequestFocusEnabled(false);
-        cstr = new java.awt.GridBagConstraints();
-        cstr.gridx = 2;
-        cstr.gridy = 0;
-        cstr.fill = java.awt.GridBagConstraints.BOTH;
-        cstr.weightx = 1.0;
-        cstr.weighty = 1.0;
-        cstr.insets = new java.awt.Insets(btnspacing, 0, btnspacing, 0);
-        barcodeZone.add(m_jPor, cstr);
-        m_jEnter.setFocusPainted(false);
-        m_jEnter.setFocusable(false);
-        m_jEnter.setRequestFocusEnabled(false);
-        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jEnterActionPerformed(evt);
-            }
-        });
-        cstr = new java.awt.GridBagConstraints();
-        cstr.gridx = 3;
-        cstr.gridy = 0;
-        cstr.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        barcodeZone.add(m_jEnter, cstr);
-        cstr = new GridBagConstraints();
-        cstr.gridx = 1;
-        cstr.gridy = 1;
-        cstr.fill = GridBagConstraints.HORIZONTAL;
-        mainZone.add(barcodeZone, cstr);
+        if (cfg == null
+                       || cfg.getProperty("ui.showbarcode").equals("1")) { 
+	        JPanel barcodeZone = new JPanel();
+	        barcodeZone.setLayout(new GridBagLayout());
+	        m_jPrice.setBackground(java.awt.Color.white);
+	        m_jPrice.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+	        m_jPrice.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+	        m_jPrice.setOpaque(true);
+	        m_jPrice.setPreferredSize(new java.awt.Dimension(100, 22));
+	        m_jPrice.setRequestFocusEnabled(false);
+	        cstr = new java.awt.GridBagConstraints();
+	        cstr.gridx = 0;
+	        cstr.gridy = 0;
+	        cstr.gridwidth = 2;
+	        cstr.insets = new Insets(btnspacing, btnspacing, btnspacing, btnspacing);
+	        cstr.fill = java.awt.GridBagConstraints.BOTH;
+	        cstr.weightx = 1.0;
+	        cstr.weighty = 1.0;
+	        barcodeZone.add(m_jPrice, cstr);
+	        m_jPor.setBackground(java.awt.Color.white);
+	        m_jPor.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+	        m_jPor.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
+	        m_jPor.setOpaque(true);
+	        m_jPor.setPreferredSize(new java.awt.Dimension(22, 22));
+	        m_jPor.setRequestFocusEnabled(false);
+	        cstr = new java.awt.GridBagConstraints();
+	        cstr.gridx = 2;
+	        cstr.gridy = 0;
+	        cstr.fill = java.awt.GridBagConstraints.BOTH;
+	        cstr.weightx = 1.0;
+	        cstr.weighty = 1.0;
+	        cstr.insets = new java.awt.Insets(btnspacing, 0, btnspacing, 0);
+	        barcodeZone.add(m_jPor, cstr);
+	        m_jEnter.setFocusPainted(false);
+	        m_jEnter.setFocusable(false);
+	        m_jEnter.setRequestFocusEnabled(false);
+	        m_jEnter.addActionListener(new java.awt.event.ActionListener() {
+	            public void actionPerformed(java.awt.event.ActionEvent evt) {
+	                m_jEnterActionPerformed(evt);
+	            }
+	        });
+	        cstr = new java.awt.GridBagConstraints();
+	        cstr.gridx = 3;
+	        cstr.gridy = 0;
+	        cstr.insets = new java.awt.Insets(btnspacing, btnspacing,
+	                btnspacing, btnspacing);
+	        barcodeZone.add(m_jEnter, cstr);
+	        cstr = new GridBagConstraints();
+	        cstr.gridx = 1;
+	        cstr.gridy = 1;
+	        cstr.fill = GridBagConstraints.HORIZONTAL;
+	        mainZone.add(barcodeZone, cstr);
+        }
         // Numpad zone
         JPanel numpadZone = new JPanel();
         numpadZone.setLayout(new GridBagLayout());
@@ -2087,6 +2103,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.fill = GridBagConstraints.BOTH;
         m_jPanContainer.add(mainZone, cstr);
 
+        //////////////
         // Footer line
         //////////////
 
@@ -2096,28 +2113,28 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         m_jTax.setFocusable(false);
         m_jTax.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        jPanel9.add(m_jTax, gridBagConstraints);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 0;
+        cstr.gridy = 1;
+        cstr.gridwidth = 2;
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.insets = new java.awt.Insets(5, 0, 0, 0);
+        jPanel9.add(m_jTax, cstr);
 
         m_jaddtax.setText("+");
         m_jaddtax.setFocusPainted(false);
         m_jaddtax.setFocusable(false);
         m_jaddtax.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        jPanel9.add(m_jaddtax, gridBagConstraints);
+        cstr = new java.awt.GridBagConstraints();
+        cstr.gridx = 2;
+        cstr.gridy = 1;
+        cstr.fill = java.awt.GridBagConstraints.BOTH;
+        cstr.weightx = 1.0;
+        cstr.weighty = 1.0;
+        cstr.insets = new java.awt.Insets(5, 5, 0, 0);
+        jPanel9.add(m_jaddtax, cstr);
 
         jPanel9.setMaximumSize(new java.awt.Dimension(m_jNumberKeys.getMaximumSize().width, jPanel9.getPreferredSize().height));
         m_jPanEntries.add(jPanel9);
