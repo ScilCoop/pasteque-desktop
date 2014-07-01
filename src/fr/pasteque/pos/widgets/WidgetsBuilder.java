@@ -52,6 +52,10 @@ public class WidgetsBuilder {
         return WidgetsBuilder.createButton(null, text, SIZE_MEDIUM);
     }
     
+    public static JButton createButton(String text, int size) {
+        return WidgetsBuilder.createButton(null, text, size);
+    }
+    
     public static JButton createButton(ImageIcon icon, int size) {
         JButton btn = new JButton();
         btn.setIcon(icon);
@@ -73,12 +77,22 @@ public class WidgetsBuilder {
      * @return  this modified button
      */
      public static JButton createButton(ImageIcon icon, String toolTipText) {
-        JButton btn = new JButton();
-        btn.setIcon(icon);
-        btn.setToolTipText(toolTipText);
-        WidgetsBuilder.adaptSize(btn, SIZE_MEDIUM);
-        return btn;
+        return createButtonTooltip(icon, toolTipText, SIZE_MEDIUM);
     }
+     
+     /**Creates a button with choosen size, icon and tooltiptext
+      * @param icon  Button's icon
+      * @param tooltiptext  Button's tooltiptext
+      * @param size Button's size
+      * @return  this modified button
+      */
+      public static JButton createButtonTooltip(ImageIcon icon, String toolTipText, int size) {
+         JButton btn = new JButton();
+         btn.setIcon(icon);
+         btn.setToolTipText(toolTipText);
+         WidgetsBuilder.adaptSize(btn, size);
+         return btn;
+      }
     
     public static void adaptSize(Component widget, int size) {
         AppConfig cfg = AppConfig.loadedInstance;

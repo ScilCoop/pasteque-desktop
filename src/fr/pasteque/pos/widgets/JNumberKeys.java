@@ -22,7 +22,15 @@
 package fr.pasteque.pos.widgets;
 
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.util.*;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+
 import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.pos.forms.AppConfig;
 
@@ -32,6 +40,9 @@ public class JNumberKeys extends javax.swing.JPanel {
     
     private boolean minusenabled = true;
     private boolean equalsenabled = true;
+    
+    private GridBagConstraints gbc= new GridBagConstraints();
+    private GridBagLayout layout = new java.awt.GridBagLayout();
     
     /** Creates new form JNumberKeys */
     public JNumberKeys() {
@@ -140,10 +151,15 @@ public class JNumberKeys extends javax.swing.JPanel {
         }
     }
 
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
-        java.awt.GridBagConstraints gridBagConstraints;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing"))) / 2;
+        gbc.insets = new java.awt.Insets(btnspacing, btnspacing,
+                btnspacing, btnspacing);
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx= 1.0;
+        gbc.weighty= 1.0;
 
         m_jBack = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_back.png"), WidgetsBuilder.SIZE_BIG);
         m_jCE = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_ce.png"), WidgetsBuilder.SIZE_BIG);
@@ -161,254 +177,61 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jKey1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_1.png"), WidgetsBuilder.SIZE_BIG);
         m_jKey0 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_0.png"), WidgetsBuilder.SIZE_BIG);
         m_jKeyDot = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_dot.png"), WidgetsBuilder.SIZE_BIG);
-        m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_enter.png"), WidgetsBuilder.SIZE_BIG);
+        m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("encaisser.png"), WidgetsBuilder.SIZE_BIG);
 
-        setLayout(new java.awt.GridBagLayout());
+        setLayout(layout);
+        
+        gbc.gridx=0;
+        addButton(m_jKey7, 0);
+        addButton(m_jKey4, 1);
+        addButton(m_jKey1, 2);
+        addButton(m_jKey0, 3);
+        
+        gbc.gridx=1;
+        addButton(m_jKey8, 0);
+        addButton(m_jKey5, 1);
+        addButton(m_jKey2, 2);
+        addButton(m_jKeyDot, 3);
+        
+        gbc.gridx=2;
+        addButton(m_jKey9, 0);
+        addButton(m_jKey6, 1);
+        addButton(m_jKey3, 2);
+        addButton(m_jBack, 3);
+        
+        gbc.gridx=3;
+        addButton(m_jPlus, 0);
+        addButton(m_jMultiply, 1);
 
-        setBorder(new javax.swing.border.EmptyBorder(new java.awt.Insets(5, 5, 5, 5)));
-        m_jCE.setFocusPainted(false);
-        m_jCE.setFocusable(false);
-        m_jCE.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jCE.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jCE, gridBagConstraints);
+        gbc.gridx=4;
+        addButton(m_jMinus, 0);
+        addButton(m_jCE, 1);
 
-        m_jBack.setFocusPainted(false);
-        m_jBack.setFocusable(false);
-        m_jBack.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jBack.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jBack, gridBagConstraints);
-
-        m_jMultiply.setFocusPainted(false);
-        m_jMultiply.setFocusable(false);
-        m_jMultiply.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jMultiply.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jMultiply, gridBagConstraints);
-
-        m_jMinus.setFocusPainted(false);
-        m_jMinus.setFocusable(false);
-        m_jMinus.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jMinus.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 4;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jMinus, gridBagConstraints);
-
-        m_jPlus.setFocusPainted(false);
-        m_jPlus.setFocusable(false);
-        m_jPlus.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jPlus.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jPlus, gridBagConstraints);
-
-        m_jKey9.setFocusPainted(false);
-        m_jKey9.setFocusable(false);
-        m_jKey9.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey9.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey9, gridBagConstraints);
-
-        m_jKey8.setFocusPainted(false);
-        m_jKey8.setFocusable(false);
-        m_jKey8.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey8.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey8, gridBagConstraints);
-
-        m_jKey7.setFocusPainted(false);
-        m_jKey7.setFocusable(false);
-        m_jKey7.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey7.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey7, gridBagConstraints);
-
-        m_jKey4.setFocusPainted(false);
-        m_jKey4.setFocusable(false);
-        m_jKey4.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey4.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey4, gridBagConstraints);
-
-        m_jKey5.setFocusPainted(false);
-        m_jKey5.setFocusable(false);
-        m_jKey5.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey5.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey5, gridBagConstraints);
-
-        m_jKey6.setFocusPainted(false);
-        m_jKey6.setFocusable(false);
-        m_jKey6.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey6.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey6, gridBagConstraints);
-
-        m_jKey3.setFocusPainted(false);
-        m_jKey3.setFocusable(false);
-        m_jKey3.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey3.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey3, gridBagConstraints);
-
-        m_jKey2.setFocusPainted(false);
-        m_jKey2.setFocusable(false);
-        m_jKey2.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey2.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey2, gridBagConstraints);
-
-        m_jKey1.setFocusPainted(false);
-        m_jKey1.setFocusable(false);
-        m_jKey1.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey1.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey1, gridBagConstraints);
-
-        m_jKey0.setFocusPainted(false);
-        m_jKey0.setFocusable(false);
-        m_jKey0.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKey0.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKey0, gridBagConstraints);
-
-        m_jKeyDot.setFocusPainted(false);
-        m_jKeyDot.setFocusable(false);
-        m_jKeyDot.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jKeyDot.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jKeyDot, gridBagConstraints);
-
-        m_jEquals.setFocusPainted(false);
-        m_jEquals.setFocusable(false);
-        m_jEquals.setMargin(new java.awt.Insets(8, 16, 8, 16));
-        m_jEquals.setRequestFocusEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(btnspacing, btnspacing,
-                btnspacing, btnspacing);
-        add(m_jEquals, gridBagConstraints);
+        gbc.gridx=3;
+        gbc.gridheight=2;
+        gbc.gridwidth=2;
+        gbc.weightx = 2.0;
+        gbc.weighty = 2.0;
+        addButton(m_jEquals, 2);
+        
         
         // Force maximum size to preferred to avoid keyboard from stretching
         // in dynamic layouts
+        
+        
         this.setMaximumSize(this.getPreferredSize());
+    }
+    
+    /** add Button */
+    private void addButton(JButton button, int ligne){
+    	button.setFocusPainted(false);
+        button.setFocusable(false);
+        button.setMargin(new java.awt.Insets(8, 16, 8, 16));
+        button.setRequestFocusEnabled(false);
+        button.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+        gbc.gridy = ligne;
+        layout.setConstraints(button, gbc);
+        add(button);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
