@@ -108,7 +108,16 @@ public class JRootApp extends JPanel implements AppView {
         DataLogicCustomers dlCust = new DataLogicCustomers();
         
         // Check database compatibility
-        String sDBVersion = readDataBaseVersion();
+        String sDBVersion = null;
+        try {
+            sDBVersion = readDataBaseVersion();
+        } catch (BasicException e) {
+
+        }
+        if (sDBVersion == null) {
+            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, AppLocal.getIntString("message.serverconnectionerror")));
+            return false;
+        }
         while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
             // TODO: i18n
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatbile version", "Server version " + sDBVersion + ", expected " + AppLocal.DB_VERSION));
@@ -218,12 +227,8 @@ public class JRootApp extends JPanel implements AppView {
         return true;
     }
     
-    private String readDataBaseVersion() {
-        try {
-            return m_dlSystem.findDbVersion();
-        } catch (BasicException ed) {
-            return null;
-        }
+    private String readDataBaseVersion() throws BasicException {
+        return m_dlSystem.findDbVersion();
     }
     
     public void tryToClose() {   
