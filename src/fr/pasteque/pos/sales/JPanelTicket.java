@@ -1987,7 +1987,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr = new GridBagConstraints();
         cstr.gridheight = 3;
         cstr.insets = new Insets(0, 0, 0, btnspacing);
-        cstr.fill = GridBagConstraints.BOTH;
+        cstr.anchor = GridBagConstraints.SOUTH;
         totalZone.add(btnTicketDiscount, cstr);
         // Discount
         this.discountLabel.setRequestFocusEnabled(false);
