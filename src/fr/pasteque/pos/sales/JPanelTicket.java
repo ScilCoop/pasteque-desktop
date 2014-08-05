@@ -2167,7 +2167,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.gridy = 1;
         cstr.weightx = 1.0;
         cstr.fill = GridBagConstraints.HORIZONTAL;
-        //m_jPanContainer.add(m_jInputContainer, cstr);
+        m_jPanContainer.add(m_jInputContainer, cstr);
 
         this.add(m_jPanContainer, "ticket");
     }
