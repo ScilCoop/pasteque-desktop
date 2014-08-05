@@ -37,17 +37,14 @@ import fr.pasteque.pos.forms.AppConfig;
 public class JNumberKeys extends javax.swing.JPanel {
 
     private Vector m_Listeners = new Vector();
-    
+
     private boolean minusenabled = true;
     private boolean equalsenabled = true;
-    
-    private GridBagConstraints gbc= new GridBagConstraints();
-    private GridBagLayout layout = new java.awt.GridBagLayout();
-    
+
     /** Creates new form JNumberKeys */
     public JNumberKeys() {
         initComponents ();
-        
+
         m_jKey0.addActionListener(new MyKeyNumberListener('0'));
         m_jKey1.addActionListener(new MyKeyNumberListener('1'));
         m_jKey2.addActionListener(new MyKeyNumberListener('2'));
@@ -73,11 +70,11 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jPlus.setVisible(value);
         m_jMultiply.setVisible(value);
     }
-    
+
     @Override
     public void setEnabled(boolean b) {
         super.setEnabled(b);
-        
+
         m_jKey0.setEnabled(b);
         m_jKey1.setEnabled(b);
         m_jKey2.setEnabled(b);
@@ -96,54 +93,54 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jEquals.setEnabled(equalsenabled && b);
         m_jBack.setEnabled(b);
     }
-    
+
     @Override
     public void setComponentOrientation(ComponentOrientation o) {
         // Nothing to change
     }
-    
+
     public void setMinusEnabled(boolean b) {
         minusenabled = b;
         m_jMinus.setEnabled(minusenabled && isEnabled());
     }
-    
+
     public boolean isMinusEnabled() {
         return minusenabled;
     }
-    
+
     public void setEqualsEnabled(boolean b) {
         equalsenabled = b;
         m_jEquals.setEnabled(equalsenabled && isEnabled());
     }
-    
+
     public boolean isEqualsEnabled() {
         return equalsenabled;
     }
 
-    
+
     public boolean isNumbersOnly() {
         return m_jEquals.isVisible();
     }
-    
+
     public void addJNumberEventListener(JNumberEventListener listener) {
         m_Listeners.add(listener);
     }
     public void removeJNumberEventListener(JNumberEventListener listener) {
         m_Listeners.remove(listener);
     }
-    
+
     private class MyKeyNumberListener implements java.awt.event.ActionListener {
-        
+
         private char m_cCad;
-        
+
         public MyKeyNumberListener(char cCad){
             m_cCad = cCad;
         }
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-           
-            JNumberEvent oEv = new JNumberEvent(JNumberKeys.this, m_cCad);            
+
+            JNumberEvent oEv = new JNumberEvent(JNumberKeys.this, m_cCad);
             JNumberEventListener oListener;
-            
+
             for (Enumeration e = m_Listeners.elements(); e.hasMoreElements();) {
                 oListener = (JNumberEventListener) e.nextElement();
                 oListener.keyPerformed(oEv);
@@ -155,6 +152,8 @@ public class JNumberKeys extends javax.swing.JPanel {
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnspacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing"))) / 2;
+        GridBagConstraints gbc = new GridBagConstraints();
+
         gbc.insets = new java.awt.Insets(btnspacing, btnspacing,
                 btnspacing, btnspacing);
         gbc.fill = GridBagConstraints.BOTH;
@@ -179,59 +178,54 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jKeyDot = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_dot.png"), WidgetsBuilder.SIZE_BIG);
         m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("encaisser.png"), WidgetsBuilder.SIZE_BIG);
 
-        setLayout(layout);
-        
-        gbc.gridx=0;
-        addButton(m_jKey7, 0);
-        addButton(m_jKey4, 1);
-        addButton(m_jKey1, 2);
-        addButton(m_jKey0, 3);
-        
-        gbc.gridx=1;
-        addButton(m_jKey8, 0);
-        addButton(m_jKey5, 1);
-        addButton(m_jKey2, 2);
-        addButton(m_jKeyDot, 3);
-        
-        gbc.gridx=2;
-        addButton(m_jKey9, 0);
-        addButton(m_jKey6, 1);
-        addButton(m_jKey3, 2);
-        addButton(m_jBack, 3);
-        
-        gbc.gridx=3;
-        addButton(m_jPlus, 0);
-        addButton(m_jMultiply, 1);
+        this.setLayout(new java.awt.GridBagLayout());
 
-        gbc.gridx=4;
-        addButton(m_jMinus, 0);
-        addButton(m_jCE, 1);
+        this.addButton(m_jKey7, 0, 0, gbc);
+        this.addButton(m_jKey4, 0, 1, gbc);
+        this.addButton(m_jKey1, 0, 2, gbc);
+        this.addButton(m_jKey0, 0, 3, gbc);
 
-        gbc.gridx=3;
+        this.addButton(m_jKey8, 1, 0, gbc);
+        this.addButton(m_jKey5, 1, 1, gbc);
+        this.addButton(m_jKey2, 1, 2, gbc);
+        this.addButton(m_jKeyDot, 1, 3, gbc);
+
+        this.addButton(m_jKey9, 2, 0, gbc);
+        this.addButton(m_jKey6, 2, 1, gbc);
+        this.addButton(m_jKey3, 2, 2, gbc);
+        this.addButton(m_jBack, 2, 3, gbc);
+
+        this.addButton(m_jPlus, 3, 0, gbc);
+        this.addButton(m_jMultiply, 3, 1, gbc);
+
+        this.addButton(m_jMinus, 4, 0, gbc);
+        this.addButton(m_jCE, 4, 1, gbc);
+
         gbc.gridheight=2;
         gbc.gridwidth=2;
         gbc.weightx = 2.0;
         gbc.weighty = 2.0;
-        addButton(m_jEquals, 2);
-        
-        
+        this.addButton(m_jEquals, 3, 2, gbc);
+
+
         // Force maximum size to preferred to avoid keyboard from stretching
         // in dynamic layouts
-        
-        
+
+
         this.setMaximumSize(this.getPreferredSize());
     }
-    
-    /** add Button */
-    private void addButton(JButton button, int ligne){
+
+    /** Add button. gbc is used as template but will be updated with x and y */
+    private void addButton(JButton button, int x, int y,
+            GridBagConstraints gbc){
     	button.setFocusPainted(false);
         button.setFocusable(false);
         button.setMargin(new java.awt.Insets(8, 16, 8, 16));
         button.setRequestFocusEnabled(false);
         button.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
-        gbc.gridy = ligne;
-        layout.setConstraints(button, gbc);
-        add(button);
+        gbc.gridy = y;
+        gbc.gridx = x;
+        this.add(button, gbc);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
