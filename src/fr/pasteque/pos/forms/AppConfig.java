@@ -40,6 +40,11 @@ public class AppConfig implements AppProperties {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.AppConfig");
 
+    private static final String DEFAULT_SERVER = "https://my.pasteque.coop";
+    private static final String DEMO_USER = "demo";
+    private static final String DEMO_PASSWORD = "demo";
+    private static final String DEFAULT_MACHINE = "Caisse";
+
     private static final String DEFAULT_DIR = System.getProperty("user.home")
             + "/." + AppLocal.APP_ID;
     public static AppConfig loadedInstance;
@@ -117,14 +122,6 @@ public class AppConfig implements AppProperties {
             m_propsconfig.remove(sKey);
         } else {
             m_propsconfig.setProperty(sKey, sValue);
-        }
-    }
-
-    private String getLocalHostName() {
-        try {
-            return java.net.InetAddress.getLocalHost().getHostName();
-        } catch (java.net.UnknownHostException eUH) {
-            return "localhost";
         }
     }
 
@@ -219,10 +216,6 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
         DEFAULT_VALUES.put("prices.roundto", "0");
-        DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/"
-                + AppLocal.DB_VERSION);
-        DEFAULT_VALUES.put("db.user", "demo");
-        DEFAULT_VALUES.put("db.password", "demo");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
         DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
     }
@@ -235,8 +228,6 @@ public class AppConfig implements AppProperties {
         m_propsconfig = new Properties();
         String dirname = System.getProperty("dirname.path");
         dirname = dirname == null ? "./" : dirname;
-
-        m_propsconfig.setProperty("machine.hostname", getLocalHostName());
 
         Locale l = Locale.getDefault();
         m_propsconfig.setProperty("user.language", l.getLanguage());
@@ -286,5 +277,12 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("ui.autohidemenu", "1");
         m_propsconfig.setProperty("ui.countmoney", "1");
         m_propsconfig.setProperty("ui.showbarcode", "1");
+
+        // Server stuff
+        m_propsconfig.setProperty("server.backoffice",
+                DEFAULT_SERVER + "/" + AppLocal.DB_VERSION);
+        m_propsconfig.setProperty("db.user", DEMO_USER);
+        m_propsconfig.setProperty("db.password", DEMO_PASSWORD);
+        m_propsconfig.setProperty("machine.hostname", DEFAULT_MACHINE);
     }
 }
