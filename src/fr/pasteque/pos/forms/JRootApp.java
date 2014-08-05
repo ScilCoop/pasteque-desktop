@@ -535,7 +535,10 @@ public class JRootApp extends JPanel implements AppView {
         
         // Show Login
         listPeople();
-        showView("login");     
+        boolean demo = AppConfig.loadedInstance.isDemo();
+        this.demoNotice.setVisible(demo);
+        this.createAccount.setVisible(demo);
+        showView("login");
 
         // show welcome message
         printerStart();
@@ -584,6 +587,9 @@ public class JRootApp extends JPanel implements AppView {
         m_jPanelContainer = new javax.swing.JPanel();
         m_jPanelLogin = new javax.swing.JPanel();
         postechLogo = new javax.swing.JLabel();
+        demoNotice = WidgetsBuilder.createLabel();
+        demoNotice.setText(AppLocal.getIntString("Label.DemoNotice"));
+        createAccount = WidgetsBuilder.createButton(AppLocal.getIntString("Button.CreateAccount"), WidgetsBuilder.SIZE_MEDIUM);
         m_jLogonName = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel2 = new javax.swing.JPanel();
@@ -616,6 +622,20 @@ public class JRootApp extends JPanel implements AppView {
         c.gridy = 0;
         c.weighty = 3;
         m_jPanelLogin.add(postechLogo, c);
+        // Demo notice
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 1;
+        m_jPanelLogin.add(demoNotice, c);
+        c.gridy = 2;
+        c.insets = new Insets(10, 10, 10, 10);
+        m_jPanelLogin.add(createAccount, c);
+        createAccount.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createAccountActionPerformed(evt);
+            }
+        });
+
         // Login frame
         m_jLogonName.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         m_jLogonName.setLayout(new java.awt.BorderLayout());
@@ -655,7 +675,7 @@ public class JRootApp extends JPanel implements AppView {
         m_jLogonName.add(jPanel2, java.awt.BorderLayout.LINE_END);
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 1;
+        c.gridy = 3;
         c.weighty = 1;
         c.anchor = GridBagConstraints.SOUTH;
         m_jPanelLogin.add(m_jLogonName, c);
@@ -670,7 +690,7 @@ public class JRootApp extends JPanel implements AppView {
         });
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 4;
         c.weighty = 0.1;
         c.weightx = 1;
         int versionInset = WidgetsBuilder.dipToPx(5);
@@ -684,6 +704,18 @@ public class JRootApp extends JPanel implements AppView {
 
     private void m_jCloseActionPerformed(java.awt.event.ActionEvent evt) {
         tryToClose();
+    }
+
+    private void createAccountActionPerformed(java.awt.event.ActionEvent evt) {
+        if (Desktop.isDesktopSupported()) {
+            try {
+                Desktop.getDesktop().browse(new java.net.URI(AppLocal.getIntString("Button.CreateAccountURL")));
+            } catch (Exception e) {
+                /* TODO: error handling */
+            }
+        } else {
+            /* TODO: error handling */
+        }
     }
 
     private void aboutActionPerformed(java.awt.event.ActionEvent evt) {
@@ -790,6 +822,8 @@ public class JRootApp extends JPanel implements AppView {
     }
 
     private javax.swing.JLabel postechLogo;
+    private javax.swing.JLabel demoNotice;
+    private javax.swing.JButton createAccount;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

@@ -94,6 +94,12 @@ public class AppConfig implements AppProperties {
         return prop;
     }
 
+    /** Check if user is using the demo account. */
+    public boolean isDemo() {
+        return this.getProperty("server.backoffice").startsWith(DEFAULT_SERVER)
+                && this.getProperty("db.user").equals(DEMO_USER);
+    }
+
     /** Shortcut to getProperty("users.activated") with parsing.
      * @returns The list of activated user ids or null if all.
      */
