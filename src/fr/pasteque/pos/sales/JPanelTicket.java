@@ -1770,7 +1770,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         ticketHeader.add(m_jTicketId, cstr);
         // Customer button
         btnCustomer = WidgetsBuilder.createButtonTooltip(ImageLoader.readImageIcon("tkt_assign_customer.png"), 
-        		AppLocal.getIntString("Button.btnCustomer.toolTip"),WidgetsBuilder.SIZE_BIG);
+                AppLocal.getIntString("Button.btnCustomer.toolTip"),
+                WidgetsBuilder.SIZE_MEDIUM);
         btnCustomer.setFocusPainted(false);
         btnCustomer.setFocusable(false);
         btnCustomer.setRequestFocusEnabled(false);
@@ -1787,8 +1788,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
 
         // Split button
         btnSplit = WidgetsBuilder.createButtonTooltip(ImageLoader.readImageIcon("tkt_split.png"),
-        		AppLocal.getIntString("Button.btnSplit.toolTip"),WidgetsBuilder.SIZE_BIG);
-        btnSplit.setMargin(new Insets(0,0,0,5));
+                AppLocal.getIntString("Button.btnSplit.toolTip"),
+                WidgetsBuilder.SIZE_MEDIUM);
         btnSplit.setFocusPainted(false);
         btnSplit.setFocusable(false);
         btnSplit.setRequestFocusEnabled(false);
