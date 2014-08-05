@@ -285,6 +285,6 @@ public class AppConfig implements AppProperties {
         m_propsconfig.setProperty("machine.screendensity", "72"); // In pixel per inch
         m_propsconfig.setProperty("ui.autohidemenu", "1");
         m_propsconfig.setProperty("ui.countmoney", "1");
-
+        m_propsconfig.setProperty("ui.showbarcode", "1");
     }
 }
