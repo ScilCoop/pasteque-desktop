@@ -176,7 +176,7 @@ public class JNumberKeys extends javax.swing.JPanel {
         m_jKey1 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_1.png"), WidgetsBuilder.SIZE_BIG);
         m_jKey0 = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_0.png"), WidgetsBuilder.SIZE_BIG);
         m_jKeyDot = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_dot.png"), WidgetsBuilder.SIZE_BIG);
-        m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("kpad_enter.png"), WidgetsBuilder.SIZE_BIG);
+        m_jEquals = WidgetsBuilder.createButton(ImageLoader.readImageIcon("encaisser.png"), WidgetsBuilder.SIZE_BIG);
 
         this.setLayout(new java.awt.GridBagLayout());
 
