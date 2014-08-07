@@ -82,13 +82,14 @@ public class StartPOS {
         ImageIcon splashImage = ImageLoader.readImageIcon("logo.png", locale);
         // Show splash
         final JFrame splash = new JFrame();
+        int splashWidth = 420;
+        int splashHeight = 344;
         splash.setUndecorated(true);
         splash.setResizable(false);
         splash.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        splash.setPreferredSize(new java.awt.Dimension(432, 184));
+        splash.setPreferredSize(new java.awt.Dimension(splashWidth,
+                        splashHeight));
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        int splashWidth = 432;
-        int splashHeight = 184;
         int splashX = (screenSize.width - splashWidth) / 2;
         int splashY = (screenSize.height - splashHeight) / 2;
         splash.setBounds(splashX, splashY, splashWidth, splashHeight);
