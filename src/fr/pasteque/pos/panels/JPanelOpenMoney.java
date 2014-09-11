@@ -298,7 +298,16 @@ implements JPanelView, CoinCountButton.Listener {
         }
         // Send cash to server and update from answer
         try {
-            cashSess = this.dlSystem.saveCashSession(cashSess);
+            CashSession updatedSess = this.dlSystem.saveCashSession(cashSess);
+            // Update id and sequence from received one (cashSess is printed)
+            if (cashSess.getId() == null) {
+                cashSess.setId(updatedSess.getId());
+            }
+            if (cashSess.getSequence() == 0) {
+                cashSess.setSequence(updatedSess.getSequence());
+            }
+            cashSess.setSequence(updatedSess.getSequence());
+            cashSess = updatedSess; // Kills link with m_PaymentsToClose
             this.appView.setActiveCash(cashSess);
             CallQueue.setup(cashSess.getId());
         } catch (BasicException e) {

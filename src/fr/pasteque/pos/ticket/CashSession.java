@@ -107,6 +107,9 @@ public class CashSession {
     public String getId() {
         return this.id;
     }
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public int getCashRegisterId() {
         return this.cashRegisterId;
@@ -114,6 +117,9 @@ public class CashSession {
 
     public int getSequence() {
         return this.sequence;
+    }
+    public void setSequence(int seq) {
+        this.sequence = seq;
     }
 
     public Date getOpenDate() {
