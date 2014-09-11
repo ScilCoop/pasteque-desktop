@@ -71,8 +71,8 @@ import org.json.JSONObject;
 public class DataLogicSales {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.forms.DatalogicSales");
-    private static final String TYPE_CAT = "category";
-    private static final String TYPE_PRD = "product";
+    private static final String TYPE_CAT = "getCat";
+    private static final String TYPE_PRD = "getPrd";
 
     /** Creates a new instance of SentenceContainerGeneric */
     public DataLogicSales() {

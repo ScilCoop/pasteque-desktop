@@ -44,7 +44,6 @@ public class ServerLoader {
     /** Lock to take and release for synchronous/asynchronous call. */
     private Object lock;
     private String url;
-    private String binUrl;
     private String user;
     private String password;
 
@@ -58,20 +57,9 @@ public class ServerLoader {
         this.url += "api.php";
     }
 
-    private void preformatBinUrl() {
-        if (!this.binUrl.startsWith("http")) {
-            this.binUrl = "http://" + this.binUrl;
-        }
-        if (!this.binUrl.endsWith("/")) {
-            this.binUrl += "/";
-        }
-        this.binUrl += "index.php";
-    }
-
     /** Create from AppConfig */
     public ServerLoader() {
         String url = AppConfig.loadedInstance.getProperty("server.backoffice");
-        String binUrl = AppConfig.loadedInstance.getProperty("server.backoffice");
         String user = AppConfig.loadedInstance.getProperty("db.user");
         String password = AppConfig.loadedInstance.getProperty("db.password");
         if (password != null && password.startsWith("crypt:")) {
@@ -81,8 +69,6 @@ public class ServerLoader {
         }
         this.url = url;
         this.preformatUrl();
-        this.binUrl = binUrl;
-        this.preformatBinUrl();
         this.user = user;
         this.password = password;
     }
@@ -108,16 +94,6 @@ public class ServerLoader {
                 ret.put(key, value);
             }
         }
-        return ret;
-    }
-
-    private Map<String, String> binParams(String model, String id) {
-        Map<String, String> ret = new HashMap<String, String>();
-        ret.put("login", this.user);
-        ret.put("password", this.password);
-        ret.put("p", "img");
-        ret.put("w", model);
-        ret.put("id", id);
         return ret;
     }
 
@@ -164,7 +140,12 @@ public class ServerLoader {
     public byte[] readBinary(String model, String id)
         throws SocketTimeoutException, URLBinGetter.ServerException,
                IOException {
-        return URLBinGetter.getBinary(this.binUrl, this.binParams(model, id));
+        logger.log(Level.INFO, "Reading ImagesAPI action " + model
+                + " id " + id);
+        byte[] resp = URLBinGetter.getBinary(this.url,
+                this.params("ImagesAPI", model, "id", id));
+        logger.log(Level.INFO, "Server response length: " + resp.length);
+        return resp;
     }
 
     public class Response {
