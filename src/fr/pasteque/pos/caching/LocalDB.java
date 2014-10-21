@@ -62,7 +62,8 @@ public class LocalDB {
                 conn = DriverManager.getConnection(url, "pasteque", "");
             } catch (ClassNotFoundException e) {
                 // Should never happen
-                e.printStackTrace();
+                logger.log(Level.SEVERE,
+                        "Unable to run local cache database", e);
             }
         }
         return conn;
@@ -143,6 +144,8 @@ public class LocalDB {
                 conn.close();
             } catch (SQLException e) {
                 // Can't we get anything from it...
+                logger.log(Level.SEVERE,
+                        "Cannot close local database connection", e);
                 e.printStackTrace();
             }
             conn = null;

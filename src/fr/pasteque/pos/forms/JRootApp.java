@@ -55,12 +55,16 @@ import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.regex.Matcher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author adrianromero
  */
 public class JRootApp extends JPanel implements AppView {
+
+    private static Logger logger = Logger.getLogger("fr.pasteque.pos.form.JRootApp");
 
     private AppProperties m_props;
     private DataLogicSystem m_dlSystem;
@@ -112,7 +116,7 @@ public class JRootApp extends JPanel implements AppView {
         try {
             sDBVersion = readDataBaseVersion();
         } catch (BasicException e) {
-
+            logger.log(Level.INFO, "Unable to read database version", e);
         }
         if (sDBVersion == null) {
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, AppLocal.getIntString("message.serverconnectionerror")));
@@ -188,6 +192,7 @@ public class JRootApp extends JPanel implements AppView {
         try {
             sWareHouse = m_dlSystem.findLocationName(m_sInventoryLocation);
         } catch (BasicException e) {
+            logger.log(Level.WARNING, "Unable to load stock location", e);
             sWareHouse = null; // no he encontrado el almacen principal
         }
 
@@ -212,14 +217,15 @@ public class JRootApp extends JPanel implements AppView {
             dlCust.preloadCustomers();
             m_dlSystem.preloadCashRegisters();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING,
+                    "Error while preloading data to local cache", e);
         }
 
         // Initialize currency format
         try {
             fr.pasteque.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
         } catch (BasicException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING, "Unable to set currency format", e);
         }
 
         this.showLogin();
@@ -439,7 +445,7 @@ public class JRootApp extends JPanel implements AppView {
             jScrollPane1.getViewport().setView(jPeople);
             
         } catch (BasicException ee) {
-            ee.printStackTrace();
+            logger.log(Level.SEVERE, "Unable to display users", ee);
         }
     }
     // Action performed when clicking on a people button
@@ -561,7 +567,8 @@ public class JRootApp extends JPanel implements AppView {
             try {
                 user = m_dlSystem.findPeopleByCard(inputtext.toString());
             } catch (BasicException e) {
-                e.printStackTrace();
+                logger.log(Level.WARNING, "Error while reading customer card",
+                        e);
             }
             
             if (user == null)  {
