@@ -45,7 +45,7 @@ set CP=%CP%;"%DIRNAME%lib/jpos1121.jar"
 set CP=%CP%;"%DIRNAME%lib/swingx-0.9.5.jar"
 set CP=%CP%;"%DIRNAME%lib/substance.jar"
 set CP=%CP%;"%DIRNAME%lib/substance-swingx.jar"
-set CP=%CP%;"%DIRNAME%/lib/h2-1.3.175"
+set CP=%CP%;"%DIRNAME%/lib/h2-1.3.175.jar"
 set CP=%CP%;"%DIRNAME%/lib/libintl.jar"
 
 rem Apache Axis SOAP libraries.
