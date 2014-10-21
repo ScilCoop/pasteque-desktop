@@ -31,7 +31,7 @@ public class AppLocal {
     
     public static final String APP_NAME = "Pasteque";
     public static final String APP_ID = "pasteque";
-    public static final String APP_VERSION = "5.0.2";
+    public static final String APP_VERSION = "5.0.3";
     public static final String DB_VERSION = "5";
   
     // private static List<ResourceBundle> m_messages;
