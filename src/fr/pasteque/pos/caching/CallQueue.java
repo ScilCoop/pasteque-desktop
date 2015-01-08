@@ -73,7 +73,7 @@ public class CallQueue {
         delTktOp = LocalDB.prepare("DELETE FROM ticketQueue "
                 + "WHERE ticketId = ?");
         countSTOps = LocalDB.prepare("SELECT count(id) AS num "
-                + "FROM shareTicketQueue");
+                + "FROM sharedTicketQueue");
         countTktOps = LocalDB.prepare("SELECT count(ticketId) as num "
                 + "FROM ticketQueue");
     }
