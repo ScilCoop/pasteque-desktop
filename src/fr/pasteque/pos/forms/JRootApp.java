@@ -220,6 +220,13 @@ public class JRootApp extends JPanel implements AppView {
             logger.log(Level.WARNING,
                     "Error while preloading data to local cache", e);
         }
+        // Try to recover if there are local data and maybe turn offline
+        if (CallQueue.getOperationsCount() > 0) {
+            if (!CallQueue.recover()) {
+                // Try next time
+                CallQueue.turnOffline();
+            }
+        }
 
         // Initialize currency format
         try {

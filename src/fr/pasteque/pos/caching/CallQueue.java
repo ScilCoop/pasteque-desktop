@@ -78,6 +78,8 @@ public class CallQueue {
                 + "FROM ticketQueue");
     }
 
+    /** Switch offline and enable timed recovery. Queuing an operation
+     * automatically turns offline. Does nothing if already offline. */
     public static void turnOffline() {
         if (!offline) {
             logger.log(Level.INFO, "Turning offline");
