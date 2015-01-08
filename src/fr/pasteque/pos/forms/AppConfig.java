@@ -224,6 +224,8 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("prices.roundto", "0");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
         DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
+        DEFAULT_VALUES.put("ui.ticketlineminwidth", "4.0"); // in inches
+        DEFAULT_VALUES.put("ui.ticketlineminheight", "2.0"); // in inches
     }
 
     /** Load "default file", which values are expanded or overriden by the

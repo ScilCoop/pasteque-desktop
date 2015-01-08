@@ -1856,6 +1856,14 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Ticket lines
         m_ticketlines = new JTicketLines();
         m_ticketlines.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        if (cfg != null
+                || !cfg.getProperty("ui.ticketlineminwidth").equals("0")
+                || !cfg.getProperty("ui.ticketlineminheight").equals("0")) {
+            int lineMinWidth = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.ticketlineminwidth")));
+            int lineMinHeight = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.ticketlineminheight")));
+            m_ticketlines.setPreferredSize(new Dimension(lineMinWidth,
+                            lineMinHeight));
+        }
         cstr = new GridBagConstraints();
         cstr.gridx = 0;
         cstr.gridy = 1;
