@@ -78,7 +78,7 @@ public class CallQueue {
                 + "FROM ticketQueue");
     }
 
-    private static void turnOffline() {
+    public static void turnOffline() {
         if (!offline) {
             logger.log(Level.INFO, "Turning offline");
             offline = true;

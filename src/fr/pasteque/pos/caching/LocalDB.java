@@ -44,7 +44,7 @@ import java.util.logging.Logger;
 public class LocalDB {
 
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.caching.LocalDB");
-    private static final int VERSION = 1;
+    private static final int VERSION = 2;
 
     private static Connection conn = null;
 
@@ -73,8 +73,19 @@ public class LocalDB {
         Connection c = getConnection();
         Statement stmt = c.createStatement();
         try {
-            stmt.executeQuery("SELECT version FROM meta");
-            // When it will be usefull upgrade code goes here
+            ResultSet rs = stmt.executeQuery("SELECT version FROM meta");
+            // Update code
+            if (rs.next()) {
+                int version = rs.getInt("version");
+                switch (version) {
+                case 1:
+                    // Upgrade from version 1 to 2
+                    stmt.execute("ALTER TABLE customers "
+                            + "ALTER COLUMN number VARCHAR(255)");
+                    stmt.execute("UPDATE meta SET version = 2");
+                    // no break to keep upgrading until latest version
+                }
+            }
         } catch (SQLException e) {
             // Create the database
             stmt.execute("CREATE TABLE meta (version INTEGER)");
@@ -103,7 +114,7 @@ public class LocalDB {
                     + "id INTEGER(255), main BOOLEAN, data BINARY(500000), "
                     + "PRIMARY KEY (id))");
             stmt.execute("CREATE TABLE customers ("
-                    + "id VARCHAR(255), number INTEGER(255), key VARCHAR(255), "
+                    + "id VARCHAR(255), number VARCHAR(255), key VARCHAR(255), "
                     + "name VARCHAR(255), card VARCHAR(255), "
                     + "data BINARY(500000), "
                     + "PRIMARY KEY (id))");
