@@ -23,6 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import fr.pasteque.beans.JFlowPanel;
+import fr.pasteque.pos.forms.AppConfig;
 
 /**
  *

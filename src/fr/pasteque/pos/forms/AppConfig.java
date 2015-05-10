@@ -219,12 +219,16 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
         DEFAULT_VALUES.put("prices.roundto", "0");
-        DEFAULT_VALUES.put("server.backoffice", "http://pt.scil.coop/"
+        DEFAULT_VALUES.put("server.backoffice", "https://my.pasteque.coop/"
                 + AppLocal.DB_VERSION);
         DEFAULT_VALUES.put("db.user", "demo");
         DEFAULT_VALUES.put("db.password", "demo");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
         DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
+        DEFAULT_VALUES.put("ui.buttons.prodbyref", "0");
+        DEFAULT_VALUES.put("ui.buttons.bold", "0");
+        DEFAULT_VALUES.put("ui.buttons.fontface", "arial");
+        DEFAULT_VALUES.put("ui.buttons.fontsize", "12px");
     }
 
     /** Load "default file", which values are expanded or overriden by the

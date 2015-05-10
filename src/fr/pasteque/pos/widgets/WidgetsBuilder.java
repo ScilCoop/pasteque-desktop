@@ -113,9 +113,10 @@ public class WidgetsBuilder {
                 if (height < minHeight) {
                     height = minHeight;
                 }
-                widget.setMinimumSize(new Dimension(width, height));
-                // Some layout ignore minimum size, adjust preferred size in case
                 widget.setPreferredSize(new Dimension(width, height));
+                widget.setMinimumSize(new Dimension(width, height));
+                widget.setMaximumSize(new Dimension(width, height));
+
     	    }
     	}
     }
