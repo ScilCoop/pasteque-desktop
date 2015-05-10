@@ -225,7 +225,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 catText = category.getReference();                         
         }
         else {                                                             
-                catText = cat.getName();
+                catText = category.getName();
         }
 	return catText;
     }
