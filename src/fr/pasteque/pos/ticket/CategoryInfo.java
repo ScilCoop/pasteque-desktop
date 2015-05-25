@@ -51,7 +51,9 @@ public class CategoryInfo implements Serializable {
     public CategoryInfo(JSONObject o) {
         this.m_sID = o.getString("id");
         this.m_sName = o.getString("label");
-	this.m_sRef = o.getString("reference");
+        if (!o.isNull("reference")) {
+            this.m_sRef = o.getString("reference");
+        }
         if (!o.isNull("parentId")) {
             this.parentId = o.getString("parentId");
         }
