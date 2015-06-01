@@ -18,10 +18,7 @@
 //    along with Openbravo POS.  If not, see <http://www.gnu.org/licenses/>.
 package fr.pasteque.pos.ticket;
 
-import fr.pasteque.basic.BasicException;
-import java.awt.image.*;
-import fr.pasteque.data.loader.IKeyed;
-import fr.pasteque.data.loader.ImageUtils;
+import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import org.json.JSONObject;
 
