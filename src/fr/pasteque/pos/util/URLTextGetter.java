@@ -18,20 +18,15 @@
 //    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 package fr.pasteque.pos.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 public class URLTextGetter {
 
@@ -86,20 +81,10 @@ public class URLTextGetter {
         conn.connect();
         int code = conn.getResponseCode();
         if (code == HttpURLConnection.HTTP_OK) {
-            String content = null;
-            try {
-                InputStream in = conn.getInputStream();
-                InputStreamReader in2 = new InputStreamReader(in);
-                BufferedReader reader = new BufferedReader(in2);
-                StringBuilder stringBuilder = new StringBuilder();
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    stringBuilder.append(line + "\n");
-                }
-                content = stringBuilder.toString();
-            } catch (ClassCastException e) {
-                throw new ServerException("Unknown content " + conn.getContentType().getClass(), e);
-            }
+            InputStream in = conn.getInputStream();
+            // Use a simple hack with Scanner to get the content of a whole InputStream...
+            Scanner s = new Scanner(in).useDelimiter("\\A");
+            String content = s.hasNext() ? s.next() : "";
             conn.disconnect();
             return content;
         } else {
