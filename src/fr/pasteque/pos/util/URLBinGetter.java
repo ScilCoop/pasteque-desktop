@@ -18,18 +18,13 @@
 //    along with POS-Tech.  If not, see <http://www.gnu.org/licenses/>.
 package fr.pasteque.pos.util;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class URLBinGetter {
