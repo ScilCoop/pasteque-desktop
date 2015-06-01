@@ -53,7 +53,11 @@ import fr.pasteque.pos.ticket.CashRegisterInfo;
 import fr.pasteque.pos.ticket.CashSession;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 
 /**
@@ -99,113 +103,201 @@ public class JRootApp extends JPanel implements AppView {
     
     public boolean initApp(AppProperties props) {
         
+        long start = System.currentTimeMillis();
+        
+        
+        java.util.List<Thread> loadingThreads = new ArrayList<>();
+        
         m_props = props;
 
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
         
         m_dlSystem = new DataLogicSystem();
-        DataLogicCustomers dlCust = new DataLogicCustomers();
+        final DataLogicCustomers dlCust = new DataLogicCustomers();
+        
+        
+        // Reload resources cache
+        java.util.List<String> cachedRes = ResourcesCache.list();
         
         // Check database compatibility
-        String sDBVersion = readDataBaseVersion();
-        while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
-            // TODO: i18n
-            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatbile version", "Server version " + sDBVersion + ", expected " + AppLocal.DB_VERSION));
-            return false;
-        }     
+        DbVersionChecker dbVersionChecker = new DbVersionChecker();
         
-        // Load host properties
-        try {
-            this.cashRegister = m_dlSystem.getCashRegister(m_props.getHost());
-        } catch (BasicException e) {
-            JMessageDialog.showMessage(this,
-                    new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
-            return false;
-        }
-        if (this.cashRegister == null) {
-            // Unknown cash register
-            JMessageDialog.showMessage(this,
-                    new MessageInf(MessageInf.SGN_DANGER,
-                            AppLocal.getIntString("Message.UnknownCash")));
-            return false;
-        }
+        launchThreadInPool(loadingThreads, dbVersionChecker);
+        
+        for (final String res : cachedRes) {
+            launchThreadInPool(loadingThreads, new Runnable() {
 
-        // Load cash session
-        try {
-            CashSession cashSess = m_dlSystem.getCashSession(this.cashRegister.getId());
-            if (cashSess == null) {
-                // New cash session
-                this.newActiveCash();
-            } else {
-                this.setActiveCash(cashSess);
-                if (cashSess.getId() != null) {
-                    CallQueue.setup(cashSess.getId());
+                @Override
+                public void run() {
+                    m_dlSystem.preloadResource(res);
                 }
-            }
-        } catch (BasicException e) {
-            // Casco. Sin caja no hay pos
-            MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
-            msg.show(this);
-            return false;
-        }  
-        
-        // Load location
-        m_sInventoryLocation = this.cashRegister.getLocationId();
-        if (m_sInventoryLocation == null) {
-            // Not set, use default
-            m_sInventoryLocation = "0";
+            });
         }
         
-        // Inicializo la impresora...
+        launchThreadInPool(loadingThreads, new Runnable() {
+
+            @Override
+            public void run() {
+                // Load host properties
+                try {
+                    cashRegister = m_dlSystem.getCashRegister(m_props.getHost());
+                } catch (BasicException e) {
+                    JMessageDialog.showMessage(JRootApp.this,
+                            new MessageInf(MessageInf.SGN_DANGER, e.getMessage(), e));
+                    cashRegister = null;
+                    return;
+                }
+                if (cashRegister == null) {
+                    // Unknown cash register
+                    JMessageDialog.showMessage(JRootApp.this,
+                            new MessageInf(MessageInf.SGN_DANGER,
+                                    AppLocal.getIntString("Message.UnknownCash")));
+                    return;
+                }
+                
+                // Load location
+                m_sInventoryLocation = cashRegister.getLocationId();
+                if (m_sInventoryLocation == null) {
+                    // Not set, use default
+                    m_sInventoryLocation = "0";
+                }
+                
+                // Load cash session
+                try {
+                    CashSession cashSess = m_dlSystem.getCashSession(cashRegister.getId());
+                    if (cashSess == null) {
+                        // New cash session
+                        newActiveCash();
+                    } else {
+                        setActiveCash(cashSess);
+                        if (cashSess.getId() != null) {
+                            CallQueue.setup(cashSess.getId());
+                        }
+                    }
+                } catch (BasicException e) {
+                    // Casco. Sin caja no hay pos
+                    MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
+                    msg.show(JRootApp.this);
+                    activeCashSession = null;
+                } 
+            }
+        });
+        
+        // Initialize printer...s
         m_TP = new DeviceTicket(this, m_props);
         
-        // Inicializamos 
+        // Initialization 
         m_TTP = new TicketParser(getDeviceTicket(), m_dlSystem);
         printerStart();
         
-        // Inicializamos la bascula
+        // Initialize the scale
         m_Scale = new DeviceScale(this, m_props);
         
-        // Inicializamos la scanpal
+        // Initialize the scanner
         m_Scanner = DeviceScannerFactory.createInstance(m_props);
             
-        // Leemos los recursos basicos
+        // Load the basic resources
         BufferedImage imgicon = m_dlSystem.getResourceAsImage("Window.Logo");
         m_jLblTitle.setIcon(imgicon == null ? null : new ImageIcon(imgicon));
         m_jLblTitle.setText(m_dlSystem.getResourceAsText("Window.Title"));  
         
-        String sWareHouse;
-        try {
-            sWareHouse = m_dlSystem.findLocationName(m_sInventoryLocation);
-        } catch (BasicException e) {
-            sWareHouse = null; // no he encontrado el almacen principal
-        }
-
-        DataLogicSales m_dlSales = new DataLogicSales();
         // Preload caches
-        m_dlSystem.preloadUsers();
-        m_dlSystem.preloadRoles();
-        // Reload resources cache
-        java.util.List<String> cachedRes = ResourcesCache.list();
-        for (String res : cachedRes) {
-            m_dlSystem.preloadResource(res);
-        }
-        // Init local cache
-        try {
-            LocalDB.init();
-            m_dlSales.preloadCategories();
-            m_dlSales.preloadProducts();
-            m_dlSales.preloadTaxes();
-            m_dlSales.preloadCurrencies();
-            m_dlSales.preloadTariffAreas();
-            m_dlSales.preloadCompositions();
-            dlCust.preloadCustomers();
-            m_dlSystem.preloadCashRegisters();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSystem.preloadUsers();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSystem.preloadRoles();
+            }
+        });
 
+        // Init local cache
+        final DataLogicSales m_dlSales = new DataLogicSales();
+
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LocalDB.init();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadCategories();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadProducts();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadTaxes();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadCurrencies();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadTariffAreas();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSales.preloadCompositions();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                dlCust.preloadCustomers();
+            }
+        });
+        launchThreadInPool(loadingThreads, new Runnable() {
+            @Override
+            public void run() {
+                m_dlSystem.preloadCashRegisters();
+            }
+        });
+
+
+        // Wait for everybody
+        for (final Thread loadingThreadPending: loadingThreads) {
+            try {
+                loadingThreadPending.join();
+            } catch (InterruptedException ex) {
+                // We ignore that so far
+            }
+        }
+        
+        while (!AppLocal.DB_VERSION.equals(dbVersionChecker.sDBVersion)) {
+            // TODO: i18n
+            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatible version", "Server version " + dbVersionChecker.sDBVersion + ", expected " + AppLocal.DB_VERSION));
+            return false;
+        }
+        
+        if (this.activeCashSession == null || this.cashRegister == null)
+            return false;
+        
         // Initialize currency format
         try {
             fr.pasteque.format.Formats.setDefaultCurrency(m_dlSales.getMainCurrency());
@@ -213,9 +305,26 @@ public class JRootApp extends JPanel implements AppView {
             e.printStackTrace();
         }
 
+        
         this.showLogin();
+        
+        
+        long end = System.currentTimeMillis();
+        
+        System.err.println("It took " + (end - start));
 
         return true;
+    }
+    
+    private static final void launchThreadInPool (java.util.List<Thread> loadingThreads, Runnable r) {
+        Thread loadingThread = new Thread(r);
+        loadingThread.start();
+        loadingThreads.add(loadingThread);
+        try {
+            loadingThread.join();
+        } catch (InterruptedException ex) {
+            // Ignore
+        }
     }
     
     private String readDataBaseVersion() {
@@ -799,5 +908,17 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JTextField m_txtKeys;
     private javax.swing.JPanel panelTask;
     private javax.swing.JLabel poweredby;
-
+    
+    private final class DbVersionChecker implements Runnable {
+        public String sDBVersion;
+        
+        @Override
+        public void run() {
+            try {
+                sDBVersion = m_dlSystem.findDbVersion();
+            } catch (BasicException ex) {
+                Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 }
