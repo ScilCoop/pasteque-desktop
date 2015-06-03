@@ -56,6 +56,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -105,8 +111,8 @@ public class JRootApp extends JPanel implements AppView {
         
         long start = System.currentTimeMillis();
         
-        
-        java.util.List<Thread> loadingThreads = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(12);
+        ArrayList<Future> futures = new ArrayList<>();
         
         m_props = props;
 
@@ -121,21 +127,23 @@ public class JRootApp extends JPanel implements AppView {
         java.util.List<String> cachedRes = ResourcesCache.list();
         
         // Check database compatibility
-        DbVersionChecker dbVersionChecker = new DbVersionChecker();
-        
-        launchThreadInPool(loadingThreads, dbVersionChecker);
+        Future<String> dbVersionString = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return m_dlSystem.findDbVersion();
+            }
+        });
         
         for (final String res : cachedRes) {
-            launchThreadInPool(loadingThreads, new Runnable() {
-
+            futures.add(executor.submit(new Runnable() {
                 @Override
                 public void run() {
                     m_dlSystem.preloadResource(res);
                 }
-            });
+            }));
         }
         
-        launchThreadInPool(loadingThreads, new Runnable() {
+        futures.add(executor.submit(new Runnable() {
 
             @Override
             public void run() {
@@ -182,7 +190,7 @@ public class JRootApp extends JPanel implements AppView {
                     activeCashSession = null;
                 } 
             }
-        });
+        }));
         
         // Initialize printer...s
         m_TP = new DeviceTicket(this, m_props);
@@ -203,23 +211,23 @@ public class JRootApp extends JPanel implements AppView {
         m_jLblTitle.setText(m_dlSystem.getResourceAsText("Window.Title"));  
         
         // Preload caches
-        launchThreadInPool(loadingThreads, new Runnable() {
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSystem.preloadUsers();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSystem.preloadRoles();
             }
-        });
+        }));
 
         // Init local cache
         final DataLogicSales m_dlSales = new DataLogicSales();
 
-        launchThreadInPool(loadingThreads, new Runnable() {
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -228,70 +236,80 @@ public class JRootApp extends JPanel implements AppView {
                     e.printStackTrace();
                 }
             }
-        });
+        }));
 
-        launchThreadInPool(loadingThreads, new Runnable() {
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadCategories();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadProducts();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadTaxes();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadCurrencies();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadTariffAreas();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSales.preloadCompositions();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 dlCust.preloadCustomers();
             }
-        });
-        launchThreadInPool(loadingThreads, new Runnable() {
+        }));
+        futures.add(executor.submit(new Runnable() {
             @Override
             public void run() {
                 m_dlSystem.preloadCashRegisters();
             }
-        });
+        }));
 
 
-        // Wait for everybody
-        for (final Thread loadingThreadPending: loadingThreads) {
+        for (Future fut : futures) {
             try {
-                loadingThreadPending.join();
+                fut.get();
             } catch (InterruptedException ex) {
-                // We ignore that so far
+                Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
-        while (!AppLocal.DB_VERSION.equals(dbVersionChecker.sDBVersion)) {
+        String dbVersion = null;
+        try {
+            dbVersion = dbVersionString.get();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ExecutionException ex) {
+            Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        while (!AppLocal.DB_VERSION.equals(dbVersion)) {
             // TODO: i18n
-            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatible version", "Server version " + dbVersionChecker.sDBVersion + ", expected " + AppLocal.DB_VERSION));
+            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatible version", "Server version " + dbVersion + ", expected " + AppLocal.DB_VERSION));
             return false;
         }
         
@@ -314,25 +332,6 @@ public class JRootApp extends JPanel implements AppView {
         System.err.println("It took " + (end - start));
 
         return true;
-    }
-    
-    private static final void launchThreadInPool (java.util.List<Thread> loadingThreads, Runnable r) {
-        Thread loadingThread = new Thread(r);
-        loadingThread.start();
-        loadingThreads.add(loadingThread);
-        try {
-            loadingThread.join();
-        } catch (InterruptedException ex) {
-            // Ignore
-        }
-    }
-    
-    private String readDataBaseVersion() {
-        try {
-            return m_dlSystem.findDbVersion();
-        } catch (BasicException ed) {
-            return null;
-        }
     }
     
     public void tryToClose() {   
@@ -908,17 +907,4 @@ public class JRootApp extends JPanel implements AppView {
     private javax.swing.JTextField m_txtKeys;
     private javax.swing.JPanel panelTask;
     private javax.swing.JLabel poweredby;
-    
-    private final class DbVersionChecker implements Runnable {
-        public String sDBVersion;
-        
-        @Override
-        public void run() {
-            try {
-                sDBVersion = m_dlSystem.findDbVersion();
-            } catch (BasicException ex) {
-                Logger.getLogger(JRootApp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
 }
