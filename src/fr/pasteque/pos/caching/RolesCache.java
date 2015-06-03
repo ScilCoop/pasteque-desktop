@@ -29,14 +29,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class RolesCache {
 
-    private static Logger logger = Logger.getLogger("fr.pasteque.pos.caching.RolesCache");
+    private static final Logger logger = Logger.getLogger("fr.pasteque.pos.caching.RolesCache");
 
     private static String path() {
         return AppConfig.loadedInstance.getDataDir() + "/roles.cache";

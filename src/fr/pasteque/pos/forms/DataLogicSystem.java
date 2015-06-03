@@ -359,10 +359,6 @@ public class DataLogicSystem {
         return data;
     }
 
-    public final byte[] getResourceAsBinary(String sName) {
-        return getResource(sName);
-    }
-
     public final String getResourceAsText(String sName) {
         return Formats.BYTEA.formatValue(getResource(sName));
     }
@@ -380,21 +376,6 @@ public class DataLogicSystem {
             return null;
         }
     }
-
-    public final Properties getResourceAsProperties(String sName) {
-
-        Properties p = new Properties();
-        try {
-            byte[] img = getResourceAsBinary(sName);
-            if (img != null) {
-                p.loadFromXML(new ByteArrayInputStream(img));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return p;
-    }
-
 
     public boolean preloadCashRegisters() {
         try {

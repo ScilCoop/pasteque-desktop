@@ -25,7 +25,6 @@ import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.data.gui.ComboBoxValModel;
 import fr.pasteque.data.gui.MessageInf;
 import fr.pasteque.format.Formats;
-import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.forms.AppConfig;
 import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.AppView;
@@ -46,11 +45,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,7 +76,7 @@ public class JPanelPayments extends JPanel
         this.total.addEditorKeys(this.keypad);
         this.notes.addEditorKeys(this.keypad);
         // Init coin buttons
-        this.coinButtons = new ArrayList<CoinCountButton>();
+        this.coinButtons = new ArrayList<>();
         DataLogicSystem dlSys = new DataLogicSystem();
         String code = dlSys.getResourceAsXML("payment.cash");
         if (code != null) {
@@ -94,21 +91,27 @@ public class JPanelPayments extends JPanel
         }
     }
 
+    @Override
     public void init(AppView app) throws BeanFactoryException {
         this.app = app;
     }
 
+    @Override
     public String getTitle() {
         return AppLocal.getIntString("Menu.Payments");
     }
 
+    @Override
     public Object getBean() {
         return this;
     }
+    
+    @Override
     public JComponent getComponent() {
         return this;
     }
 
+    @Override
     public void activate() {
         this.reasonModel.setSelectedKey("cashin");
         // Open drawer
