@@ -66,18 +66,14 @@ public class DataLogicReceipts {
                 if (o == null) {
                     return null;
                 }
-                String strdata = o.getString("data");
-                byte[] data = DatatypeConverter.parseBase64Binary(strdata);
-                TicketInfo tkt = new TicketInfo(data);
                 // Ticket read from server, cache it
-                SharedTicketInfo stkt = new SharedTicketInfo(o.getString("id"),
-                        tkt);
+                SharedTicketInfo stkt = new SharedTicketInfo(o);
                 try {
                     TicketsCache.saveTicket(stkt);
                 } catch (BasicException e) {
                     e.printStackTrace();
                 }
-                return tkt;
+                return stkt.getTicket();
             } else {
                 return null;
             }
@@ -145,12 +141,9 @@ public class DataLogicReceipts {
         try {
             ServerLoader loader = new ServerLoader();
             ServerLoader.Response r;
-            JSONObject tkt = new JSONObject();
+            JSONObject tkt = ticket.toSharedJSON();
             tkt.put("id", id);
-            tkt.put("label", ticket.getName());
-            byte[] data = ticket.serialize();
-            String strData = DatatypeConverter.printBase64Binary(data);
-            tkt.put("data", strData);
+
             r = loader.write("TicketsAPI", "share",
                     "ticket", tkt.toString());
             if (!r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {

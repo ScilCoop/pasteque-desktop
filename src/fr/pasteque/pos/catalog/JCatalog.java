@@ -199,7 +199,7 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
                 java.util.List<CategoryInfo> categories = m_dlSales.getSubcategories(catid);
                 for (CategoryInfo cat : categories) {
 
-                    jcurrTab.addButton(new ImageIcon(tnbsubcat.getThumbNailText(cat.getImage(), cat.getName())), new SelectedCategory(cat));
+                    jcurrTab.addButton(new ImageIcon(tnbsubcat.getThumbNailText(cat.getImage(), getCategoryLabel(cat))), new SelectedCategory(cat));
                 }
                 
                 // Add products
@@ -216,8 +216,30 @@ public class JCatalog extends JPanel implements ListSelectionListener, CatalogSe
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notactive"), e));            
         }
     }
+
+    private String getCategoryLabel(CategoryInfo category) {
+    	AppConfig cfg = AppConfig.loadedInstance;
+	String catText = null;
+
+        if(cfg.getProperty("ui.buttons.catbyref").equals("1")) {          
+                catText = category.getReference();                         
+        }
+        else {                                                             
+                catText = category.getName();
+        }
+	return catText;
+    }
     
     private String getProductLabel(ProductInfoExt product) {
+    	AppConfig cfg = AppConfig.loadedInstance;
+	String prodText = null;
+
+        if(cfg.getProperty("ui.buttons.prodbyref").equals("1")) {          
+                prodText = product.getReference();                         
+        }
+        else {                                                             
+                prodText = product.getName();
+        }
 
         if (pricevisible) {
             if (taxesincluded) {

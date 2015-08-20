@@ -31,8 +31,8 @@ public class AppLocal {
     
     public static final String APP_NAME = "Pasteque";
     public static final String APP_ID = "pasteque";
-    public static final String APP_VERSION = "2.0 alpha 8";
-    public static final String DB_VERSION = "5";
+    public static final String APP_VERSION = "6.0";
+    public static final String DB_VERSION = "6";
   
     // private static List<ResourceBundle> m_messages;
     private static LocaleResources resources;

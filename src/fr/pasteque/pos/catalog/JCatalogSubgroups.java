@@ -37,6 +37,7 @@ import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.forms.DataLogicSales;
 import fr.pasteque.pos.sales.TaxesLogic;
 import fr.pasteque.pos.ticket.TaxInfo;
+import fr.pasteque.pos.forms.AppConfig;
 
 /**
  *
@@ -242,6 +243,15 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     }
     
     private String getProductLabel(ProductInfoExt product) {
+    	AppConfig cfg = AppConfig.loadedInstance;
+	String prodText = null;
+	
+        if(cfg.getProperty("ui.buttons.prodbyref").equals("1")) {          
+                prodText = product.getReference();                         
+        }
+        else {                                                             
+                prodText = product.getName();
+        }
 
         if (pricevisible) {
             if (taxesincluded) {

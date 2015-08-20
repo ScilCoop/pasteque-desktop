@@ -36,19 +36,24 @@ public class CategoryInfo implements Serializable {
     private String m_sID;
     private String parentId;
     private String m_sName;
+    private String m_sRef;
     private Integer dispOrder;
     private BufferedImage m_Image;
 
     /** Creates new CategoryInfo */
-    public CategoryInfo(String id, String name, BufferedImage image) {
+    public CategoryInfo(String id, String ref, String name, BufferedImage image) {
         m_sID = id;
         m_sName = name;
+	m_sRef = ref;
         m_Image = image;
     }
 
     public CategoryInfo(JSONObject o) {
         this.m_sID = o.getString("id");
         this.m_sName = o.getString("label");
+        if (!o.isNull("reference")) {
+            this.m_sRef = o.getString("reference");
+        }
         if (!o.isNull("parentId")) {
             this.parentId = o.getString("parentId");
         }
@@ -64,6 +69,14 @@ public class CategoryInfo implements Serializable {
 
     public String getID() {
         return m_sID;
+    }
+
+    public String getReference() {
+    	return m_sRef;
+    }
+
+    public void setReference(String sRef) {
+    	m_sRef = sRef;
     }
 
     public String getName() {
