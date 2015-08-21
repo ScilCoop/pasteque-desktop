@@ -48,9 +48,7 @@ public class JFrmConfig extends javax.swing.JFrame {
         
         this.setIconImage(ImageLoader.readImage("favicon.png"));
         setTitle(AppLocal.APP_NAME + " - " + AppLocal.APP_VERSION + " - " + AppLocal.getIntString("Menu.Configuration"));
-        
         addWindowListener(new MyFrameListener()); 
-        
         DataLogicSystem dls = new DataLogicSystem();
         try {
             String dbVersion = dls.findDbVersion();

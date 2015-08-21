@@ -36,22 +36,22 @@ import javax.swing.JTextField;
 import javax.swing.JPasswordField;
 
 public class WidgetsBuilder {
-    
+
     public static final int SIZE_SMALL = 0;
     public static final int SIZE_MEDIUM = 1;
     public static final int SIZE_BIG = 2;
     public static final int SIZE_HUDGE = 3;
-    
+
     private WidgetsBuilder() {}
-    
+
     public static JButton createButton(ImageIcon icon) {
     	return WidgetsBuilder.createButton(icon, SIZE_MEDIUM);
     }
-    
+
     public static JButton createButton(String text) {
         return WidgetsBuilder.createButton(null, text, SIZE_MEDIUM);
     }
-    
+
     public static JButton createButton(ImageIcon icon, int size) {
         JButton btn = new JButton();
         btn.setIcon(icon);
@@ -61,7 +61,7 @@ public class WidgetsBuilder {
 
     public static JButton createButton(ImageIcon icon, String text, int size) {
         JButton btn = new JButton();
-        btn.setText(text);
+        btn.setText("  " + text + "  ");
         btn.setIcon(icon);
         WidgetsBuilder.adaptSize(btn, size);
         return btn;
@@ -79,7 +79,7 @@ public class WidgetsBuilder {
         WidgetsBuilder.adaptSize(btn, SIZE_MEDIUM);
         return btn;
     }
-    
+
     public static void adaptSize(Component widget, int size) {
         AppConfig cfg = AppConfig.loadedInstance;
     	if (cfg != null) {
@@ -104,7 +104,7 @@ public class WidgetsBuilder {
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
     	            break;
     	        }
-                
+
                 int width = (int) widget.getPreferredSize().getWidth();
                 int height = (int) widget.getPreferredSize().getHeight();
                 if (width < minWidth) {
@@ -120,19 +120,19 @@ public class WidgetsBuilder {
     	    }
     	}
     }
-    
+
     public static int pixelSize(float inchSize) {
         AppConfig cfg = AppConfig.loadedInstance;
         int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));
         return (int)(inchSize * density);
     }
-    
+
     public static int dipToPx(int px) {
         AppConfig cfg = AppConfig.loadedInstance;
-        int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));        
+        int density = Integer.parseInt(cfg.getProperty("machine.screendensity"));
         return (int)((float)px * (float)density / 72.0);
     }
-    
+
     public static Font getFont(int size) {
         AppConfig cfg = AppConfig.loadedInstance;
         int dipSize;
@@ -155,12 +155,12 @@ public class WidgetsBuilder {
         int fontSize = dipToPx(dipSize);
         return new Font("Dialog", style, fontSize);
     }
-    
+
     /** Setup an existing label with config properties */
     public static void setupLabel(JLabel lbl, int size) {
         lbl.setFont(getFont(size));
     }
-    
+
     public static JLabel createLabel(String text) {
         JLabel lbl = new JLabel();
         setupLabel(lbl, SIZE_MEDIUM);
@@ -169,22 +169,22 @@ public class WidgetsBuilder {
         }
         return lbl;
     }
-    
+
     public static JLabel createLabel() {
         return createLabel(null);
     }
-    
+
     public static JLabel createImportantLabel() {
         return createImportantLabel(null);
     }
-    
+
     public static JLabel createImportantLabel(String text) {
         JLabel lbl = new JLabel(text);
         setupLabel(lbl, SIZE_BIG);
-        
+
         return lbl;
     }
-    
+
     public static JLabel createSmallLabel() {
         return createSmallLabel(null);
     }
@@ -194,7 +194,7 @@ public class WidgetsBuilder {
         setupLabel(lbl, SIZE_SMALL);
         return lbl;
     }
-    
+
     /** Make a label looks like an input field. */
     public static void inputStyle(JLabel label) {
         label.setBackground(java.awt.Color.white);
@@ -203,7 +203,7 @@ public class WidgetsBuilder {
         label.setOpaque(true);
         label.setRequestFocusEnabled(false);
     }
-    
+
     public static JTextField createTextField() {
         JTextField field = new JTextField();
         field.setFont(getFont(SIZE_MEDIUM));
@@ -212,7 +212,7 @@ public class WidgetsBuilder {
     public static JPasswordField createPasswordField() {
         JPasswordField field = new JPasswordField();
         field.setFont(getFont(SIZE_MEDIUM));
-        return field;    
+        return field;
     }
     public static JComboBox createComboBox() {
         JComboBox box = new JComboBox();
@@ -229,7 +229,7 @@ public class WidgetsBuilder {
         }
         return box;
     }
-    
+
     public static ImageIcon createIcon(ImageIcon icon) {
         AppConfig cfg = AppConfig.loadedInstance;
         if (cfg != null) {
@@ -241,42 +241,42 @@ public class WidgetsBuilder {
         }
         return icon;
     }
-    
+
     public static ImageIcon createIcon(String name) {
         ImageIcon icon = ImageLoader.readImageIcon(name);
         return createIcon(icon);
     }
-    
+
     public static class TouchIcon extends ImageIcon {
     	private int fullHeight;
     	private int fullWidth;
     	private ImageIcon icon;
-    	
+
     	public TouchIcon(ImageIcon baseIcon, int fullWidth, int fullHeight) {
     		this.icon = baseIcon;
     		this.fullWidth = fullWidth;
     		this.fullHeight = fullHeight;
     	}
-    	
+
     	@Override
     	public int getIconHeight() {
     	    return Math.max(this.fullHeight, this.icon.getIconHeight());
     	}
-    	
+
     	@Override
     	public int getIconWidth() {
     	    return Math.max(this.fullWidth, this.icon.getIconWidth());
     	}
-    	
+
     	@Override
     	public void paintIcon(Component c, Graphics g, int x, int y) {
             int marginTop = 0;
             int marginLeft = 0;
-            if (this.fullHeight > 0 
+            if (this.fullHeight > 0
                 && this.icon.getIconHeight() < this.fullHeight) {
                 marginTop = (this.fullHeight - this.icon.getIconHeight())/2;
             }
-            if (this.fullWidth > 0 
+            if (this.fullWidth > 0
                 && this.icon.getIconWidth() < this.fullWidth) {
                 marginLeft = (this.fullWidth - this.icon.getIconWidth())/2;
             }
@@ -285,5 +285,5 @@ public class WidgetsBuilder {
             g.translate(-marginLeft, -marginTop);
         }
     }
-    
+
 }

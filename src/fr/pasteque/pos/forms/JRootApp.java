@@ -64,57 +64,57 @@ public class JRootApp extends JPanel implements AppView {
 
     private AppProperties m_props;
     private DataLogicSystem m_dlSystem;
-    
+
     private Properties m_propsdb = null;
     private CashSession activeCashSession;
     private CashRegisterInfo cashRegister;
-    
+
     private String m_sInventoryLocation;
-    
+
     private StringBuffer inputtext;
-   
+
     private DeviceScale m_Scale;
     private DeviceScanner m_Scanner;
-    private DeviceTicket m_TP;   
+    private DeviceTicket m_TP;
     private TicketParser m_TTP;
-    
+
     private Map<String, BeanFactory> m_aBeanFactories;
-    
+
     private JPrincipalApp m_principalapp = null;
-    
+
     private static HashMap<String, String> m_oldclasses; // This is for backwards compatibility purposes
-    
-    static {        
+
+    static {
         initOldClasses();
     }
-    
+
     /** Creates new form JRootApp */
-    public JRootApp() {    
+    public JRootApp() {
 
         m_aBeanFactories = new HashMap<String, BeanFactory>();
-        
-        initComponents ();            
-        jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));   
+
+        initComponents ();
+        jScrollPane1.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
     }
-    
+
     public boolean initApp(AppProperties props) {
-        
+
         m_props = props;
 
         // support for different component orientation languages.
         applyComponentOrientation(ComponentOrientation.getOrientation(Locale.getDefault()));
-        
+
         m_dlSystem = new DataLogicSystem();
         DataLogicCustomers dlCust = new DataLogicCustomers();
-        
+
         // Check database compatibility
         String sDBVersion = readDataBaseVersion();
         while (!AppLocal.DB_VERSION.equals(sDBVersion)) {
             // TODO: i18n
             JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_DANGER, "Incompatbile version", "Server version " + sDBVersion + ", expected " + AppLocal.DB_VERSION));
             return false;
-        }     
-        
+        }
+
         // Load host properties
         try {
             this.cashRegister = m_dlSystem.getCashRegister(m_props.getHost());
@@ -148,33 +148,33 @@ public class JRootApp extends JPanel implements AppView {
             MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotclosecash"), e);
             msg.show(this);
             return false;
-        }  
-        
+        }
+
         // Load location
         m_sInventoryLocation = this.cashRegister.getLocationId();
         if (m_sInventoryLocation == null) {
             // Not set, use default
             m_sInventoryLocation = "0";
         }
-        
+
         // Inicializo la impresora...
         m_TP = new DeviceTicket(this, m_props);
-        
-        // Inicializamos 
+
+        // Inicializamos
         m_TTP = new TicketParser(getDeviceTicket(), m_dlSystem);
         printerStart();
-        
+
         // Inicializamos la bascula
         m_Scale = new DeviceScale(this, m_props);
-        
+
         // Inicializamos la scanpal
         m_Scanner = DeviceScannerFactory.createInstance(m_props);
-            
+
         // Leemos los recursos basicos
         BufferedImage imgicon = m_dlSystem.getResourceAsImage("Window.Logo");
         m_jLblTitle.setIcon(imgicon == null ? null : new ImageIcon(imgicon));
-        m_jLblTitle.setText(m_dlSystem.getResourceAsText("Window.Title"));  
-        
+        m_jLblTitle.setText(m_dlSystem.getResourceAsText("Window.Title"));
+
         String sWareHouse;
         try {
             sWareHouse = m_dlSystem.findLocationName(m_sInventoryLocation);
@@ -217,7 +217,7 @@ public class JRootApp extends JPanel implements AppView {
 
         return true;
     }
-    
+
     private String readDataBaseVersion() {
         try {
             return m_dlSystem.findDbVersion();
@@ -225,9 +225,9 @@ public class JRootApp extends JPanel implements AppView {
             return null;
         }
     }
-    
-    public void tryToClose() {   
-        
+
+    public void tryToClose() {
+
         if (closeAppView()) {
 
             // success. continue with the shut down
@@ -239,19 +239,19 @@ public class JRootApp extends JPanel implements AppView {
             SwingUtilities.getWindowAncestor(this).dispose();
         }
     }
-    
+
     // Interfaz de aplicacion
     public DeviceTicket getDeviceTicket(){
         return m_TP;
     }
-    
+
     public DeviceScale getDeviceScale() {
         return m_Scale;
     }
     public DeviceScanner getDeviceScanner() {
         return m_Scanner;
     }
-    
+
     public CashRegisterInfo getCashRegister() {
         return this.cashRegister;
     }
@@ -270,11 +270,11 @@ public class JRootApp extends JPanel implements AppView {
     public Date getActiveCashDateStart() {
         return this.activeCashSession.getOpenDate();
     }
-    
+
     public boolean isCashOpened() {
         return this.activeCashSession.isOpened();
     }
-    
+
     public void setActiveCash(CashSession cashSess) {
         this.activeCashSession = cashSess;
     }
@@ -287,26 +287,26 @@ public class JRootApp extends JPanel implements AppView {
     public AppProperties getProperties() {
         return m_props;
     }
-    
+
     public Object getBean(String beanfactory) throws BeanFactoryException {
-        
+
         // For backwards compatibility
         beanfactory = mapNewClass(beanfactory);
-        
-        
+
+
         BeanFactory bf = m_aBeanFactories.get(beanfactory);
-        if (bf == null) {   
-            
+        if (bf == null) {
+
             // testing sripts
             if (beanfactory.startsWith("/")) {
-                bf = new BeanFactoryScript(beanfactory);               
+                bf = new BeanFactoryScript(beanfactory);
             } else {
                 // Class BeanFactory
                 try {
                     Class bfclass = Class.forName(beanfactory);
 
                     if (BeanFactory.class.isAssignableFrom(bfclass)) {
-                        bf = (BeanFactory) bfclass.newInstance();             
+                        bf = (BeanFactory) bfclass.newInstance();
                     } else {
                         // the old construction for beans...
                         Constructor constMyView = bfclass.getConstructor(new Class[] {AppView.class});
@@ -320,10 +320,10 @@ public class JRootApp extends JPanel implements AppView {
                     throw new BeanFactoryException(e);
                 }
             }
-            
+
             // cache the factory
-            m_aBeanFactories.put(beanfactory, bf);         
-            
+            m_aBeanFactories.put(beanfactory, bf);
+
             // Initialize if it is a BeanFactoryApp
             if (bf instanceof BeanFactoryApp) {
                 ((BeanFactoryApp) bf).init(this);
@@ -331,18 +331,18 @@ public class JRootApp extends JPanel implements AppView {
         }
         return bf.getBean();
     }
-    
+
     private static String mapNewClass(String classname) {
         String newclass = m_oldclasses.get(classname);
-        return newclass == null 
-                ? classname 
+        return newclass == null
+                ? classname
                 : newclass;
     }
-    
+
     private static void initOldClasses() {
         m_oldclasses = new HashMap<String, String>();
-        
-        // update bean names from 2.00 to 2.20    
+
+        // update bean names from 2.00 to 2.20
         m_oldclasses.put("fr.pasteque.pos.reports.JReportCustomers", "/com/openbravo/reports/customers.bs");
         m_oldclasses.put("fr.pasteque.pos.reports.JReportCustomersB", "/com/openbravo/reports/customersb.bs");
         m_oldclasses.put("fr.pasteque.pos.reports.JReportClosedPos", "/com/openbravo/reports/closedpos.bs");
@@ -357,27 +357,27 @@ public class JRootApp extends JPanel implements AppView {
         m_oldclasses.put("fr.pasteque.pos.reports.JReportUserSales", "/com/openbravo/reports/usersales.bs");
         m_oldclasses.put("fr.pasteque.pos.reports.JReportProducts", "/com/openbravo/reports/products.bs");
         m_oldclasses.put("fr.pasteque.pos.reports.JReportCatalog", "/com/openbravo/reports/productscatalog.bs");
-        
+
         // update bean names from 2.10 to 2.20
         m_oldclasses.put("fr.pasteque.pos.panels.JPanelTax", "com.openbravo.pos.inventory.TaxPanel");
-       
+
     }
-    
+
     public void waitCursorBegin() {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     }
-    
+
     public void waitCursorEnd(){
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
-    
+
     public AppUserView getAppUserView() {
         return m_principalapp;
     }
 
-    
+
     private void printerStart() {
-        
+
         String sresource = m_dlSystem.getResourceAsXML("Printer.Start");
         if (sresource == null) {
             m_TP.getDeviceDisplay().writeVisor(AppLocal.APP_NAME, AppLocal.APP_VERSION);
@@ -387,23 +387,23 @@ public class JRootApp extends JPanel implements AppView {
             } catch (TicketPrinterException eTP) {
                 m_TP.getDeviceDisplay().writeVisor(AppLocal.APP_NAME, AppLocal.APP_VERSION);
             }
-        }        
+        }
     }
-    
+
     private void listPeople() {
-        
+
         try {
-           
+
             jScrollPane1.getViewport().setView(null);
 
             JFlowPanel jPeople = new JFlowPanel();
             jPeople.applyComponentOrientation(getComponentOrientation());
-            
+
             java.util.List people = m_dlSystem.listPeopleVisible();
             String[] enabledUsers = m_props.getEnabledUsers();
-            
+
             for (int i = 0; i < people.size(); i++) {
-                 
+
                 AppUser user = (AppUser) people.get(i);
                 // Check if user is not disabled on this machine
                 if (enabledUsers != null) {
@@ -428,60 +428,60 @@ public class JRootApp extends JPanel implements AppView {
                 btn.setMaximumSize(new Dimension(150, 50));
                 btn.setPreferredSize(new Dimension(150, 50));
                 btn.setMinimumSize(new Dimension(150, 50));
-        
-                jPeople.add(btn);                    
+
+                jPeople.add(btn);
             }
             jScrollPane1.getViewport().setView(jPeople);
-            
+
         } catch (BasicException ee) {
             ee.printStackTrace();
         }
     }
     // Action performed when clicking on a people button
     private class AppUserAction extends AbstractAction {
-        
+
         private AppUser m_actionuser;
-        
+
         public AppUserAction(AppUser user) {
             m_actionuser = user;
             putValue(Action.SMALL_ICON, m_actionuser.getIcon());
             putValue(Action.NAME, m_actionuser.getName());
         }
-        
+
         public AppUser getUser() {
             return m_actionuser;
         }
-        
+
         public void actionPerformed(ActionEvent evt) {
             // Try auto-logging if user has no password set
             if (m_actionuser.authenticate()) {
                 // It works!
-                openAppView(m_actionuser);         
+                openAppView(m_actionuser);
             } else {
                 // Show password input
-                String sPassword = JPasswordDialog.showEditPassword(JRootApp.this, 
+                String sPassword = JPasswordDialog.showEditPassword(JRootApp.this,
                         AppLocal.getIntString("Label.Password"),
                         m_actionuser.getName(),
                         m_actionuser.getIcon());
                 if (sPassword != null) {
                     if (m_actionuser.authenticate(sPassword)) {
                         // Password is valid, enter app
-                        openAppView(m_actionuser);                
+                        openAppView(m_actionuser);
                     } else {
                         // Wrong password, show message
                         MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.BadPassword"));
-                        msg.show(JRootApp.this);                        
+                        msg.show(JRootApp.this);
                     }
-                }   
+                }
             }
         }
     }
-    
+
     private void showView(String view) {
         CardLayout cl = (CardLayout)(m_jPanelContainer.getLayout());
-        cl.show(m_jPanelContainer, view);  
+        cl.show(m_jPanelContainer, view);
     }
-    
+
     /** Enter app, show main screen with selected user. */
     private void openAppView(AppUser user) {
         // Make sure app is not already opened before continuing
@@ -492,7 +492,7 @@ public class JRootApp extends JPanel implements AppView {
             // The user status notificator
             jPanel3.add(m_principalapp.getNotificator());
             jPanel3.revalidate();
-            
+
             // The main panel
             m_jPanelContainer.add(m_principalapp, "_" + m_principalapp.getUser().getId());
             showView("_" + m_principalapp.getUser().getId());
@@ -500,12 +500,12 @@ public class JRootApp extends JPanel implements AppView {
             m_principalapp.activate();
         }
     }
-    
+
     /** Return to login screen.
      * @return True if not opened or successfuly closed, false if close failed.
      */
     public boolean closeAppView() {
-        
+
         if (m_principalapp == null) {
             return true;
         } else if (!m_principalapp.deactivate()) {
@@ -521,47 +521,47 @@ public class JRootApp extends JPanel implements AppView {
             m_principalapp = null;
 
             showLogin();
-            
+
             return true;
         }
     }
-    
+
     private void showLogin() {
-        
+
         // Show Login
         listPeople();
-        showView("login");     
+        showView("login");
 
         // show welcome message
         printerStart();
- 
+
         // keyboard listener activation
         inputtext = new StringBuffer();
-        m_txtKeys.setText(null);       
+        m_txtKeys.setText(null);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 m_txtKeys.requestFocus();
             }
-        });  
+        });
     }
-    
+
     private void processKey(char c) {
-        
+
         if (c == '\n') {
-            
+
             AppUser user = null;
             try {
                 user = m_dlSystem.findPeopleByCard(inputtext.toString());
             } catch (BasicException e) {
                 e.printStackTrace();
             }
-            
+
             if (user == null)  {
                 // user not found
                 MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.nocard"));
-                msg.show(this);                
+                msg.show(this);
             } else {
-                openAppView(user);   
+                openAppView(user);
             }
 
             inputtext = new StringBuffer();

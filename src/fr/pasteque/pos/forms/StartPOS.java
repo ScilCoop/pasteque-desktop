@@ -106,7 +106,7 @@ public class StartPOS {
                 if (!registerApp()) {
                     System.exit(1);
                 }
-                
+
                 // Set the format patterns
                 Formats.setIntegerPattern(config.getProperty("format.integer"));
                 Formats.setDoublePattern(config.getProperty("format.double"));

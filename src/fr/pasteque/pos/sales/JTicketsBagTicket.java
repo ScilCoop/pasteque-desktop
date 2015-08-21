@@ -26,8 +26,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import fr.pasteque.data.gui.MessageInf;
-import fr.pasteque.pos.forms.AppView; 
-import fr.pasteque.pos.forms.AppLocal; 
+import fr.pasteque.pos.forms.AppView;
+import fr.pasteque.pos.forms.AppLocal;
 import fr.pasteque.pos.printer.*;
 import fr.pasteque.basic.BasicException;
 import fr.pasteque.data.gui.JMessageDialog;
@@ -41,75 +41,75 @@ import fr.pasteque.pos.panels.JTicketsFinder;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class JTicketsBagTicket extends JTicketsBag {
-    
+
     private DataLogicSystem m_dlSystem = null;
     protected DataLogicCustomers dlCustomers = null;
 
-    private DeviceTicket m_TP;    
-    private TicketParser m_TTP;    
-    private TicketParser m_TTP2; 
-    
+    private DeviceTicket m_TP;
+    private TicketParser m_TTP;
+    private TicketParser m_TTP2;
+
     private TicketInfo m_ticket;
     private TicketInfo m_ticketCopy;
-    
+
     private JTicketsBagTicketBag m_TicketsBagTicketBag;
-    
+
     private JPanelTicketEdits m_panelticketedit;
 
     /** Creates new form JTicketsBagTicket */
     public JTicketsBagTicket(AppView app, JPanelTicketEdits panelticket) {
-        
+
         super(app, panelticket);
-        m_panelticketedit = panelticket; 
+        m_panelticketedit = panelticket;
         m_dlSystem = new DataLogicSystem();
         dlCustomers = new DataLogicCustomers();
-        
+
         // Inicializo la impresora...
         m_TP = new DeviceTicket();
-   
+
         // Inicializo el parser de documentos de ticket
         m_TTP = new TicketParser(m_TP, m_dlSystem); // para visualizar el ticket
         m_TTP2 = new TicketParser(m_App.getDeviceTicket(), m_dlSystem); // para imprimir el ticket
-        
+
         initComponents();
-        
+
         m_TicketsBagTicketBag = new JTicketsBagTicketBag(this);
-        
+
         m_jTicketEditor.addEditorKeys(m_jKeys);
-        
+
         // Este deviceticket solo tiene una impresora, la de pantalla
         m_jPanelTicket.add(m_TP.getDevicePrinter("1").getPrinterComponent(), BorderLayout.CENTER);
     }
-    
+
     public void activate() {
-        
+
         // precondicion es que no tenemos ticket activado ni ticket en el panel
-        
+
         m_ticket = null;
         m_ticketCopy = null;
-        
-        printTicket();        
-        
+
+        printTicket();
+
         m_jTicketEditor.reset();
         m_jTicketEditor.activate();
-        
+
         m_panelticketedit.setActiveTicket(null, null);
 
         jrbSales.setSelected(true);
-        
+
         m_jEdit.setVisible(m_App.getAppUserView().getUser().hasPermission("sales.EditTicket"));
         m_jRefund.setVisible(m_App.getAppUserView().getUser().hasPermission("sales.RefundTicket"));
         m_jPrint.setVisible(m_App.getAppUserView().getUser().hasPermission("sales.PrintTicket"));
-             
+
         // postcondicion es que tenemos ticket activado aqui y ticket en el panel
     }
-    
+
     public boolean deactivate() {
-        
-        // precondicion es que tenemos ticket activado aqui y ticket en el panel        
-        m_ticket = null;   
+
+        // precondicion es que tenemos ticket activado aqui y ticket en el panel
+        m_ticket = null;
         m_ticketCopy = null;
-        return true;       
+        return true;
         // postcondicion es que no tenemos ticket activado ni ticket en el panel
     }
 
@@ -125,26 +125,26 @@ public class JTicketsBagTicket extends JTicketsBag {
         }
         m_ticket = null;
         m_ticketCopy = null;
-        resetToTicket(); 
+        resetToTicket();
     }
 
     public void canceleditionTicket() {
-        
+
         m_ticketCopy = null;
         resetToTicket();
-    }    
-    
-    private void resetToTicket() {       
+    }
+
+    private void resetToTicket() {
         printTicket();
         m_jTicketEditor.reset();
         m_jTicketEditor.activate();
-        m_panelticketedit.setActiveTicket(null, null); 
+        m_panelticketedit.setActiveTicket(null, null);
     }
-    
+
     protected JComponent getBagComponent() {
         return m_TicketsBagTicketBag;
     }
-    
+
     protected JComponent getNullComponent() {
         return this;
     }
@@ -165,7 +165,7 @@ public class JTicketsBagTicket extends JTicketsBag {
             MessageInf msg = new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.cannotloadticket"), e);
             msg.show(this);
         }
-        
+
         m_jTicketEditor.reset();
         m_jTicketEditor.activate();
     }
@@ -192,15 +192,15 @@ public class JTicketsBagTicket extends JTicketsBag {
         }
         m_jRefund.setEnabled(m_ticket != null && m_ticket.getTicketType() == TicketInfo.RECEIPT_NORMAL);
         m_jPrint.setEnabled(m_ticket != null);
-        
+
         // Este deviceticket solo tiene una impresora, la de pantalla
         m_TP.getDevicePrinter("1").reset();
-        
+
         if (m_ticket == null) {
-            m_jTicketId.setText(null);            
+            m_jTicketId.setText(null);
         } else {
             m_jTicketId.setText(m_ticket.getName());
-            
+
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.VELOCITY);
                 String resource;
@@ -384,17 +384,17 @@ public class JTicketsBagTicket extends JTicketsBag {
         for(int i = 0; i < m_ticket.getLinesCount(); i++) {
             TicketLineInfo newline = new TicketLineInfo(m_ticket.getLine(i));
             aRefundLines.add(newline);
-        } 
-        
+        }
+
         m_ticketCopy = null;
         m_TicketsBagTicketBag.showRefund();
         m_panelticketedit.showRefundLines(aRefundLines);
-        
+
         TicketInfo refundticket = new TicketInfo();
         refundticket.setTicketType(TicketInfo.RECEIPT_REFUND);
         refundticket.setCustomer(m_ticket.getCustomer());
         refundticket.setPayments(m_ticket.getPayments());
-        m_panelticketedit.setActiveTicket(refundticket, null);      
+        m_panelticketedit.setActiveTicket(refundticket, null);
     }
 
     private void okBtnActionPerformed(java.awt.event.ActionEvent evt) {
@@ -436,5 +436,5 @@ public class JTicketsBagTicket extends JTicketsBag {
     private javax.swing.JButton m_jRefund;
     private fr.pasteque.pos.widgets.JEditorIntegerPositive m_jTicketEditor;
     private javax.swing.JLabel m_jTicketId;
-    
+
 }

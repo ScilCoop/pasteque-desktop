@@ -2,19 +2,70 @@
   <style id="default">
     <opaque value="true"/>
     <state>
-      <color type="BACKGROUND" value="#EDF7FF" />
-      <color type="FOREGROUND" value="#FFFFFF" />
-      <color type="TEXT_FOREGROUND" value="#000000" />
+      <color type="BACKGROUND" value="#FFFFFF" />
+      <color type="FOREGROUND" value="#000000" />
+      <color type="TEXT_FOREGROUND" value="#111111" />
     </state>
     <font name="Lucida" size="12"/>
   </style>
-  <bind style="default" type="region" key=".*"/>
 
-  <style id="textfield">
+  <style id="accent1">
+    <opaque value="true"/>
     <state>
-      <color value="white" type="BACKGROUND"/>
+        <color type="BACKGROUND" value="#36425F" />
+        <color type="FOREGROUND" value="#FFFFFF" />
+        <color type="TEXT_FOREGROUND" value="#111111" />
     </state>
-    <insets top="5" bottom="6" right="7" left="6"/>
+    <state value="PRESSED">
+        <color type="BACKGROUND" value="#153642" />
+    </state>
   </style>
-  <bind style="textfield" type="region" key="TextField"/>
+
+  <style id="accent2">
+    <opaque value="true"/>
+    <state>
+        <color type="BACKGROUND" value="#A3351E" />
+        <color type="FOREGROUND" value="#FFFFFF" />
+        <color type="TEXT_FOREGROUND" value="#111111" />
+    </state>
+    <state value="PRESSED">
+        <color type="BACKGROUND" value="#252525" />
+    </state>
+  </style>
+
+  <style id="accent3">
+    <opaque value="true"/>
+    <state>
+        <color type="BACKGROUND" value="#7A7A7A" />
+        <color type="FOREGROUND" value="#FFFFFF" />
+        <color type="TEXT_FOREGROUND" value="#111111" />
+    </state>
+    <state value="PRESSED">
+        <color type="BACKGROUND" value="#C2C2C2" />
+    </state>
+  </style>
+
+  <style id="content1_bg">
+    <opaque value="true"/>
+    <state>
+        <color type="BACKGROUND" value="#FFFFFF" />
+    </state>
+  </style>
+
+  <style id="content2_bg">
+    <opaque value="true"/>
+    <state>
+        <color type="BACKGROUND" value="#F6F8FA" />
+    </state>
+  </style>
+
+  <style id="content3_bg">
+    <opaque value="true"/>
+    <state>
+        <color type="BACKGROUND" value="#F9B60E" />
+    </state>
+  </style>
+
+  <bind style="default" type="region" key=".*"/>
+  <bind style="accent2" type="region" key="button"/>
 </synth>

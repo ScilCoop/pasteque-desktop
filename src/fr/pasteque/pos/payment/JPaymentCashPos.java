@@ -49,49 +49,49 @@ import javax.swing.SwingConstants;
  * @author adrianromero
  */
 public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInterface {
-    
+
     private JPaymentNotifier m_notifier;
 
     private double m_dPaid;
     private double m_dTotal;
     private double partAmount;
     private CurrencyInfo currency;
-    
+
     /** Creates new form JPaymentCash */
     public JPaymentCashPos(JPaymentNotifier notifier, DataLogicSystem dlSystem) {
-        
+
         m_notifier = notifier;
-        
-        initComponents();  
-        
+
+        initComponents();
+
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
-        
+
         String code = dlSystem.getResourceAsXML("payment.cash");
         if (code != null) {
             try {
                 ScriptEngine script = ScriptFactory.getScriptEngine(ScriptFactory.BEANSHELL);
-                script.put("payment", new ScriptPaymentCash(dlSystem));    
+                script.put("payment", new ScriptPaymentCash(dlSystem));
                 script.eval(code);
             } catch (ScriptException e) {
                 MessageInf msg = new MessageInf(MessageInf.SGN_NOTICE, AppLocal.getIntString("message.cannotexecute"), e);
                 msg.show(this);
             }
         }
-        
+
     }
-    
+
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
-        
+
         m_dTotal = dTotal;
         this.partAmount = partAmount;
         this.currency = currency;
-        
+
         m_jTendered.reset();
         m_jTendered.activate();
-        
-        printState();        
+
+        printState();
     }
     public PaymentInfo executePayment() {
         if (this.m_dPaid - this.partAmount >= 0.0) {
@@ -102,20 +102,20 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             // Partial part amount
             return new PaymentInfoCash(m_dPaid, m_dPaid,
                     this.currency);
-        }        
+        }
     }
     public Component getComponent() {
         return this;
     }
-    
+
     private void printState() {
 
         Double value = m_jTendered.getDoubleValue();
         if (value == null || value == 0.0) {
             m_dPaid = this.partAmount;
-        } else {            
+        } else {
             m_dPaid = value;
-        }   
+        }
 
         int iCompare = RoundUtils.compare(m_dPaid, this.partAmount);
         boolean fullPayment = RoundUtils.compare(m_dPaid, this.m_dTotal) >= 0
@@ -134,23 +134,23 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         }
         m_notifier.setStatus(m_dPaid > 0.0, fullPayment);
     }
-    
+
     private class RecalculateState implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             printState();
         }
-    }    
-    
+    }
+
     public class ScriptPaymentCash {
-        
+
         private DataLogicSystem dlSystem;
         private ThumbNailBuilder tnbbutton;
-        
+
         public ScriptPaymentCash(DataLogicSystem dlSystem) {
             this.dlSystem = dlSystem;
             tnbbutton = new ThumbNailBuilder(64, 54, "fr.pasteque.images/cash.png");
         }
-        
+
         public void addButton(String image, double amount) {
             JButton btn = WidgetsBuilder.createButton(new ImageIcon(tnbbutton.getThumbNailText(dlSystem.getResourceAsImage(image), Formats.CURRENCY.formatValue(amount))));
             btn.setFocusPainted(false);
@@ -159,11 +159,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             btn.setHorizontalTextPosition(SwingConstants.CENTER);
             btn.setVerticalTextPosition(SwingConstants.BOTTOM);
             btn.addActionListener(new AddAmount(amount));
-            moneyBtnsContainer.add(btn);  
+            moneyBtnsContainer.add(btn);
         }
     }
-    
-    private class AddAmount implements ActionListener {        
+
+    private class AddAmount implements ActionListener {
         private double amount;
         public AddAmount(double amount) {
             this.amount = amount;
@@ -179,11 +179,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             printState();
         }
     }
-    
+
     private void initComponents() {
         AppConfig cfg = AppConfig.loadedInstance;
         int btnSpacing = WidgetsBuilder.pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnspacing")));
-        
+
         jPanel5 = new javax.swing.JPanel();
         changeContainer = new javax.swing.JPanel();
         m_jChangeEuros = WidgetsBuilder.createLabel();
@@ -202,11 +202,12 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
         jPanel5.setLayout(new java.awt.BorderLayout());
 
         changeContainer.setLayout(new GridLayout(2, 2, 8, 8));
-        
-        
+
+
         changeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
         changeContainer.add(changeLabel);
         m_jChangeEuros.setBackground(java.awt.Color.white);
+        m_jChangeEuros.setForeground(java.awt.Color.darkGray);
         m_jChangeEuros.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         m_jChangeEuros.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(1, 4, 1, 4)));
         m_jChangeEuros.setOpaque(true);
@@ -242,7 +243,7 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
 
         add(jPanel2, java.awt.BorderLayout.LINE_END);
     }
-    
+
     private javax.swing.JLabel changeLabel;
     private javax.swing.JLabel givenLabel;
     private javax.swing.JPanel jPanel1;
@@ -255,5 +256,5 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
     private JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
     private JEditorCurrencyPositive m_jTendered;
-    
+
 }
