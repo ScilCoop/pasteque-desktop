@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -38,66 +40,71 @@ import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterface {
-    
+
     private double m_dPaid;
     private double m_dTotal;
     private double partAmount;
     private JPaymentNotifier m_notifier;
     private CurrencyInfo currency;
-    
+
     /** Creates new form JPaymentFree */
     public JPaymentFree(JPaymentNotifier notifier) {
         m_notifier = notifier;
         initComponents();
-        
+
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
     }
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
-        
+
         m_dTotal = dTotal;
         this.partAmount = partAmount;
         this.currency = currency;
-       
+
         // m_jTotal.setText(Formats.CURRENCY.formatValue(new Double(m_dTotal)));
         m_jTendered.reset();
         m_jTendered.activate();
-        
+
         printState();
     }
-    
+
     public PaymentInfo executePayment() {
         return new PaymentInfoFree(m_dPaid, this.currency);
     }
-    public Component getComponent() {
+
+    public JPanel getComponent() {
         return this;
     }
-    
+
+    public JPanel getPanel() {
+        return this;
+    }
+
     private void printState() {
-        
+
         Double value = m_jTendered.getDoubleValue();
         if (value == null) {
             m_dPaid = this.partAmount;
         } else {
             m_dPaid = value;
-        } 
+        }
 
         Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
-        
+
         int iCompare = RoundUtils.compare(m_dPaid, m_dTotal);
-        
+
         // if iCompare > 0 then the payment is not valid
         m_notifier.setStatus(m_dPaid > 0.0 && iCompare <= 0, iCompare == 0);
     }
-    
+
     private class RecalculateState implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             printState();
         }
     }
-    
+
     private void initComponents() {
         setLayout(new java.awt.BorderLayout());
 
@@ -107,7 +114,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         m_jTendered = new JEditorCurrencyPositive();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        
+
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
         jPanel1.add(m_jKeys);
 
@@ -116,7 +123,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         jPanel3.add(m_jTendered, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(jPanel3);
-        
+
         inputContainer.setLayout(new java.awt.BorderLayout());
         inputContainer.add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -124,7 +131,7 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         paymentInfoContainer = new javax.swing.JPanel();
         givenLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.InputCash"));
         m_jMoneyEuros = WidgetsBuilder.createLabel();
-        
+
         paymentInfoContainer.setLayout(new BorderLayout());
 
         JPanel changeContainer = new JPanel();
@@ -137,12 +144,12 @@ public class JPaymentFree extends javax.swing.JPanel implements JPaymentInterfac
         m_jMoneyEuros.setOpaque(true);
         changeContainer.add(m_jMoneyEuros);
         paymentInfoContainer.add(changeContainer, BorderLayout.NORTH);
-        
+
         // Add all to main container
         add(paymentInfoContainer, java.awt.BorderLayout.CENTER);
         add(inputContainer, java.awt.BorderLayout.LINE_END);
     }
-    
+
     private JLabel givenLabel;
     private JPanel jPanel1;
     private JPanel inputContainer;

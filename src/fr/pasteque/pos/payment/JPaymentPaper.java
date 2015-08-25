@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -23,7 +25,7 @@
 package fr.pasteque.pos.payment;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Panel;
 import java.awt.GridLayout;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,52 +40,56 @@ import fr.pasteque.pos.widgets.JEditorKeys;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterface {
-    
+
     private JPaymentNotifier m_notifier;
-    
+
     private double m_dTicket;
     private double m_dTotal;
     private double partAmount;
     private CurrencyInfo currency;
-    
+
     private String m_sPaper; // "paperin", "paperout"
-    // private String m_sCustomer; 
-    
-    
+    // private String m_sCustomer;
+
+
     /** Creates new form JPaymentTicket */
     public JPaymentPaper(JPaymentNotifier notifier, String sPaper) {
-        
+
         m_notifier = notifier;
         m_sPaper = sPaper;
-        
+
         initComponents();
-        
+
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
     }
-    
+
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
-        
+
         m_dTotal = dTotal;
         this.partAmount = partAmount;
         this.currency = currency;
-        
+
         m_jTendered.reset();
         m_jTendered.activate();
-        
-        printState();        
+
+        printState();
     }
-    
-    public Component getComponent() {
+
+    public JPanel getComponent() {
         return this;
     }
-    
+
+    public JPanel getPanel() {
+        return this;
+    }
+
     public PaymentInfo executePayment() {
 
         return new PaymentInfoTicket(m_dTicket, this.currency, m_sPaper);
-    }    
-    
+    }
+
     private void printState() {
 
         Double value = m_jTendered.getDoubleValue();
@@ -91,23 +97,23 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
             m_dTicket = 0.0;
         } else {
             m_dTicket = value;
-        } 
-        
+        }
+
         Formats.setAltCurrency(this.currency);
         m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dTicket)));
-        
+
         int iCompare = RoundUtils.compare(m_dTicket, m_dTotal);
-        
+
         // it is allowed to pay more
         m_notifier.setStatus(m_dTicket > 0.0, iCompare >= 0);
     }
-    
+
     private class RecalculateState implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             printState();
         }
-    }    
-    
+    }
+
     private void initComponents() {
         setLayout(new java.awt.BorderLayout());
 
@@ -118,7 +124,7 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jTendered = new JEditorCurrencyPositive();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        
+
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
         jPanel1.add(m_jKeys);
 
@@ -127,15 +133,15 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         jPanel3.add(m_jTendered, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(jPanel3);
-        
+
         inputContainer.setLayout(new java.awt.BorderLayout());
         inputContainer.add(jPanel1, java.awt.BorderLayout.NORTH);
-        
+
         // Setup left part (paymentInfoContainer): payment info (amount)
         JPanel paymentInfoContainer = new JPanel();
         givenLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("Label.InputCash"));
         m_jMoneyEuros = WidgetsBuilder.createLabel();
-        
+
         paymentInfoContainer.setLayout(new BorderLayout());
 
         JPanel changeContainer = new JPanel();
@@ -148,13 +154,13 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
         m_jMoneyEuros.setOpaque(true);
         changeContainer.add(m_jMoneyEuros);
         paymentInfoContainer.add(changeContainer, BorderLayout.NORTH);
-        
+
         // Add all to main container
         add(paymentInfoContainer, BorderLayout.CENTER);
         add(inputContainer, BorderLayout.LINE_END);
     }
-    
-    
+
+
     private javax.swing.JLabel givenLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
@@ -163,5 +169,5 @@ public class JPaymentPaper extends javax.swing.JPanel implements JPaymentInterfa
     private JEditorKeys m_jKeys;
     private javax.swing.JLabel m_jMoneyEuros;
     private JEditorCurrencyPositive m_jTendered;
-    
+
 }

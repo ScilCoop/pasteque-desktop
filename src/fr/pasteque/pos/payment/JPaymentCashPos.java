@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -42,6 +44,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
@@ -104,7 +107,11 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
                     this.currency);
         }
     }
-    public Component getComponent() {
+    public JPanel getComponent() {
+        return this;
+    }
+
+    public JPanel getPanel() {
         return this;
     }
 
@@ -158,6 +165,7 @@ public class JPaymentCashPos extends javax.swing.JPanel implements JPaymentInter
             btn.setRequestFocusEnabled(false);
             btn.setHorizontalTextPosition(SwingConstants.CENTER);
             btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+            btn.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
             btn.addActionListener(new AddAmount(amount));
             moneyBtnsContainer.add(btn);
         }

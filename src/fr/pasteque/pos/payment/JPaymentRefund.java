@@ -1,8 +1,11 @@
+//    Pasteque is based Openbravo POS
 //    Openbravo POS is a point of sales application designed for touch screens.
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //    http://www.openbravo.com/product/pos
+//                  2015 Scil
+//    Philippe Pary
 //
-//    This file is part of Openbravo POS.
+//    This file is part of Pasteque
 //
 //    Openbravo POS is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -21,40 +24,45 @@ package fr.pasteque.pos.payment;
 
 import fr.pasteque.pos.admin.CurrencyInfo;
 import fr.pasteque.pos.customers.CustomerInfoExt;
-import java.awt.Component;
+import java.awt.Panel;
 import fr.pasteque.pos.forms.AppLocal;
+import javax.swing.JPanel;
 
 public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterface {
-    
+
     private JPaymentNotifier m_notifier;
     private double m_dTotal;
-    
+
     private String m_sName;
     private CurrencyInfo currency;
-    
+
     /** Creates new form JPaymentChequeRefund */
     public JPaymentRefund(JPaymentNotifier notifier, String sName) {
-        
+
         m_notifier = notifier;
         m_sName = sName;
-        
+
         initComponents();
     }
-    
+
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
         m_dTotal = dTotal;
         this.currency = currency;
         m_notifier.setStatus(true, true);
     }
-    
+
     public PaymentInfo executePayment() {
         return new PaymentInfoTicket(m_dTotal, this.currency, m_sName);
     }
-    public Component getComponent() {
+    public JPanel getComponent() {
         return this;
-    } 
-    
+    }
+
+    public JPanel getPanel() {
+        return this;
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -69,10 +77,10 @@ public class JPaymentRefund extends javax.swing.JPanel implements JPaymentInterf
 
     }
     // </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
-    
+
 }

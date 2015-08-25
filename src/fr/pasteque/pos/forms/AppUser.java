@@ -1,6 +1,8 @@
+//    Pasteque is based uppon OpenBravo POS
 //    Openbravo POS is a point of sales application designed for touch screens.
 //    Copyright (C) 2008-2009 Openbravo, S.L.
-//    http://www.openbravo.com/product/pos
+//                  2015 Scil
+//    Philippe Pary
 //
 //    This file is part of Openbravo POS.
 //
@@ -178,17 +180,6 @@ public class AppUser implements Serializable {
         m_oldclasses.put("net.adrianromero.tpv.panels.JPanelPayments", "fr.pasteque.pos.panels.JPanelPayments");
         m_oldclasses.put("net.adrianromero.tpv.panels.JPanelCloseMoney", "fr.pasteque.pos.panels.JPanelCloseMoney");
         m_oldclasses.put("net.adrianromero.tpv.reports.JReportClosedPos", "/fr.pasteque.reports/closedpos.bs");
-
-//        m_oldclasses.put("payment.cash", "");
-//        m_oldclasses.put("payment.cheque", "");
-//        m_oldclasses.put("payment.paper", "");
-//        m_oldclasses.put("payment.tichet", "");
-//        m_oldclasses.put("payment.magcard", "");
-//        m_oldclasses.put("payment.free", "");
-//        m_oldclasses.put("refund.cash", "");
-//        m_oldclasses.put("refund.cheque", "");
-//        m_oldclasses.put("refund.paper", "");
-//        m_oldclasses.put("refund.magcard", "");
 
         m_oldclasses.put("Menu.StockManagement", "fr.pasteque.pos.forms.MenuStockManagement");
         m_oldclasses.put("net.adrianromero.tpv.inventory.ProductsPanel", "fr.pasteque.pos.inventory.ProductsPanel");

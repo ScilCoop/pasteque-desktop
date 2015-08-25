@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -1846,6 +1848,8 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         // Tariff area
         m_jTariff.setFocusable(false);
         m_jTariff.setRequestFocusEnabled(false);
+        m_jTariff.setOpaque(true);
+        m_jTariff.setBackground(java.awt.Color.white);
         m_jTariff.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jTariffActionPerformed(evt);

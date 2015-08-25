@@ -33,23 +33,23 @@ import java.awt.Dimension;
 public class JPanelTicketSales extends JPanelTicket {
 
     /** Creates a new instance of JPanelTicketSales */
-    public JPanelTicketSales() {        
+    public JPanelTicketSales() {
     }
-    
+
     @Override
     public void init(AppView app) {
         super.init(app);
         m_ticketlines.addListSelectionListener(new CatalogSelectionListener());
     }
-    
+
     public String getTitle() {
         return null;
     }
-    
+
     public boolean requiresOpenedCash() {
         return true;
     }
-    
+
     protected Component getSouthComponent() {
         m_cat = new JCatalog(dlSales,
                 "true".equals(m_jbtnconfig.getProperty("pricevisible")),
@@ -66,15 +66,15 @@ public class JPanelTicketSales extends JPanelTicket {
     protected void resetSouthComponent() {
         m_cat.showCatalogPanel(null);
     }
-    
+
     protected JTicketsBag getJTicketsBag() {
         return JTicketsBag.createTicketsBag(m_App.getProperties().getProperty("machine.ticketsbag"), m_App, this);
     }
-    
+
     @Override
-    public void activate() throws BasicException {      
+    public void activate() throws BasicException {
         super.activate();
         m_cat.loadCatalog();
-    }      
-    
+    }
+
 }

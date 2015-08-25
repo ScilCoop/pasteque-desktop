@@ -3,6 +3,7 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//    Cédric Houbart
 //
 //    This file is part of POS-Tech.
 //
@@ -31,24 +32,24 @@ import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.pos.forms.AppConfig;
 
 public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
-    
+
     private final static char[] SET_DOUBLE = {'\u007f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '-'};
     private final static char[] SET_DOUBLE_POSITIVE = {'\u007f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.'};
     private final static char[] SET_INTEGER = {'\u007f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-'};
     private final static char[] SET_INTEGER_POSITIVE = {'\u007f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-    
+
     protected EventListenerList listeners = new EventListenerList();
-    
+
     private EditorComponent editorcurrent ;
-    
-    private char[] keysavailable;    
+
+    private char[] keysavailable;
     private boolean m_bMinus;
     private boolean m_bKeyDot;
-       
+
     /** Creates new form JEditorKeys */
     public JEditorKeys() {
         initComponents();
-        
+
         m_jKey0.addActionListener(new MyKeyNumberListener('0'));
         m_jKey1.addActionListener(new MyKeyNumberListener('1'));
         m_jKey2.addActionListener(new MyKeyNumberListener('2'));
@@ -61,27 +62,27 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
         m_jKey9.addActionListener(new MyKeyNumberListener('9'));
         m_jKeyDot.addActionListener(new MyKeyNumberListener('.'));
         m_jCE.addActionListener(new MyKeyNumberListener('\u007f'));
-        m_jMinus.addActionListener(new MyKeyNumberListener('-'));     
-//        m_jBack.addActionListener(new MyKeyNumberListener('\u0008'));  
-//        m_jMode.addActionListener(new MyKeyNumberListener('\u0010')); 
-        
+        m_jMinus.addActionListener(new MyKeyNumberListener('-'));
+//        m_jBack.addActionListener(new MyKeyNumberListener('\u0008'));
+//        m_jMode.addActionListener(new MyKeyNumberListener('\u0010'));
+
         editorcurrent = null;
         setMode(MODE_STRING);
         doEnabled(false);
     }
-    
+
     @Override
     public void setComponentOrientation(ComponentOrientation o) {
         // Nothing to change
     }
-    
+
     public void addActionListener(ActionListener l) {
         listeners.add(ActionListener.class, l);
     }
     public void removeActionListener(ActionListener l) {
         listeners.remove(ActionListener.class, l);
     }
-    
+
     protected void fireActionPerformed() {
         EventListener[] l = listeners.getListeners(ActionListener.class);
         ActionEvent e = null;
@@ -89,10 +90,10 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
             if (e == null) {
                 e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null);
             }
-            ((ActionListener) l[i]).actionPerformed(e);	       
+            ((ActionListener) l[i]).actionPerformed(e);	
         }
-    }   
-    
+    }
+
     private void doEnabled(boolean b) {
         m_jKey0.setEnabled(b);
         m_jKey1.setEnabled(b);
@@ -108,7 +109,7 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
         m_jCE.setEnabled(b);
         m_jMinus.setEnabled(b && m_bMinus);
     }
-    
+
     public void setMode(int iMode) {
         switch (iMode) {
             case MODE_DOUBLE:
@@ -136,54 +137,54 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
                 m_bMinus = true;
                 m_bKeyDot = true;
                 keysavailable = null;
-                break;                                
+                break;
         }
     }
-    
+
     private class MyKeyNumberListener implements java.awt.event.ActionListener {
-        
+
         private char m_cCad;
-        
+
         public MyKeyNumberListener(char cCad){
             m_cCad = cCad;
         }
         public void actionPerformed(java.awt.event.ActionEvent evt) {
-                     
+
             // como contenedor de editores
             if (editorcurrent != null) {
                 editorcurrent.transChar(m_cCad);
             }
         }
-    }  
-    
+    }
+
     public void setActive(EditorComponent e, int iMode) {
-       
+
         if (editorcurrent != null) {
             editorcurrent.deactivate();
-        }        
-        editorcurrent = e;  // e != null    
+        }
+        editorcurrent = e;  // e != null
         setMode(iMode);
         doEnabled(true);
-        
+
         // keyboard listener activation
-        m_txtKeys.setText(null);       
+        m_txtKeys.setText(null);
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 m_txtKeys.requestFocus();
             }
-        });          
+        });
     }
-    
+
     public void setInactive(EditorComponent e) {
-        
+
         if (e == editorcurrent && editorcurrent != null) { // e != null
             editorcurrent.deactivate();
             editorcurrent = null;
             setMode(MODE_STRING);
             doEnabled(false);
-        }        
+        }
     }
-   
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -389,7 +390,7 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
         // como contenedor de editores solo
         if (editorcurrent != null) {
             m_txtKeys.setText("0");
-            
+
             // solo lo lanzamos si esta dentro del set de teclas
             char c = evt.getKeyChar();
             if (c == '\n') {
@@ -408,16 +409,16 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
                 }
             }
         }
-        
+
     }//GEN-LAST:event_m_txtKeysKeyTyped
 
     private void m_txtKeysFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_m_txtKeysFocusLost
 
-        setInactive(editorcurrent); 
+        setInactive(editorcurrent);
 
     }//GEN-LAST:event_m_txtKeysFocusLost
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     javax.swing.JButton m_jCE;
     javax.swing.JButton m_jKey0;
@@ -434,5 +435,5 @@ public class JEditorKeys extends javax.swing.JPanel implements EditorKeys {
     javax.swing.JButton m_jMinus;
     javax.swing.JTextField m_txtKeys;
     // End of variables declaration//GEN-END:variables
-    
+
 }

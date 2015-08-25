@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -29,31 +31,31 @@ import fr.pasteque.data.loader.ImageLoader;
 import fr.pasteque.pos.widgets.WidgetsBuilder;
 
 public class ThumbNailBuilder {
-    
+
     private Image m_imgdefault;
     private int m_width;
     private int m_height;
-    
-    /** Creates a new instance of ThumbNailBuilder */    
+
+    /** Creates a new instance of ThumbNailBuilder */
     public ThumbNailBuilder(int width, int height) {
         init(width, height, null);
     }
-    
+
     public ThumbNailBuilder(int width, int height, Image imgdef) {
         init(width, height, imgdef);
-      
+
     }
-    
+
     public ThumbNailBuilder(int width, int height, String img) {
-        
+
         Image defimg;
         try {
-            init(width, height, ImageLoader.readImage(img));               
+            init(width, height, ImageLoader.readImage(img));
         } catch (Exception fnfe) {
             init(width, height, null);
-        }                 
-    }    
-    
+        }
+    }
+
     private void init(int width, int height, Image imgdef) {
         m_width = width;
         m_height = height;
@@ -61,62 +63,58 @@ public class ThumbNailBuilder {
             m_imgdefault = null;
         } else {
             m_imgdefault = createThumbNail(imgdef);
-        } 
+        }
     }
-    
+
     public Image getThumbNail(Image img) {
-   
+
         if (img == null) {
             return m_imgdefault;
         } else {
             return createThumbNail(img);
-        }     
-    }      
-    
+        }
+    }
+
     public Image getThumbNailText(Image img, String text) {
-                
+
         img = getThumbNail(img);
-        
+
         BufferedImage imgtext = new BufferedImage(img.getWidth(null), img.getHeight(null),  BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = imgtext.createGraphics();
-                
-        // The text        
+
+        // The text
         JTextArea label = new JTextArea();
         label.setOpaque(false);
         label.setLineWrap(true);
         label.setWrapStyleWord(true);
-	
+
         // Make font bold if text is not too long
         int wordsCount = text.split(" ").length;
         int charCount = text.length();
         label.setFont(WidgetsBuilder.getFont(WidgetsBuilder.SIZE_SMALL));
+        label.setForeground(java.awt.Color.darkGray);
         label.setText(text);
         label.setSize(imgtext.getWidth(), imgtext.getHeight()); // Force for preferredSize
         Dimension d = label.getPreferredSize();
-        label.setBounds(0, 0, imgtext.getWidth(), d.height);  
-        
+        label.setBounds(0, 0, imgtext.getWidth(), d.height);
+
         // The background
         Color c1 = new Color(0xff, 0xff, 0xff, 0x40);
         Color c2 = new Color(0xff, 0xff, 0xff, 0xd0);
 
-//        Point2D center = new Point2D.Float(imgtext.getWidth() / 2, label.getHeight());
-//        float radius = imgtext.getWidth() / 3;
-//        float[] dist = {0.1f, 1.0f};
-//        Color[] colors = {c2, c1};        
-//        Paint gpaint = new RadialGradientPaint(center, radius, dist, colors);
         Paint gpaint = new GradientPaint(new Point(0,0), c1, new Point(label.getWidth() / 2, 0), c2, true);
-        
+
         g2d.drawImage(img, 0, 0, null);
         g2d.translate(0, imgtext.getHeight() - label.getHeight());
-        g2d.setPaint(gpaint);            
-        g2d.fillRect(0 , 0, imgtext.getWidth(), label.getHeight());    
+        g2d.setPaint(gpaint);
+        g2d.fillRect(0 , 0, imgtext.getWidth(), label.getHeight());
         label.paint(g2d);
-            
+
         g2d.dispose();
-        
-        return imgtext;    
+
+        return imgtext;
     }
-    
+
     private Image createThumbNail(Image img) {
         // The desired scaled size without deformation
         int targetw, targeth;
@@ -154,5 +152,5 @@ public class ThumbNailBuilder {
                                0, 0, imgw, imgh, null);
         g2d.dispose();
         return midimg;
-    }    
+    }
 }

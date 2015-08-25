@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 Scil (http://scil.coop)
+//                       2015 Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -44,10 +46,10 @@ import fr.pasteque.pos.widgets.WidgetsBuilder;
  * @author  adrianromero
  */
 public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterface {
-    
+
     private JPaymentNotifier notifier;
     private CustomerInfoExt customerext;
-    
+
     private double m_dPaid;
     private double partAmount;
     private double m_dTotal;
@@ -55,67 +57,71 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
 
     /** Creates new form JPaymentDebt */
     public JPaymentDebt(JPaymentNotifier notifier) {
-        
+
         this.notifier = notifier;
-        
-        initComponents();  
-        
+
+        initComponents();
+
         m_jTendered.addPropertyChangeListener("Edition", new RecalculateState());
         m_jTendered.addEditorKeys(m_jKeys);
-        
+
     }
-    
+
     public void activate(CustomerInfoExt customerext, double dTotal,
             double partAmount, CurrencyInfo currency, String transID) {
-        
+
         this.customerext = customerext;
         m_dTotal = dTotal;
         this.partAmount = partAmount;
         this.currency = currency;
-        
+
         m_jTendered.reset();
-        
-        // 
+
+        //
         if (customerext == null) {
             m_jName.setText(null);
             m_jNotes.setText(null);
             txtMaxdebt.setText(null);
-            txtCurdate.setText(null);        
+            txtCurdate.setText(null);
             txtCurdebt.setText(null);
-            
+
             m_jKeys.setEnabled(false);
             m_jTendered.setEnabled(false);
-            
-            
-        } else {            
+
+
+        } else {
             m_jName.setText(customerext.getName());
             m_jNotes.setText(customerext.getNotes());
             txtMaxdebt.setText(Formats.CURRENCY.formatValue(RoundUtils.getValue(customerext.getMaxdebt())));
-            txtCurdate.setText(Formats.DATE.formatValue(customerext.getCurdate()));        
-            txtCurdebt.setText(Formats.CURRENCY.formatValue(RoundUtils.getValue(customerext.getCurdebt())));   
-                
+            txtCurdate.setText(Formats.DATE.formatValue(customerext.getCurdate()));
+            txtCurdebt.setText(Formats.CURRENCY.formatValue(RoundUtils.getValue(customerext.getCurdebt())));
+
             if (RoundUtils.compare(RoundUtils.getValue(customerext.getCurdebt()), RoundUtils.getValue(customerext.getMaxdebt())) >= 0)  {
                 m_jKeys.setEnabled(false);
-                m_jTendered.setEnabled(false);                
-            } else {    
+                m_jTendered.setEnabled(false);
+            } else {
                 m_jKeys.setEnabled(true);
                 m_jTendered.setEnabled(true);
-                m_jTendered.activate();  
+                m_jTendered.activate();
             }
-        }        
-        
+        }
+
         printState();
-        
+
     }
     public PaymentInfo executePayment() {
         return new PaymentInfoTicket(m_dPaid, this.currency, "debt");
     }
-    public Component getComponent() {
+    public JPanel getComponent() {
+        return this;
+    }
+    public JPanel getPanel() {
         return this;
     }
 
+
     private void printState() {
-        
+
         if (customerext == null) {
             m_jMoneyEuros.setText(null);
             jlblMessage.setText(AppLocal.getIntString("message.nocustomernodebt"));
@@ -126,12 +132,12 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
                 m_dPaid = this.partAmount;
             } else {
                 m_dPaid = value;
-            } 
+            }
             Formats.setAltCurrency(this.currency);
             m_jMoneyEuros.setText(Formats.CURRENCY.formatValue(new Double(m_dPaid)));
-            
-            
-            if (RoundUtils.compare(RoundUtils.getValue(customerext.getCurdebt()) + m_dPaid, RoundUtils.getValue(customerext.getMaxdebt())) >= 0)  { 
+
+
+            if (RoundUtils.compare(RoundUtils.getValue(customerext.getCurdebt()) + m_dPaid, RoundUtils.getValue(customerext.getMaxdebt())) >= 0)  {
                 // maximum debt exceded
                 jlblMessage.setText(AppLocal.getIntString("message.customerdebtexceded"));
                 notifier.setStatus(false, false);
@@ -141,15 +147,15 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
                 // if iCompare > 0 then the payment is not valid
                 notifier.setStatus(m_dPaid > 0.0 && iCompare <= 0, iCompare == 0);
             }
-        }        
+        }
     }
-    
+
     private class RecalculateState implements PropertyChangeListener {
         public void propertyChange(PropertyChangeEvent evt) {
             printState();
         }
-    }     
-    
+    }
+
     private void initComponents() {
         setLayout(new java.awt.BorderLayout());
 
@@ -159,7 +165,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         m_jTendered = new JEditorCurrencyPositive();
         JPanel jPanel1 = new javax.swing.JPanel();
         JPanel jPanel3 = new javax.swing.JPanel();
-        
+
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.Y_AXIS));
         jPanel1.add(m_jKeys);
 
@@ -168,7 +174,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         jPanel3.add(m_jTendered, java.awt.BorderLayout.CENTER);
 
         jPanel1.add(jPanel3);
-        
+
         inputContainer.setLayout(new java.awt.BorderLayout());
         inputContainer.add(jPanel1, java.awt.BorderLayout.NORTH);
 
@@ -176,7 +182,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         JPanel paymentInfoContainer = new JPanel();
         paymentInfoContainer.setLayout(new BoxLayout(paymentInfoContainer, BoxLayout.Y_AXIS));
         JPanel debtInfoContainer = new JPanel(new GridLayout(6, 2, 8, 8));
-        
+
         // First line: debt amount
         JLabel debtLabel = WidgetsBuilder.createLabel(AppLocal.getIntString("label.debt"));
         debtInfoContainer.add(debtLabel);
@@ -242,7 +248,7 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
         // Add all these stuff to container
         paymentInfoContainer.add(debtInfoContainer);
         paymentInfoContainer.add(jlblMessage);
-        
+
         // Add all to main container
         add(paymentInfoContainer, java.awt.BorderLayout.CENTER);
         add(inputContainer, java.awt.BorderLayout.LINE_END);
@@ -258,5 +264,5 @@ public class JPaymentDebt extends javax.swing.JPanel implements JPaymentInterfac
     private javax.swing.JTextField txtCurdate;
     private javax.swing.JTextField txtCurdebt;
     private javax.swing.JTextField txtMaxdebt;
-    
+
 }

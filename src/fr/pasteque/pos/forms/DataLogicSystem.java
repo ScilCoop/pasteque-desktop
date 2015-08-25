@@ -291,18 +291,23 @@ public class DataLogicSystem {
     /** Load resource from server */
     private final byte[] loadResource(String name) throws BasicException {
         ServerLoader loader = new ServerLoader();
-        byte[] resource;
+        byte[] resource = null;
         // Check resource from server
         try {
             ServerLoader.Response r = loader.read("ResourcesAPI", "get",
                     "label", name);
             if (r.getStatus().equals(ServerLoader.Response.STATUS_OK)) {
                 JSONObject o = r.getObjContent();
-                String strRes = o.getString("content");
-                if (o.getInt("type") == 0) {
+                String strRes = null;
+                if(o != null && o.getString("content") != null) {
+                    strRes = o.getString("content");
+                }
+                if (o != null && o.getInt("type") == 0) {
                     resource = strRes.getBytes();
                 } else {
-                    resource = DatatypeConverter.parseBase64Binary(strRes);
+                    if(strRes != null) {
+                        resource = DatatypeConverter.parseBase64Binary(strRes);
+                    }
                 }
             } else {
                 return null;

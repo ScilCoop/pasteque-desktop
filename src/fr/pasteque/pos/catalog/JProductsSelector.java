@@ -34,20 +34,19 @@ import fr.pasteque.beans.JFlowPanel;
  * @author adrianromero
  */
 public class JProductsSelector extends javax.swing.JPanel {
-    
+
     private JFlowPanel flowpanel;
-    
+
     /** Creates new form JProductsSelector */
     public JProductsSelector() {
         initComponents();
 
         flowpanel = new JFlowPanel();
-        
+
         add(flowpanel, BorderLayout.CENTER);
     }
-    
+
     public void addProduct(Image img, String name, ActionListener al) {
-        
         JButton btn = new JButton();
         btn.applyComponentOrientation(getComponentOrientation());
         btn.setText(name);
@@ -62,9 +61,9 @@ public class JProductsSelector extends javax.swing.JPanel {
         btn.setPreferredSize(new Dimension(80, 70));
         btn.setMinimumSize(new Dimension(80, 70));
         btn.addActionListener(al);
-        flowpanel.add(btn);        
+        flowpanel.add(btn);
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -76,9 +75,9 @@ public class JProductsSelector extends javax.swing.JPanel {
         setLayout(new java.awt.BorderLayout());
 
     }// </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    
+
 }

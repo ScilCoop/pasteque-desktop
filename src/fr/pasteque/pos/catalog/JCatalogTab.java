@@ -1,8 +1,11 @@
+//    Pasteque is based upon Openbravo POS
 //    Openbravo POS is a point of sales application designed for touch screens.
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //    http://www.openbravo.com/product/pos
+//    Copyright 2015 Scil
+//    Philippe Pary
 //
-//    This file is part of Openbravo POS.
+//    This file is part of Pasteque
 //
 //    Openbravo POS is free software: you can redistribute it and/or modify
 //    it under the terms of the GNU General Public License as published by
@@ -30,27 +33,30 @@ import fr.pasteque.pos.forms.AppConfig;
  * @author adrianromero
  */
 public class JCatalogTab extends javax.swing.JPanel {
-    
+
     private JFlowPanel flowpanel;
-    
+
     /** Creates new form JCategoryProducts */
     public JCatalogTab() {
         initComponents();
 
         flowpanel = new JFlowPanel();
         JScrollPane scroll = new JScrollPane(flowpanel);
+        flowpanel.setOpaque(true);
+        flowpanel.setBackground(java.awt.Color.white);
+        scroll.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(0,0,0,0)));
+
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scroll.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
-        
+
         add(scroll, BorderLayout.CENTER);
     }
-    
+
     public void setEnabled(boolean value) {
         flowpanel.setEnabled(value);
         super.setEnabled(value);
     }
-    
+
     public void addButton(Icon ico, ActionListener al) {
         JButton btn = new JButton();
         btn.applyComponentOrientation(getComponentOrientation());
@@ -62,7 +68,7 @@ public class JCatalogTab extends javax.swing.JPanel {
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setMargin(new Insets(2, 2, 2, 2));
         btn.addActionListener(al);
-        flowpanel.add(btn);        
+        flowpanel.add(btn);
     }
 
     public void addButton(Icon ico, String id, ActionListener al) {
@@ -91,7 +97,7 @@ public class JCatalogTab extends javax.swing.JPanel {
     private JButton checkButton(String id) {
         int count = flowpanel.getComponentCount();
         JButton btn = null;
-        
+
         for (int i = 0; i < count; i++) {
             if ( ((JButton)flowpanel.getComponent(i)).getName().equals(id) )
                 btn = (JButton)flowpanel.getComponent(i);
@@ -109,9 +115,9 @@ public class JCatalogTab extends javax.swing.JPanel {
 
         setLayout(new java.awt.BorderLayout());
     }// </editor-fold>//GEN-END:initComponents
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     // End of variables declaration//GEN-END:variables
-    
+
 }

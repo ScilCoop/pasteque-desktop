@@ -28,12 +28,12 @@ import fr.pasteque.basic.BasicException;
  * @author adrianromero
  */
 public interface CatalogSelector {
-    
+
     public void loadCatalog() throws BasicException;
     public void showCatalogPanel(String id);
     public void setComponentEnabled(boolean value);
     public Component getComponent();
-    
-    public void addActionListener(ActionListener l);  
-    public void removeActionListener(ActionListener l);    
+
+    public void addActionListener(ActionListener l);
+    public void removeActionListener(ActionListener l);
 }

@@ -46,50 +46,50 @@ import fr.pasteque.pos.forms.AppConfig;
  */
 public class JCatalogSubgroups extends JPanel implements ListSelectionListener, CatalogSelector {
     protected EventListenerList listeners = new EventListenerList();
-    private DataLogicSales m_dlSales;   
+    private DataLogicSales m_dlSales;
     private TaxesLogic taxeslogic;
 
     private boolean pricevisible;
     private boolean taxesincluded;
-    
+
     // Set of Products panels
     private Map<String, ProductInfoExt> m_productsset = new HashMap<String, ProductInfoExt>();
-    
+
     // Set of Categoriespanels
      private Set<Integer> m_subgroupsset = new HashSet<Integer>();
-        
+
     private ThumbNailBuilder tnbbutton;
     private ThumbNailBuilder tnbcat;
-    
+
     private SubgroupInfo showingsubgr = null;
     private int m_index;
     private boolean m_guided;
-    
+
     /** Creates new form JCatalog */
     public JCatalogSubgroups(DataLogicSales dlSales) {
         this(dlSales, false, false, 64, 54);
     }
-    
+
     public JCatalogSubgroups(DataLogicSales dlSales, boolean pricevisible, boolean taxesincluded, int width, int height) {
-        
+
         m_dlSales = dlSales;
         this.pricevisible = pricevisible;
         this.taxesincluded = taxesincluded;
-        
+
         initComponents();
-        
-        m_jListSubgroups.addListSelectionListener(this);                
+
+        m_jListSubgroups.addListSelectionListener(this);
         m_jscrollsubgr.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
 
 //TODO Cambiar imagenes por defecto si hay otras. Cambiar tb en SubgroupEditor
         tnbcat = new ThumbNailBuilder(32, 32, "category_default.png");
         tnbbutton = new ThumbNailBuilder(width, height, "product_default.png");
     }
-    
+
     public Component getComponent() {
         return this;
     }
-    
+
     public void showCatalogPanel(String id) {
         if (id == null) {
             showRootSubgroupsPanel();
@@ -112,34 +112,34 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         taxeslogic = new TaxesLogic(m_dlSales.getTaxList());
         // delete all categories panel
         m_jProducts.removeAll();
-        
-        m_productsset.clear();        
+
+        m_productsset.clear();
         m_subgroupsset.clear();
-        
+
         showingsubgr = null;
         m_index = 0;
 
         // Select the first category
         m_jListSubgroups.setCellRenderer(new SmallSubgroupRenderer());
-         
+
         // Display catalog panel
         showRootSubgroupsPanel();
     }
 
     public void setComponentEnabled(boolean value) {
-        
+
         m_jListSubgroups.setEnabled(value);
         m_jscrollsubgr.setEnabled(value);
         m_lblIndicator.setEnabled(value);
         m_btnBack.setEnabled(value);
-        m_jProducts.setEnabled(value); 
+        m_jProducts.setEnabled(value);
         synchronized (m_jProducts.getTreeLock()) {
             int compCount = m_jProducts.getComponentCount();
             for (int i = 0 ; i < compCount ; i++) {
                 m_jProducts.getComponent(i).setEnabled(value);
             }
         }
-     
+
         this.setEnabled(value);
     }
 
@@ -147,8 +147,8 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
         m_guided = value;
         m_jListSubgroups.setEnabled(!value);
         m_jscrollsubgr.setEnabled(!value);
-    }   
-    
+    }
+
     public void addActionListener(ActionListener l) {
         listeners.add(ActionListener.class, l);
     }
@@ -157,35 +157,35 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     }
 
     public void valueChanged(ListSelectionEvent evt) {
-        
+
         if (!evt.getValueIsAdjusting()) {
             int i = m_jListSubgroups.getSelectedIndex();
             if (i >= 0) {
                 // Lo hago visible...
                 Rectangle oRect = m_jListSubgroups.getCellBounds(i, i);
-                m_jListSubgroups.scrollRectToVisible(oRect);       
+                m_jListSubgroups.scrollRectToVisible(oRect);
             }
         }
-    }  
-    
+    }
+
     protected void fireSelectedProduct(ProductInfoExt prod) {
         EventListener[] l = listeners.getListeners(ActionListener.class);
         ActionEvent e = null;
-        
+
         for (int i = 0; i < l.length; i++) {
             if (e == null) {
                 e = new ActionEvent(prod, ActionEvent.ACTION_PERFORMED, prod.getID());
             }
-            ((ActionListener) l[i]).actionPerformed(e);	       
+            ((ActionListener) l[i]).actionPerformed(e);	
         }
-        
+
         if (m_guided) {
             m_index++;
-            
+
             //Si hay subgrupos de los que elegir...
             if (m_jListSubgroups.getModel().getSize() > m_index) {
                 m_jListSubgroups.setSelectedIndex(m_index);
-            
+
             //Si ya hemos elegido un producto de cada subgrupo hacemos changeCatalog
             } else {
                 //Enviamos un codigo para que se haga un changeCatalog
@@ -194,11 +194,11 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
                     if (e == null) {
                         e = new ActionEvent(prod, ActionEvent.ACTION_PERFORMED, "-1");
                     }
-                    ((ActionListener) l[i]).actionPerformed(e);	       
+                    ((ActionListener) l[i]).actionPerformed(e);	
                 }
             }
         }
-    }   
+    }
 
     /**
      * Call for cancelling the subgroup sale
@@ -207,49 +207,49 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     private void cancelSubgroupSale() {
         EventListener[] l = listeners.getListeners(ActionListener.class);
         ActionEvent e = null;
-        
+
         for (int i = 0; i < l.length; i++) {
-            if (e == null) {                
+            if (e == null) {
                 e = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, "cancelSubgroupSale");
             }
-            ((ActionListener) l[i]).actionPerformed(e);	       
+            ((ActionListener) l[i]).actionPerformed(e);	
         }
 
     }
-    
+
     private void selectSubgroupPanel(Integer sid) {
 
         try {
             // Load subgroups panel if not exists
             if (!m_subgroupsset.contains(sid)) {
-                
-                JCatalogTab jcurrTab = new JCatalogTab();      
+
+                JCatalogTab jcurrTab = new JCatalogTab();
                 m_jProducts.add(jcurrTab, String.valueOf(sid));
                 m_subgroupsset.add(sid);
-                
+
                 // Add products
                 java.util.List<ProductInfoExt> products = m_dlSales.getSubgroupCatalog(sid);
                 for (ProductInfoExt prod : products) {
                     jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
                 }
             }
-            
+
             // Show categories panel
             CardLayout cl = (CardLayout)(m_jProducts.getLayout());
-            cl.show(m_jProducts, String.valueOf(sid));  
+            cl.show(m_jProducts, String.valueOf(sid));
         } catch (BasicException e) {
-            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notactive"), e));            
+            JMessageDialog.showMessage(this, new MessageInf(MessageInf.SGN_WARNING, AppLocal.getIntString("message.notactive"), e));
         }
     }
-    
+
     private String getProductLabel(ProductInfoExt product) {
     	AppConfig cfg = AppConfig.loadedInstance;
 	String prodText = null;
 	
-        if(cfg.getProperty("ui.buttons.prodbyref").equals("1")) {          
-                prodText = product.getReference();                         
+        if(cfg.getProperty("ui.buttons.prodbyref").equals("1")) {
+                prodText = product.getReference();
         }
-        else {                                                             
+        else {
                 prodText = product.getName();
         }
 
@@ -264,12 +264,12 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
             return product.getName();
         }
     }
-    
+
     private void selectIndicatorPanel(Icon icon, String label) {
-        
+
         m_lblIndicator.setText(label);
         m_lblIndicator.setIcon(icon);
-        
+
         // Show subcategories panel
         CardLayout cl = (CardLayout)(m_jCategories.getLayout());
         cl.show(m_jCategories, "subcategories");
@@ -292,21 +292,21 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     }
 
     private void showSubgroupPanel(SubgroupInfo s) {
-        
+
         selectIndicatorPanel(new ImageIcon(tnbbutton.getThumbNail(s.getImage())), s.getName());
         selectSubgroupPanel(s.getID());
         showingsubgr = s;
     }
 /*
     private void showProductPanel(String id) {
-            
+
         ProductInfoExt product = m_productsset.get(id);
 
         if (product == null) {
             if (m_productsset.containsKey(id)) {
                 // It is an empty panel
                 if (showingsubgr == null) {
-                    showRootSubgroupsPanel();                         
+                    showRootSubgroupsPanel();
                 } else {
                     showSubgroupPanel(showingsubgr);
                 }
@@ -319,7 +319,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
                         // no hay productos por tanto lo anado a la de vacios y muestro el panel principal.
                         m_productsset.put(id, null);
                         if (showingsubgr == null) {
-                            showRootSubgroupsPanel();                         
+                            showRootSubgroupsPanel();
                         } else {
                             showSubgroupPanel(showingsubgr);
                         }
@@ -329,24 +329,24 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
                         product = m_dlSales.getProductInfo(id);
                         m_productsset.put(id, product);
 
-                        JCatalogTab jcurrTab = new JCatalogTab();      
-                        m_jProducts.add(jcurrTab, "PRODUCT." + id);                        
+                        JCatalogTab jcurrTab = new JCatalogTab();
+                        m_jProducts.add(jcurrTab, "PRODUCT." + id);
 
                         // Add products
                         for (ProductInfoExt prod : products) {
                             jcurrTab.addButton(new ImageIcon(tnbbutton.getThumbNailText(prod.getImage(), getProductLabel(prod))), new SelectedAction(prod));
-                        }                       
+                        }
 
                         selectIndicatorPanel(new ImageIcon(tnbbutton.getThumbNail(product.getImage())), product.getName());
 
                         CardLayout cl = (CardLayout)(m_jProducts.getLayout());
-                        cl.show(m_jProducts, "PRODUCT." + id); 
+                        cl.show(m_jProducts, "PRODUCT." + id);
                     }
                 } catch (BasicException eb) {
                     eb.printStackTrace();
                     m_productsset.put(id, null);
                     if (showingsubgr == null) {
-                        showRootSubgroupsPanel();                         
+                        showRootSubgroupsPanel();
                     } else {
                         showSubgroupPanel(showingsubgr);
                     }
@@ -357,7 +357,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
             selectIndicatorPanel(new ImageIcon(tnbbutton.getThumbNail(product.getImage())), product.getName());
 
             CardLayout cl = (CardLayout)(m_jProducts.getLayout());
-            cl.show(m_jProducts, "PRODUCT." + id); 
+            cl.show(m_jProducts, "PRODUCT." + id);
         }
     }
 */
@@ -370,7 +370,7 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
             fireSelectedProduct(prod);
         }
     }
-/*    
+/*
     private class SelectedSubgroup implements ActionListener {
         private SubgroupInfo s;
         public SelectedSubgroup(SubgroupInfo s) {
@@ -380,20 +380,20 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
             showSubgroupPanel(s);
         }
     }
-*/    
+*/
     private class SubgroupsListModel extends AbstractListModel {
         private java.util.List m_aSubgroups;
         public SubgroupsListModel(java.util.List aSubgroups) {
             m_aSubgroups = aSubgroups;
         }
-        public int getSize() { 
-            return m_aSubgroups.size(); 
+        public int getSize() {
+            return m_aSubgroups.size();
         }
         public Object getElementAt(int i) {
             return m_aSubgroups.get(i);
-        }    
+        }
     }
-    
+
     private class SmallSubgroupRenderer extends DefaultListCellRenderer {
         public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
             super.getListCellRendererComponent(list, null, index, isSelected, cellHasFocus);
@@ -401,9 +401,9 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
             setText(s.getName());
             setIcon(new ImageIcon(tnbcat.getThumbNail(s.getImage())));
             return this;
-        }      
-    }            
-    
+        }
+    }
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -515,13 +515,13 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     }// </editor-fold>//GEN-END:initComponents
 
     private void m_jCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_jCancelActionPerformed
-        cancelSubgroupSale();        
+        cancelSubgroupSale();
     }//GEN-LAST:event_m_jCancelActionPerformed
 
     private void m_btnBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_m_btnBackActionPerformed
 
-        showRootSubgroupsPanel();        
-        
+        showRootSubgroupsPanel();
+
     }//GEN-LAST:event_m_btnBackActionPerformed
 
     private void m_jListSubgroupsValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_m_jListSubgroupsValueChanged
@@ -532,10 +532,10 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
                 selectSubgroupPanel(s.getID());
             }
         }
-        
+
 }//GEN-LAST:event_m_jListSubgroupsValueChanged
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -552,5 +552,5 @@ public class JCatalogSubgroups extends JPanel implements ListSelectionListener, 
     private javax.swing.JScrollPane m_jscrollsubgr;
     private javax.swing.JLabel m_lblIndicator;
     // End of variables declaration//GEN-END:variables
-    
+
 }

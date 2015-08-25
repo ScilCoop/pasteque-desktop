@@ -2,7 +2,7 @@
   <style id="default">
     <opaque value="true"/>
     <state>
-      <color type="BACKGROUND" value="#FFFFFF" />
+      <color type="BACKGROUND" value="#DDDDDD" />
       <color type="FOREGROUND" value="#000000" />
       <color type="TEXT_FOREGROUND" value="#111111" />
     </state>
@@ -23,6 +23,7 @@
 
   <style id="accent2">
     <opaque value="true"/>
+    <property key="Button.iconTextGap" type="integer" value="5" />
     <state>
         <color type="BACKGROUND" value="#A3351E" />
         <color type="FOREGROUND" value="#FFFFFF" />
@@ -30,6 +31,7 @@
     </state>
     <state value="PRESSED">
         <color type="BACKGROUND" value="#252525" />
+        <color type="TEXT_FOREGROUND" value="#DDDDDD" />
     </state>
   </style>
 
@@ -52,6 +54,18 @@
     </state>
   </style>
 
+  <style id="content1_select">
+    <state value="SELECTED">
+        <color type="BACKGROUND" value="#DDDDEE" />
+    </state>
+    <state value="FOCUSED">
+        <color type="BACKGROUND" value="#EEDDDD" />
+    </state>
+    <state value="MOUSE_OVER">
+        <color type="BACKGROUND" value="#DDEEDD" />
+    </state>
+  </style>
+
   <style id="content2_bg">
     <opaque value="true"/>
     <state>
@@ -66,6 +80,10 @@
     </state>
   </style>
 
-  <bind style="default" type="region" key=".*"/>
+  <bind style="default" type="region" key="Panel"/>
+  <bind style="content1_bg" type="region" key="List"/>
   <bind style="accent2" type="region" key="button"/>
+  <bind style="content2_bg" type="region" key="SCROLLBAR"/>
+  <bind style="accent2" type="region" key="SCROLLBARTHUMB"/>
+  <bind style="content2_bg" type="region" key="SCROLLBARTRACK"/>
 </synth>

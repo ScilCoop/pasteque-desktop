@@ -3,6 +3,8 @@
 //
 //    Copyright (C) 2007-2009 Openbravo, S.L.
 //                       2012 SARL SCOP Scil (http://scil.coop)
+//                       2015 SARL SCOP Scil (http://scil.coop)
+//    Cédric Houbart, Philippe Pary
 //
 //    This file is part of POS-Tech.
 //
@@ -398,6 +400,7 @@ public class JRootApp extends JPanel implements AppView {
 
             JFlowPanel jPeople = new JFlowPanel();
             jPeople.applyComponentOrientation(getComponentOrientation());
+            jPeople.setBackground(java.awt.Color.white);
 
             java.util.List people = m_dlSystem.listPeopleVisible();
             String[] enabledUsers = m_props.getEnabledUsers();
@@ -615,13 +618,14 @@ public class JRootApp extends JPanel implements AppView {
         m_jLogonName.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         m_jLogonName.setLayout(new java.awt.BorderLayout());
         // Scroll
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
         jScrollPane1.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        jScrollPane1.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        jScrollPane1.setPreferredSize(new java.awt.Dimension(510, 118));
-        jScrollPane1.setMinimumSize(new java.awt.Dimension(510, 118));
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(510, 123));
+        jScrollPane1.setMinimumSize(new java.awt.Dimension(510, 123));
+        jScrollPane1.setBackground(java.awt.Color.white);
         m_jLogonName.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel2.setLayout(new java.awt.BorderLayout());
         // Close button
         m_jClose.setIcon(ImageLoader.readImageIcon("exit.png"));
@@ -629,13 +633,16 @@ public class JRootApp extends JPanel implements AppView {
         m_jClose.setFocusPainted(false);
         m_jClose.setFocusable(false);
         m_jClose.setPreferredSize(new java.awt.Dimension(115, 35));
+        m_jClose.setMaximumSize(new java.awt.Dimension(115, 35));
+        m_jClose.setMinimumSize(new java.awt.Dimension(115, 35));
         m_jClose.setRequestFocusEnabled(false);
+        m_jClose.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
         m_jClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 m_jCloseActionPerformed(evt);
             }
         });
-        jPanel2.add(m_jClose, java.awt.BorderLayout.NORTH);
+        jPanel2.add(m_jClose, java.awt.BorderLayout.SOUTH);
         // Login by scan
         jPanel1.setLayout(null);
         m_txtKeys.setPreferredSize(new java.awt.Dimension(0, 0));
@@ -647,7 +654,7 @@ public class JRootApp extends JPanel implements AppView {
         jPanel1.add(m_txtKeys);
         m_txtKeys.setBounds(0, 0, 0, 0);
         jPanel2.add(jPanel1, java.awt.BorderLayout.CENTER);
-        m_jLogonName.add(jPanel2, java.awt.BorderLayout.LINE_END);
+        m_jLogonName.add(jPanel2, java.awt.BorderLayout.SOUTH);
         c = new GridBagConstraints();
         c.gridx = 0;
         c.gridy = 1;

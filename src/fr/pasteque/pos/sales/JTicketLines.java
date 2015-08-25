@@ -22,6 +22,7 @@
 package fr.pasteque.pos.sales;
 
 import fr.pasteque.data.loader.LocalRes;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
@@ -29,6 +30,7 @@ import java.awt.BorderLayout;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -58,17 +60,17 @@ public class JTicketLines extends javax.swing.JPanel {
     private static Logger logger = Logger.getLogger("fr.pasteque.pos.sales.JTicketLines");
 
     private static SAXParser m_sp = null;
-    
+
     private TicketTableModel m_jTableModel;
-    
+
     /** Creates new form JLinesTicket */
     public JTicketLines() {
-        initComponents();  
+        initComponents();
     }
 
     public void init(String ticketline) {
         ColumnTicket[] acolumns = new ColumnTicket[0];
-        
+
         if (ticketline != null) {
             try {
                 if (m_sp == null) {
@@ -87,60 +89,60 @@ public class JTicketLines extends javax.swing.JPanel {
                 logger.log(Level.WARNING, LocalRes.getIntString("exception.iofile"), eIO);
             }
         }
-               
-        m_jTableModel = new TicketTableModel(acolumns);    
-        m_jTicketTable.setModel(m_jTableModel);        
-        
+
+        m_jTableModel = new TicketTableModel(acolumns);
+        m_jTicketTable.setModel(m_jTableModel);
+
         //m_jTicketTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel jColumns = m_jTicketTable.getColumnModel();
         for (int i = 0; i < acolumns.length; i++) {
             jColumns.getColumn(i).setPreferredWidth(acolumns[i].width);
             jColumns.getColumn(i).setResizable(false);
-        }       
-        
+        }
+
         m_jScrollTableTicket.getVerticalScrollBar().setPreferredSize(new Dimension(35, 35));
         TableCellRenderer defaultHeaderRenderer = m_jTicketTable.getTableHeader().getDefaultRenderer();
         m_jTicketTable.getTableHeader().setDefaultRenderer(new TicketHeaderRenderer(defaultHeaderRenderer, acolumns));
-        m_jTicketTable.getTableHeader().setReorderingAllowed(false);         
+        m_jTicketTable.getTableHeader().setReorderingAllowed(false);
         m_jTicketTable.setDefaultRenderer(Object.class, new TicketCellRenderer(acolumns));
         m_jTicketTable.setRowHeight(WidgetsBuilder.dipToPx(40));
-        m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+        m_jTicketTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         m_jScrollTableTicket.invalidate();
         // reseteo la tabla...
         m_jTableModel.clear();
     }
-    
-    public void addListSelectionListener(ListSelectionListener l) {        
+
+    public void addListSelectionListener(ListSelectionListener l) {
         m_jTicketTable.getSelectionModel().addListSelectionListener(l);
     }
     public void removeListSelectionListener(ListSelectionListener l) {
         m_jTicketTable.getSelectionModel().removeListSelectionListener(l);
     }
-    
-    public void clearTicketLines() {                   
+
+    public void clearTicketLines() {
         m_jTableModel.clear();
     }
-    
+
     public void setTicketLine(int index, TicketLineInfo oLine){
-        
-        m_jTableModel.setRow(index, oLine);  
+
+        m_jTableModel.setRow(index, oLine);
     }
-    
+
     public void addTicketLine(TicketLineInfo oLine) {
 
         m_jTableModel.addRow(oLine);
-        
-        // Selecciono la que acabamos de anadir.            
-        setSelectedIndex(m_jTableModel.getRowCount() - 1);   
-    }    
-    
+
+        // Selecciono la que acabamos de anadir.
+        setSelectedIndex(m_jTableModel.getRowCount() - 1);
+    }
+
     public void insertTicketLine(int index, TicketLineInfo oLine) {
 
         m_jTableModel.insertRow(index, oLine);
-        
-        // Selecciono la que acabamos de anadir.            
-        setSelectedIndex(index);   
-    }     
+
+        // Selecciono la que acabamos de anadir.
+        setSelectedIndex(index);
+    }
     public void removeTicketLine(int i){
 
         m_jTableModel.removeRow(i);
@@ -155,9 +157,9 @@ public class JTicketLines extends javax.swing.JPanel {
             setSelectedIndex(i);
         }
     }
-    
+
     public void setSelectedIndex(int i){
-        
+
         // Seleccionamos
         m_jTicketTable.getSelectionModel().setSelectionInterval(i, i);
 
@@ -165,13 +167,13 @@ public class JTicketLines extends javax.swing.JPanel {
         Rectangle oRect = m_jTicketTable.getCellRect(i, 0, true);
         m_jTicketTable.scrollRectToVisible(oRect);
     }
-    
+
     public int getSelectedIndex() {
         return m_jTicketTable.getSelectionModel().getMinSelectionIndex(); // solo sera uno, luego no importa...
     }
-    
+
     public void selectionDown() {
-        
+
         int i = m_jTicketTable.getSelectionModel().getMaxSelectionIndex();
         if (i < 0){
             i =  0; // No hay ninguna seleccionada
@@ -184,13 +186,13 @@ public class JTicketLines extends javax.swing.JPanel {
 
         if ((i >= 0) && (i < m_jTableModel.getRowCount())) {
             // Solo seleccionamos si podemos.
-     
+
             setSelectedIndex(i);
         }
     }
-    
+
     public void selectionUp() {
-        
+
         int i = m_jTicketTable.getSelectionModel().getMinSelectionIndex();
         if (i < 0){
             i = m_jTableModel.getRowCount() - 1; // No hay ninguna seleccionada
@@ -206,18 +208,18 @@ public class JTicketLines extends javax.swing.JPanel {
             setSelectedIndex(i);
         }
     }
-    
+
     private static class TicketCellRenderer extends DefaultTableCellRenderer {
-        
-        private ColumnTicket[] m_acolumns;        
-        
+
+        private ColumnTicket[] m_acolumns;
+
         public TicketCellRenderer(ColumnTicket[] acolumns) {
             m_acolumns = acolumns;
         }
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column){
-            
+
             JLabel aux = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             WidgetsBuilder.setupLabel(aux, WidgetsBuilder.SIZE_MEDIUM);
             aux.setVerticalAlignment(javax.swing.SwingConstants.TOP);
@@ -225,17 +227,17 @@ public class JTicketLines extends javax.swing.JPanel {
             return aux;
         }
     }
-    
+
     private static class TicketHeaderRenderer extends DefaultTableCellRenderer {
-        
+
         private ColumnTicket[] m_acolumns;
         private TableCellRenderer baseRenderer;
-        
+
         public TicketHeaderRenderer(TableCellRenderer baseRenderer, ColumnTicket[] acolumns) {
             this.baseRenderer = baseRenderer;
             m_acolumns = acolumns;
         }
-        
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel aux = (JLabel) this.baseRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
@@ -245,13 +247,13 @@ public class JTicketLines extends javax.swing.JPanel {
             return aux;
         }
     }
-    
+
     private static class TicketTableModel extends AbstractTableModel {
-        
+
 //        private AppView m_App;
         private ColumnTicket[] m_acolumns;
         private ArrayList m_rows = new ArrayList();
-        
+
         public TicketTableModel(ColumnTicket[] acolumns) {
             m_acolumns = acolumns;
         }
@@ -269,22 +271,22 @@ public class JTicketLines extends javax.swing.JPanel {
         public Object getValueAt(int row, int column) {
             return ((String[]) m_rows.get(row))[column];
         }
-  
+
         @Override
         public boolean isCellEditable(int row, int column) {
             return false;
         }
-        
+
         public void clear() {
             int old = getRowCount();
-            if (old > 0) { 
+            if (old > 0) {
                 m_rows.clear();
                 fireTableRowsDeleted(0, old - 1);
             }
         }
-        
+
         public void setRow(int index, TicketLineInfo oLine){
-            
+
             String[] row = (String []) m_rows.get(index);
             for (int i = 0; i < m_acolumns.length; i++) {
                 try {
@@ -293,18 +295,18 @@ public class JTicketLines extends javax.swing.JPanel {
                     row[i] = script.eval(m_acolumns[i].value).toString();
                 } catch (ScriptException e) {
                     row[i] = null;
-                } 
+                }
                 fireTableCellUpdated(index, i);
-            }             
-        }        
-        
+            }
+        }
+
         public void addRow(TicketLineInfo oLine) {
-            
+
             insertRow(m_rows.size(), oLine);
         }
-        
+
         public void insertRow(int index, TicketLineInfo oLine) {
-            
+
             String[] row = new String[m_acolumns.length];
             for (int i = 0; i < m_acolumns.length; i++) {
                 try {
@@ -313,32 +315,32 @@ public class JTicketLines extends javax.swing.JPanel {
                     row[i] = script.eval(m_acolumns[i].value).toString();
                 } catch (ScriptException e) {
                     row[i] = null;
-                }  
-            } 
-            
+                }
+            }
+
             m_rows.add(index, row);
             fireTableRowsInserted(index, index);
         }
-        
+
         public void removeRow(int row) {
             m_rows.remove(row);
             fireTableRowsDeleted(row, row);
-        }        
+        }
     }
-    
+
     private static class ColumnsHandler extends DefaultHandler {
-        
+
         private ArrayList m_columns = null;
-        
+
         public ColumnTicket[] getColumns() {
             return (ColumnTicket[]) m_columns.toArray(new ColumnTicket[m_columns.size()]);
         }
         @Override
-        public void startDocument() throws SAXException { 
+        public void startDocument() throws SAXException {
             m_columns = new ArrayList();
         }
         @Override
-        public void endDocument() throws SAXException {}    
+        public void endDocument() throws SAXException {}
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
             if ("column".equals(qName)){
@@ -356,28 +358,29 @@ public class JTicketLines extends javax.swing.JPanel {
                 c.value = attributes.getValue("value");
                 m_columns.add(c);
             }
-        }      
+        }
         @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {}
         @Override
         public void characters(char[] ch, int start, int length) throws SAXException {}
     }
-    
+
     private static class ColumnTicket {
         public String name;
         public int width;
         public int align;
         public String value;
     }
-    
+
     private void initComponents() {
         setLayout(new BorderLayout());
-        
+
         m_jScrollTableTicket = new javax.swing.JScrollPane();
         m_jTicketTable = new javax.swing.JTable();
 
         m_jScrollTableTicket.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        m_jScrollTableTicket.setVerticalScrollBarPolicy(javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        m_jScrollTableTicket.setBackground(java.awt.Color.white);
+        m_jScrollTableTicket.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")), javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0)));
         m_jTicketTable.setFocusable(false);
         m_jTicketTable.setIntercellSpacing(new java.awt.Dimension(0, 1));
         m_jTicketTable.setRequestFocusEnabled(false);
@@ -388,7 +391,7 @@ public class JTicketLines extends javax.swing.JPanel {
         add(m_jScrollTableTicket, BorderLayout.CENTER);
 
     }
-    
+
     private javax.swing.JScrollPane m_jScrollTableTicket;
     private javax.swing.JTable m_jTicketTable;
 }
