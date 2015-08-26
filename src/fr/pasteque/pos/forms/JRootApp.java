@@ -627,22 +627,6 @@ public class JRootApp extends JPanel implements AppView {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
         jPanel2.setLayout(new java.awt.BorderLayout());
-        // Close button
-        m_jClose.setIcon(ImageLoader.readImageIcon("exit.png"));
-        m_jClose.setText(AppLocal.getIntString("Button.Close")); // NOI18N
-        m_jClose.setFocusPainted(false);
-        m_jClose.setFocusable(false);
-        m_jClose.setPreferredSize(new java.awt.Dimension(115, 35));
-        m_jClose.setMaximumSize(new java.awt.Dimension(115, 35));
-        m_jClose.setMinimumSize(new java.awt.Dimension(115, 35));
-        m_jClose.setRequestFocusEnabled(false);
-        m_jClose.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
-        m_jClose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                m_jCloseActionPerformed(evt);
-            }
-        });
-        jPanel2.add(m_jClose, java.awt.BorderLayout.SOUTH);
         // Login by scan
         jPanel1.setLayout(null);
         m_txtKeys.setPreferredSize(new java.awt.Dimension(0, 0));
@@ -661,6 +645,32 @@ public class JRootApp extends JPanel implements AppView {
         c.weighty = 1;
         c.anchor = GridBagConstraints.SOUTH;
         m_jPanelLogin.add(m_jLogonName, c);
+
+        // Close button
+        m_jClose.setIcon(ImageLoader.readImageIcon("exit.png"));
+        m_jClose.setText(AppLocal.getIntString("Button.Close")); // NOI18N
+        m_jClose.setFocusPainted(false);
+        m_jClose.setFocusable(false);
+        m_jClose.setPreferredSize(new java.awt.Dimension(115, 35));
+        m_jClose.setMaximumSize(new java.awt.Dimension(115, 35));
+        m_jClose.setMinimumSize(new java.awt.Dimension(115, 35));
+        m_jClose.setRequestFocusEnabled(false);
+        m_jClose.setBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Button.darkShadow")));
+        m_jClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                m_jCloseActionPerformed(evt);
+            }
+        });
+        c = new GridBagConstraints();
+        c.gridx = 0;
+        c.gridy = 2;
+        c.weighty = 0;
+        c.weightx = 1;
+        int versionInset = WidgetsBuilder.dipToPx(10);
+        c.insets = new Insets( versionInset, versionInset, versionInset, versionInset);
+        c.anchor = GridBagConstraints.CENTER;
+        m_jPanelLogin.add(m_jClose, c);
+
         // About
         JButton about = WidgetsBuilder.createButton(ImageLoader.readImageIcon("about.png"), WidgetsBuilder.SIZE_SMALL);
         about.setBorder(BorderFactory.createEmptyBorder());
@@ -672,12 +682,12 @@ public class JRootApp extends JPanel implements AppView {
         });
         c = new GridBagConstraints();
         c.gridx = 0;
-        c.gridy = 2;
+        c.gridy = 0;
         c.weighty = 0.1;
-        c.weightx = 1;
-        int versionInset = WidgetsBuilder.dipToPx(5);
-        c.insets = new Insets(0, 0, 0, versionInset);
-        c.anchor = GridBagConstraints.LINE_END;
+        c.weightx = 0.1;
+        versionInset = WidgetsBuilder.dipToPx(15);
+        c.insets = new Insets( versionInset, versionInset, versionInset, versionInset);
+        c.anchor = GridBagConstraints.FIRST_LINE_START;
         m_jPanelLogin.add(about, c);
         m_jPanelContainer.add(m_jPanelLogin, "login");
         add(m_jPanelContainer, java.awt.BorderLayout.CENTER);

@@ -185,6 +185,7 @@ public abstract class JPaymentSelect extends javax.swing.JDialog
             jpayinterfacePanel.applyComponentOrientation(getComponentOrientation());
             jpayinterfacePanel.setOpaque(true);
             jpayinterfacePanel.setBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray));
+            jpayinterfacePanel.setBackground(java.awt.Color.red);
 
             ImageIcon icon = WidgetsBuilder.createIcon(ImageLoader.readImageIcon(jpay.getIconKey()));
             m_jTabPayment.addTab(

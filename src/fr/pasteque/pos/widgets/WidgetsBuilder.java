@@ -45,7 +45,7 @@ public class WidgetsBuilder {
     private WidgetsBuilder() {}
 
     public static JButton createButton(ImageIcon icon) {
-    	return WidgetsBuilder.createButton(icon, SIZE_MEDIUM);
+        return WidgetsBuilder.createButton(icon, SIZE_MEDIUM);
     }
 
     public static JButton createButton(String text) {
@@ -82,28 +82,28 @@ public class WidgetsBuilder {
 
     public static void adaptSize(Component widget, int size) {
         AppConfig cfg = AppConfig.loadedInstance;
-    	if (cfg != null) {
-    	    if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
-    	        int minWidth, minHeight = 0;
-    	        switch (size) {
-    	        case SIZE_SMALL:
-    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchsmallbtnminwidth")));
+        if (cfg != null) {
+            if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
+                int minWidth, minHeight = 0;
+                switch (size) {
+                case SIZE_SMALL:
+                    minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchsmallbtnminwidth")));
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchsmallbtnminheight")));
-    	            break;
-    	        case SIZE_BIG:
-    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminwidth")));
+                    break;
+                case SIZE_BIG:
+                    minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminwidth")));
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbigbtnminheight")));
-    	            break;
+                    break;
                 case SIZE_HUDGE:
                     minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminwidth")));
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchhudgebtnminheight")));
                     break;
-    	        case SIZE_MEDIUM:
-    	        default:
-    	            minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
+                case SIZE_MEDIUM:
+                default:
+                    minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
                     minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
-    	            break;
-    	        }
+                    break;
+                }
 
                 int width = (int) widget.getPreferredSize().getWidth();
                 int height = (int) widget.getPreferredSize().getHeight();
@@ -117,8 +117,8 @@ public class WidgetsBuilder {
                 widget.setMinimumSize(new Dimension(width, height));
                 widget.setMaximumSize(new Dimension(width, height));
 
-    	    }
-    	}
+            }
+        }
     }
 
     public static int pixelSize(float inchSize) {
@@ -224,7 +224,7 @@ public class WidgetsBuilder {
         AppConfig cfg = AppConfig.loadedInstance;
         if (cfg != null) {
             if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
-    	        adaptSize(box, SIZE_MEDIUM);
+                adaptSize(box, SIZE_MEDIUM);
             }
         }
         return box;
@@ -234,7 +234,7 @@ public class WidgetsBuilder {
         AppConfig cfg = AppConfig.loadedInstance;
         if (cfg != null) {
             if (cfg.getProperty("machine.screentype").equals("touchscreen")) {
-    	        int minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
+                int minWidth = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminwidth")));
                 int minHeight = pixelSize(Float.parseFloat(cfg.getProperty("ui.touchbtnminheight")));
                 return new TouchIcon(icon, minWidth, minHeight);
             }
@@ -248,28 +248,28 @@ public class WidgetsBuilder {
     }
 
     public static class TouchIcon extends ImageIcon {
-    	private int fullHeight;
-    	private int fullWidth;
-    	private ImageIcon icon;
+        private int fullHeight;
+        private int fullWidth;
+        private ImageIcon icon;
 
-    	public TouchIcon(ImageIcon baseIcon, int fullWidth, int fullHeight) {
-    		this.icon = baseIcon;
-    		this.fullWidth = fullWidth;
-    		this.fullHeight = fullHeight;
-    	}
+        public TouchIcon(ImageIcon baseIcon, int fullWidth, int fullHeight) {
+            this.icon = baseIcon;
+            this.fullWidth = fullWidth;
+            this.fullHeight = fullHeight;
+        }
 
-    	@Override
-    	public int getIconHeight() {
-    	    return Math.max(this.fullHeight, this.icon.getIconHeight());
-    	}
+        @Override
+        public int getIconHeight() {
+            return Math.max(this.fullHeight, this.icon.getIconHeight());
+        }
 
-    	@Override
-    	public int getIconWidth() {
-    	    return Math.max(this.fullWidth, this.icon.getIconWidth());
-    	}
+        @Override
+        public int getIconWidth() {
+            return Math.max(this.fullWidth, this.icon.getIconWidth());
+        }
 
-    	@Override
-    	public void paintIcon(Component c, Graphics g, int x, int y) {
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
             int marginTop = 0;
             int marginLeft = 0;
             if (this.fullHeight > 0
