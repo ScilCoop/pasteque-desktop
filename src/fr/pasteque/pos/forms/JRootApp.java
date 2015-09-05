@@ -29,8 +29,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.UUID;
-import java.sql.SQLException;
 import javax.swing.*;
 
 import fr.pasteque.pos.printer.*;
@@ -55,16 +53,13 @@ import fr.pasteque.pos.widgets.WidgetsBuilder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
 
 /**
  *

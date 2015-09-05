@@ -24,6 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 import gnu.gettext.GettextResource;
+import java.util.Locale;
 
 /**
  *
@@ -55,7 +56,7 @@ public class LocaleResources {
     
     public void addBundleName(String bundlename) {
 //        m_resources.add(getBundle(bundlename));
-        m_resources.add(ResourceBundle.getBundle(bundlename));
+        m_resources.add(ResourceBundle.getBundle(bundlename, Locale.FRANCE));
     }    
     
     public String getString(String sKey) {

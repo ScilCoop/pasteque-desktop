@@ -25,7 +25,7 @@ import java.util.TooManyListenersException;
 
 public class ScaleComm implements Scale, SerialPortEventListener {
     
-    private String m_sPortScale;
+    private final String m_sPortScale;
     private CommPortIdentifier m_PortIdPrinter;
     private SerialPort m_CommPortPrinter;      
     private OutputStream m_out;
@@ -47,6 +47,7 @@ public class ScaleComm implements Scale, SerialPortEventListener {
         m_dWeightBuffer = 0.0;
     }
     
+    @Override
     public Double readWeight() {
         
         synchronized(this) {
@@ -77,11 +78,11 @@ public class ScaleComm implements Scale, SerialPortEventListener {
                 // a value as been readed.
                 double dWeight = m_dWeightBuffer / 1000.0;
                 m_dWeightBuffer = 0.0;
-                return new Double(dWeight);
+                return dWeight;
             } else {
                 m_iStatusScale = SCALE_READY;
                 m_dWeightBuffer = 0.0;
-                return new Double(0.0);
+                return 0.0;
             }
         }
     }
@@ -121,6 +122,7 @@ public class ScaleComm implements Scale, SerialPortEventListener {
         }        
     }
     
+    @Override
     public void serialEvent(SerialPortEvent e) {
 
 	// Determine type of event.

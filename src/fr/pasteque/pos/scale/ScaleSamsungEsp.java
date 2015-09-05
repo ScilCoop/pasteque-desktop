@@ -28,7 +28,7 @@ public class ScaleSamsungEsp implements Scale, SerialPortEventListener {
     private CommPortIdentifier m_PortIdPrinter;
     private SerialPort m_CommPortPrinter;  
     
-    private String m_sPortScale;
+    private final String m_sPortScale;
     private OutputStream m_out;
     private InputStream m_in;
 
@@ -51,6 +51,7 @@ public class ScaleSamsungEsp implements Scale, SerialPortEventListener {
         m_dWeightDecimals = 1.0;
     }
     
+    @Override
     public Double readWeight() {
         
         synchronized(this) {
@@ -83,12 +84,12 @@ public class ScaleSamsungEsp implements Scale, SerialPortEventListener {
                 double dWeight = m_dWeightBuffer / m_dWeightDecimals;
                 m_dWeightBuffer = 0.0;
                 m_dWeightDecimals = 1.0;
-                return new Double(dWeight);
+                return dWeight;
             } else {
                 m_iStatusScale = SCALE_READY;
                 m_dWeightBuffer = 0.0;
                 m_dWeightDecimals = 1.0;
-                return new Double(0.0);
+                return 0.0;
             }
         }
     }
@@ -128,6 +129,7 @@ public class ScaleSamsungEsp implements Scale, SerialPortEventListener {
         }        
     }
     
+    @Override
     public void serialEvent(SerialPortEvent e) {
 
 	// Determine type of event.

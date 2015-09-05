@@ -24,7 +24,6 @@ import fr.pasteque.pos.widgets.JNumberDialog;
 import fr.pasteque.pos.forms.AppLocal;
 
 import java.awt.Component;
-import javax.swing.ImageIcon;
 
 /**
  *
@@ -32,12 +31,13 @@ import javax.swing.ImageIcon;
  */
 public class ScaleDialog implements Scale {
 
-    private Component parent;
+    private final Component parent;
 
     public ScaleDialog(Component parent) {
         this.parent = parent;
     }
 
+    @Override
     public Double readWeight() throws ScaleException {
         
         // Set title for grams Kilos, ounzes, pounds, ...

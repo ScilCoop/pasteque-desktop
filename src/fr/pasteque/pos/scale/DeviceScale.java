@@ -28,7 +28,7 @@ import java.awt.Component;
 
 public class DeviceScale {
     
-    private Scale m_scale;
+    private final Scale m_scale;
     
     /** Creates a new instance of DeviceScale */
     public DeviceScale(Component parent, AppProperties props) {
@@ -64,7 +64,7 @@ public class DeviceScale {
             Double result = m_scale.readWeight();
             if (result == null) {
                 return null; // Canceled by the user / scale
-            } else if (result.doubleValue() < 0.002) {
+            } else if (result < 0.002) {
                 // invalid result. nothing on the scale
                 throw new ScaleException(AppLocal.getIntString("scale.invalidvalue"));                
             } else {
