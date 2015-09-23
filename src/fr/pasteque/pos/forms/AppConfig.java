@@ -225,6 +225,7 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("db.password", "demo");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
         DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
+        DEFAULT_VALUES.put("ui.buttons.catbyref", "0");
         DEFAULT_VALUES.put("ui.buttons.prodbyref", "0");
         DEFAULT_VALUES.put("ui.buttons.bold", "0");
         DEFAULT_VALUES.put("ui.buttons.fontface", "arial");
