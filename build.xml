@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
     POS-Tech
     Based upon Openbravo POS
-    
+
     Copyright (C) 2008-2009 Openbravo, S.L.
                        2012 Scil (http://scil.coop)
 
@@ -75,7 +75,7 @@
     <target name="init.bin">
         <delete dir="${dest.bin}" />
     </target>
-    
+
     <!-- ================================================================= -->
     <!-- C O M P I L E                                                     -->
     <!-- ================================================================= -->
@@ -104,7 +104,7 @@
                 <exclude name="**/Thumbs.db"/>
                 <exclude name="**/filesystem.attributes"/>
             </fileset>
-        </copy>                
+        </copy>
     </target>
 
     <!-- ================================================================= -->
@@ -117,7 +117,7 @@
 
         <copy todir="${basedir}/build/zip">
             <fileset dir="${dest.classes}/pos"/>
-        </copy>  
+        </copy>
         <mkdir dir="${dest.jar}" />
         <jar jarfile="${dest.jar}/${name}.jar"
              compress="true"
@@ -127,7 +127,7 @@
                 <attribute name="Implementation-Title" value="${app.name}"/>
                 <attribute name="Implementation-Version" value="${version}"/>
                 <attribute name="Main-Class" value="fr.pasteque.pos.forms.StartPOS" />
-    	    </manifest>
+            </manifest>
         </jar>
         <delete dir="${basedir}/build/zip" />
     </target>
@@ -145,13 +145,10 @@
         <copy file="${dest.jar}/${name}.jar" todir="${dest.bin}"/>
         <copy todir="${dest.bin}/licensing">
             <fileset dir="${basedir}/licensing"/>
-        </copy>   
+        </copy>
         <copy todir="${dest.bin}">
             <fileset dir="${launchers}"/>
-        </copy>     
-        <chmod file="${dest.bin}/start.sh" perm="755"/>
-        <chmod file="${dest.bin}/configure.sh" perm="755"/>
-        <chmod file="${dest.bin}/install.sh" perm="755"/>
+        </copy>
         <copy todir="${dest.bin}/lib">
             <fileset dir="${basedir}/lib"/>
         </copy>
@@ -193,14 +190,14 @@
     <!-- ================================================================= -->
     <!-- D I S T R I B U T I O N  F I L E S                                -->
     <!-- ================================================================= -->
-    
+
     <target name="dist" depends="dist.bin,dist.src" description="Generate the release files">
     </target>
-  
+
     <target name="dist.bin" depends="init.dist,build" description="Generate the bin zip file.">
         <mkdir dir="${dest.dist}" />
         <zip zipfile="${dest.dist}/${name}-desktop-${version}.zip">
-            <zipfileset dir="${dest.bin}" prefix="${name}-desktop-${version}" />
+            <zipfileset dir="${dest.bin}" prefix="${name}-desktop-${version}" filemode="755" />
         </zip>
     </target>
 
@@ -244,7 +241,7 @@
 
         <mkdir dir="${dest.dist}" />
         <zip zipfile="${dest.dist}/${name}-desktop-${version}_src.zip">
-            <zipfileset dir="${basedir}/build/zip" prefix="${name}-desktop-${version}_src"/>
+            <zipfileset dir="${basedir}/build/zip" prefix="${name}-desktop-${version}_src" filemode="755" />
         </zip>
         <delete dir="${basedir}/build/zip" />
     </target>

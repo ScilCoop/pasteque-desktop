@@ -221,8 +221,8 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("prices.roundto", "0");
         DEFAULT_VALUES.put("server.backoffice", "https://my.pasteque.coop/"
                 + AppLocal.DB_VERSION);
-        DEFAULT_VALUES.put("db.user", "demo");
-        DEFAULT_VALUES.put("db.password", "demo");
+        DEFAULT_VALUES.put("db.user", "demo6");
+        DEFAULT_VALUES.put("db.password", "demo6");
         DEFAULT_VALUES.put("ui.printticketbydefault", "1");
         DEFAULT_VALUES.put("ui.autodisplaycustcount", "1");
         DEFAULT_VALUES.put("ui.buttons.catbyref", "0");
@@ -241,7 +241,7 @@ public class AppConfig implements AppProperties {
         String dirname = System.getProperty("dirname.path");
         dirname = dirname == null ? "./" : dirname;
 
-        m_propsconfig.setProperty("machine.hostname", getLocalHostName());
+        m_propsconfig.setProperty("machine.hostname", "Caisse");
 
         Locale l = Locale.getDefault();
         m_propsconfig.setProperty("user.language", l.getLanguage());
