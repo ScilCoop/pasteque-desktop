@@ -1768,6 +1768,20 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         cstr.weightx = 1.0;
         cstr.fill = GridBagConstraints.NONE;
         ticketHeader.add(m_jTicketId, cstr);
+        // Customer reload button
+        btnCustomerReload = WidgetsBuilder.createButton(ImageLoader.readImageIcon("reload.png"), AppLocal.getIntString("Button.btnCustomerReload.toolTip"));
+        btnCustomerReload.setFocusPainted(false);
+        btnCustomerReload.setFocusable(false);
+        btnCustomerReload.setRequestFocusEnabled(false);
+        btnCustomerReload.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCustomerReloadActionPerformed(evt);
+            }
+        });
+        cstr = new GridBagConstraints();
+        cstr.gridy = 0;
+        cstr.insets = new Insets(0, btnspacing, 0, btnspacing);
+        ticketHeader.add(btnCustomerReload, cstr);
         // Customer button
         btnCustomer = WidgetsBuilder.createButton(ImageLoader.readImageIcon("tkt_assign_customer.png"), AppLocal.getIntString("Button.btnCustomer.toolTip"));
         btnCustomer.setFocusPainted(false);
@@ -2286,11 +2300,13 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
         if (prod != null) {
             buttonTransition(prod);
         }
-        
+    }
+
+    private void btnCustomerReloadActionPerformed(java.awt.event.ActionEvent evt) {
+        this.dlCustomers.preloadCustomers();
     }
 
     private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {
-
         JCustomerFinder finder = JCustomerFinder.getCustomerFinder(this, dlCustomers);
         finder.search(m_oTicket.getCustomer());
         finder.setVisible(true);
@@ -2365,6 +2381,7 @@ public abstract class JPanelTicket extends JPanel implements JPanelView, BeanFac
     }
 
     private javax.swing.JButton btnCustomer;
+    private javax.swing.JButton btnCustomerReload;
     private javax.swing.JButton btnSplit;
     private javax.swing.JPanel catcontainer;
     private javax.swing.JButton jEditAttributes;
