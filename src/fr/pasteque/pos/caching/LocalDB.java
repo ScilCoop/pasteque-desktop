@@ -60,6 +60,7 @@ public class LocalDB {
                 Class.forName("org.h2.Driver");
                 String url = "jdbc:h2:" + path();
                 conn = DriverManager.getConnection(url, "pasteque", "");
+                logger.log(Level.INFO, "Opened H2 Database");
             } catch (ClassNotFoundException e) {
                 // Should never happen
                 e.printStackTrace();
@@ -135,6 +136,7 @@ public class LocalDB {
                     + "PRIMARY KEY (ticketId))");
             logger.log(Level.INFO, "Initialized database version " + VERSION);
         }
+        stmt.close();
     }
 
     public static void close() {
