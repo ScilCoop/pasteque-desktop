@@ -216,6 +216,7 @@ public class AppConfig implements AppProperties {
         DEFAULT_VALUES.put("ui.fontsizebig", "14");
         DEFAULT_VALUES.put("ui.fontsizesmall", "10");
         DEFAULT_VALUES.put("ui.showupdownbuttons", "0");
+        DEFAULT_VALUES.put("ui.showbarcode", "0");
         DEFAULT_VALUES.put("ui.margintype", "percent");
         DEFAULT_VALUES.put("prices.setmode", "taxed");
         DEFAULT_VALUES.put("prices.roundto", "0");
