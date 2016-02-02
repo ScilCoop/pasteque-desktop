@@ -32,7 +32,7 @@
     <property name="app.name" value="Pasteque"/>
     <property name="app.website" value="http://www.pasteque.coop"/>
     <!-- project version -->
-    <property name="version" value="6.0.1"/>
+    <property name="version" value="6.0.2"/>
     <!-- javac properties -->
     <property name="javac.deprecation" value="off"/>
     <property name="javac.optimize" value="on"/>
